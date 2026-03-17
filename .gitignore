@@ -1,0 +1,17 @@
+.env
+.pytest_cache/
+.venv/
+__pycache__/
+*.pyc
+
+data/uploads/*
+!data/uploads/.gitkeep
+
+data/parsed/*
+!data/parsed/.gitkeep
+
+data/chunks/*
+!data/chunks/.gitkeep
+
+storage/qdrant/*
+!storage/qdrant/.gitkeep
