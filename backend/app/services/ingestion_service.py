@@ -1,6 +1,7 @@
 import json  # 导入 json，用来落盘 chunk 结果文件。
 from dataclasses import asdict, dataclass  # 导入 dataclass 以及把 dataclass 转成字典的工具。
 from pathlib import Path  # 导入 Path，方便处理文件路径。
+from typing import Callable  # 导入 Callable，用于定义阶段回调类型。
 
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
 from ..rag.chunkers.text_chunker import TextChunker  # 导入文本切分器。
@@ -31,12 +32,23 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
         self.embedding_client = EmbeddingClient(self.settings)  # 创建 embedding 客户端。
         self.vector_store = QdrantVectorStore(self.settings)  # 创建 Qdrant 写入器。
 
-    def ingest_document(self, *, document_id: str, filename: str, source_path: Path) -> DocumentIngestionResult:  # 执行完整文档入库流程。
+    def ingest_document(  # 执行完整文档入库流程。
+        self,
+        *,
+        document_id: str,
+        filename: str,
+        source_path: Path,
+        on_stage: Callable[[str, int], None] | None = None,
+    ) -> DocumentIngestionResult:
+        if on_stage is not None:  # 如果调用方传了阶段回调，就先标记解析阶段。
+            on_stage("parsing", 10)  # 进入解析阶段，进度先更新到 10%。
         parsed_document = self.parser.parse(source_path=source_path, document_id=document_id, filename=filename)  # 先把原始文件解析成纯文本。
 
         parsed_path = self.settings.parsed_dir / f"{document_id}.txt"  # 计算解析后文本的落盘路径。
         parsed_path.write_text(parsed_document.text, encoding="utf-8")  # 把纯文本内容写到 parsed 目录。
 
+        if on_stage is not None:  # 解析完成后进入切块阶段。
+            on_stage("chunking", 35)  # 更新阶段和进度。
         chunks = self.chunker.split(document_id=document_id, text=parsed_document.text)  # 按配置把纯文本切成多个 chunk。
         if not chunks:  # 如果没有切出任何 chunk，说明文本不可用。
             raise ValueError(f"No chunks generated from '{filename}'.")  # 抛出业务错误，停止入库。
@@ -48,10 +60,14 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
             encoding="utf-8",  # 使用 utf-8 编码写文件。
         )
 
+        if on_stage is not None:  # 切块完成后进入 embedding 阶段。
+            on_stage("embedding", 65)  # 更新阶段和进度。
         embeddings = self.embedding_client.embed_texts([chunk.text for chunk in chunks])  # 对所有 chunk 文本生成向量。
         if len(embeddings) != len(chunks):  # 如果向量数量和 chunk 数量不一致，说明依赖返回异常。
             raise RuntimeError("Embedding count does not match chunk count.")  # 抛出运行时错误。
 
+        if on_stage is not None:  # embedding 完成后进入索引阶段。
+            on_stage("indexing", 90)  # 更新阶段和进度。
         vector_count = self.vector_store.upsert_document(  # 把 chunk 和向量一起写入 Qdrant。
             chunks=chunks,  # 传入 chunk 列表。
             embeddings=embeddings,  # 传入对应的向量列表。

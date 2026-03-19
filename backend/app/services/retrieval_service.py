@@ -1,36 +1,37 @@
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
+from ..rag.embeddings.client import EmbeddingClient  # 导入 embedding 客户端，用于把查询文本向量化。
+from ..rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 向量存储，用于执行向量检索。
 from ..schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求、响应和结果模型。
-from .document_service import DocumentService  # 导入文档服务，用来获取已上传文档列表。
 
 
 class RetrievalService:  # 封装文档检索接口的业务逻辑。
     def __init__(self, settings: Settings | None = None) -> None:  # 初始化检索服务。
         self.settings = settings or get_settings()  # 优先使用传入配置，否则读取全局配置。
-        self.document_service = DocumentService(self.settings)  # 创建文档服务实例，当前占位检索从文档列表构造结果。
+        self.embedding_client = EmbeddingClient(self.settings)  # 创建 embedding 客户端，把查询问题转换成向量。
+        self.vector_store = QdrantVectorStore(self.settings)  # 创建向量存储实例，负责执行 Qdrant 相似度检索。
 
     def search(self, request: RetrievalRequest) -> RetrievalResponse:  # 执行检索并返回结果。
-        uploaded_documents = self.document_service.list_documents().items  # 先取出所有已上传文档。
+        query_vector = self.embedding_client.embed_texts([request.query])[0]  # 先对查询文本生成 embedding 向量。
+        scored_points = self.vector_store.search(query_vector, limit=request.top_k)  # 用查询向量在 Qdrant 中检索候选 chunk。
         results: list[RetrievedChunk] = []  # 初始化检索结果列表。
 
-        for index, document in enumerate(uploaded_documents[: request.top_k], start=1):  # 只取前 top_k 个文档构造占位结果。
+        for point in scored_points:  # 遍历 Qdrant 返回的相似点位。
+            payload = point.payload or {}  # 读取 payload，空值时回退到空字典。
             results.append(  # 把当前文档转换成一条占位检索结果。
                 RetrievedChunk(  # 创建单条检索结果对象。
-                    chunk_id=f"{document.document_id}-chunk-{index}",  # 用文档 ID 和序号拼一个占位 chunk_id。
-                    document_id=document.document_id,  # 复制文档 ID。
-                    document_name=document.filename,  # 复制文档名。
-                    text=(  # 用说明性文本代替真实检索出的 chunk 内容。
-                        f"Placeholder retrieval result for '{document.filename}'. "  # 说明这是一条占位结果。
-                        "Vector search, embeddings, and rerank are not wired yet."  # 说明真实检索链路还没接。
-                    ),
-                    score=max(0.95 - index * 0.05, 0.5),  # 人工给一个递减分数，便于前端联调。
-                    source_path=document.storage_path,  # 返回原始文件路径。
+                    chunk_id=str(payload.get("chunk_id") or point.id),  # 优先返回业务 chunk_id，缺失时回退到 point id。
+                    document_id=str(payload.get("document_id") or "unknown"),  # 返回文档 ID，缺失时用 unknown 兜底。
+                    document_name=str(payload.get("document_name") or "unknown"),  # 返回文档名，缺失时用 unknown 兜底。
+                    text=str(payload.get("text") or ""),  # 返回检索命中的 chunk 文本。
+                    score=float(point.score),  # 返回 Qdrant 的相似度分数。
+                    source_path=str(payload.get("source_path") or ""),  # 返回原始文档路径，缺失时返回空字符串。
                 )
             )
 
         return RetrievalResponse(  # 组装最终检索响应。
             query=request.query,  # 返回原始查询文本。
             top_k=request.top_k,  # 返回请求的 top_k。
-            mode="placeholder",  # 当前模式是占位检索。
+            mode="qdrant",  # 当前模式是 Qdrant 向量检索。
             results=results,  # 返回构造好的结果列表。
         )
 

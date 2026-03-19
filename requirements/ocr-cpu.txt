@@ -1,0 +1,10 @@
+# OCR CPU stack.
+# Official Paddle install docs:
+# https://www.paddlepaddle.org.cn/install/quick
+
+--extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cpu/
+
+paddlepaddle==3.3.0
+paddleocr
+opencv-python-headless
+Pillow

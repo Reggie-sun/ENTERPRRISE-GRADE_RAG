@@ -18,6 +18,6 @@ class Citation(BaseModel):  # 定义回答里每条引用片段的结构。
 class ChatResponse(BaseModel):  # 定义问答接口的响应体结构。
     question: str  # 原始用户问题。
     answer: str  # 生成出的回答内容。
-    mode: str  # 当前回答模式，例如 placeholder 或 real。
+    mode: str  # 当前回答模式，例如 rag / retrieval_fallback / no_context。
     model: str  # 当前使用的生成模型名称。
     citations: list[Citation]  # 回答中附带的引用片段列表。

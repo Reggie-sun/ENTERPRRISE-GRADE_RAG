@@ -18,8 +18,8 @@ def health_check() -> dict[str, object]:  # 定义健康检查函数，返回一
             "collection": settings.qdrant_collection,  # 返回当前使用的 collection 名称。
         },
         "llm": {
-            "provider": "ollama",  # 当前问答生成阶段默认按 Ollama 风格接口来接。
-            "base_url": settings.ollama_base_url,  # 返回 LLM 服务地址。
+            "provider": settings.llm_provider,  # 返回当前 LLM provider。
+            "base_url": settings.ollama_base_url if settings.llm_provider.lower().strip() == "ollama" else "",  # ollama 模式才返回服务地址。
             "model": settings.ollama_model,  # 返回当前配置的生成模型名称。
         },
         "embedding": {

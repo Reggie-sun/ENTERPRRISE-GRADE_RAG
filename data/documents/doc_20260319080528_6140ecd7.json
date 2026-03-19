@@ -1,0 +1,25 @@
+{
+  "doc_id": "doc_20260319080528_6140ecd7",
+  "tenant_id": "wl",
+  "file_name": "The headache of Penq.pdf",
+  "file_hash": "a3d717f0db83f53e244d3c5df6d016869f83a0501c40332574f205eb9ea5adc3",
+  "source_type": "pdf",
+  "department_ids": [],
+  "role_ids": [
+    "engineer"
+  ],
+  "owner_id": null,
+  "visibility": "private",
+  "classification": "internal",
+  "tags": [
+    "pdf_test_2"
+  ],
+  "source_system": null,
+  "status": "queued",
+  "current_version": 1,
+  "latest_job_id": "job_20260319080528_26ecc65a",
+  "storage_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260319080528_6140ecd7__The_headache_of_Penq.pdf",
+  "created_by": "reggie",
+  "created_at": "2026-03-19T08:05:28.037855Z",
+  "updated_at": "2026-03-19T08:05:28.037855Z"
+}

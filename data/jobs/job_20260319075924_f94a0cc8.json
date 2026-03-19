@@ -1,0 +1,14 @@
+{
+  "job_id": "job_20260319075924_f94a0cc8",
+  "doc_id": "doc_20260319075924_b4d97875",
+  "version": 1,
+  "file_name": "The headache of Penq.pdf",
+  "status": "queued",
+  "stage": "queued",
+  "progress": 0,
+  "retry_count": 0,
+  "error_code": null,
+  "error_message": null,
+  "created_at": "2026-03-19T07:59:24.369758Z",
+  "updated_at": "2026-03-19T07:59:24.369758Z"
+}

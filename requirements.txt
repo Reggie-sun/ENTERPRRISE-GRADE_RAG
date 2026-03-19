@@ -1,0 +1,5 @@
+# Safe default for local development.
+# This installs the API runtime and dev/test dependencies only.
+# GPU stacks are split into dedicated files under requirements/.
+
+-r requirements/dev.txt

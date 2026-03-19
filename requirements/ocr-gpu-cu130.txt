@@ -1,0 +1,10 @@
+# OCR GPU stack for Paddle CUDA 13.0 wheels.
+# Official Paddle install docs:
+# https://www.paddlepaddle.org.cn/install/quick
+
+--extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu130/
+
+paddlepaddle-gpu==3.3.0
+paddleocr
+opencv-python-headless
+Pillow

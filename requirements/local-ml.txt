@@ -1,0 +1,5 @@
+# Local embedding / rerank model libraries.
+# Install together with one CUDA-specific torch file.
+
+transformers
+sentence-transformers

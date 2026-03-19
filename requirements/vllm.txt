@@ -1,0 +1,7 @@
+# vLLM is intentionally isolated from the API base environment.
+# Preferred install command in a fresh environment:
+#   uv pip install -r requirements/vllm.txt --torch-backend=auto
+# If you use plain pip, follow the CUDA-specific instructions in:
+#   https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html
+
+vllm==0.12.0
