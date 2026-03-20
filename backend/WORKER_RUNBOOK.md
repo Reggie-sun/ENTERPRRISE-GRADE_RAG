@@ -32,7 +32,7 @@ docker compose up -d qdrant redis
 启动 API：
 
 ```bash
-conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
 ```
 
 启动 worker：
@@ -58,7 +58,7 @@ docker compose logs -f worker
 ### 4.1 API 健康检查
 
 ```bash
-curl -s http://127.0.0.1:8000/api/v1/health
+curl -s http://127.0.0.1:8020/api/v1/health
 ```
 
 重点确认：

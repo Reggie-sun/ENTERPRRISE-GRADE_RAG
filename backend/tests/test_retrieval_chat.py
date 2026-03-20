@@ -118,6 +118,82 @@ def test_chat_ask_uses_real_retrieval_citations(tmp_path: Path) -> None:  # 验�
     assert "Vector search, embeddings, and rerank are not wired yet." not in payload["citations"][0]["snippet"]  # 引用内容不应是旧占位文本。
 
 
+def test_retrieval_search_can_filter_by_document_id(tmp_path: Path) -> None:  # 验证检索接口支持按 document_id 过滤。
+    settings = build_test_settings(tmp_path)  # 构造测试配置。
+    ensure_data_directories(settings)  # 创建测试目录。
+    document_service = DocumentService(settings)  # 创建文档服务实例。
+    retrieval_service = RetrievalService(settings)  # 创建检索服务实例。
+    client = TestClient(app)  # 创建测试客户端。
+
+    app.dependency_overrides[get_document_service] = lambda: document_service  # 覆盖文档服务依赖。
+    app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service  # 覆盖检索服务依赖。
+    try:  # 确保测试结束后清理依赖覆盖。
+        upload_a = client.post(  # 上传第一份文档。
+            "/api/v1/documents/upload",
+            files={"file": ("a.txt", "Doc A alarm E101 cooling note.".encode("utf-8"), "text/plain")},
+        )
+        upload_b = client.post(  # 上传第二份文档。
+            "/api/v1/documents/upload",
+            files={"file": ("b.txt", "Doc B alarm E101 pressure note.".encode("utf-8"), "text/plain")},
+        )
+        search_response = client.post(  # 指定 document_id 仅检索文档 A。
+            "/api/v1/retrieval/search",
+            json={
+                "query": "alarm E101",
+                "top_k": 5,
+                "document_id": upload_a.json()["document_id"],
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()  # 清理依赖覆盖。
+
+    assert upload_a.status_code == 201
+    assert upload_b.status_code == 201
+    assert search_response.status_code == 200
+    payload = search_response.json()
+    assert payload["results"]  # 指定文档仍应有结果。
+    assert all(item["document_id"] == upload_a.json()["document_id"] for item in payload["results"])  # 结果应全部属于文档 A。
+
+
+def test_chat_ask_can_filter_citations_by_document_id(tmp_path: Path) -> None:  # 验证问答接口支持按 document_id 过滤引用来源。
+    settings = build_test_settings(tmp_path)  # 构造测试配置。
+    ensure_data_directories(settings)  # 创建测试目录。
+    document_service = DocumentService(settings)  # 创建文档服务实例。
+    retrieval_service = RetrievalService(settings)  # 创建检索服务实例。
+    chat_service = ChatService(settings)  # 创建问答服务实例。
+    client = TestClient(app)  # 创建测试客户端。
+
+    app.dependency_overrides[get_document_service] = lambda: document_service  # 覆盖文档服务依赖。
+    app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service  # 覆盖检索服务依赖。
+    app.dependency_overrides[get_chat_service] = lambda: chat_service  # 覆盖问答服务依赖。
+    try:  # 确保测试结束后清理依赖覆盖。
+        upload_a = client.post(  # 上传第一份文档。
+            "/api/v1/documents/upload",
+            files={"file": ("a.txt", "Doc A alarm E301 reset guide.".encode("utf-8"), "text/plain")},
+        )
+        upload_b = client.post(  # 上传第二份文档。
+            "/api/v1/documents/upload",
+            files={"file": ("b.txt", "Doc B alarm E301 valve guide.".encode("utf-8"), "text/plain")},
+        )
+        chat_response = client.post(  # 问答时只允许引用文档 B。
+            "/api/v1/chat/ask",
+            json={
+                "question": "How to handle alarm E301?",
+                "top_k": 5,
+                "document_id": upload_b.json()["document_id"],
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()  # 清理依赖覆盖。
+
+    assert upload_a.status_code == 201
+    assert upload_b.status_code == 201
+    assert chat_response.status_code == 200
+    payload = chat_response.json()
+    assert payload["citations"]  # 指定文档应有引用。
+    assert all(item["document_id"] == upload_b.json()["document_id"] for item in payload["citations"])  # 引用必须都来自文档 B。
+
+
 def test_chat_ask_falls_back_when_ollama_unavailable(tmp_path: Path) -> None:  # 验证 Ollama 不可用时会返回检索兜底回答而不是 500。
     settings = build_test_settings(tmp_path).model_copy(  # 先拿基础配置，再覆盖成 ollama 模式。
         update={

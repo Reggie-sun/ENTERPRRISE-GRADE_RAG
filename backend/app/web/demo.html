@@ -341,6 +341,21 @@
         font-size: 0.9rem;
       }
 
+      /* 当前文档提示样式 */
+      .current-doc {
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: rgba(31, 122, 82, 0.08);
+        border: 1px solid rgba(31, 122, 82, 0.15);
+        font-size: 0.9rem;
+        color: var(--ok);
+      }
+
+      .current-doc strong {
+        color: var(--ink);
+      }
+
       @media (max-width: 960px) {
         .hero {
           grid-template-columns: 1fr;
@@ -419,6 +434,10 @@
             </div>
           </form>
           <div id="upload-status" class="status-pill">等待上传</div>
+          <!-- 当前文档提示区域 -->
+          <div id="current-doc-info" class="current-doc" style="display: none;">
+            当前文档：<strong id="current-doc-name"></strong>
+          </div>
           <div class="result-box">
             <pre id="upload-output">还没有任务。</pre>
           </div>
@@ -473,7 +492,7 @@
       </section>
 
       <p class="footer-note">
-        建议顺序：先做健康检查，再上传文件，等任务完成后再跑检索和问答。
+        建议顺序：先做健康检查，再上传文件，等任务完成后再跑检索和问答。检索和问答默认只针对本次上传的文档。
       </p>
     </main>
 
@@ -482,6 +501,7 @@
       const terminalJobStates = new Set(["completed", "failed", "dead_letter", "partial_failed"]);
       let latestJobId = "";
       let latestDocId = "";
+      let currentDocName = "";  // 当前上传的文档名称。
       let pollTimer = null;
 
       const jobStateText = {
@@ -526,8 +546,41 @@
           typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
       }
 
+      // 安全清空节点内容（使用 textContent 而非 innerHTML）。
       function clearNode(id) {
-        document.getElementById(id).innerHTML = "";
+        const node = document.getElementById(id);
+        while (node.firstChild) {
+          node.removeChild(node.firstChild);
+        }
+      }
+
+      // 安全创建文本节点。
+      function createTextNode(text) {
+        return document.createTextNode(text);
+      }
+
+      // 安全创建元素并设置属性（不使用 innerHTML）。
+      function createElement(tag, className, children) {
+        const el = document.createElement(tag);
+        if (className) {
+          el.className = className;
+        }
+        if (children) {
+          if (Array.isArray(children)) {
+            children.forEach(child => {
+              if (typeof child === "string") {
+                el.appendChild(createTextNode(child));
+              } else {
+                el.appendChild(child);
+              }
+            });
+          } else if (typeof children === "string") {
+            el.appendChild(createTextNode(children));
+          } else {
+            el.appendChild(children);
+          }
+        }
+        return el;
       }
 
       async function request(path, options = {}) {
@@ -556,6 +609,32 @@
         } catch (error) {
           setStatus("health-status", "健康检查失败", "error");
           writePre("health-output", String(error));
+        }
+      }
+
+      // 清空检索和问答结果（上传新文档时调用）。
+      function clearRetrievalAndChatResults() {
+        // 清空检索结果。
+        clearNode("retrieval-results");
+        setStatus("retrieval-status", "待执行", "");
+
+        // 清空问答结果。
+        writePre("chat-answer", "还没有回答。");
+        clearNode("chat-citations");
+        setStatus("chat-status", "待执行", "");
+      }
+
+      // 更新当前文档显示。
+      function updateCurrentDocDisplay(docName) {
+        currentDocName = docName;
+        const docInfoEl = document.getElementById("current-doc-info");
+        const docNameEl = document.getElementById("current-doc-name");
+
+        if (docName) {
+          docNameEl.textContent = docName;
+          docInfoEl.style.display = "block";
+        } else {
+          docInfoEl.style.display = "none";
         }
       }
 
@@ -630,6 +709,12 @@
         setStatus("upload-status", "正在创建入库任务", "warn");
         writePre("upload-output", "上传中...");
 
+        // 上传新文档时，清空旧的检索和问答结果。
+        clearRetrievalAndChatResults();
+
+        // 更新当前文档显示。
+        updateCurrentDocDisplay(file.name);
+
         try {
           const data = await request("/documents", {
             method: "POST",
@@ -643,32 +728,60 @@
         } catch (error) {
           setStatus("upload-status", "上传失败", "error");
           writePre("upload-output", String(error));
+          // 上传失败时清除当前文档显示。
+          updateCurrentDocDisplay("");
         } finally {
           button.disabled = false;
         }
       }
 
+      // 安全渲染检索结果（使用 DOM API 而非 innerHTML）。
       function renderRetrievalResults(data) {
         const container = document.getElementById("retrieval-results");
         clearNode("retrieval-results");
 
         if (!data.results.length) {
-          container.innerHTML = '<div class="result-box"><pre>没有检索命中结果。</pre></div>';
+          // 创建空结果提示。
+          const box = createElement("div", "result-box", null);
+          const pre = createElement("pre", null, "没有检索命中结果。");
+          box.appendChild(pre);
+          container.appendChild(box);
           return;
         }
 
         data.results.forEach((item, index) => {
-          const article = document.createElement("article");
-          article.className = "result-card";
-          article.innerHTML = `
-            <h3>#${index + 1} ${item.document_name}</h3>
-            <div class="meta">
-              <span class="tag">分数 ${item.score.toFixed(4)}</span>
-              <span class="tag">${item.chunk_id}</span>
-              <span class="tag">${item.document_id}</span>
-            </div>
-            <div>${item.text}</div>
-          `;
+          // 创建 article 容器。
+          const article = createElement("article", "result-card", null);
+
+          // 创建标题 h3。
+          const h3 = createElement("h3", null, `#${index + 1} `);
+          h3.appendChild(createTextNode(item.document_name));
+          article.appendChild(h3);
+
+          // 创建 meta 区域。
+          const meta = createElement("div", "meta", null);
+
+          // 分数标签。
+          const tag1 = createElement("span", "tag", `分数 ${item.score.toFixed(4)}`);
+          meta.appendChild(tag1);
+
+          // chunk_id 标签。
+          const tag2 = createElement("span", "tag", null);
+          tag2.appendChild(createTextNode(item.chunk_id));
+          meta.appendChild(tag2);
+
+          // document_id 标签。
+          const tag3 = createElement("span", "tag", null);
+          tag3.appendChild(createTextNode(item.document_id));
+          meta.appendChild(tag3);
+
+          article.appendChild(meta);
+
+          // 文本内容。
+          const textDiv = createElement("div", null, null);
+          textDiv.appendChild(createTextNode(item.text));
+          article.appendChild(textDiv);
+
           container.appendChild(article);
         });
       }
@@ -693,34 +806,65 @@
           renderRetrievalResults(data);
         } catch (error) {
           setStatus("retrieval-status", "检索失败", "error");
-          document.getElementById("retrieval-results").innerHTML =
-            `<div class="result-box"><pre>${String(error)}</pre></div>`;
+          // 安全显示错误信息（使用 textContent）。
+          const container = document.getElementById("retrieval-results");
+          const box = createElement("div", "result-box", null);
+          const pre = createElement("pre", null, null);
+          pre.textContent = String(error);  // 使用 textContent 安全显示错误。
+          box.appendChild(pre);
+          container.appendChild(box);
         } finally {
           button.disabled = false;
         }
       }
 
+      // 安全渲染引用结果（使用 DOM API 而非 innerHTML）。
       function renderCitations(citations) {
         const container = document.getElementById("chat-citations");
         clearNode("chat-citations");
 
         if (!citations.length) {
-          container.innerHTML = '<div class="result-box"><pre>没有返回引用。</pre></div>';
+          // 创建空结果提示。
+          const box = createElement("div", "result-box", null);
+          const pre = createElement("pre", null, "没有返回引用。");
+          box.appendChild(pre);
+          container.appendChild(box);
           return;
         }
 
         citations.forEach((item, index) => {
-          const article = document.createElement("article");
-          article.className = "result-card";
-          article.innerHTML = `
-            <h3>#${index + 1} ${item.document_name}</h3>
-            <div class="meta">
-              <span class="tag">分数 ${item.score.toFixed(4)}</span>
-              <span class="tag">${item.chunk_id}</span>
-              <span class="tag">${item.document_id}</span>
-            </div>
-            <div>${item.snippet}</div>
-          `;
+          // 创建 article 容器。
+          const article = createElement("article", "result-card", null);
+
+          // 创建标题 h3。
+          const h3 = createElement("h3", null, `#${index + 1} `);
+          h3.appendChild(createTextNode(item.document_name));
+          article.appendChild(h3);
+
+          // 创建 meta 区域。
+          const meta = createElement("div", "meta", null);
+
+          // 分数标签。
+          const tag1 = createElement("span", "tag", `分数 ${item.score.toFixed(4)}`);
+          meta.appendChild(tag1);
+
+          // chunk_id 标签。
+          const tag2 = createElement("span", "tag", null);
+          tag2.appendChild(createTextNode(item.chunk_id));
+          meta.appendChild(tag2);
+
+          // document_id 标签。
+          const tag3 = createElement("span", "tag", null);
+          tag3.appendChild(createTextNode(item.document_id));
+          meta.appendChild(tag3);
+
+          article.appendChild(meta);
+
+          // 片段内容。
+          const textDiv = createElement("div", null, null);
+          textDiv.appendChild(createTextNode(item.snippet));
+          article.appendChild(textDiv);
+
           container.appendChild(article);
         });
       }

@@ -12,7 +12,11 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
 
     def search(self, request: RetrievalRequest) -> RetrievalResponse:  # 执行检索并返回结果。
         query_vector = self.embedding_client.embed_texts([request.query])[0]  # 先对查询文本生成 embedding 向量。
-        scored_points = self.vector_store.search(query_vector, limit=request.top_k)  # 用查询向量在 Qdrant 中检索候选 chunk。
+        scored_points = self.vector_store.search(  # 用查询向量在 Qdrant 中检索候选 chunk。
+            query_vector,
+            limit=request.top_k,
+            document_id=request.document_id,
+        )
         results: list[RetrievedChunk] = []  # 初始化检索结果列表。
 
         for point in scored_points:  # 遍历 Qdrant 返回的相似点位。

@@ -15,7 +15,11 @@ class ChatService:  # 封装问答接口的业务逻辑。
 
     def answer(self, request: ChatRequest) -> ChatResponse:  # 根据用户问题生成问答响应。
         retrieval_result = self.retrieval_service.search(  # 先调用检索服务拿候选片段。
-            RetrievalRequest(query=request.question, top_k=request.top_k)  # 把问答请求转换成检索请求。
+            RetrievalRequest(  # 把问答请求转换成检索请求。
+                query=request.question,
+                top_k=request.top_k,
+                document_id=request.document_id,
+            )
         )
         rerank_top_n = max(1, min(request.top_k, self.settings.rerank_top_n))  # 计算 rerank 后保留数量。
         try:  # 优先使用 reranker 对候选片段做重排。

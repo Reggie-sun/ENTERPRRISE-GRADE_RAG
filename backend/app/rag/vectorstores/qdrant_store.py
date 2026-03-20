@@ -73,15 +73,33 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         )
         return int(result.count)  # 把返回值转换成 Python int。
 
-    def search(self, query_vector: list[float], *, limit: int) -> list[models.ScoredPoint]:  # 按查询向量检索最相似的 chunk。
+    def search(  # 按查询向量检索最相似的 chunk。
+        self,
+        query_vector: list[float],
+        *,
+        limit: int,
+        document_id: str | None = None,
+    ) -> list[models.ScoredPoint]:
         if not query_vector or limit <= 0:  # 空向量或非法 limit 不执行检索。
             return []  # 直接返回空结果。
         if not self._collection_exists(self.settings.qdrant_collection):  # 目标 collection 不存在时直接返回空结果。
             return []  # 让上层按“暂无数据”处理，而不是抛 500。
 
+        query_filter = None  # 默认不加过滤，保持全库检索行为。
+        if document_id:  # 传入 document_id 时，只检索目标文档下的 chunk。
+            query_filter = models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="document_id",
+                        match=models.MatchValue(value=document_id),
+                    )
+                ]
+            )
+
         response = self.client.query_points(  # 调用 Qdrant 向量检索接口。
             collection_name=self.settings.qdrant_collection,  # 指定检索的 collection。
             query=query_vector,  # 传入查询向量。
+            query_filter=query_filter,  # 可选文档过滤条件。
             limit=limit,  # 限制返回条数。
             with_payload=True,  # 需要 payload 才能返回 chunk 文本和文档元信息。
             with_vectors=False,  # 响应里不回传向量，减少传输开销。
