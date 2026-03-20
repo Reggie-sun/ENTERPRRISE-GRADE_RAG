@@ -65,6 +65,8 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         return len(points)  # 返回本次成功提交的点位数量。
 
     def count_points(self) -> int:  # 统计当前 collection 里的点位数量。
+        if not self._collection_exists(self.settings.qdrant_collection):  # collection 尚未创建时直接返回 0，避免把“没有数据”当异常。
+            return 0
         result = self.client.count(  # 调用 Qdrant 计数接口。
             collection_name=self.settings.qdrant_collection,  # 指定目标 collection。
             exact=True,  # 要求精确计数。

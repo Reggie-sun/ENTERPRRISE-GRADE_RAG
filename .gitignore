@@ -13,5 +13,11 @@ data/parsed/*
 data/chunks/*
 !data/chunks/.gitkeep
 
+data/documents/*
+!data/documents/.gitkeep
+
+data/jobs/*
+!data/jobs/.gitkeep
+
 storage/qdrant/*
 !storage/qdrant/.gitkeep

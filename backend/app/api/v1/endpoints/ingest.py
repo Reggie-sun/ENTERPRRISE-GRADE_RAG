@@ -21,10 +21,10 @@ def get_ingest_job_status(  # 定义 ingest job 状态查询接口函数。
 @router.post(
     "/{job_id}/run",  # 定义按 job_id 触发执行 ingest 任务的路径。
     response_model=IngestJobStatusResponse,  # 指定成功时返回的响应结构。
-    summary="Run ingest job now",  # 给 Swagger 页面展示简要标题。
+    summary="Enqueue ingest job now",  # 给 Swagger 页面展示简要标题。
 )
-def run_ingest_job(  # 定义 ingest job 执行接口函数。
+def run_ingest_job(  # 定义 ingest job 手动重投递接口函数。
     job_id: str,  # 接收路径中的任务 ID。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> IngestJobStatusResponse:
-    return document_service.run_ingest_job(job_id)  # 立即执行指定任务并返回最新状态。
+    return document_service.queue_ingest_job(job_id)  # 把指定任务重新投递到异步队列并返回最新状态。

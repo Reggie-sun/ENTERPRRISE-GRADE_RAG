@@ -27,4 +27,10 @@ def health_check() -> dict[str, object]:  # 定义健康检查函数，返回一
             "base_url": settings.embedding_base_url or settings.ollama_base_url,  # 优先返回独立 embedding 地址，没配则复用 LLM 地址。
             "model": settings.embedding_model,  # 返回当前使用的 embedding 模型名称。
         },
+        "queue": {
+            "provider": "celery",  # 当前异步任务框架固定为 Celery。
+            "broker_url": settings.celery_broker_url,  # 返回 Celery broker 地址。
+            "result_backend": settings.celery_result_backend,  # 返回 Celery 结果后端地址。
+            "ingest_queue": settings.celery_ingest_queue,  # 返回入库任务默认队列名。
+        },
     }

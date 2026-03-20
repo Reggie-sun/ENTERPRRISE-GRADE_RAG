@@ -1,5 +1,18 @@
 # V1 Plan
 
+## 0. 当前状态
+
+按当前冻结范围，V1 已满足验收标准，可以进入版本冻结。
+
+当前验收依据：
+
+- `POST /api/v1/documents` 已通过真实 Swagger MCP 上传测试
+- `GET /api/v1/ingest/jobs/{job_id}` 已返回真实 job 状态与重试语义字段
+- `POST /api/v1/ingest/jobs/{job_id}/run` 已完成真实接口测试
+- 本地测试通过：`pytest -q -> 24 passed`
+
+这里的“完成”指的是：**V1 最小闭环已经完成**，不是说企业级全部能力都做完了。
+
 ## 1. 项目目标
 
 本项目的 V1 目标不是一次性做完整企业级 RAG 平台，而是先做出一个**单机可运行、接口可联调、链路可验证**的企业知识库问答后端。
@@ -41,17 +54,22 @@ V1 入库保留两条路径：
 
 - 同步验证链路：`POST /api/v1/documents/upload`
   用于本地开发和快速验证 parse -> chunk -> embedding -> Qdrant 是否跑通
-- 队列化接口契约：`POST /api/v1/documents` + `GET /api/v1/ingest/jobs/{job_id}`
-  用于固定异步入库接口形态
+- 异步入库链路：`POST /api/v1/documents` + `GET /api/v1/ingest/jobs/{job_id}`
+  用于真实验证 `enqueue -> worker consume -> 状态流转`
 
-当前代码阶段，队列化链路已经有：
+当前代码阶段，异步链路已经有：
 
 - 创建文档记录
 - 创建 ingest job
+- Celery 投递
+- worker 消费
 - 查询 job 状态
-- 手动触发执行：`POST /api/v1/ingest/jobs/{job_id}/run`
+- 失败达到上限后进入 `dead_letter`
+- 可配置自动重试参数：`ingest_failure_retry_limit` / `ingest_retry_delay_seconds`
+- job 状态响应包含重试语义字段：`max_retry_limit` / `auto_retry_eligible` / `manual_retry_allowed`
+- 手动重投递：`POST /api/v1/ingest/jobs/{job_id}/run`
 
-这说明 V1 已经具备异步化接口骨架，但**真正的 Celery/Redis 自动消费**还属于下一步增强，不必和“最小闭环”混为一谈。
+这说明 V1 现在已经不是“只有异步接口骨架”，而是具备了**真实异步执行能力**。
 
 ### 2.3 检索与问答范围
 
@@ -75,6 +93,11 @@ V1 当前要求的是：
 - ingest job 元数据落盘
 - 文档详情和 job 状态查询
 - 手动执行 ingest job
+- `dead_letter` 终态与重试上限控制
+- job 状态响应重试语义字段（可直接给管理端 UI 用）
+- 非 eager worker 回归测试（覆盖 `queued -> completed` 与 `queued -> dead_letter`）
+- worker 运行手册（`backend/WORKER_RUNBOOK.md`）
+- ingest 状态机与错误码文档（`backend/INGEST_STATE_MACHINE.md`）
 - 文档解析与切块
 - embedding 生成
 - Qdrant 入库
@@ -92,12 +115,9 @@ V1 当前要求的是：
 
 如果按“当前真实 V1”收口，接下来优先级应当是：
 
-1. 把 queued ingestion 从“手动 run”推进到“真实异步 worker 执行”
-2. 稳定 job 状态流转、失败处理和重试语义
-3. 继续补接口测试和失败路径测试
-4. 再决定是否进入 BM25、ACL 过滤和 Celery/Redis 完整接入
+1. 再决定是否进入 BM25、ACL 过滤和 OCR
 
-这里要明确：**下一步最合理的是完善异步执行，不是继续扩 V1 功能面。**
+这里要明确：**异步执行已经接上，下一步最合理的是把这条链路稳定下来，而不是继续扩 V1 功能面。**
 
 ---
 
@@ -129,6 +149,7 @@ V1 当前要求的是：
 
 - 后端：FastAPI
 - 向量库：Qdrant
+- 队列：Celery + Redis
 - Embedding：BGE-M3
 - Rerank：当前先保证链路可用，生产目标仍是 `bge-reranker-v2-m3`
 - LLM：当前开发链路允许 `mock / Ollama-compatible`，生产目标再切 `vLLM`
@@ -146,8 +167,10 @@ V1 当前要求的是：
 - 能上传一个 PDF 或 TXT 文档
 - 能通过同步链路完成 parse、chunk、embedding 和向量入库
 - 能通过 queued 接口创建文档与 ingest job
-- 能查询 ingest job 状态
-- 能执行 ingest job 并把文档状态推进到 `active`
+- 能查询 ingest job 状态（含 `max_retry_limit` / `auto_retry_eligible` / `manual_retry_allowed`）
+- 能由 worker 自动消费 ingest job 并把文档状态推进到 `active`
+- 失败次数达到阈值后，任务能进入 `dead_letter`
+- 能通过 `/api/v1/ingest/jobs/{job_id}/run` 手动重投递失败/待处理任务
 - 能基于用户问题完成检索、rerank 和回答生成
 - 返回结果中带有真实引用片段
 - 单机环境下接口和测试可以稳定跑通
@@ -158,17 +181,17 @@ V1 当前要求的是：
 
 ---
 
-## 8. 下一步建议
+## 8. V1 后续建议
 
 如果继续按 V1 推进，最合理的下一步不是再改大架构，而是：
 
-1. 保留当前 `POST /api/v1/ingest/jobs/{job_id}/run` 作为手动执行/重试入口
-2. 引入真实异步 worker，让 `POST /api/v1/documents` 创建任务后自动消费
-3. 保持现有 API 合同不变
+1. 保留当前 `POST /api/v1/ingest/jobs/{job_id}/run` 作为手动重投递/重试入口
+2. 固化 Celery worker 的启动方式、部署方式和失败恢复语义（见 `backend/WORKER_RUNBOOK.md`）
+3. 保持现有 API 合同不变，并按 `backend/INGEST_STATE_MACHINE.md` 维护 `failed/dead_letter` 判定语义
 4. 等异步链路稳定后，再进入 ACL 过滤和 BM25
 
 这样做的原因很直接：
 
 - 当前闭环已经有了
-- 下一步最值钱的是把“骨架接口”变成“真实异步执行”
+- 下一步最值钱的是把“真实异步执行”变成“稳定异步执行”
 - 如果现在继续把 BM25、ACL、OCR 一起塞进 V1，范围会再次失控

@@ -18,7 +18,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])  # 创建 documents 
     response_model=DocumentCreateResponse,  # 指定成功时返回的响应结构。
     status_code=status.HTTP_201_CREATED,  # 指定成功时返回 201 Created。
     summary="Create a document and queue ingestion",  # 给 Swagger 页面展示简要标题。
-    description="Uploads a document, persists the document/job metadata, and returns immediately with queued status.",  # 给 Swagger 页面展示详细说明。
+    description="Uploads a document, persists the document/job metadata, enqueues a Celery ingest job, and returns immediately with queued status.",  # 给 Swagger 页面展示详细说明。
 )
 async def create_document(  # 定义文档创建接口函数。
     file: UploadFile = File(..., description="Supported file types: .pdf, .md, .markdown, .txt"),  # 接收上传文件。
