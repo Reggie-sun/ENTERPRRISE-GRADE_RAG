@@ -1,0 +1,96 @@
+@tailwind base;  /* 引入 Tailwind 基础样式。 */
+@tailwind components;  /* 引入 Tailwind 组件样式。 */
+@tailwind utilities;  /* 引入 Tailwind 工具类。 */
+
+/* 全局基础样式 */
+:root {
+  /* 颜色变量定义，与后端 demo.html 保持一致 */
+  --bg: #f5efe4;
+  --bg-soft: rgba(255, 255, 255, 0.72);
+  --panel: rgba(255, 250, 244, 0.86);
+  --ink: #17202a;
+  --ink-soft: #56616d;
+  --line: rgba(23, 32, 42, 0.12);
+  --accent: #b6462f;
+  --accent-deep: #7f2f1f;
+  --accent-warm: #f6d3ae;
+  --ok: #1f7a52;
+  --warn: #8d5d16;
+  --shadow: 0 24px 60px rgba(77, 42, 16, 0.14);
+}
+
+/* 全局盒模型设置 */
+* {
+  box-sizing: border-box;
+}
+
+/* 全局 body 样式 */
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  /* 多层渐变背景，营造温暖专业的视觉氛围 */
+  background:
+    radial-gradient(circle at top left, rgba(246, 211, 174, 0.85), transparent 28%),
+    radial-gradient(circle at top right, rgba(182, 70, 47, 0.14), transparent 24%),
+    linear-gradient(180deg, #fbf6ee 0%, var(--bg) 100%);
+}
+
+/* 装饰性背景光晕 - 右上角 */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+body::before {
+  right: -120px;
+  top: 96px;
+  width: 320px;
+  height: 320px;
+  background: rgba(182, 70, 47, 0.14);
+}
+
+/* 装饰性背景光晕 - 左下角 */
+body::after {
+  left: -80px;
+  bottom: 48px;
+  width: 240px;
+  height: 240px;
+  background: rgba(246, 211, 174, 0.78);
+}
+
+/* 滚动条样式优化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(23, 32, 42, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(23, 32, 42, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(23, 32, 42, 0.3);
+}
+
+/* 代码/等宽字体样式 */
+.font-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+/* 标题字体样式 */
+.font-serif {
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+}
