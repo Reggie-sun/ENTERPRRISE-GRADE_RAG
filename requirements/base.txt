@@ -1,42 +1,44 @@
+# API 服务的基础运行时依赖。
+# 此文件有意排除 torch / vLLM / Paddle 等运行时大包。
 # Base runtime dependencies for the API service.
 # This file intentionally excludes torch / vLLM / Paddle runtime packages.
 
-# Core API
+# Core API / 核心 API 框架
 fastapi==0.116.1
 uvicorn[standard]==0.35.0
 python-multipart==0.0.20
 orjson
 
-# Config
+# Config / 配置管理
 pydantic-settings==2.10.1
 python-dotenv==1.1.1
 
-# Database / metadata
+# Database / metadata / 数据库和元数据
 sqlalchemy
 alembic
 psycopg[binary]
 pgvector
 
-# Cache / queue
+# Cache / queue / 缓存和队列
 redis
 celery
 
-# Retrieval / vector / HTTP
+# Retrieval / vector / HTTP / 检索、向量和 HTTP 客户端
 qdrant-client==1.15.1
 httpx==0.28.1
 rank-bm25
 
-# Document parsing
+# Document parsing / 文档解析
 pypdf==5.9.0
 PyMuPDF
 python-docx
 python-pptx
 openpyxl
 
-# Object storage
+# Object storage / 对象存储
 minio
 
-# Observability
+# Observability / 可观测性
 prometheus-client
 opentelemetry-api
 opentelemetry-sdk

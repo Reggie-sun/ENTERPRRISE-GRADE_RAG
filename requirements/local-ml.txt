@@ -1,5 +1,7 @@
+# 本地 embedding / rerank 模型库。
 # Local embedding / rerank model libraries.
+# 需要与 CUDA 特定的 torch 文件一起安装。
 # Install together with one CUDA-specific torch file.
 
-transformers
-sentence-transformers
+transformers  # HuggingFace transformers 库 / HuggingFace transformers library
+sentence-transformers  # sentence-transformers 库 / sentence-transformers library

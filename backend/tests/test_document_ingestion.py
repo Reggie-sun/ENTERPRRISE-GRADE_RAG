@@ -147,6 +147,28 @@ def test_create_document_normalizes_blank_metadata_values(tmp_path: Path) -> Non
     assert document_payload["created_by"] == "reggie"  # 非空 created_by 应被 strip。
 
 
+def test_create_document_rejects_file_larger_than_limit(tmp_path: Path) -> None:  # 测试上传文件超过大小限制时返回 413。
+    settings = build_test_settings(tmp_path).model_copy(update={"upload_max_file_size_bytes": 8})  # 把上限调小，便于构造边界测试。
+    ensure_data_directories(settings)  # 创建测试目录。
+    service = DocumentService(settings)  # 创建测试服务实例。
+
+    app.dependency_overrides[get_document_service] = lambda: service  # 覆盖依赖注入。
+    client = TestClient(app)  # 创建测试客户端。
+
+    try:  # 确保测试结束后清理依赖覆盖。
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("manual.txt", b"123456789", "text/plain")},  # 9 字节，超过 8 字节上限。
+        )
+    finally:
+        app.dependency_overrides.clear()  # 清理依赖覆盖。
+
+    assert response.status_code == 413  # 超限时应返回 413。
+    detail = response.json()["detail"]  # 提取错误详情。
+    assert "Maximum allowed size is 8 bytes" in detail  # 错误信息应包含当前上限。
+
+
 def test_get_ingest_job_status_after_create_document(tmp_path: Path) -> None:  # 测试创建文档后可通过 ingest job 接口查询任务状态。
     settings = build_test_settings(tmp_path)  # 构造测试配置。
     ensure_data_directories(settings)  # 创建测试目录。

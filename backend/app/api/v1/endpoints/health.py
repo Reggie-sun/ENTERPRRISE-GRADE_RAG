@@ -1,6 +1,6 @@
 from fastapi import APIRouter  # 导入 FastAPI 的路由对象，用来声明接口。
 
-from ....core.config import get_settings  # 导入配置读取函数，用来拿到当前系统配置。
+from ....core.config import get_llm_base_url, get_llm_model, get_settings  # 导入配置读取函数和统一 LLM 配置解析函数。
 
 router = APIRouter(tags=["health"])  # 创建一个路由分组，并在 Swagger 文档里打上 health 标签。
 
@@ -19,8 +19,8 @@ def health_check() -> dict[str, object]:  # 定义健康检查函数，返回一
         },
         "llm": {
             "provider": settings.llm_provider,  # 返回当前 LLM provider。
-            "base_url": settings.ollama_base_url if settings.llm_provider.lower().strip() == "ollama" else "",  # ollama 模式才返回服务地址。
-            "model": settings.ollama_model,  # 返回当前配置的生成模型名称。
+            "base_url": get_llm_base_url(settings) if settings.llm_provider.lower().strip() != "mock" else "",  # 非 mock 模式返回当前生效的服务地址。
+            "model": "mock" if settings.llm_provider.lower().strip() == "mock" else get_llm_model(settings),  # mock 模式显式返回 mock，避免误导联调判断。
         },
         "embedding": {
             "provider": settings.embedding_provider,  # 返回当前 embedding 服务类型，例如 ollama / openai / mock。

@@ -1,3 +1,7 @@
+# 本地开发的安全默认配置。
+# 这里只安装 API 运行时和开发/测试依赖。
+# GPU 相关依赖已拆分到 requirements/ 目录下的专用文件中。
+
 # Safe default for local development.
 # This installs the API runtime and dev/test dependencies only.
 # GPU stacks are split into dedicated files under requirements/.

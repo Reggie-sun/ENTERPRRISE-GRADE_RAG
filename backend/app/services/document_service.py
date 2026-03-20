@@ -328,6 +328,15 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
             )
 
         content = await upload.read()  # 读取上传文件的全部二进制内容。
+        if len(content) > self.settings.upload_max_file_size_bytes:  # 超过上传上限时直接拒绝，避免大文件把服务内存打爆。
+            max_size_mb = self.settings.upload_max_file_size_bytes // (1024 * 1024)  # 用 MB 展示上限，便于前端和调用方理解。
+            raise HTTPException(  # 抛出 413，明确表示请求实体过大。
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=(
+                    f"File too large: {len(content)} bytes. "
+                    f"Maximum allowed size is {self.settings.upload_max_file_size_bytes} bytes ({max_size_mb}MB)."
+                ),
+            )
         if not content:  # 如果文件内容为空，拒绝继续入库。
             raise HTTPException(  # 抛出 400 错误。
                 status_code=status.HTTP_400_BAD_REQUEST,  # 使用 400 Bad Request。

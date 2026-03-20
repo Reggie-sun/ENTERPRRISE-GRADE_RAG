@@ -1,5 +1,5 @@
-from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
-from ..rag.generators.client import LLMGenerationClient  # 导入 LLM 生成客户端。
+from ..core.config import Settings, get_llm_model, get_settings  # 导入配置对象和配置获取函数。
+from ..rag.generators.client import LLMGenerationClient, LLMGenerationRetryableError  # 导入 LLM 生成客户端和可降级异常类型。
 from ..rag.rerankers.client import RerankerClient  # 导入 rerank 客户端。
 from ..schemas.chat import ChatRequest, ChatResponse, Citation  # 导入问答请求、响应和引用片段模型。
 from ..schemas.retrieval import RetrievalRequest  # 导入检索请求模型，问答前要先做检索。
@@ -55,7 +55,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 contexts=contexts,  # 传入检索证据上下文。
             )
             mode = "rag"  # 生成成功时标记为完整 RAG 模式。
-        except RuntimeError:  # 远程 LLM 不可用或返回异常时，回退到检索摘要回答。
+        except LLMGenerationRetryableError:  # 仅在可恢复的远程故障时走降级，避免吞掉配置或协议错误。
             answer = self._build_retrieval_fallback_answer(citations)  # 用引用片段拼一个稳定可读的兜底回答。
             mode = "retrieval_fallback"  # 标记为检索兜底模式。
 
@@ -70,7 +70,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
     def _response_model_name(self) -> str:  # 根据 provider 返回当前响应里的模型标识。
         if self.settings.llm_provider.lower().strip() == "mock":  # mock 模式下直接返回 mock。
             return "mock"  # 返回 mock 作为模型名称。
-        return self.settings.ollama_model  # 其他模式返回实际模型名。
+        return get_llm_model(self.settings)  # 其他模式返回当前生效的模型名。
 
     @staticmethod
     def _build_retrieval_fallback_answer(citations: list[Citation]) -> str:  # 当 LLM 不可用时，基于引用内容生成兜底回答。

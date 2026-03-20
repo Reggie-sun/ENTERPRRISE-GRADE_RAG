@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>企业级 RAG 演示台</title>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --bg-soft: rgba(255, 255, 255, 0.72);
+        --panel: rgba(255, 250, 244, 0.86);
+        --ink: #17202a;
+        --ink-soft: #56616d;
+        --line: rgba(23, 32, 42, 0.12);
+        --accent: #b6462f;
+        --accent-deep: #7f2f1f;
+        --accent-warm: #f6d3ae;
+        --ok: #1f7a52;
+        --warn: #8d5d16;
+        --shadow: 0 24px 60px rgba(77, 42, 16, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(246, 211, 174, 0.85), transparent 28%),
+          radial-gradient(circle at top right, rgba(182, 70, 47, 0.14), transparent 24%),
+          linear-gradient(180deg, #fbf6ee 0%, var(--bg) 100%);
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        z-index: 0;
+        border-radius: 999px;
+        pointer-events: none;
+        filter: blur(18px);
+      }
+
+      body::before {
+        right: -120px;
+        top: 96px;
+        width: 320px;
+        height: 320px;
+        background: rgba(182, 70, 47, 0.14);
+      }
+
+      body::after {
+        left: -80px;
+        bottom: 48px;
+        width: 240px;
+        height: 240px;
+        background: rgba(246, 211, 174, 0.78);
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        width: min(1200px, calc(100vw - 32px));
+        margin: 32px auto 48px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .hero-card,
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--bg-soft);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card {
+        border-radius: 28px;
+        padding: 28px;
+      }
+
+      .hero-card h1 {
+        margin: 0 0 10px;
+        font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+        font-size: clamp(2rem, 3.6vw, 3.8rem);
+        line-height: 0.98;
+        letter-spacing: -0.03em;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(182, 70, 47, 0.09);
+        color: var(--accent-deep);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .hero-copy {
+        color: var(--ink-soft);
+        line-height: 1.6;
+        max-width: 60ch;
+      }
+
+      .hero-metrics {
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric {
+        padding: 18px;
+        border-radius: 22px;
+        background: var(--panel);
+        border: 1px solid rgba(182, 70, 47, 0.1);
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.5rem;
+        font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .panel {
+        border-radius: 24px;
+        padding: 22px;
+      }
+
+      .span-4 {
+        grid-column: span 4;
+      }
+
+      .span-6 {
+        grid-column: span 6;
+      }
+
+      .span-8 {
+        grid-column: span 8;
+      }
+
+      .span-12 {
+        grid-column: span 12;
+      }
+
+      .panel h2 {
+        margin: 0 0 6px;
+        font-size: 1.25rem;
+      }
+
+      .panel p {
+        margin: 0 0 16px;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+
+      form,
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      input,
+      textarea,
+      button,
+      select {
+        font: inherit;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(23, 32, 42, 0.12);
+        background: rgba(255, 255, 255, 0.82);
+        padding: 13px 14px;
+        color: var(--ink);
+        transition: border-color 180ms ease, transform 180ms ease;
+      }
+
+      textarea {
+        min-height: 112px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: rgba(182, 70, 47, 0.48);
+        transform: translateY(-1px);
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        background: linear-gradient(135deg, var(--accent) 0%, #d16837 100%);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        box-shadow: 0 18px 28px rgba(182, 70, 47, 0.24);
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.7;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .ghost {
+        background: rgba(23, 32, 42, 0.06);
+        color: var(--ink);
+        box-shadow: none;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+        width: fit-content;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(23, 32, 42, 0.06);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .status-pill.ok {
+        background: rgba(31, 122, 82, 0.11);
+        color: var(--ok);
+      }
+
+      .status-pill.warn {
+        background: rgba(141, 93, 22, 0.12);
+        color: var(--warn);
+      }
+
+      .status-pill.error {
+        background: rgba(182, 70, 47, 0.12);
+        color: var(--accent-deep);
+      }
+
+      .result-box {
+        min-height: 96px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px dashed rgba(23, 32, 42, 0.14);
+        background: rgba(255, 255, 255, 0.55);
+      }
+
+      .result-box pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .result-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .result-card {
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(23, 32, 42, 0.08);
+      }
+
+      .result-card h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: rgba(23, 32, 42, 0.06);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .footer-note {
+        margin-top: 20px;
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 960px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .span-4,
+        .span-6,
+        .span-8,
+        .span-12 {
+          grid-column: span 12;
+        }
+
+        .split {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <article class="hero-card">
+          <div class="eyebrow">V1 演示界面</div>
+          <h1>从文档入库到回答生成，后面连的都是真实后端。</h1>
+          <p class="hero-copy">
+            这个页面只是现有 FastAPI 接口的一层可视化外壳，不做假流程。上传会真实创建
+            ingest job，轮询会读取真实任务状态，检索会命中向量库，问答也会返回真实引用。
+          </p>
+        </article>
+        <aside class="hero-metrics">
+          <div class="metric">
+            当前覆盖
+            <strong>健康检查 / 入库任务 / 检索 / 问答</strong>
+          </div>
+          <div class="metric">
+            当前目标
+            <strong>先把链路看清楚，再扩平台能力</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section class="grid">
+        <article class="panel span-4">
+          <h2>健康检查</h2>
+          <p>读取当前后端配置面，确认向量库、模型和队列服务的实际提供方。</p>
+          <div class="button-row">
+            <button id="health-button" type="button">检查后端状态</button>
+          </div>
+          <div id="health-status" class="status-pill">待执行</div>
+          <div class="result-box">
+            <pre id="health-output">点击健康检查后，这里会显示当前后端的实时配置。</pre>
+          </div>
+        </article>
+
+        <article class="panel span-8">
+          <h2>上传文档并轮询入库</h2>
+          <p>创建真实 ingest job，然后持续观察状态流转，直到 worker 进入终态。</p>
+          <form id="upload-form">
+            <div class="split">
+              <label>
+                租户 ID
+                <input id="tenant-id" name="tenant_id" value="wl" required />
+              </label>
+              <label>
+                创建人
+                <input id="created-by" name="created_by" value="demo-user" />
+              </label>
+            </div>
+            <label>
+              文件
+              <input id="file-input" name="file" type="file" accept=".pdf,.md,.markdown,.txt" required />
+            </label>
+            <div class="button-row">
+              <button id="upload-button" type="submit">创建入库任务</button>
+              <button id="poll-button" class="ghost" type="button">轮询最新任务</button>
+            </div>
+          </form>
+          <div id="upload-status" class="status-pill">等待上传</div>
+          <div class="result-box">
+            <pre id="upload-output">还没有任务。</pre>
+          </div>
+        </article>
+
+        <article class="panel span-6">
+          <h2>检索测试</h2>
+          <p>先看生成前的 top chunks，这是判断召回质量最快的方式。</p>
+          <form id="retrieval-form">
+            <label>
+              查询问题
+              <textarea id="retrieval-query" required>这份文档主要讲了什么？</textarea>
+            </label>
+            <div class="split">
+              <label>
+                Top K
+                <input id="retrieval-top-k" type="number" min="1" max="20" value="5" required />
+              </label>
+              <div class="button-row" style="align-items: end;">
+                <button id="retrieval-button" type="submit">执行检索</button>
+              </div>
+            </div>
+          </form>
+          <div id="retrieval-status" class="status-pill">待执行</div>
+          <div id="retrieval-results" class="result-list"></div>
+        </article>
+
+        <article class="panel span-6">
+          <h2>带引用的问答</h2>
+          <p>把真实问题发给 chat 接口，直接看回答模式、模型名和引用片段。</p>
+          <form id="chat-form">
+            <label>
+              问题
+              <textarea id="chat-question" required>总结这份已上传文档里最相关的内容。</textarea>
+            </label>
+            <div class="split">
+              <label>
+                Top K
+                <input id="chat-top-k" type="number" min="1" max="20" value="5" required />
+              </label>
+              <div class="button-row" style="align-items: end;">
+                <button id="chat-button" type="submit">发起问答</button>
+              </div>
+            </div>
+          </form>
+          <div id="chat-status" class="status-pill">待执行</div>
+          <div class="result-box">
+            <pre id="chat-answer">还没有回答。</pre>
+          </div>
+          <div id="chat-citations" class="result-list"></div>
+        </article>
+      </section>
+
+      <p class="footer-note">
+        建议顺序：先做健康检查，再上传文件，等任务完成后再跑检索和问答。
+      </p>
+    </main>
+
+    <script>
+      const apiPrefix = "/api/v1";
+      const terminalJobStates = new Set(["completed", "failed", "dead_letter", "partial_failed"]);
+      let latestJobId = "";
+      let latestDocId = "";
+      let pollTimer = null;
+
+      const jobStateText = {
+        pending: "待处理",
+        uploaded: "已上传",
+        queued: "已入队",
+        parsing: "解析中",
+        ocr_processing: "OCR 处理中",
+        chunking: "切块中",
+        embedding: "向量化中",
+        indexing: "索引写入中",
+        completed: "已完成",
+        failed: "失败",
+        dead_letter: "死信",
+        partial_failed: "部分失败",
+      };
+
+      const modeText = {
+        qdrant: "Qdrant 向量检索",
+        rag: "RAG 回答",
+        retrieval_fallback: "检索回退",
+        no_context: "无上下文",
+        mock: "模拟模式",
+      };
+
+      function translateJobState(value) {
+        return jobStateText[value] || value;
+      }
+
+      function translateMode(value) {
+        return modeText[value] || value;
+      }
+
+      function setStatus(id, text, tone = "") {
+        const node = document.getElementById(id);
+        node.textContent = text;
+        node.className = `status-pill ${tone}`.trim();
+      }
+
+      function writePre(id, payload) {
+        document.getElementById(id).textContent =
+          typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
+      }
+
+      function clearNode(id) {
+        document.getElementById(id).innerHTML = "";
+      }
+
+      async function request(path, options = {}) {
+        const response = await fetch(`${apiPrefix}${path}`, options);
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json")
+          ? await response.json()
+          : await response.text();
+
+        if (!response.ok) {
+          const detail = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+          throw new Error(`HTTP ${response.status}: ${detail}`);
+        }
+
+        return data;
+      }
+
+      async function runHealthCheck() {
+        setStatus("health-status", "正在检查后端", "warn");
+        writePre("health-output", "加载中...");
+
+        try {
+          const data = await request("/health");
+          setStatus("health-status", "后端可访问", "ok");
+          writePre("health-output", data);
+        } catch (error) {
+          setStatus("health-status", "健康检查失败", "error");
+          writePre("health-output", String(error));
+        }
+      }
+
+      async function getJobStatus(jobId, fromTimer = false) {
+        if (!jobId) {
+          setStatus("upload-status", "没有可轮询的任务", "warn");
+          writePre("upload-output", "请先创建一个 ingest job。");
+          return;
+        }
+
+        if (!fromTimer) {
+          setStatus("upload-status", "正在轮询任务状态", "warn");
+        }
+
+        try {
+          const data = await request(`/ingest/jobs/${encodeURIComponent(jobId)}`);
+          latestJobId = data.job_id;
+          latestDocId = data.doc_id;
+          const done = terminalJobStates.has(data.status);
+          setStatus(
+            "upload-status",
+            `任务${translateJobState(data.status)} | 阶段 ${translateJobState(data.stage)} | ${data.progress}%`,
+            done && data.status === "completed" ? "ok" : done ? "error" : "warn",
+          );
+          writePre("upload-output", data);
+
+          if (done && pollTimer) {
+            window.clearInterval(pollTimer);
+            pollTimer = null;
+          }
+        } catch (error) {
+          setStatus("upload-status", "轮询失败", "error");
+          writePre("upload-output", String(error));
+          if (pollTimer) {
+            window.clearInterval(pollTimer);
+            pollTimer = null;
+          }
+        }
+      }
+
+      function startPolling(jobId) {
+        if (pollTimer) {
+          window.clearInterval(pollTimer);
+        }
+
+        getJobStatus(jobId);
+        pollTimer = window.setInterval(() => getJobStatus(jobId, true), 1500);
+      }
+
+      async function createIngestJob(event) {
+        event.preventDefault();
+
+        const button = document.getElementById("upload-button");
+        const fileInput = document.getElementById("file-input");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          setStatus("upload-status", "请先选择文件", "warn");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("tenant_id", document.getElementById("tenant-id").value.trim() || "wl");
+
+        const createdBy = document.getElementById("created-by").value.trim();
+        if (createdBy) {
+          formData.append("created_by", createdBy);
+        }
+
+        button.disabled = true;
+        setStatus("upload-status", "正在创建入库任务", "warn");
+        writePre("upload-output", "上传中...");
+
+        try {
+          const data = await request("/documents", {
+            method: "POST",
+            body: formData,
+          });
+          latestJobId = data.job_id;
+          latestDocId = data.doc_id;
+          setStatus("upload-status", `已入队 ${data.job_id}`, "ok");
+          writePre("upload-output", data);
+          startPolling(data.job_id);
+        } catch (error) {
+          setStatus("upload-status", "上传失败", "error");
+          writePre("upload-output", String(error));
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function renderRetrievalResults(data) {
+        const container = document.getElementById("retrieval-results");
+        clearNode("retrieval-results");
+
+        if (!data.results.length) {
+          container.innerHTML = '<div class="result-box"><pre>没有检索命中结果。</pre></div>';
+          return;
+        }
+
+        data.results.forEach((item, index) => {
+          const article = document.createElement("article");
+          article.className = "result-card";
+          article.innerHTML = `
+            <h3>#${index + 1} ${item.document_name}</h3>
+            <div class="meta">
+              <span class="tag">分数 ${item.score.toFixed(4)}</span>
+              <span class="tag">${item.chunk_id}</span>
+              <span class="tag">${item.document_id}</span>
+            </div>
+            <div>${item.text}</div>
+          `;
+          container.appendChild(article);
+        });
+      }
+
+      async function runRetrieval(event) {
+        event.preventDefault();
+        const button = document.getElementById("retrieval-button");
+        button.disabled = true;
+        setStatus("retrieval-status", "正在检索", "warn");
+        clearNode("retrieval-results");
+
+        try {
+          const data = await request("/retrieval/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: document.getElementById("retrieval-query").value.trim(),
+              top_k: Number(document.getElementById("retrieval-top-k").value),
+            }),
+          });
+          setStatus("retrieval-status", `${data.results.length} 条命中 | 模式 ${translateMode(data.mode)}`, "ok");
+          renderRetrievalResults(data);
+        } catch (error) {
+          setStatus("retrieval-status", "检索失败", "error");
+          document.getElementById("retrieval-results").innerHTML =
+            `<div class="result-box"><pre>${String(error)}</pre></div>`;
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function renderCitations(citations) {
+        const container = document.getElementById("chat-citations");
+        clearNode("chat-citations");
+
+        if (!citations.length) {
+          container.innerHTML = '<div class="result-box"><pre>没有返回引用。</pre></div>';
+          return;
+        }
+
+        citations.forEach((item, index) => {
+          const article = document.createElement("article");
+          article.className = "result-card";
+          article.innerHTML = `
+            <h3>#${index + 1} ${item.document_name}</h3>
+            <div class="meta">
+              <span class="tag">分数 ${item.score.toFixed(4)}</span>
+              <span class="tag">${item.chunk_id}</span>
+              <span class="tag">${item.document_id}</span>
+            </div>
+            <div>${item.snippet}</div>
+          `;
+          container.appendChild(article);
+        });
+      }
+
+      async function runChat(event) {
+        event.preventDefault();
+        const button = document.getElementById("chat-button");
+        button.disabled = true;
+        setStatus("chat-status", "正在生成回答", "warn");
+        writePre("chat-answer", "等待模型响应...");
+        clearNode("chat-citations");
+
+        try {
+          const data = await request("/chat/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: document.getElementById("chat-question").value.trim(),
+              top_k: Number(document.getElementById("chat-top-k").value),
+            }),
+          });
+          setStatus("chat-status", `${translateMode(data.mode)} | 模型 ${data.model}`, "ok");
+          writePre("chat-answer", data.answer);
+          renderCitations(data.citations);
+        } catch (error) {
+          setStatus("chat-status", "问答请求失败", "error");
+          writePre("chat-answer", String(error));
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      document.getElementById("health-button").addEventListener("click", runHealthCheck);
+      document.getElementById("upload-form").addEventListener("submit", createIngestJob);
+      document.getElementById("poll-button").addEventListener("click", () => getJobStatus(latestJobId));
+      document.getElementById("retrieval-form").addEventListener("submit", runRetrieval);
+      document.getElementById("chat-form").addEventListener("submit", runChat);
+    </script>
+  </body>
+</html>

@@ -1,7 +1,10 @@
+# vLLM 故意与 API 基础环境隔离。
 # vLLM is intentionally isolated from the API base environment.
+# 推荐在全新环境中的安装命令：
 # Preferred install command in a fresh environment:
 #   uv pip install -r requirements/vllm.txt --torch-backend=auto
+# 如果使用普通 pip，请参考以下 CUDA 特定说明：
 # If you use plain pip, follow the CUDA-specific instructions in:
 #   https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html
 
-vllm==0.12.0
+vllm==0.12.0  # vLLM 推理引擎 / vLLM inference engine

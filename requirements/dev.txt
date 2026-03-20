@@ -1,6 +1,7 @@
+# 开发和测试依赖。
 # Development and test dependencies.
 
 -r base.txt
 
-pytest==8.4.1
-pytest-asyncio
+pytest==8.4.1  # Python 测试框架 / Python testing framework
+pytest-asyncio  # pytest 异步测试支持 / Async test support for pytest
