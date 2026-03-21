@@ -90,6 +90,9 @@ export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId 
       <p className="m-0 mb-3 text-sm text-ink-soft">
         当前文档：{currentDocumentName || '未选择文件'}
       </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft">
+        未指定当前文档时，会按全库范围执行检索。
+      </p>
 
       {/* 表单 */}
       <form onSubmit={handleSubmit} className="grid gap-3">

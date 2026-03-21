@@ -7,7 +7,8 @@ from uuid import uuid4  # 导入 uuid4，用来生成文档唯一标识。
 
 from fastapi import HTTPException, UploadFile, status  # 导入 FastAPI 异常、上传文件对象和状态码。
 
-from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
+from ..core.config import Settings, get_postgres_metadata_dsn, get_settings  # 导入配置对象和配置获取函数。
+from ..db.postgres_metadata_store import PostgresMetadataStore  # 导入 PostgreSQL 元数据存储实现。
 from ..schemas.document import (  # 导入文档相关响应模型和持久化结构。
     Classification,
     DocumentCreateResponse,
@@ -28,6 +29,7 @@ SUPPORTED_UPLOAD_SUFFIXES = SUPPORTED_PARSE_SUFFIXES  # 当前允许上传的扩
 PROCESSING_JOB_STATUSES = {"parsing", "ocr_processing", "chunking", "embedding", "indexing"}  # ingest job 处理中状态集合。
 TERMINAL_JOB_STATUSES = {"completed", "dead_letter"}  # ingest job 终态集合。
 IngestBaseErrorCode = Literal["INGEST_DISPATCH_ERROR", "INGEST_VALIDATION_ERROR", "INGEST_RUNTIME_ERROR"]  # ingest 基础错误码集合。
+UPLOAD_READ_CHUNK_SIZE_BYTES = 1 * 1024 * 1024  # 上传文件分块读取大小，避免一次 read() 拉满内存。
 INGEST_ERROR_CODE_DISPATCH: IngestBaseErrorCode = "INGEST_DISPATCH_ERROR"  # 调度失败基础错误码。
 INGEST_ERROR_CODE_VALIDATION: IngestBaseErrorCode = "INGEST_VALIDATION_ERROR"  # 业务校验失败基础错误码。
 INGEST_ERROR_CODE_RUNTIME: IngestBaseErrorCode = "INGEST_RUNTIME_ERROR"  # 运行期依赖失败基础错误码。
@@ -39,8 +41,20 @@ def _dead_letter_error_code(base_error_code: IngestBaseErrorCode) -> str:  # 给
 
 
 def _sanitize_filename(filename: str) -> str:  # 清洗上传文件名，避免非法字符进入磁盘路径。
-    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", filename).strip("._")  # 把不安全字符替换成下划线，再去掉首尾的点和下划线。
-    return cleaned or "document"  # 如果清洗后变空，就回退到 document。
+    safe_name = Path(filename or "document").name  # 只保留文件名本体，避免路径穿越。
+    suffix = Path(safe_name).suffix.lower()  # 先拿到原始扩展名，后续单独保留，避免清洗过程把扩展名吞掉。
+    base_name = safe_name[: -len(suffix)] if suffix else safe_name  # 把主名和扩展名拆开处理。
+
+    cleaned_base = re.sub(r"[^A-Za-z0-9._-]+", "_", base_name).strip("._-")  # 清洗主文件名，不动扩展名。
+    if not cleaned_base:  # 主文件名完全被清空时回退兜底值。
+        cleaned_base = "document"
+
+    cleaned_suffix = re.sub(r"[^A-Za-z0-9]+", "", suffix.lstrip("."))  # 扩展名仅保留字母数字，避免异常字符。
+    if cleaned_suffix:
+        return f"{cleaned_base}.{cleaned_suffix}"  # 有合法扩展名时拼回去，保证后续解析器能识别文件类型。
+
+    fallback = re.sub(r"[^A-Za-z0-9._-]+", "_", safe_name).strip("._")  # 没有合法扩展名时回退到旧逻辑行为。
+    return fallback or "document"  # 如果仍为空，统一回退 document。
 
 
 def _normalize_optional_str(value: str | None) -> str | None:  # 统一清洗可选字符串，空白值视为未传。
@@ -60,6 +74,15 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
     def __init__(self, settings: Settings | None = None) -> None:  # 初始化文档服务。
         self.settings = settings or get_settings()  # 优先使用传入配置，否则读取全局配置。
         self.ingestion_service = DocumentIngestionService(self.settings)  # 创建入库服务实例。
+        self.metadata_store: PostgresMetadataStore | None = None  # 默认不启用 PostgreSQL 元数据存储。
+        if self.settings.postgres_metadata_enabled:  # 显式启用后，切换 document/job 元数据到 PostgreSQL 真源。
+            dsn = get_postgres_metadata_dsn(self.settings)  # 读取 PostgreSQL 连接串，兼容 DATABASE_URL。
+            if not dsn:  # 启用开关但没有 DSN 时，直接失败，避免“看起来成功但数据没落库”。
+                raise RuntimeError("PostgreSQL metadata storage enabled but no DSN configured.")
+            store = PostgresMetadataStore(dsn)  # 创建 PostgreSQL 元数据存储实例。
+            store.ping()  # 启动阶段先做一次连通性校验，失败尽早暴露。
+            store.ensure_required_tables()  # 校验目标表是否存在，避免运行期才发现元数据无法写入。
+            self.metadata_store = store  # 元数据操作统一切到 PostgreSQL。
 
     async def create_document(  # 创建文档记录和 ingest job，并立即返回 queued。
         self,
@@ -85,6 +108,19 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
         normalized_owner_id = _normalize_optional_str(owner_id)  # 清洗 owner_id。
         normalized_source_system = _normalize_optional_str(source_system)  # 清洗 source_system。
         normalized_created_by = _normalize_optional_str(created_by)  # 清洗 created_by。
+        file_hash = hashlib.sha256(content).hexdigest()  # 对上传内容计算稳定哈希，用于内容级去重。
+        duplicate_record = self._find_document_record_by_file_hash(file_hash, tenant_id=normalized_tenant_id)  # 同租户下命中相同内容时直接复用已有文档。
+        if duplicate_record is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "code": "DOCUMENT_ALREADY_EXISTS",
+                    "doc_id": duplicate_record.doc_id,
+                    "latest_job_id": duplicate_record.latest_job_id,
+                    "file_name": duplicate_record.file_name,
+                    "file_hash": duplicate_record.file_hash,
+                },
+            )
         now = datetime.now(timezone.utc)  # 记录本次创建的统一时间戳。
         doc_id = self._generate_entity_id("doc")  # 生成文档 ID。
         job_id = self._generate_entity_id("job")  # 生成任务 ID。
@@ -97,7 +133,7 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
             doc_id=doc_id,
             tenant_id=normalized_tenant_id,
             file_name=filename,
-            file_hash=hashlib.sha256(content).hexdigest(),
+            file_hash=file_hash,
             source_type=suffix.lstrip(".") or "unknown",
             department_ids=normalized_department_ids,
             role_ids=normalized_role_ids,
@@ -129,8 +165,8 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
             updated_at=now,
         )
 
-        self._write_json(self._document_record_path(doc_id), document_record)  # 把 document 元数据落到 documents 目录。
-        self._write_json(self._job_record_path(job_id), ingest_job)  # 把 job 元数据落到 jobs 目录。
+        self._save_document_record(document_record)  # 按当前存储策略持久化 document 元数据。
+        self._save_job_record(ingest_job)  # 按当前存储策略持久化 ingest job 元数据。
         self._dispatch_job_or_fail(ingest_job, document_record)  # 把新建的 job 投递到 Celery 队列，失败时立即返回错误。
 
         return DocumentCreateResponse(doc_id=doc_id, job_id=job_id, status="queued")  # 返回接口需要的最小响应。
@@ -277,22 +313,26 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
         return self._to_ingest_job_status_response(record)  # 返回接口需要的任务状态字段。
 
     def list_documents(self) -> DocumentListResponse:  # 列出当前已经上传过的文档。
-        self.settings.document_dir.mkdir(parents=True, exist_ok=True)  # 确保 documents 元数据目录存在。
         items: list[DocumentSummary] = []  # 初始化文档摘要列表。
+        if self.metadata_store is not None:  # PostgreSQL 模式优先从数据库读取文档列表。
+            records = self.metadata_store.list_documents()  # 读取数据库中的 document 记录。
+        else:  # 未启用 PostgreSQL 时，继续沿用本地 JSON 元数据目录。
+            self.settings.document_dir.mkdir(parents=True, exist_ok=True)  # 确保 documents 元数据目录存在。
+            records = []  # 先初始化空列表，再从 JSON 文件反序列化。
+            for path in sorted(self.settings.document_dir.glob("*.json")):  # 遍历所有 document 元数据文件。
+                if not path.is_file() or path.name.startswith("."):  # 跳过目录和隐藏文件。
+                    continue
+                records.append(DocumentRecord.model_validate_json(path.read_text(encoding="utf-8")))  # 读取并解析 document 元数据。
 
-        for path in sorted(self.settings.document_dir.glob("*.json")):  # 遍历所有 document 元数据文件。
-            if not path.is_file() or path.name.startswith("."):  # 跳过目录和隐藏文件。
-                continue
-
-            record = DocumentRecord.model_validate_json(path.read_text(encoding="utf-8"))  # 读取并解析 document 元数据。
-            items.append(  # 把当前文件转换成摘要结构并加入列表。
-                DocumentSummary(  # 创建单个文档摘要对象。
-                    document_id=record.doc_id,  # 填充文档唯一 ID。
-                    filename=record.file_name,  # 填充原始文件名。
-                    size_bytes=Path(record.storage_path).stat().st_size if Path(record.storage_path).exists() else 0,  # 尝试从原始文件路径读取文件大小。
-                    parse_supported=f".{record.source_type.lower()}" in SUPPORTED_PARSE_SUFFIXES,  # 判断该文件类型是否可解析。
-                    storage_path=record.storage_path,  # 返回原始文件落盘路径。
-                    updated_at=record.updated_at,  # 返回 document 记录里的更新时间。
+        for record in records:  # 把 document 记录转换成对外的摘要结构。
+            items.append(
+                DocumentSummary(
+                    document_id=record.doc_id,
+                    filename=record.file_name,
+                    size_bytes=Path(record.storage_path).stat().st_size if Path(record.storage_path).exists() else 0,
+                    parse_supported=f".{record.source_type.lower()}" in SUPPORTED_PARSE_SUFFIXES,
+                    storage_path=record.storage_path,
+                    updated_at=record.updated_at,
                 )
             )
 
@@ -327,8 +367,24 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
                 detail=f"Unsupported file type: {suffix or 'unknown'}. Supported types: {supported}",  # 返回明确的错误说明。
             )
 
-        content = await upload.read()  # 读取上传文件的全部二进制内容。
-        if len(content) > self.settings.upload_max_file_size_bytes:  # 超过上传上限时直接拒绝，避免大文件把服务内存打爆。
+        content_buffer = bytearray()  # 分块读取上传内容，避免一次性 read() 把超大文件全部搬进内存。
+        while True:  # 循环读取直到文件结束或超限。
+            chunk = await upload.read(UPLOAD_READ_CHUNK_SIZE_BYTES)  # 每次读取固定大小，便于提前触发超限判断。
+            if not chunk:  # 没有更多内容时结束读取。
+                break
+            content_buffer.extend(chunk)  # 累积已读取内容。
+            if len(content_buffer) > self.settings.upload_max_file_size_bytes:  # 一旦超过上限立即失败，避免继续读完大文件。
+                max_size_mb = self.settings.upload_max_file_size_bytes // (1024 * 1024)  # 用 MB 展示上限，便于前端和调用方理解。
+                raise HTTPException(  # 抛出 413，明确表示请求实体过大。
+                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                    detail=(
+                        f"File too large: {len(content_buffer)} bytes. "
+                        f"Maximum allowed size is {self.settings.upload_max_file_size_bytes} bytes ({max_size_mb}MB)."
+                    ),
+                )
+
+        content = bytes(content_buffer)  # 读取完成后转换成 bytes，兼容后续落盘和哈希流程。
+        if len(content) > self.settings.upload_max_file_size_bytes:  # 保留最终兜底校验，防止极端场景漏判。
             max_size_mb = self.settings.upload_max_file_size_bytes // (1024 * 1024)  # 用 MB 展示上限，便于前端和调用方理解。
             raise HTTPException(  # 抛出 413，明确表示请求实体过大。
                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
@@ -362,10 +418,16 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
         path.write_text(model.model_dump_json(indent=2), encoding="utf-8")  # 直接落盘，方便后续调试和状态查询。
 
     def _save_document_record(self, record: DocumentRecord) -> None:  # 持久化 document 记录。
-        self._write_json(self._document_record_path(record.doc_id), record)  # 写入 document 元数据文件。
+        if self.metadata_store is not None:  # 启用 PostgreSQL 元数据模式时优先写库。
+            self.metadata_store.save_document(record)  # 写入 rag_source_documents。
+            return
+        self._write_json(self._document_record_path(record.doc_id), record)  # 回退写入本地 document 元数据文件。
 
     def _save_job_record(self, record: IngestJobRecord) -> None:  # 持久化 job 记录。
-        self._write_json(self._job_record_path(record.job_id), record)  # 写入 job 元数据文件。
+        if self.metadata_store is not None:  # 启用 PostgreSQL 元数据模式时优先写库。
+            self.metadata_store.save_job(record)  # 写入 rag_ingest_jobs。
+            return
+        self._write_json(self._job_record_path(record.job_id), record)  # 回退写入本地 job 元数据文件。
 
     def _update_job_record(  # 统一更新并落盘任务状态。
         self,
@@ -408,16 +470,40 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
         )
 
     def _load_document_record(self, doc_id: str) -> DocumentRecord:  # 读取 document 元数据，不存在则抛 404。
+        if self.metadata_store is not None:  # PostgreSQL 模式优先从数据库读取。
+            record = self.metadata_store.load_document(doc_id)
+            if record is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document not found: {doc_id}")
+            return record
         path = self._document_record_path(doc_id)  # 先拿到目标 JSON 文件路径。
         if not path.exists():  # 如果文件不存在，说明文档 ID 无效。
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document not found: {doc_id}")  # 返回 404。
         return DocumentRecord.model_validate_json(path.read_text(encoding="utf-8"))  # 读取并解析 document JSON。
 
     def _load_job_record(self, job_id: str) -> IngestJobRecord:  # 读取 ingest job 元数据，不存在则抛 404。
+        if self.metadata_store is not None:  # PostgreSQL 模式优先从数据库读取。
+            record = self.metadata_store.load_job(job_id)
+            if record is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ingest job not found: {job_id}")
+            return record
         path = self._job_record_path(job_id)  # 先拿到目标 JSON 文件路径。
         if not path.exists():  # 如果文件不存在，说明 job ID 无效。
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ingest job not found: {job_id}")  # 返回 404。
         return IngestJobRecord.model_validate_json(path.read_text(encoding="utf-8"))  # 读取并解析 job JSON。
+
+    def _find_document_record_by_file_hash(self, file_hash: str, *, tenant_id: str | None = None) -> DocumentRecord | None:  # 按文件内容哈希查找已存在文档，避免重复入库。
+        if self.metadata_store is not None:  # PostgreSQL 模式优先从数据库查重。
+            return self.metadata_store.find_document_by_file_hash(file_hash, tenant_id=tenant_id)
+        self.settings.document_dir.mkdir(parents=True, exist_ok=True)  # 确保 document 元数据目录存在。
+        for path in sorted(self.settings.document_dir.glob("*.json")):  # 遍历所有 document 元数据记录。
+            if not path.is_file() or path.name.startswith("."):  # 跳过目录和隐藏文件。
+                continue
+            record = DocumentRecord.model_validate_json(path.read_text(encoding="utf-8"))  # 读取并解析单条 document 记录。
+            if tenant_id is not None and record.tenant_id != tenant_id:  # 指定租户时只在当前租户范围内去重。
+                continue
+            if record.file_hash == file_hash:  # 命中相同内容时直接返回已有记录。
+                return record
+        return None  # 没找到则返回 None，允许继续创建新文档。
 
     def _dispatch_job_or_fail(self, job_record: IngestJobRecord, document_record: DocumentRecord) -> None:  # 统一处理 Celery 投递失败路径。
         try:  # 尝试把当前任务投递给 Celery worker。

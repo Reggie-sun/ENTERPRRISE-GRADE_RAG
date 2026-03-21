@@ -259,7 +259,31 @@ V1 当前要求的是：
   - embedding 服务未启动
   - vLLM 未 ready
 
-### 9.2 v0.1.2 优先级
+### 9.2 PostgreSQL 边界与风险控制
+
+当前代码已经接入了 PostgreSQL，但在 `v0.1.2` 必须明确它的角色边界，否则范围会失控。
+
+`v0.1.2` 对 PostgreSQL 的冻结口径如下：
+
+- 在线检索主链路仍然固定为 `Qdrant`
+- PostgreSQL 当前允许承担 `document/job metadata` 真源角色
+- PostgreSQL 中的 `versions/chunks/assets/pgvector` 允许继续作为 backfill / 分析 / 迁移支路存在
+- `v0.1.2` 不做在线检索从 Qdrant 切到 pgvector
+- `v0.1.2` 不做“双写后以 PostgreSQL 检索为准”的切库动作
+
+这样定义的原因：
+
+- 现在已经接入 PostgreSQL，直接回退这部分工作没有必要
+- 但如果在 `v0.1.2` 继续推进在线检索切到 PostgreSQL，版本性质就会从“稳定化”变成“重构”
+- 当前最稳的做法是：**保留 PostgreSQL 接入成果，但不改变在线主检索路径**
+
+因此，`v0.1.2` 的风险控制原则固定为：
+
+1. Qdrant 是当前在线检索真源
+2. PostgreSQL 是当前 metadata 真源和数据沉淀支路
+3. pgvector 是后续演进位，不是当前主链路
+
+### 9.3 v0.1.2 优先级
 
 按优先级执行时，建议顺序固定为：
 
@@ -269,7 +293,7 @@ V1 当前要求的是：
 4. 测试补齐
 5. runbook / 发布说明收口
 
-### 9.3 v0.1.2 验收标准
+### 9.4 v0.1.2 验收标准
 
 `v0.1.2` 完成时，至少要满足：
 
@@ -282,12 +306,16 @@ V1 当前要求的是：
 - `pytest backend/tests/test_retrieval_chat.py backend/tests/test_document_ingestion.py` 通过
 - `frontend` 执行 `npm run build` 通过
 
-### 9.4 v0.1.2 明确不做
+并且新增一条架构验收约束：
+
+- PostgreSQL 接入不改变当前 Qdrant 在线主检索链路
+
+### 9.5 v0.1.2 明确不做
 
 以下内容继续后置，不纳入 `v0.1.2`：
 
-- PostgreSQL 真源改造
-- pgvector
+- 在线检索切到 PostgreSQL / pgvector
+- 让 pgvector 替代当前 Qdrant 主检索链路
 - ACL / RBAC 正式落地
 - BM25 / RRF 混合检索
 - OCR 与复杂 Office 解析
@@ -295,7 +323,12 @@ V1 当前要求的是：
 - Agent
 - docker compose 全量生产化编排
 
-### 9.5 v0.1.2 建议输出物
+说明：
+
+- 这里不是说 PostgreSQL 相关工作不再继续，而是说 `v0.1.2` 不把“在线切库”作为交付目标
+- PostgreSQL metadata、backfill、pgvector 补数能力可以保留，但不进入主检索路径切换
+
+### 9.6 v0.1.2 建议输出物
 
 这一版结束时，建议至少产出：
 

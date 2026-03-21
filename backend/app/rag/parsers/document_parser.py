@@ -16,7 +16,7 @@ class ParsedDocument:  # 表示一份文档被解析后的结果。
 
 class DocumentParser:  # 负责把不同格式的文件统一解析成纯文本。
     def parse(self, source_path: Path, document_id: str, filename: str) -> ParsedDocument:  # 根据文件类型选择对应解析逻辑。
-        suffix = source_path.suffix.lower()  # 读取并标准化文件扩展名。
+        suffix = source_path.suffix.lower() or Path(filename).suffix.lower()  # 优先用落盘文件后缀，缺失时回退原始文件名后缀。
 
         if suffix not in SUPPORTED_PARSE_SUFFIXES:  # 如果当前文件类型不在支持范围内。
             supported = ", ".join(sorted(SUPPORTED_PARSE_SUFFIXES))  # 拼出可读的支持格式列表。

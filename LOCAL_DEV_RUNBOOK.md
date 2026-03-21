@@ -83,6 +83,7 @@ curl http://192.168.10.200:8000/v1/models
 打开：
 
 - `http://127.0.0.1:3000`
+- `http://127.0.0.1:8020/demo` 仅作为后端内置 smoke page，不是主前端
 
 期望流程：
 
@@ -91,6 +92,11 @@ curl http://192.168.10.200:8000/v1/models
 3. 页面显示当前文档名称和 `doc_id`
 4. ingest job 状态推进到 `completed`
 5. 检索和问答只返回当前文档的结果
+
+说明：
+
+- `3000` 的 React 页面是当前主前端
+- `8020/demo` 只用于后端单页联调和快速 smoke test
 
 ## 4. 常见故障
 
@@ -153,4 +159,5 @@ curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
 
 - [backend/WORKER_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/WORKER_RUNBOOK.md)
 - [backend/LOCAL_MODEL_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/LOCAL_MODEL_RUNBOOK.md)
+- [backend/POSTGRES_METADATA_MIGRATION.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/POSTGRES_METADATA_MIGRATION.md)
 - [V1_PLAN.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/V1_PLAN.md)

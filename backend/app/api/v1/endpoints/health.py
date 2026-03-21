@@ -1,6 +1,6 @@
 from fastapi import APIRouter  # 导入 FastAPI 的路由对象，用来声明接口。
 
-from ....core.config import get_llm_base_url, get_llm_model, get_settings  # 导入配置读取函数和统一 LLM 配置解析函数。
+from ....core.config import get_llm_base_url, get_llm_model, get_postgres_metadata_dsn, get_settings  # 导入配置读取函数和统一配置解析函数。
 
 router = APIRouter(tags=["health"])  # 创建一个路由分组，并在 Swagger 文档里打上 health 标签。
 
@@ -32,5 +32,10 @@ def health_check() -> dict[str, object]:  # 定义健康检查函数，返回一
             "broker_url": settings.celery_broker_url,  # 返回 Celery broker 地址。
             "result_backend": settings.celery_result_backend,  # 返回 Celery 结果后端地址。
             "ingest_queue": settings.celery_ingest_queue,  # 返回入库任务默认队列名。
+        },
+        "metadata_store": {
+            "provider": "postgres" if settings.postgres_metadata_enabled else "local_json",  # 当前 document/job 元数据后端。
+            "postgres_enabled": settings.postgres_metadata_enabled,  # 是否启用了 PostgreSQL 元数据真源。
+            "dsn_configured": bool(get_postgres_metadata_dsn(settings)),  # 是否检测到可用 DSN，避免把敏感连接串暴露给前端。
         },
     }

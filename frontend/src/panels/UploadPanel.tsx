@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw } from 'lucide-react';  // 引入图标。
 import { Card, Button, StatusPill, ResultBox, Input } from '@/components';
 import {
+  ApiError,
   createDocument,
   getIngestJobStatus,
   type IngestJobStatusResponse,
@@ -40,6 +41,36 @@ const JOB_STATE_TEXT: Record<string, string> = {
 
 // 面板状态类型。
 type PanelStatus = 'idle' | 'uploading' | 'polling' | 'success' | 'error';
+
+interface DuplicateDocumentDetail {
+  code: 'DOCUMENT_ALREADY_EXISTS';
+  doc_id: string;
+  latest_job_id: string;
+  file_name: string;
+  file_hash: string;
+}
+
+function parseDuplicateDocumentDetail(error: unknown): DuplicateDocumentDetail | null {
+  if (!(error instanceof ApiError) || error.status !== 409) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(error.detail) as { detail?: DuplicateDocumentDetail };
+    const detail = parsed.detail;
+    if (
+      detail?.code === 'DOCUMENT_ALREADY_EXISTS'
+      && typeof detail.doc_id === 'string'
+      && typeof detail.latest_job_id === 'string'
+    ) {
+      return detail;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
 
 interface UploadPanelProps {
   onUploadStart?: (fileName: string) => void;
@@ -153,6 +184,21 @@ export function UploadPanel({
       // 开始轮询任务状态。
       startPolling(result.job_id);
     } catch (err) {
+      const duplicateDetail = parseDuplicateDocumentDetail(err);
+      if (duplicateDetail) {
+        const existingResult: DocumentCreateResponse = {
+          doc_id: duplicateDetail.doc_id,
+          job_id: duplicateDetail.latest_job_id,
+          status: 'queued',
+        };
+        setCreateResult(existingResult);
+        setJobStatus(null);
+        setError('');
+        onUploadCreated?.(duplicateDetail.doc_id);
+        startPolling(duplicateDetail.latest_job_id);
+        return;
+      }
+
       setError(err instanceof Error ? err.message : String(err));
       setStatus('error');
       onUploadFailed?.();

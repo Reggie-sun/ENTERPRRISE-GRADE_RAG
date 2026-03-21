@@ -2,7 +2,7 @@
 # Local embedding service dependencies.
 # 请根据 CUDA 运行时单独安装 torch，例如：
 # Install torch separately to match your CUDA runtime, for example:
-#   pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+#   pip install --upgrade "torch>=2.6,<2.8" --index-url https://download.pytorch.org/whl/cu124
 
 fastapi==0.116.1  # FastAPI 框架 / FastAPI framework
 uvicorn[standard]==0.35.0  # ASGI 服务器 / ASGI server

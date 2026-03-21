@@ -26,13 +26,13 @@ docker run -d \
 
 ## 2. Start local embedding server / 启动本地 embedding 服务
 
-Create a dedicated Python 3.10 environment and install torch separately:
-创建一个专用的 Python 3.10 环境并单独安装 torch：
+Create a dedicated Python 3.10 environment and install torch separately (`>=2.6` required by current transformers safety check):
+创建一个专用的 Python 3.10 环境并单独安装 torch（当前 transformers 的安全检查要求 `>=2.6`）：
 
 ```bash
 conda create -n rag-embed python=3.10 -y
 conda activate rag-embed
-pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+pip install --upgrade "torch>=2.6,<2.8" --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements/embedding.txt
 ```
 
@@ -89,3 +89,5 @@ Then open / 然后访问：
 
 - API docs / API 文档：`http://127.0.0.1:8020/docs`
 - Demo page / 演示页面：`http://127.0.0.1:8020/demo`
+
+Use `/demo` only as a backend-built smoke page. The primary frontend for local development is the React app on `http://127.0.0.1:3000`.

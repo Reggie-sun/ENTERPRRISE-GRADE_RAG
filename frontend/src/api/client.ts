@@ -38,14 +38,17 @@ class ApiError extends Error {
  */
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_PREFIX}${path}`;
+  const headers = new Headers(options.headers);  // 统一标准化请求头，兼容对象/数组/Headers 三种输入。
+  const isFormDataBody = options.body instanceof FormData;  // FormData 由浏览器自动注入 multipart boundary。
+
+  if (!isFormDataBody && !headers.has('Content-Type')) {  // 仅非 FormData 且未显式设置时才默认 JSON。
+    headers.set('Content-Type', 'application/json');
+  }
 
   // 发送请求。
   const response = await fetch(url, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers,
   });
 
   // 解析响应内容。

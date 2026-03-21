@@ -50,6 +50,8 @@ export default function App() {
   };
 
   const handleUploadFailed = () => {
+    setCurrentDocumentName('');
+    setCurrentDocId('');
     setLatestJob(null);
   };
 
