@@ -4,6 +4,16 @@
 __pycache__/
 *.pyc
 
+# Node / frontend build artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local logs
+logs/
+backend/logs/
+
 data/uploads/*
 !data/uploads/.gitkeep
 

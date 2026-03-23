@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/reggie/vscode_folder/Enterprise-grade_RAG",
+        "/home/reggie/vscode_folder/MCP"
+      ]
+    },
+    "git": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--mount",
+        "type=bind,src=/home/reggie/vscode_folder/Enterprise-grade_RAG,dst=/workspace/repo",
+        "mcp/git",
+        "-r",
+        "/workspace/repo"
+      ]
+    },
+    "codegraph": {
+      "command": "node",
+      "args": [
+        "/home/reggie/vscode_folder/MCP/mcp-server-codegraph/dist/index.js",
+        "/home/reggie/vscode_folder/Enterprise-grade_RAG"
+      ],
+      "cwd": "/home/reggie/vscode_folder/MCP/mcp-server-codegraph"
+    }
+  }
+}

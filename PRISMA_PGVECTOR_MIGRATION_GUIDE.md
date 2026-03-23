@@ -1,81 +1,190 @@
-# Prisma / pgvector 迁移说明
+# Prisma / pgvector 迁移指南
 
-## 1. 文档目的
+最后核对时间：2026-03-23
 
-这份文档说明 4 件事：
+这份文档聚焦 3 个问题：
 
-- 当前 Prisma 表结构在整个项目中的定位
-- 为什么需要把当前项目逐步迁移到 PostgreSQL + pgvector
-- 这次实际是怎么迁移到目标数据库的
-- 后续继续接入业务代码时要注意什么
+1. 这个仓库里 Prisma 现在到底管哪些 PostgreSQL 表
+2. pgvector 在当前项目里是如何落地的
+3. 如果你要继续推进从 `JSON + Qdrant` 向 `PostgreSQL + pgvector` 过渡，应该按什么顺序做
 
-目标数据库：
+这不是一份泛化教程，而是基于当前仓库的真实代码、真实 schema 和当前数据库状态整理出来的落地指南。
 
-```env
-DATABASE_URL="postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public"
-```
+---
 
-最终 Prisma 文件位置：
+## 1. 一句话结论
+
+当前项目已经完成了 **Prisma schema 落地 + PostgreSQL 建表 + pgvector 向量列落地 + 历史数据回填**，但还没有完成 **在线检索主链路从 Qdrant 切到 pgvector**。
+
+更准确地说：
+
+- Prisma 已经管理当前项目的 PostgreSQL 结构
+- `rag_source_documents` / `rag_ingest_jobs` 已经能作为在线 metadata 真源
+- `rag_document_versions` / `rag_knowledge_chunks` / `rag_data_assets` 已经通过 backfill 迁入 PostgreSQL
+- `rag_knowledge_chunks.embedding vector(1024)` 已经补齐
+- 当前在线检索仍由 `RetrievalService -> QdrantVectorStore` 执行
+
+所以这份指南的核心不是“如何从零建一个 schema”，而是“如何正确理解当前已经迁了什么、下一步该改哪里”。
+
+---
+
+## 2. Prisma 在这个项目里的角色
+
+### 2.1 不是所有数据库都由 Prisma 管
+
+当前仓库是双数据库思路：
+
+- PostgreSQL
+  - 由 Prisma schema 管理
+  - 用来承接 AI 元数据和 Enterprise-grade_RAG 的结构化数据
+- MySQL
+  - 业务系统自己的库
+  - 不由 Prisma 管
+  - 只给 AI / Tool Calling 做只读查询
+
+这点在 [prisma/schema.prisma](/home/reggie/vscode_folder/Enterprise-grade_RAG/prisma/schema.prisma) 的顶部注释里已经写明。
+
+### 2.2 Prisma 在当前项目真正管理什么
+
+Prisma 现在管理两类表：
+
+1. 旧 AI 系统原有表
+   - `ai_sessions`
+   - `messages`
+   - `knowledge_documents`
+   - `prompt_templates`
+
+2. Enterprise-grade_RAG 迁移后新增表
+   - `rag_source_documents`
+   - `rag_document_versions`
+   - `rag_ingest_jobs`
+   - `rag_knowledge_chunks`
+   - `rag_data_assets`
+
+### 2.3 Prisma 在这里不是“ORM 演示”，而是 schema 真源
+
+当前你应该把 Prisma 理解成：
+
+- PostgreSQL 结构定义来源
+- pgvector 列定义来源
+- 后续 Node/管理后台接库时的类型契约来源
+
+而不是简单理解成“后端现在所有读写都已经走 Prisma Client”。
+
+当前真实情况是：
+
+- Python 服务在线写 metadata 主要用 `psycopg`
+- Prisma 负责定义 schema，不是 Python 主链路运行时 ORM
+
+---
+
+## 3. 当前 schema 的关键结构
+
+当前核心文件：
 
 - [prisma/schema.prisma](/home/reggie/vscode_folder/Enterprise-grade_RAG/prisma/schema.prisma)
 
+### 3.1 数据源定义
+
+当前 PostgreSQL 数据源定义是：
+
+```prisma
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+```
+
+这表示两件事：
+
+1. 当前 schema 依赖 PostgreSQL
+2. 当前数据库必须启用 `vector` extension
+
+### 3.2 为什么 `previewFeatures = ["postgresqlExtensions"]`
+
+当前 generator 开启了：
+
+```prisma
+previewFeatures = ["postgresqlExtensions"]
+```
+
+这是因为 schema 里声明了：
+
+- `extensions = [pgvector(map: "vector")]`
+
+如果没有这个能力，Prisma 不能正确表达 “这个 PostgreSQL schema 依赖 pgvector 扩展”。
+
+### 3.3 最关键的 5 张 RAG 表
+
+| Prisma Model | 物理表 | 作用 |
+| --- | --- | --- |
+| `RagSourceDocument` | `rag_source_documents` | 文档主表 |
+| `RagDocumentVersion` | `rag_document_versions` | 文档版本 |
+| `RagIngestJob` | `rag_ingest_jobs` | ingest 任务状态 |
+| `RagKnowledgeChunk` | `rag_knowledge_chunks` | chunk 文本和向量元数据 |
+| `RagDataAsset` | `rag_data_assets` | `data/` 目录文件镜像 |
+
+### 3.4 表关系图
+
+```mermaid
+erDiagram
+    RagSourceDocument ||--o{ RagDocumentVersion : has
+    RagSourceDocument ||--o{ RagIngestJob : has
+    RagSourceDocument ||--o{ RagKnowledgeChunk : has
+    RagSourceDocument ||--o{ RagDataAsset : has
+    RagIngestJob ||--o{ RagDataAsset : has
+
+    RagSourceDocument {
+        string docId
+        string tenantId
+        string fileName
+        string fileHash
+        string status
+        int currentVersion
+        string latestJobId
+    }
+
+    RagDocumentVersion {
+        string docId
+        int version
+        int chunkCount
+        int vectorCount
+        bool isCurrent
+        string status
+    }
+
+    RagIngestJob {
+        string jobId
+        string docId
+        string status
+        string stage
+        int progress
+        int retryCount
+    }
+
+    RagKnowledgeChunk {
+        string chunkId
+        string docId
+        int chunkIndex
+        string embeddingModel
+        vector embedding
+    }
+
+    RagDataAsset {
+        string assetKey
+        string kind
+        string relativePath
+        string docId
+        string jobId
+    }
+```
+
 ---
 
-## 2. 当前项目原本的存储形态
+## 4. 为什么不能直接复用 `KnowledgeDocument`
 
-在这次迁移之前，这个仓库并不是 PostgreSQL 主导架构，而是：
-
-- 文档与任务主数据：本地 JSON 文件
-- 向量检索：Qdrant
-- 问答与检索接口：FastAPI
-- 前端：React + Vite
-
-也就是说，原本的真实运行方式是：
-
-1. 上传文件
-2. 解析文件
-3. 切 chunk
-4. 算 embedding
-5. 写入 Qdrant
-6. 文档和任务元数据写到本地 `data/` 目录
-
-这套方式适合 demo 和本地验证，但不适合后续做：
-
-- 统一数据库管理
-- 标准化备份
-- 多服务共享
-- 审计
-- SQL 联查
-- 版本治理
-- 更稳定的生产部署
-
----
-
-## 3. 原始 Prisma 结构分析
-
-你给的原始 Prisma 结构主要分两部分。
-
-### 3.1 旧 AI 系统的 4 张表
-
-- `AiSession`
-- `Message`
-- `KnowledgeDocument`
-- `PromptTemplate`
-
-这 4 张表本质上对应的是：
-
-- 会话映射
-- 历史消息
-- 旧版知识库向量文档
-- Prompt 模板
-
-这部分已经有自己的业务语义，所以本次迁移原则是：
-
-`不改原表结构，只在旁边新增当前 Enterprise-grade_RAG 需要的表`
-
-### 3.2 `KnowledgeDocument` 的问题
-
-原始表如下：
+当前 legacy 表：
 
 ```prisma
 model KnowledgeDocument {
@@ -86,437 +195,544 @@ model KnowledgeDocument {
   embedding  Unsupported("vector(1536)")?
   metadata   Json?
   createdAt  DateTime @default(now())
-
-  @@index([namespace])
-  @@map("knowledge_documents")
 }
 ```
 
-它适合：
+这个表不能直接承担当前项目主存储职责，原因是具体的，不是抽象的：
 
-- 单表 demo
-- 快速验证 pgvector
-- 没有 ACL / 版本 / 任务状态 / 文档生命周期要求的场景
+1. 向量维度不匹配  
+   当前项目 embedding 模型是 `BAAI/bge-m3`，维度是 `1024`，不是 `1536`。
 
-它不适合当前项目直接复用的原因：
+2. 它没有文档 / 版本 / 任务拆层  
+   当前项目真实结构是：
+   - document
+   - version
+   - ingest job
+   - chunk
 
-1. `1536` 维不匹配  
-   当前项目实际 embedding 模型是 `BAAI/bge-m3`，维度是 `1024`，不是 `1536`。
-
-2. 文档和 chunk 混在同一张表  
-   当前项目是“文档 -> 多个 chunk -> 向量索引”的结构，单表会导致文档元数据重复很多次。
-
-3. 缺少业务主键  
-   当前项目稳定使用：
-   - `doc_id`
-   - `job_id`
-   - `chunk_id`
-
-4. 缺少 ACL 字段  
-   当前项目已有：
-   - `tenant_id`
+3. 它没有当前项目已经落地的 ACL / 生命周期字段  
+   例如：
+   - `tenantId`
    - `visibility`
    - `classification`
-   - `department_ids`
-   - `role_ids`
-   - `owner_id`
+   - `departmentIds`
+   - `roleIds`
+   - `ownerId`
+   - `currentVersion`
+   - `latestJobId`
+   - `fileHash`
 
-5. 缺少生命周期字段  
-   当前项目已有：
-   - `file_hash`
-   - `status`
-   - `current_version`
-   - `latest_job_id`
+4. 它更像 demo 级向量表  
+   不适合作为企业级 RAG 的主数据模型。
 
-所以结论是：
+所以当前正确策略不是去“硬改旧表”，而是：
 
-`KnowledgeDocument` 保留，但不能直接承担当前 Enterprise-grade_RAG 的主存储职责。
-
----
-
-## 4. 为什么要迁移到 PostgreSQL + pgvector
-
-迁移的核心目的不是“为了换数据库而换数据库”，而是为了把当前 demo 结构变成可持续演进的后端底座。
-
-### 4.1 当前本地 JSON + Qdrant 的限制
-
-- 文档主数据不在数据库里，不方便统一管理
-- 状态恢复和任务审计不方便做
-- 去重、版本、重试逻辑更容易分散
-- SQL 联查能力弱
-- 备份恢复不统一
-- 多实例或多服务接入时不够稳
-
-### 4.2 PostgreSQL + pgvector 的价值
-
-- 文档、任务、chunk 元数据统一进数据库
-- 向量和业务字段能在同库管理
-- 方便做 SQL 过滤和元数据联查
-- 更适合做版本控制、ACL、审计和治理
-- 便于未来接 Prisma / Node / 管理后台
-
-### 4.3 为什么不是“直接删掉 Qdrant”
-
-因为当前 Python 后端已经在用 Qdrant，链路已经跑通。
-
-更稳的策略不是立刻替换，而是：
-
-1. 先把 PostgreSQL schema 建好
-2. 让 PostgreSQL 成为新的结构化真源
-3. 再决定：
-   - 保留 Qdrant 做检索副本
-   - 或者逐步切到 pgvector 检索
-
-这是一种“先接入、再替换”的迁移方式，风险更低。
+- 保留 `KnowledgeDocument` 不动
+- 在旁边新增当前项目自己的 RAG 表结构
 
 ---
 
-## 5. 本次最终采用的 Prisma 结构
+## 5. pgvector 在当前 schema 里是怎么落地的
 
-最终 schema 采取“双层兼容”策略：
+### 5.1 向量列定义
 
-### 5.1 保留原表
+当前真正承接 pgvector 的表是：
 
-以下表完全保留，不改结构：
+- `RagKnowledgeChunk`
 
-- `ai_sessions`
-- `messages`
-- `knowledge_documents`
-- `prompt_templates`
+它的向量列定义是：
 
-### 5.2 新增当前项目专用表
+```prisma
+embedding Unsupported("vector(1024)")?
+```
 
-新增了 4 张表：
+这和当前 embedding 模型完全一致：
+
+- `BAAI/bge-m3`
+- 维度 `1024`
+
+### 5.2 为什么用 `Unsupported("vector(1024)")`
+
+Prisma 目前不能把 pgvector 当成普通标量类型直接建模成 `Float[]` 那种高层抽象，所以这里用：
+
+- `Unsupported("vector(1024)")`
+
+它的意义是：
+
+- Prisma 能把列建出来
+- Prisma schema 能表达这个字段确实是原生 `vector(1024)`
+- 但你不能指望 Prisma Client 对这个字段提供完整高层操作体验
+
+这也是为什么当前仓库里：
+
+- schema 用 Prisma 定义
+- 向量补数和 metadata 写入用 `psycopg`
+
+### 5.3 当前数据库里 pgvector 已经不是“待办”
+
+实测当前数据库已经满足：
+
+- `vector` extension 已安装
+- `rag_knowledge_chunks.embedding` 已有数据
+- 当前 `embedding IS NULL = 0`
+- 当前 `embedding IS NOT NULL = 557`
+- HNSW 索引已存在：
+  - `rag_knowledge_chunks_embedding_hnsw_idx`
+
+也就是说，pgvector 在数据库层面已经是“可用状态”，不是“设计图状态”。
+
+---
+
+## 6. 当前真实落地状态
+
+下面这些数字不是文档推演，而是 2026-03-23 实测快照。
+
+### 6.1 PostgreSQL 当前行数
+
+| 表名 | 当前行数 |
+| --- | ---: |
+| `rag_source_documents` | 17 |
+| `rag_ingest_jobs` | 17 |
+| `rag_document_versions` | 5 |
+| `rag_knowledge_chunks` | 557 |
+| `rag_data_assets` | 30 |
+
+### 6.2 为什么 `17 / 17 / 5 / 557 / 30` 这个组合很重要
+
+这个组合说明当前项目不是简单的“已经全切”：
+
+- `rag_source_documents = 17`
+- `rag_ingest_jobs = 17`
+
+说明在线 metadata 已经持续进入 PostgreSQL。
+
+但：
+
+- `rag_document_versions = 5`
+- `rag_knowledge_chunks = 557`
+
+说明版本和 chunk 层并没有随着每一次在线上传实时补齐，而是目前主要依赖 backfill。
+
+所以你不能把当前架构理解成：
+
+- “所有在线 ingest 结果都自动写进 PostgreSQL 向量表”
+
+当前更准确的理解是：
+
+- “metadata 在线写 PostgreSQL”
+- “chunk/vector/data-asset 主要通过 backfill 补齐”
+
+### 6.3 当前 `rag_knowledge_chunks` 的实际完成度
+
+实测：
+
+- chunk 总数：`557`
+- `embedding IS NOT NULL`：`557`
+- `embedding IS NULL`：`0`
+
+这说明只要你从 PostgreSQL 读，它已经具备完整的向量检索数据基础。
+
+### 6.4 当前 `rag_data_assets` 的意义
+
+当前 `rag_data_assets = 30`，它不是“附加表”，而是这次 Prisma 迁移非常关键的补充。
+
+它解决的问题是：
+
+- 如果只迁 document/job/chunk 元数据，你并没有真正把 `data/` 目录整体纳入 PostgreSQL
+
+而 `rag_data_assets` 能承接：
+
+- `documents/*.json`
+- `jobs/*.json`
+- `parsed/*.txt`
+- `chunks/*.json`
+- `uploads/*`
+
+所以这张表的价值是：
+
+- 把 `data/` 从磁盘散文件变成数据库可审计资产
+
+---
+
+## 7. 当前在线链路和 Prisma schema 的关系
+
+### 7.1 当前在线链路图
+
+```mermaid
+flowchart TD
+    A[Upload / API 请求] --> B[DocumentService]
+    B --> C[保存原始文件到 data/uploads]
+    B --> D[写 metadata]
+    D --> D1[rag_source_documents]
+    D --> D2[rag_ingest_jobs]
+
+    B --> E[DocumentIngestionService]
+    E --> F[parse]
+    F --> G[data/parsed/*.txt]
+    E --> H[chunk]
+    H --> I[data/chunks/*.json]
+    E --> J[embedding]
+    J --> K[Qdrant]
+
+    L[RetrievalService] --> M[query embedding]
+    M --> N[Qdrant search]
+```
+
+### 7.2 这张图对应的真实代码
+
+在线主链路关键代码：
+
+- [document_service.py](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/app/services/document_service.py)
+- [ingestion_service.py](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/app/services/ingestion_service.py)
+- [retrieval_service.py](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/app/services/retrieval_service.py)
+- [qdrant_store.py](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/app/rag/vectorstores/qdrant_store.py)
+
+当前关键事实：
+
+1. `DocumentService` 在 `RAG_POSTGRES_METADATA_ENABLED=true` 时会写：
+   - `rag_source_documents`
+   - `rag_ingest_jobs`
+
+2. `DocumentIngestionService` 仍然写：
+   - `data/parsed/*.txt`
+   - `data/chunks/*.json`
+   - Qdrant collection
+
+3. `RetrievalService` 当前检索模式固定是：
+   - `mode = "qdrant"`
+
+所以当前 Prisma schema 虽然已经具备 pgvector 表结构，但**在线读取路径还没有切换到这些表**。
+
+---
+
+## 8. 当前 backfill 链路和 Prisma schema 的关系
+
+### 8.1 当前 backfill 流程图
+
+```mermaid
+flowchart LR
+    A[data/documents + data/jobs] --> B[backfill_postgres_metadata.py]
+    B --> C[rag_source_documents + rag_ingest_jobs]
+
+    D[data/] --> E[backfill_postgres_data.py]
+    E --> F[rag_document_versions]
+    E --> G[rag_knowledge_chunks]
+    E --> H[rag_data_assets]
+
+    I[Qdrant / embedding service] --> J[backfill_pgvector_embeddings.py]
+    J --> K[rag_knowledge_chunks.embedding]
+    J --> L[同步 rag_document_versions.vectorCount]
+```
+
+### 8.2 三个脚本各自负责什么
+
+#### `scripts/backfill_postgres_metadata.py`
+
+职责：
+
+- 把 `data/documents/*.json`
+- 把 `data/jobs/*.json`
+
+写入：
 
 - `rag_source_documents`
-- `rag_document_versions`
 - `rag_ingest_jobs`
+
+#### `scripts/backfill_postgres_data.py`
+
+职责：
+
+- 扫整个 `data/`
+- 构造：
+  - document version
+  - chunk rows
+  - data asset rows
+
+写入：
+
+- `rag_source_documents`
+- `rag_ingest_jobs`
+- `rag_document_versions`
 - `rag_knowledge_chunks`
+- `rag_data_assets`
 
-它们分别对应：
+#### `scripts/backfill_pgvector_embeddings.py`
 
-#### `rag_source_documents`
+职责：
 
-文档主表，负责存：
+- 给 `rag_knowledge_chunks.embedding` 回填向量
 
-- `docId`
-- `tenantId`
-- `fileName`
-- `fileHash`
-- `sourceType`
-- `sourceSystem`
-- `createdBy`
-- `ownerId`
-- `visibility`
-- `classification`
-- `departmentIds`
-- `roleIds`
-- `tags`
-- `namespace`
-- `status`
-- `currentVersion`
-- `latestJobId`
-- `storagePath`
+支持模式：
 
-#### `rag_document_versions`
+- `qdrant`
+- `reembed`
+- `hybrid`
 
-版本表，负责存：
+默认推荐 `hybrid`，因为它优先复用 Qdrant 旧向量，再补缺失 embedding。
 
-- `docId`
-- `version`
-- `storagePath`
-- `parsedPath`
-- `chunkPath`
-- `chunkCount`
-- `vectorCount`
-- `indexVersion`
-- `isCurrent`
+### 8.3 为什么这三步不能混成一步理解
 
-#### `rag_ingest_jobs`
+这三类动作解决的是不同层次的问题：
 
-任务表，负责存：
+1. metadata backfill  
+   解决 “document/job 元数据进 PostgreSQL”
 
-- `jobId`
-- `docId`
-- `version`
-- `fileName`
-- `status`
-- `stage`
-- `progress`
-- `retryCount`
-- `errorCode`
-- `errorMessage`
+2. data backfill  
+   解决 “version/chunk/asset 进 PostgreSQL”
 
-#### `rag_knowledge_chunks`
+3. pgvector backfill  
+   解决 “chunk 向量真正补齐”
 
-当前项目真正使用的向量 chunk 表，负责存：
-
-- `chunkId`
-- `docId`
-- `tenantId`
-- `namespace`
-- `chunkIndex`
-- `content`
-- `embeddingModel`
-- `embedding vector(1024)`
-- `sourcePath`
-- `parsedPath`
-- `charStart`
-- `charEnd`
-- `pageNo`
-- `ownerId`
-- `visibility`
-- `classification`
-- `departmentIds`
-- `roleIds`
+如果只做第 1 步，你有的是 metadata，不是可检索向量库。  
+如果只做第 2 步，你有的是 chunk 文本，不是完整 pgvector。  
+必须第 1、2、3 步一起完成，PostgreSQL 才算具备“结构化副本 + 向量副本”。
 
 ---
 
-## 6. 为什么新增表而不是改原表
+## 9. 实际迁移时该怎么做
 
-原因很简单：你已经明确要求：
+### 9.1 先准备环境变量
 
-`不要动原来的表结构`
-
-这个要求本身也是合理的，因为：
-
-1. 原系统可能已经依赖这些旧表
-2. 旧 AI 系统和当前 RAG 项目不是一套完全相同的数据模型
-3. 强改旧表会引入兼容性风险
-4. 新项目的数据语义更复杂，硬塞进旧表不干净
-
-所以现在这套设计的优点是：
-
-- legacy 表继续可用
-- 新 RAG 项目有自己的规范表
-- 后续可以平滑迁移业务代码
-- 不会破坏旧系统
-
----
-
-## 7. 本次实际迁移过程
-
-### 7.1 连接目标数据库
-
-目标库：
+当前项目里最关键的配置是：
 
 ```env
-postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public
+RAG_POSTGRES_METADATA_ENABLED=true
+RAG_POSTGRES_METADATA_DSN=postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public
+DATABASE_URL=postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public
+RAG_QDRANT_URL=http://localhost:6333
+RAG_QDRANT_COLLECTION=enterprise_rag_v1_local_bge_m3
 ```
 
-连接检查通过，说明数据库端口可达。
+这里有两个容易踩坑的点：
 
-### 7.2 Prisma 校验
+1. Python 运行时读的是：
+   - `RAG_POSTGRES_METADATA_DSN`
+   - 或回退 `DATABASE_URL`
 
-由于 Prisma 7 对 datasource 配置方式有变动，这次迁移使用 Prisma 6.16.2 完成。
+2. Prisma schema 读的是：
+   - `DATABASE_URL`
 
-执行过的关键动作：
+所以如果你只配一边，往往会出现：
 
-1. 校验 schema
-2. `db push` 到目标库
-3. `db pull` 反查数据库结构
-4. `migrate diff` 确认数据库已经和 schema 对齐
+- Prisma 能建表，但 Python 服务连不上
+- 或 Python 能写 metadata，但 Prisma 命令找不到库
 
-结果是：
+### 9.2 建表
 
-- schema 校验通过
-- 数据库已同步
-- 差异为空
+当前推荐的建表命令是：
 
-### 7.3 pgvector 索引
+```bash
+DATABASE_URL="postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public" \
+npx prisma@6.19.0 db push --schema prisma/schema.prisma
+```
 
-仅声明 `Unsupported("vector(...)")` 还不够，所以额外执行了：
+为什么这里显式写 `prisma@6.19.0`：
+
+- 这版是当前项目已经实际用过并验证过的版本
+- 这样能避免本机全局 Prisma 版本不一致导致 schema push 行为漂移
+
+### 9.3 然后做 metadata backfill
+
+```bash
+python scripts/backfill_postgres_metadata.py \
+  --dsn "postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public"
+```
+
+### 9.4 再做 `data/` 全量 backfill
+
+```bash
+python scripts/backfill_postgres_data.py \
+  --dsn "postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public"
+```
+
+### 9.5 最后补 pgvector
+
+```bash
+python scripts/backfill_pgvector_embeddings.py --mode hybrid
+```
+
+这个顺序不要反过来。  
+原因很直接：
+
+- 你必须先有 `rag_knowledge_chunks`
+- 才谈得上给它补 `embedding`
+
+---
+
+## 10. Prisma 能做什么，不能做什么
+
+### 10.1 Prisma 能做的
+
+Prisma 在当前项目里适合负责：
+
+- 定义 PostgreSQL 表结构
+- 定义 `vector(1024)` 列
+- 定义枚举、关系、索引声明
+- 给 Node/管理端提供统一 schema 视图
+
+### 10.2 Prisma 当前不适合直接承担的
+
+Prisma 在当前项目里不适合直接承担：
+
+- Python 在线 ingest 主链路的所有实时写入
+- pgvector 大批量回填
+- Qdrant -> PostgreSQL 向量搬运
+- ANN 索引治理
+
+原因是：
+
+1. 当前主业务逻辑在 Python/FastAPI
+2. 批量导入和向量列更新更适合 `psycopg`
+3. ANN 索引仍需要 SQL 级控制
+
+### 10.3 为什么 HNSW 索引没有放在 Prisma 里一次性解决
+
+Prisma schema 能定义向量列，但对 HNSW / IVF Flat 这种索引能力仍然不够细。
+
+所以当前项目采取的是更实用的做法：
+
+- Prisma 负责把表和列建出来
+- `pgvector_backfill.py` 负责确保 ANN 索引存在
+
+当前实测已经有：
 
 ```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-
-CREATE INDEX IF NOT EXISTS knowledge_documents_embedding_hnsw_idx
-ON "knowledge_documents"
-USING hnsw (embedding vector_cosine_ops);
-
-CREATE INDEX IF NOT EXISTS rag_knowledge_chunks_embedding_hnsw_idx
-ON "rag_knowledge_chunks"
-USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX rag_knowledge_chunks_embedding_hnsw_idx
+ON public.rag_knowledge_chunks
+USING hnsw (embedding vector_cosine_ops)
+WHERE embedding IS NOT NULL;
 ```
 
-这一步的意义是：
-
-- 不只是“能存向量”
-- 而是已经具备基础 ANN 检索索引能力
-
 ---
 
-## 8. 迁移完成后数据库里有什么
+## 11. 当前 schema 已经支持什么，尚不支持什么
 
-迁移完成后，`public` schema 中至少包含：
+### 11.1 已支持
 
-### 原有保留表
-
-- `ai_sessions`
-- `messages`
-- `knowledge_documents`
-- `prompt_templates`
-
-### 新增 RAG 表
-
-- `rag_source_documents`
-- `rag_document_versions`
-- `rag_ingest_jobs`
-- `rag_knowledge_chunks`
-
-### 枚举
-
-- `MessageRole`
-- `RagVisibility`
-- `RagClassification`
-- `RagDocumentStatus`
-- `RagIngestJobStatus`
-
----
-
-## 9. 后续怎么真正把项目接入这套 PostgreSQL
-
-这次做的是：
-
-`把表结构迁到数据库`
-
-还没做的是：
-
-`让当前 Python RAG 代码真正读写这些表`
-
-后续真正接入，建议分 3 步。
-
-### 第 1 步：先把 PostgreSQL 作为“结构化真源”
-
-先把这些对象改成落 PostgreSQL：
+当前 Prisma schema 已经能稳定支持：
 
 - 文档主数据
+- 任务状态
 - 文档版本
-- 入库任务
-- chunk 元数据
+- chunk 文本
+- 1024 维 pgvector
+- `data/` 文件镜像
+- ACL / owner / tenant 等治理字段
 
-也就是说，把当前 `data/documents`、`data/jobs`、`data/chunks` 这些 JSON 存储逐步替掉。
+### 11.2 尚未完成在线接入的能力
 
-### 第 2 步：保持 Qdrant 继续跑
+当前 schema 虽然已经有，但在线链路还没有完全利用这些能力：
 
-短期内不要一上来就移除 Qdrant。
+- `rag_document_versions` 不是在线实时维护
+- `rag_knowledge_chunks` 不是在线实时写入
+- `rag_data_assets` 不是在线实时镜像
+- `RetrievalService` 还没有从 PostgreSQL 读向量
 
-建议：
-
-- PostgreSQL：真源
-- Qdrant：检索副本
-
-这样能保证：
-
-- 老链路不断
-- 新结构先稳定
-
-### 第 3 步：再评估是否切成 pgvector 检索
-
-等到 PostgreSQL 真源和写入链路稳定之后，再决定：
-
-- 继续 Qdrant 检索
-- 或改成 pgvector 检索
-- 或做混合检索
+也就是说，当前 schema 具备能力，不代表当前流量已经走这套能力。
 
 ---
 
-## 10. 迁移时最需要注意的点
+## 12. 如果下一步继续推进，应该怎么改
 
-### 10.1 不要把 legacy 表和新表混着写
+### 12.1 第一阶段：让在线 ingest 真正写全 PostgreSQL
 
-尤其不要让当前 Python RAG 项目去直接写 `knowledge_documents`，因为：
+这一阶段建议改动目标：
 
-- 它是 1536 维 legacy 表
-- 当前项目实际是 1024 维
+- 在线 ingest 完成后，同步写：
+  - `rag_document_versions`
+  - `rag_knowledge_chunks`
+  - `rag_data_assets`
 
-当前项目应该写：
+这样做的结果是：
 
-- `rag_source_documents`
-- `rag_document_versions`
-- `rag_ingest_jobs`
-- `rag_knowledge_chunks`
+- 新文档不再依赖 backfill 才能在 PostgreSQL 里完整出现
 
-### 10.2 向量维度不能搞错
+### 12.2 第二阶段：增加 pgvector 检索实现，但先不切主读
 
-当前项目的 embedding 模型是 `bge-m3`，维度是：
+建议增加：
 
-```text
-1024
+- `PgvectorVectorStore`
+- 或 `PgvectorRetrievalService`
+
+然后做双跑：
+
+```mermaid
+flowchart LR
+    A[query] --> B[生成 query embedding]
+    B --> C1[Qdrant 检索]
+    B --> C2[pgvector 检索]
+    C1 --> D[对比 top-k / chunkId / score]
+    C2 --> D
+    D --> E[结果稳定后再切主读]
 ```
 
-如果你后面改成别的 embedding 模型，必须同步调整：
+### 12.3 第三阶段：再决定 Qdrant 的角色
 
-- Prisma schema
-- 数据迁移策略
-- 向量索引
+等 pgvector 检索稳定后，你再决定：
 
-### 10.3 pgvector 只是“存储能力”，不是全部检索能力
+1. 保留 Qdrant 作为检索副本
+2. 或让 PostgreSQL / pgvector 成为唯一向量主库
 
-你还需要额外关注：
-
-- 向量索引类型：`hnsw` 或 `ivfflat`
-- 相似度算子：`vector_cosine_ops`
-- 查询 SQL
-- 元数据过滤
-
-### 10.4 ACL 字段不要偷懒都塞进 JSON
-
-像这些字段必须保持结构化：
-
-- `tenantId`
-- `visibility`
-- `classification`
-- `departmentIds`
-- `roleIds`
-- `ownerId`
-
-因为这些字段未来是要参与过滤的，不只是展示。
-
-### 10.5 先解决“写入一致性”，再考虑“完全替换检索”
-
-更稳的顺序是：
-
-1. 先把 PostgreSQL 表建好
-2. 再让文档、任务、chunk 元数据进入 PostgreSQL
-3. 再考虑检索是否切到 pgvector
-
-不要反过来一上来就替换检索层。
-
-### 10.6 Prisma 版本要注意
-
-这次迁移使用 Prisma 6.16.2 是因为：
-
-- 这份 schema 是传统写法
-- Prisma 7 对 datasource URL 管理方式变了
-
-如果你后面要升级到 Prisma 7，需要额外处理：
-
-- `prisma.config.ts`
-- 连接配置迁移
+这个决定不应该在 schema 刚落地时就做。
 
 ---
 
-## 11. 推荐的后续动作
+## 13. 当前最容易误解的 5 个点
 
-按优先级建议这样推进：
+1. “Prisma schema 已经有 pgvector 列”  
+   不等于 “在线检索已经走 pgvector”。
 
-### P1
+2. “`rag_source_documents` / `rag_ingest_jobs` 已经在增长”  
+   不等于 “`rag_document_versions` / `rag_knowledge_chunks` 也在实时增长”。
 
-- 让 Python 后端真正写入 `rag_source_documents / rag_ingest_jobs / rag_knowledge_chunks`
+3. “当前数据库里有 557 条向量”  
+   不等于 “这些向量一定是在线 ingest 直接写进去的”。  
+   当前主要是通过 backfill 补进去的。
 
-### P2
+4. “保留 `KnowledgeDocument`”  
+   不等于 “当前项目实际还在用它做主向量表”。
 
-- 做一版从现有 JSON / Qdrant 导入 PostgreSQL 的迁移脚本
-
-### P3
-
-- 再评估是否把检索从 Qdrant 切到 pgvector
+5. “Prisma 可以定义 vector 列”  
+   不等于 “Prisma 就适合做当前项目全部向量写入和批处理”。
 
 ---
 
-## 12. 一句话结论
+## 14. 推荐你把这份文档当成什么用
 
-这次迁移的本质不是“把老表改掉”，而是：
+这份文档最适合作为：
 
-`在保留旧 AI 系统表结构不变的前提下，为当前 Enterprise-grade_RAG 项目新增一套规范的 PostgreSQL + pgvector 数据结构，并已经成功落到目标数据库 welllihaidb.public。`
+- schema 设计说明
+- PostgreSQL / pgvector 落地状态说明
+- 后续改在线链路的开发基线
+
+它不适合作为：
+
+- “项目已经完全切换 pgvector”的对外口径
+
+因为到今天为止，最关键的事实仍然是：
+
+- **schema 已经切过去了**
+- **数据副本也已经补过去了**
+- **在线主检索还没有切过去**
+
+---
+
+## 15. 最终判断
+
+如果只从 Prisma / schema 角度看，这次迁移已经是成功的：
+
+- 新表结构合理
+- legacy 兼容保留
+- pgvector 维度和当前模型一致
+- 数据库里已经有真实数据和真实向量
+
+如果从系统流量路径角度看，这次迁移仍然处在过渡期：
+
+- metadata 已部分在线化
+- chunk/vector 仍偏 backfill 驱动
+- retrieval 主读仍是 Qdrant
+
+所以当前最准确的说法是：
+
+- **Prisma / pgvector 基础设施已经建好**
+- **要把它真正变成线上主路径，还需要继续改在线 ingest 和 retrieval**
