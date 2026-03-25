@@ -96,6 +96,45 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         )
         return int(result.count) > 0  # 只要有一个 point 就说明该文档已经入向量库。
 
+    def delete_document_points(self, document_id: str) -> int:  # 按文档 ID 删除当前 collection 下的所有向量点位。
+        normalized_document_id = document_id.strip()  # 统一清理空白，避免把空字符串当有效文档 ID。
+        if not normalized_document_id:  # 空文档 ID 直接视为无需删除。
+            return 0
+        if not self._collection_exists(self.settings.qdrant_collection):  # collection 不存在时直接视为已清理。
+            return 0
+
+        pre_count = self.client.count(  # 删除前先统计该文档当前点位数量，便于返回删除计数。
+            collection_name=self.settings.qdrant_collection,
+            count_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="document_id",
+                        match=models.MatchValue(value=normalized_document_id),
+                    )
+                ]
+            ),
+            exact=True,
+        )
+        removed = int(pre_count.count)
+        if removed <= 0:  # 没有命中点位时无需触发 delete 请求。
+            return 0
+
+        self.client.delete(  # 按 document_id 过滤删除整份文档的所有点位。
+            collection_name=self.settings.qdrant_collection,
+            points_selector=models.FilterSelector(
+                filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="document_id",
+                            match=models.MatchValue(value=normalized_document_id),
+                        )
+                    ]
+                )
+            ),
+            wait=True,
+        )
+        return removed  # 返回删除前统计值，作为本次清理数量。
+
     def search(  # 按查询向量检索最相似的 chunk。
         self,
         query_vector: list[float],

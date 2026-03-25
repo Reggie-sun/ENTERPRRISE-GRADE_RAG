@@ -1,19 +1,20 @@
 /**
  * 文档上传面板组件
- * 支持创建入库任务并轮询任务状态
+ * 支持单文件/批量文件创建入库任务并轮询任务状态
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { Upload, RefreshCw } from 'lucide-react';  // 引入图标。
-import { Card, Button, StatusPill, ResultBox, Input } from '@/components';
+import { useEffect, useRef, useState } from 'react';
+import { RefreshCw, Upload } from 'lucide-react';
+import { Card, Button, Input, ResultBox, StatusPill } from '@/components';
 import {
   ApiError,
   createDocument,
+  createDocumentsBatch,
   formatApiError,
   getIngestJobStatus,
-  type IngestJobStatusResponse,
   type DocumentCreateResponse,
   type IngestJobStatus,
+  type IngestJobStatusResponse,
 } from '@/api';
 
 // 终态任务状态集合。
@@ -49,6 +50,18 @@ interface DuplicateDocumentDetail {
   latest_job_id: string;
   file_name: string;
   file_hash: string;
+}
+
+interface BatchUploadRow {
+  fileName: string;
+  submitStatus: 'queued' | 'failed';
+  docId: string | null;
+  jobId: string | null;
+  ingestStatus: IngestJobStatus | null;
+  stage: string | null;
+  progress: number | null;
+  errorCode: string | null;
+  errorMessage: string | null;
 }
 
 function toRecord(value: unknown): Record<string, unknown> | null {
@@ -100,17 +113,32 @@ export function UploadPanel({
   // 表单状态。
   const [tenantId, setTenantId] = useState('wl');
   const [createdBy, setCreatedBy] = useState('demo-user');
-  const [file, setFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // 面板状态。
   const [status, setStatus] = useState<PanelStatus>('idle');
   const [createResult, setCreateResult] = useState<DocumentCreateResponse | null>(null);
   const [jobStatus, setJobStatus] = useState<IngestJobStatusResponse | null>(null);
-  const [error, setError] = useState<string>('');
-  const [hint, setHint] = useState<string>('');
+  const [batchRows, setBatchRows] = useState<BatchUploadRow[]>([]);
+  const [error, setError] = useState('');
+  const [hint, setHint] = useState('');
 
-  // 轮询定时器引用。
+  // 轮询定时器和任务集合引用。
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingJobIdsRef = useRef<Set<string>>(new Set());
+  const primaryJobIdRef = useRef<string | null>(null);  // 主任务 ID 用 ref 持有，避免轮询闭包拿到旧状态。
+  const pollRequestInFlightRef = useRef(false);  // 避免上一次轮询还没结束时继续叠加新请求。
+  const consecutivePollFailureCountRef = useRef(0);  // 记录连续轮询失败次数，只在持续异常时再把面板判成 error。
+
+  const stopPolling = () => {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+    pollingJobIdsRef.current.clear();
+    pollRequestInFlightRef.current = false;
+    consecutivePollFailureCountRef.current = 0;
+  };
 
   // 组件卸载时清理定时器。
   useEffect(() => {
@@ -118,105 +146,227 @@ export function UploadPanel({
       if (pollTimerRef.current) {
         clearInterval(pollTimerRef.current);
       }
+      pollingJobIdsRef.current.clear();
     };
   }, []);
 
-  // 获取任务状态。
-  const fetchJobStatus = async (jobId: string, fromTimer = false) => {
+  // 批量获取当前轮询任务状态。
+  const fetchBatchJobStatuses = async (fromTimer = false) => {
+    const jobIds = Array.from(pollingJobIdsRef.current);
+    if (!jobIds.length) {
+      return;
+    }
+    if (pollRequestInFlightRef.current) {
+      return;
+    }
     if (!fromTimer) {
       setStatus('polling');
     }
+    pollRequestInFlightRef.current = true;
 
     try {
-      const result = await getIngestJobStatus(jobId);
-      setJobStatus(result);
-      onJobStatusChange?.(result);
+      const results = await Promise.all(jobIds.map((jobId) => getIngestJobStatus(jobId)));
+      consecutivePollFailureCountRef.current = 0;
+      setError('');
+      const resultByJobId = new Map(results.map((item) => [item.job_id, item]));
 
-      // 判断是否为终态。
-      const isTerminal = TERMINAL_STATES.has(result.status);
-      if (isTerminal) {
-        setStatus(result.status === 'completed' ? 'success' : 'error');
-        // 终态时停止轮询。
-        if (pollTimerRef.current) {
-          clearInterval(pollTimerRef.current);
-          pollTimerRef.current = null;
+      setBatchRows((prev) => prev.map((row) => {
+        if (!row.jobId) {
+          return row;
+        }
+        const matched = resultByJobId.get(row.jobId);
+        if (!matched) {
+          return row;
+        }
+        return {
+          ...row,
+          ingestStatus: matched.status,
+          stage: matched.stage,
+          progress: matched.progress,
+          errorCode: matched.error_code,
+          errorMessage: matched.error_message,
+        };
+      }));
+
+      if (primaryJobIdRef.current) {
+        const primaryJob = resultByJobId.get(primaryJobIdRef.current);
+        if (primaryJob) {
+          setJobStatus(primaryJob);
+          onJobStatusChange?.(primaryJob);
         }
       }
+
+      const allTerminal = results.every((item) => TERMINAL_STATES.has(item.status));
+      if (allTerminal) {
+        const hasFailedTerminal = results.some((item) => item.status !== 'completed');
+        setStatus(hasFailedTerminal ? 'error' : 'success');
+        stopPolling();
+      }
     } catch (err) {
+      consecutivePollFailureCountRef.current += 1;
+      const isRetriablePollError = err instanceof ApiError && (err.kind === 'timeout' || err.kind === 'network');
+      if (isRetriablePollError && consecutivePollFailureCountRef.current < 3) {
+        return;
+      }
       setError(formatApiError(err, '任务状态轮询'));
       setStatus('error');
       onUploadFailed?.();
-      if (pollTimerRef.current) {
-        clearInterval(pollTimerRef.current);
-        pollTimerRef.current = null;
-      }
+      stopPolling();
+    } finally {
+      pollRequestInFlightRef.current = false;
     }
   };
 
-  // 开始轮询。
-  const startPolling = (jobId: string) => {
-    // 清理已有定时器。
-    if (pollTimerRef.current) {
-      clearInterval(pollTimerRef.current);
+  // 开始轮询一组 job。
+  const startPolling = (jobIds: string[]) => {
+    const normalizedJobIds = jobIds.map((item) => item.trim()).filter((item) => item.length > 0);
+    stopPolling();
+    if (!normalizedJobIds.length) {
+      return;
     }
 
-    // 立即获取一次状态。
-    fetchJobStatus(jobId);
-
-    // 每 1.5 秒轮询一次。
-    pollTimerRef.current = setInterval(() => fetchJobStatus(jobId, true), 1500);
+    pollingJobIdsRef.current = new Set(normalizedJobIds);
+    void fetchBatchJobStatuses(false);
+    pollTimerRef.current = setInterval(() => {
+      void fetchBatchJobStatuses(true);
+    }, 1500);
   };
 
-  // 创建入库任务。
+  // 创建入库任务（单文件或批量）。
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file) {
+    if (selectedFiles.length === 0) {
       setError('请先选择文件');
       return;
     }
+
+    const tenantValue = tenantId.trim() || 'wl';
+    const createdByValue = createdBy.trim();
+    const firstFile = selectedFiles[0];
 
     setStatus('uploading');
     setError('');
     setHint('');
     setCreateResult(null);
     setJobStatus(null);
-    onUploadStart?.(file.name);
+    setBatchRows([]);
+    primaryJobIdRef.current = null;
+    stopPolling();
+    onUploadStart?.(firstFile.name);
+
+    if (selectedFiles.length === 1) {
+      try {
+        const formData = new FormData();
+        formData.append('file', firstFile);
+        formData.append('tenant_id', tenantValue);
+        if (createdByValue) {
+          formData.append('created_by', createdByValue);
+        }
+
+        const result = await createDocument(formData);
+        setCreateResult(result);
+        primaryJobIdRef.current = result.job_id;
+        setBatchRows([
+          {
+            fileName: firstFile.name,
+            submitStatus: 'queued',
+            docId: result.doc_id,
+            jobId: result.job_id,
+            ingestStatus: 'queued',
+            stage: 'queued',
+            progress: 0,
+            errorCode: null,
+            errorMessage: null,
+          },
+        ]);
+        onUploadCreated?.(result.doc_id);
+        startPolling([result.job_id]);
+      } catch (err) {
+        const duplicateDetail = parseDuplicateDocumentDetail(err);
+        if (duplicateDetail) {
+          const existingResult: DocumentCreateResponse = {
+            doc_id: duplicateDetail.doc_id,
+            job_id: duplicateDetail.latest_job_id,
+            status: 'queued',
+          };
+          setCreateResult(existingResult);
+          primaryJobIdRef.current = existingResult.job_id;
+          setBatchRows([
+            {
+              fileName: firstFile.name,
+              submitStatus: 'queued',
+              docId: duplicateDetail.doc_id,
+              jobId: duplicateDetail.latest_job_id,
+              ingestStatus: 'queued',
+              stage: 'queued',
+              progress: 0,
+              errorCode: null,
+              errorMessage: null,
+            },
+          ]);
+          setHint('检测到重复文档，已复用历史 doc_id，并继续跟踪最新任务状态。');
+          onUploadCreated?.(duplicateDetail.doc_id);
+          startPolling([duplicateDetail.latest_job_id]);
+          return;
+        }
+
+        setError(formatApiError(err, '上传并创建入库任务'));
+        setStatus('error');
+        onUploadFailed?.();
+      }
+      return;
+    }
 
     try {
-      // 构建 FormData。
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('tenant_id', tenantId.trim() || 'wl');
-      if (createdBy.trim()) {
-        formData.append('created_by', createdBy.trim());
+      for (const file of selectedFiles) {
+        formData.append('files', file);
+      }
+      formData.append('tenant_id', tenantValue);
+      if (createdByValue) {
+        formData.append('created_by', createdByValue);
       }
 
-      // 发送创建请求。
-      const result = await createDocument(formData);
-      setCreateResult(result);
-      onUploadCreated?.(result.doc_id);
+      const payload = await createDocumentsBatch(formData);
+      const rows: BatchUploadRow[] = payload.items.map((item) => ({
+        fileName: item.file_name,
+        submitStatus: item.status,
+        docId: item.doc_id,
+        jobId: item.job_id,
+        ingestStatus: item.status === 'queued' ? 'queued' : null,
+        stage: item.status === 'queued' ? 'queued' : null,
+        progress: item.status === 'queued' ? 0 : null,
+        errorCode: item.error_code,
+        errorMessage: item.error_message,
+      }));
+      setBatchRows(rows);
+      setHint(`批量提交完成：共 ${payload.total} 个，已入队 ${payload.queued} 个，失败 ${payload.failed} 个。`);
 
-      // 开始轮询任务状态。
-      startPolling(result.job_id);
-    } catch (err) {
-      const duplicateDetail = parseDuplicateDocumentDetail(err);
-      if (duplicateDetail) {
-        const existingResult: DocumentCreateResponse = {
-          doc_id: duplicateDetail.doc_id,
-          job_id: duplicateDetail.latest_job_id,
+      const firstQueued = rows.find((row) => row.submitStatus === 'queued' && row.docId && row.jobId);
+      if (firstQueued?.docId && firstQueued.jobId) {
+        const primaryResult: DocumentCreateResponse = {
+          doc_id: firstQueued.docId,
+          job_id: firstQueued.jobId,
           status: 'queued',
         };
-        setCreateResult(existingResult);
-        setJobStatus(null);
-        setError('');
-        setHint('检测到重复文档，已复用历史 doc_id，并继续跟踪最新任务状态。');
-        onUploadCreated?.(duplicateDetail.doc_id);
-        startPolling(duplicateDetail.latest_job_id);
+        setCreateResult(primaryResult);
+        primaryJobIdRef.current = primaryResult.job_id;
+        onUploadCreated?.(primaryResult.doc_id);
+      }
+
+      const queuedJobIds = rows
+        .filter((row) => row.submitStatus === 'queued' && row.jobId)
+        .map((row) => row.jobId as string);
+      if (queuedJobIds.length === 0) {
+        setStatus('error');
+        onUploadFailed?.();
         return;
       }
 
-      setError(formatApiError(err, '上传并创建入库任务'));
+      startPolling(queuedJobIds);
+    } catch (err) {
+      setError(formatApiError(err, '批量上传并创建入库任务'));
       setStatus('error');
       onUploadFailed?.();
     }
@@ -224,27 +374,41 @@ export function UploadPanel({
 
   // 手动轮询最新任务。
   const handlePoll = () => {
+    if (pollingJobIdsRef.current.size > 0) {
+      void fetchBatchJobStatuses(false);
+      return;
+    }
     if (createResult?.job_id) {
-      fetchJobStatus(createResult.job_id);
+      startPolling([createResult.job_id]);
     }
   };
 
   // 获取状态徽章信息。
   const getStatusInfo = () => {
-    if (!jobStatus) {
-      return { text: status === 'idle' ? '等待上传' : '处理中...', tone: 'warn' as const };
-    }
+    const submitFailedCount = batchRows.filter((row) => row.submitStatus === 'failed').length;
+    const queuedRows = batchRows.filter((row) => row.submitStatus === 'queued');
+    const completedCount = queuedRows.filter((row) => row.ingestStatus === 'completed').length;
+    const ingestFailedCount = queuedRows.filter((row) => (
+      row.ingestStatus !== null && TERMINAL_STATES.has(row.ingestStatus) && row.ingestStatus !== 'completed'
+    )).length;
+    const totalFailed = submitFailedCount + ingestFailedCount;
 
-    const stateText = JOB_STATE_TEXT[jobStatus.status] || jobStatus.status;
-    const stageText = JOB_STATE_TEXT[jobStatus.stage] || jobStatus.stage;
-
-    if (jobStatus.status === 'completed') {
-      return { text: `任务${stateText} | ${jobStatus.progress}%`, tone: 'ok' as const };
+    if (status === 'idle') {
+      return { text: '等待上传', tone: 'warn' as const };
     }
-    if (TERMINAL_STATES.has(jobStatus.status)) {
-      return { text: `任务${stateText} | 阶段 ${stageText}`, tone: 'error' as const };
+    if (status === 'uploading') {
+      return { text: '上传中...', tone: 'warn' as const };
     }
-    return { text: `任务${stateText} | 阶段 ${stageText} | ${jobStatus.progress}%`, tone: 'warn' as const };
+    if (status === 'polling') {
+      return {
+        text: `已提交 ${batchRows.length} 个，完成 ${completedCount}/${queuedRows.length}，失败 ${totalFailed} 个`,
+        tone: 'warn' as const,
+      };
+    }
+    if (status === 'success') {
+      return { text: `任务完成：成功 ${completedCount} 个`, tone: 'ok' as const };
+    }
+    return { text: `任务结束：失败 ${totalFailed} 个`, tone: 'error' as const };
   };
 
   const statusInfo = getStatusInfo();
@@ -253,13 +417,18 @@ export function UploadPanel({
   const stageText = jobStatus ? (JOB_STATE_TEXT[jobStatus.stage] || jobStatus.stage) : '-';
   const failureCode = jobStatus?.error_code || '-';
   const failureText = jobStatus?.error_message || '-';
+  const selectedFileText = selectedFiles.length === 0
+    ? '-'
+    : selectedFiles.length === 1
+      ? selectedFiles[0].name
+      : `${selectedFiles[0].name} 等 ${selectedFiles.length} 个文件`;
 
   return (
     <Card className="col-span-8">
       {/* 标题 */}
       <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">上传文档并轮询入库</h2>
       <p className="m-0 mb-4 text-ink-soft leading-relaxed">
-        创建真实 ingest job，然后持续观察状态流转，直到 worker 进入终态。
+        支持单文件和批量上传；每个文件都会创建独立 ingest job 并显示状态进度。
       </p>
 
       {/* 表单 */}
@@ -281,11 +450,12 @@ export function UploadPanel({
 
         {/* 文件选择 */}
         <label className="grid gap-1.5 text-sm font-semibold">
-          文件
+          文件（可多选）
           <input
             type="file"
+            multiple
             accept=".pdf,.md,.markdown,.txt"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
             className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-accent-deep"
           />
         </label>
@@ -295,10 +465,15 @@ export function UploadPanel({
           <Button type="submit" loading={status === 'uploading'}>
             <span className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
-              创建入库任务
+              {selectedFiles.length > 1 ? '批量创建入库任务' : '创建入库任务'}
             </span>
           </Button>
-          <Button type="button" variant="ghost" onClick={handlePoll} disabled={!createResult}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handlePoll}
+            disabled={batchRows.length === 0 && !createResult}
+          >
             <span className="flex items-center gap-2">
               <RefreshCw className="w-4 h-4" />
               轮询最新任务
@@ -311,10 +486,10 @@ export function UploadPanel({
       <StatusPill tone={statusInfo.tone}>{statusInfo.text}</StatusPill>
       {hint ? <p className="m-0 mt-2 text-sm text-ink-soft">{hint}</p> : null}
 
-      {/* 结果展示 */}
+      {/* 主结果展示 */}
       <div className="mt-4">
         <ResultBox>
-          {`文件: ${file?.name || '-'}
+          {`文件: ${selectedFileText}
 doc_id: ${activeDocId}
 job_id: ${activeJobId}
 当前阶段: ${stageText}
@@ -326,6 +501,46 @@ ${error ? `面板错误: ${error}` : '面板错误: -'}
 `}
         </ResultBox>
       </div>
+
+      {/* 批量明细 */}
+      {batchRows.length > 0 ? (
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full text-sm text-ink border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">文件</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">提交状态</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">doc_id</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">job_id</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">入库阶段</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">进度</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">错误</th>
+              </tr>
+            </thead>
+            <tbody>
+              {batchRows.map((row, index) => (
+                <tr key={`${row.fileName}-${index}`}>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)] break-all">{row.fileName}</td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)]">
+                    {row.submitStatus === 'queued' ? '已入队' : '失败'}
+                  </td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)] break-all">{row.docId || '-'}</td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)] break-all">{row.jobId || '-'}</td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)]">
+                    {row.stage ? (JOB_STATE_TEXT[row.stage] || row.stage) : '-'}
+                  </td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)]">
+                    {typeof row.progress === 'number' ? `${row.progress}%` : '-'}
+                  </td>
+                  <td className="p-2 border-b border-[rgba(23,32,42,0.08)] break-all">
+                    {row.errorMessage || row.errorCode || '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
     </Card>
   );
 }

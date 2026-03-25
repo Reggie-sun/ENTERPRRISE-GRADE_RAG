@@ -1,0 +1,77 @@
+{
+  "roles": [
+    {
+      "role_id": "employee",
+      "name": "Employee",
+      "description": "Can search and view content within the assigned department scope.",
+      "data_scope": "department",
+      "is_admin": false
+    },
+    {
+      "role_id": "department_admin",
+      "name": "Department Admin",
+      "description": "Can manage documents and SOP assets within the assigned department.",
+      "data_scope": "department",
+      "is_admin": true
+    },
+    {
+      "role_id": "sys_admin",
+      "name": "System Admin",
+      "description": "Can access all departments and system management capabilities.",
+      "data_scope": "global",
+      "is_admin": true
+    }
+  ],
+  "departments": [
+    {
+      "department_id": "dept_ops",
+      "tenant_id": "wl",
+      "department_name": "Operations",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_after_sales",
+      "tenant_id": "wl",
+      "department_name": "After Sales",
+      "parent_department_id": "dept_ops",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_production",
+      "tenant_id": "wl",
+      "department_name": "Production",
+      "parent_department_id": "dept_ops",
+      "is_active": true
+    }
+  ],
+  "users": [
+    {
+      "user_id": "user_employee_demo",
+      "tenant_id": "wl",
+      "username": "employee.demo",
+      "display_name": "Employee Demo",
+      "department_id": "dept_after_sales",
+      "role_id": "employee",
+      "is_active": true
+    },
+    {
+      "user_id": "user_department_admin_demo",
+      "tenant_id": "wl",
+      "username": "department.admin.demo",
+      "display_name": "Department Admin Demo",
+      "department_id": "dept_after_sales",
+      "role_id": "department_admin",
+      "is_active": true
+    },
+    {
+      "user_id": "user_sys_admin_demo",
+      "tenant_id": "wl",
+      "username": "sys.admin.demo",
+      "display_name": "System Admin Demo",
+      "department_id": "dept_ops",
+      "role_id": "sys_admin",
+      "is_active": true
+    }
+  ]
+}

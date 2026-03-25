@@ -41,11 +41,14 @@ class PostgresMetadataStore:
             )
 
     def save_document(self, record: DocumentRecord) -> None:
-        metadata_payload = {
+        db_status = self._db_status_from_record(record.status)  # 数据库枚举暂不包含 deleted，写库前先做兼容映射。
+        metadata_payload: dict[str, object] = {
             "department_id": record.department_id,
             "category_id": record.category_id,
             "uploaded_by": record.uploaded_by,
         }  # 新增主数据字段先落在 metadata JSON，避免强依赖库表结构变更。
+        if record.status == "deleted":  # 仅删除状态写 deleted 标记，避免污染既有 metadata 断言与下游兼容逻辑。
+            metadata_payload["deleted"] = True
         with psycopg.connect(self.psycopg_dsn) as conn:
             with conn.cursor() as cur:
                 cur.execute(
@@ -100,7 +103,7 @@ class PostgresMetadataStore:
                         "role_ids": record.role_ids,
                         "tags": record.tags,
                         "namespace": "default",
-                        "status": record.status,
+                        "status": db_status,
                         "current_version": record.current_version,
                         "latest_job_id": record.latest_job_id,
                         "storage_path": record.storage_path,
@@ -189,6 +192,22 @@ class PostgresMetadataStore:
         if not rows:
             return None
         return self._row_to_job(rows[0])
+
+    def load_job_statuses(self, job_ids: list[str]) -> dict[str, str]:
+        normalized_job_ids = [job_id.strip() for job_id in job_ids if job_id and job_id.strip()]
+        if not normalized_job_ids:
+            return {}
+
+        rows = self._fetchall(
+            """
+            SELECT
+                "jobId", "status"
+            FROM public.rag_ingest_jobs
+            WHERE "jobId" = ANY(%(job_ids)s)
+            """,
+            {"job_ids": normalized_job_ids},
+        )
+        return {str(row["jobId"]): str(row["status"]) for row in rows}
 
     def list_documents(self) -> list[DocumentRecord]:
         rows = self._fetchall(
@@ -297,6 +316,8 @@ class PostgresMetadataStore:
         department_id = metadata_map.get("department_id")
         category_id = metadata_map.get("category_id")
         uploaded_by = metadata_map.get("uploaded_by")
+        deleted_flag = bool(metadata_map.get("deleted"))  # deleted 通过 metadata 标记回读，避免依赖数据库枚举扩展。
+        record_status = "deleted" if deleted_flag else str(row["status"])
         return DocumentRecord(
             doc_id=str(row["docId"]),
             tenant_id=str(row["tenantId"]),
@@ -312,7 +333,7 @@ class PostgresMetadataStore:
             classification=str(row["classification"]),  # type: ignore[arg-type]
             tags=self._as_str_list(row.get("tags")),
             source_system=None if row.get("sourceSystem") is None else str(row["sourceSystem"]),
-            status=str(row["status"]),  # type: ignore[arg-type]
+            status=record_status,  # type: ignore[arg-type]
             current_version=int(row["currentVersion"]),
             latest_job_id="" if row.get("latestJobId") is None else str(row["latestJobId"]),
             storage_path=str(row["storagePath"]),
@@ -321,6 +342,12 @@ class PostgresMetadataStore:
             created_at=row["createdAt"],  # type: ignore[arg-type]
             updated_at=row["updatedAt"],  # type: ignore[arg-type]
         )
+
+    @staticmethod
+    def _db_status_from_record(status: str) -> str:  # 把应用层文档状态映射成数据库允许的枚举值。
+        if status == "deleted":  # 当前 schema 未扩展 deleted，先以 failed 落库并借 metadata 标记墓碑语义。
+            return "failed"
+        return status
 
     def _row_to_job(self, row: dict[str, object]) -> IngestJobRecord:
         return IngestJobRecord(

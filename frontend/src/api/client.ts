@@ -6,11 +6,14 @@
 import type {
   HealthResponse,
   DocumentCreateResponse,
+  DocumentBatchCreateResponse,
   DocumentUploadResponse,
   DocumentListResponse,
   DocumentListQuery,
   DocumentDetailResponse,
+  DocumentDeleteResponse,
   DocumentPreviewResponse,
+  DocumentRebuildResponse,
   IngestJobStatusResponse,
   RetrievalRequest,
   RetrievalResponse,
@@ -201,11 +204,33 @@ export async function getDocumentPreview(docId: string, maxChars = 12000): Promi
   return request<DocumentPreviewResponse>(`/documents/${encodeURIComponent(docId)}/preview?${params.toString()}`);
 }
 
+/** 删除文档（主数据状态 + 向量副本） */
+export async function deleteDocument(docId: string): Promise<DocumentDeleteResponse> {
+  return request<DocumentDeleteResponse>(`/documents/${encodeURIComponent(docId)}`, {
+    method: 'DELETE',
+  });
+}
+
+/** 重建文档向量（异步重建任务） */
+export async function rebuildDocumentVectors(docId: string): Promise<DocumentRebuildResponse> {
+  return request<DocumentRebuildResponse>(`/documents/${encodeURIComponent(docId)}/rebuild`, {
+    method: 'POST',
+  });
+}
+
 /** 创建文档并排队入库（异步 Celery 任务） */
 export async function createDocument(formData: FormData): Promise<DocumentCreateResponse> {
   return request<DocumentCreateResponse>('/documents', {
     method: 'POST',
     body: formData,  // FormData 不需要设置 Content-Type，浏览器会自动设置 boundary。
+  });
+}
+
+/** 批量创建文档并排队入库（每个文件独立 job） */
+export async function createDocumentsBatch(formData: FormData): Promise<DocumentBatchCreateResponse> {
+  return request<DocumentBatchCreateResponse>('/documents/batch', {
+    method: 'POST',
+    body: formData,
   });
 }
 

@@ -1,6 +1,6 @@
 # Local Dev Runbook / 本地开发运行手册
 
-本手册覆盖当前已验证的 `v0.1.2` 开发基线：
+本手册覆盖当前已验证的 `v0.2` 开发基线：
 
 - 前端：`http://127.0.0.1:3000`
 - 后端：`http://127.0.0.1:8020`
@@ -97,7 +97,7 @@ curl http://192.168.10.200:8000/v1/models
 - `3000` 的 React 页面是当前主前端
 - `8020/demo` 只用于后端单页联调和快速 smoke test
 
-### 3.4 一键 smoke test（推荐）
+### 3.4 一键 smoke test（v0.1.2 主链路）
 
 仓库已提供可执行脚本：
 
@@ -121,6 +121,33 @@ TENANT_ID=wl \
 TOP_K=3 \
 POLL_TIMEOUT_SECONDS=180 \
 bash scripts/smoke_test.sh
+```
+
+### 3.5 一键 smoke test（v0.2 文档管理）
+
+仓库已提供 `v0.2` 文档管理回归脚本：
+
+```bash
+bash scripts/smoke_test_v02.sh
+```
+
+脚本覆盖链路：
+
+- `GET /api/v1/health`
+- `POST /api/v1/documents/batch`（批量上传）
+- `GET /api/v1/ingest/jobs/{job_id}`（轮询两个 job 到 `completed`）
+- `GET /api/v1/documents`（关键字筛选）
+- `GET /api/v1/documents/{doc_id}/preview`（在线预览）
+- `POST /api/v1/documents/{doc_id}/rebuild`（重建向量并轮询完成）
+- `DELETE /api/v1/documents/{doc_id}` + `GET /api/v1/documents/{doc_id}`（删除状态校验）
+
+可选参数（按需覆盖）：
+
+```bash
+API_BASE_URL=http://127.0.0.1:8020 \
+TENANT_ID=wl \
+POLL_TIMEOUT_SECONDS=240 \
+bash scripts/smoke_test_v02.sh
 ```
 
 ## 4. 常见故障
@@ -205,6 +232,7 @@ curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
 2. Embedding 服务是否可达：`curl http://192.168.10.200:8002/health`
 3. Qdrant 是否可达：`curl http://192.168.10.200:6333/collections`
 4. 直接跑一次仓库脚本：`bash scripts/smoke_test.sh`
+5. 如果是文档列表/预览/删除/重建向量问题，再跑：`bash scripts/smoke_test_v02.sh`
 
 ## 5. 相关文档
 

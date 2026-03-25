@@ -12,7 +12,7 @@ export type Visibility = 'public' | 'department' | 'role' | 'private';
 export type Classification = 'public' | 'internal' | 'confidential' | 'secret';
 
 /** 文档生命周期状态 */
-export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed';
+export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
 
 /** Ingest Job 状态枚举 */
 export type IngestJobStatus =
@@ -80,6 +80,25 @@ export interface DocumentCreateResponse {
   doc_id: string;  // 新创建文档的唯一标识。
   job_id: string;  // 本次入库任务的唯一标识。
   status: 'queued';  // 当前创建结果固定为 queued。
+}
+
+/** POST /documents/batch 单文件结果 */
+export interface DocumentBatchItemResponse {
+  file_name: string;  // 当前文件名。
+  status: 'queued' | 'failed';  // 当前文件处理结果。
+  doc_id: string | null;  // 成功创建时返回 doc_id。
+  job_id: string | null;  // 成功创建时返回 job_id。
+  http_status: number | null;  // 失败时返回对应 HTTP 状态码。
+  error_code: string | null;  // 失败时返回可选错误码。
+  error_message: string | null;  // 失败时返回错误文本。
+}
+
+/** POST /documents/batch 响应 - 批量创建文档并排队入库 */
+export interface DocumentBatchCreateResponse {
+  total: number;  // 本次批量上传总文件数。
+  queued: number;  // 成功入队文件数。
+  failed: number;  // 失败文件数。
+  items: DocumentBatchItemResponse[];  // 各文件处理结果。
 }
 
 /** POST /documents/upload 响应 - 同步上传并入库 */
@@ -159,6 +178,21 @@ export interface DocumentPreviewResponse {
   text_truncated: boolean;  // 文本是否被截断。
   preview_file_url: string | null;  // 在线预览文件流地址（如 PDF）。
   updated_at: string;  // 文档更新时间。
+}
+
+/** 文档删除响应 */
+export interface DocumentDeleteResponse {
+  doc_id: string;  // 被删除的文档 ID。
+  status: 'deleted';  // 删除动作状态。
+  vector_points_removed: number;  // 清理掉的向量点位数量。
+}
+
+/** 文档重建向量响应 */
+export interface DocumentRebuildResponse {
+  doc_id: string;  // 触发重建的文档 ID。
+  job_id: string;  // 新生成的重建任务 ID。
+  status: 'queued';  // 当前重建任务状态。
+  previous_vector_points_removed: number;  // 重建前清理掉的旧向量点位数量。
 }
 
 // ========== Ingest Job 相关 ==========

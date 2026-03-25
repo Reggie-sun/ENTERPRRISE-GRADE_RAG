@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Card, Button, Input, ResultBox, StatusPill } from '@/components';
 import {
+  deleteDocument,
   formatApiError,
   getDocumentPreview,
   getDocuments,
+  rebuildDocumentVectors,
   type DocumentLifecycleStatus,
   type DocumentPreviewResponse,
   type DocumentSummary,
@@ -22,6 +24,7 @@ const STATUS_OPTIONS: Array<{ label: string; value: DocumentLifecycleStatus | ''
   { label: '已排队', value: 'queued' },
   { label: '已上传', value: 'uploaded' },
   { label: '可检索', value: 'active' },
+  { label: '已删除', value: 'deleted' },
   { label: '失败', value: 'failed' },
   { label: '部分失败', value: 'partial_failed' },
 ];
@@ -45,6 +48,7 @@ const DOC_STATUS_TEXT: Record<string, string> = {
   queued: '已排队',
   uploaded: '已上传',
   active: '可检索',
+  deleted: '已删除',
   failed: '失败',
   partial_failed: '部分失败',
 };
@@ -66,6 +70,10 @@ export function DocumentListPanel() {
   const [previewError, setPreviewError] = useState('');
   const [previewData, setPreviewData] = useState<DocumentPreviewResponse | null>(null);
   const [previewDocId, setPreviewDocId] = useState('');
+  const [deleteLoadingDocId, setDeleteLoadingDocId] = useState('');
+  const [rebuildLoadingDocId, setRebuildLoadingDocId] = useState('');
+  const [operationMessage, setOperationMessage] = useState('');
+  const [operationError, setOperationError] = useState('');
 
   const [keyword, setKeyword] = useState('');
   const [departmentId, setDepartmentId] = useState('');
@@ -92,8 +100,6 @@ export function DocumentListPanel() {
       setPageSize(payload.page_size);
       setStatus('success');
     } catch (err) {
-      setItems([]);
-      setTotal(0);
       setStatus('error');
       setError(formatApiError(err, '文档列表查询'));
     }
@@ -133,6 +139,56 @@ export function DocumentListPanel() {
       setPreviewData(null);
       setPreviewStatus('error');
       setPreviewError(formatApiError(err, '文档预览'));
+    }
+  };
+
+  const handleDelete = async (item: DocumentSummary) => {
+    const confirmed = window.confirm(`确认删除文档「${item.filename}」吗？该操作会清理向量副本。`);
+    if (!confirmed) {
+      return;
+    }
+    setDeleteLoadingDocId(item.document_id);
+    setOperationMessage('');
+    setOperationError('');
+    try {
+      const result = await deleteDocument(item.document_id);
+      setOperationMessage(`文档已删除：${result.doc_id}，已清理向量 ${result.vector_points_removed} 条。`);
+      if (previewData?.doc_id === item.document_id) {
+        setPreviewData(null);
+        setPreviewStatus('idle');
+        setPreviewDocId('');
+      }
+      await fetchDocuments(page, pageSize);
+    } catch (err) {
+      setOperationError(formatApiError(err, '删除文档'));
+    } finally {
+      setDeleteLoadingDocId('');
+    }
+  };
+
+  const handleRebuild = async (item: DocumentSummary) => {
+    if (item.status === 'deleted') {
+      setOperationError('已删除文档不支持重建向量。');
+      setOperationMessage('');
+      return;
+    }
+    const confirmed = window.confirm(`确认重建文档「${item.filename}」的向量索引吗？`);
+    if (!confirmed) {
+      return;
+    }
+    setRebuildLoadingDocId(item.document_id);
+    setOperationMessage('');
+    setOperationError('');
+    try {
+      const result = await rebuildDocumentVectors(item.document_id);
+      setOperationMessage(
+        `已触发重建向量任务：${result.job_id}（文档 ${result.doc_id}，预清理向量 ${result.previous_vector_points_removed} 条）。`
+      );
+      await fetchDocuments(page, pageSize);
+    } catch (err) {
+      setOperationError(formatApiError(err, '重建向量'));
+    } finally {
+      setRebuildLoadingDocId('');
     }
   };
 
@@ -211,6 +267,16 @@ export function DocumentListPanel() {
           <ResultBox>{error}</ResultBox>
         </div>
       ) : null}
+      {operationMessage ? (
+        <div className="mt-3">
+          <StatusPill tone="ok">{operationMessage}</StatusPill>
+        </div>
+      ) : null}
+      {operationError ? (
+        <div className="mt-3">
+          <ResultBox>{operationError}</ResultBox>
+        </div>
+      ) : null}
 
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm text-ink border-separate border-spacing-0">
@@ -244,14 +310,33 @@ export function DocumentListPanel() {
                 </td>
                 <td className="p-2 border-b border-[rgba(23,32,42,0.08)] align-top">{toLocalTime(item.updated_at)}</td>
                 <td className="p-2 border-b border-[rgba(23,32,42,0.08)] align-top">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    loading={previewStatus === 'loading' && previewDocId === item.document_id}
-                    onClick={() => handlePreview(item.document_id)}
-                  >
-                    预览
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      loading={previewStatus === 'loading' && previewDocId === item.document_id}
+                      onClick={() => handlePreview(item.document_id)}
+                    >
+                      预览
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      loading={deleteLoadingDocId === item.document_id}
+                      onClick={() => handleDelete(item)}
+                    >
+                      删除
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      loading={rebuildLoadingDocId === item.document_id}
+                      disabled={item.status === 'deleted'}
+                      onClick={() => handleRebuild(item)}
+                    >
+                      重建向量
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
