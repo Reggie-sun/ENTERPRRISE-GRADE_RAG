@@ -43,15 +43,33 @@ export type IngestErrorCode =
 /** 健康检查响应 */
 export interface HealthResponse {
   status: string;  // 服务状态。
-  timestamp: string;  // 时间戳。
-  version: string;  // 版本号。
-  config: {
-    llm_provider: string;  // LLM 提供方。
-    embedding_provider: string;  // Embedding 提供方。
-    qdrant_url: string;  // Qdrant 地址。
-    collection_name: string;  // Collection 名称。
-    ollama_base_url: string;  // Ollama 地址。
-    ollama_model: string;  // Ollama 模型名。
+  app_name: string;  // 应用名称。
+  environment: string;  // 运行环境。
+  vector_store: {
+    provider: string;  // 向量库提供方。
+    url: string;  // 向量库地址。
+    collection: string;  // Collection 名称。
+  };
+  llm: {
+    provider: string;  // LLM 提供方。
+    base_url: string;  // LLM 服务地址。
+    model: string;  // LLM 模型名称。
+  };
+  embedding: {
+    provider: string;  // Embedding 提供方。
+    base_url: string;  // Embedding 服务地址。
+    model: string;  // Embedding 模型名称。
+  };
+  queue: {
+    provider: string;  // 队列提供方。
+    broker_url: string;  // broker 地址。
+    result_backend: string;  // 结果后端地址。
+    ingest_queue: string;  // 入库队列名。
+  };
+  metadata_store: {
+    provider: string;  // 元数据存储类型。
+    postgres_enabled: boolean;  // 是否启用 PostgreSQL 元数据真源。
+    dsn_configured: boolean;  // 是否配置了 DSN。
   };
 }
 
@@ -89,12 +107,30 @@ export interface DocumentSummary {
   size_bytes: number;  // 文件大小。
   parse_supported: boolean;  // 是否支持解析。
   storage_path: string;  // 文件落盘路径。
+  status: DocumentLifecycleStatus;  // 文档主状态。
+  ingest_status: IngestJobStatus | null;  // 最近一次 ingest 任务状态。
+  latest_job_id: string | null;  // 最近一次 ingest 任务 ID。
+  department_id: string | null;  // 文档主部门。
+  category_id: string | null;  // 文档二级分类。
+  uploaded_by: string | null;  // 上传人。
   updated_at: string;  // 最近更新时间。
+}
+
+/** 文档列表查询参数 */
+export interface DocumentListQuery {
+  page?: number;  // 页码（从 1 开始）。
+  page_size?: number;  // 每页数量。
+  keyword?: string;  // 文件名或文档 ID 关键字。
+  department_id?: string;  // 主部门筛选。
+  category_id?: string;  // 分类筛选。
+  status?: DocumentLifecycleStatus;  // 文档状态筛选。
 }
 
 /** GET /documents 响应 - 文档列表 */
 export interface DocumentListResponse {
   total: number;  // 文档总数。
+  page: number;  // 当前页码。
+  page_size: number;  // 当前每页数量。
   items: DocumentSummary[];  // 文档摘要列表。
 }
 
@@ -103,10 +139,26 @@ export interface DocumentDetailResponse {
   doc_id: string;  // 文档唯一标识。
   file_name: string;  // 原始文件名。
   status: DocumentLifecycleStatus;  // 当前文档状态。
+  ingest_status: IngestJobStatus | null;  // 最近一次 ingest 状态。
+  department_id: string | null;  // 文档主部门。
+  category_id: string | null;  // 文档二级分类。
+  uploaded_by: string | null;  // 上传人。
   current_version: number;  // 当前版本。
   latest_job_id: string;  // 最近一次入库任务 ID。
   created_at: string;  // 创建时间。
   updated_at: string;  // 更新时间。
+}
+
+/** 文档预览响应 */
+export interface DocumentPreviewResponse {
+  doc_id: string;  // 文档唯一标识。
+  file_name: string;  // 原始文件名。
+  preview_type: 'text' | 'pdf';  // 预览类型。
+  content_type: string;  // 预览内容类型。
+  text_content: string | null;  // 文本预览内容，PDF 场景可为空。
+  text_truncated: boolean;  // 文本是否被截断。
+  preview_file_url: string | null;  // 在线预览文件流地址（如 PDF）。
+  updated_at: string;  // 文档更新时间。
 }
 
 // ========== Ingest Job 相关 ==========

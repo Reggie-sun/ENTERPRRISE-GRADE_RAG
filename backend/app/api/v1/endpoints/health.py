@@ -1,12 +1,13 @@
 from fastapi import APIRouter  # 导入 FastAPI 的路由对象，用来声明接口。
 
 from ....core.config import get_llm_base_url, get_llm_model, get_postgres_metadata_dsn, get_settings  # 导入配置读取函数和统一配置解析函数。
+from ....schemas.health import HealthResponse  # 导入健康检查响应模型，固定接口合同字段。
 
 router = APIRouter(tags=["health"])  # 创建一个路由分组，并在 Swagger 文档里打上 health 标签。
 
 
-@router.get("/health")  # 声明一个 GET /health 接口。
-def health_check() -> dict[str, object]:  # 定义健康检查函数，返回一个字典结构的状态信息。
+@router.get("/health", response_model=HealthResponse)  # 声明 GET /health 接口并固定响应结构。
+def health_check() -> HealthResponse:  # 定义健康检查函数，返回结构化健康状态。
     settings = get_settings()  # 读取当前项目配置，例如应用名、Qdrant 地址、模型地址等。
     return {
         "status": "ok",  # 表示服务本身当前可用。

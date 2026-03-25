@@ -10,8 +10,8 @@ This does not mean the full enterprise feature set is complete. It means the cur
 
 - Frontend: `127.0.0.1:3000`
 - Backend API: `127.0.0.1:8020`
-- Qdrant + Redis on local host ports
-- Local embedding service on `127.0.0.1:8002`
+- Qdrant + Redis on remote server endpoints
+- Embedding service on remote server endpoint
 - Remote vLLM via an OpenAI-compatible endpoint
 
 ## Included In Current Baseline / 当前基线包含内容

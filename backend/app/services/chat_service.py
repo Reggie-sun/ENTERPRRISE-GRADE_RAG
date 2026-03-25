@@ -1,5 +1,12 @@
+import json  # 导入 json，用于序列化 SSE 事件数据。
+from typing import Iterator  # 导入 Iterator，用于声明流式输出类型。
+
 from ..core.config import Settings, get_llm_model, get_settings  # 导入配置对象和配置获取函数。
-from ..rag.generators.client import LLMGenerationClient, LLMGenerationRetryableError  # 导入 LLM 生成客户端和可降级异常类型。
+from ..rag.generators.client import (  # 导入 LLM 生成客户端和异常类型。
+    LLMGenerationClient,
+    LLMGenerationFatalError,
+    LLMGenerationRetryableError,
+)
 from ..rag.rerankers.client import RerankerClient  # 导入 rerank 客户端。
 from ..schemas.chat import ChatRequest, ChatResponse, Citation  # 导入问答请求、响应和引用片段模型。
 from ..schemas.retrieval import RetrievalRequest  # 导入检索请求模型，问答前要先做检索。
@@ -14,6 +21,80 @@ class ChatService:  # 封装问答接口的业务逻辑。
         self.generation_client = LLMGenerationClient(self.settings)  # 创建生成客户端，负责最终回答。
 
     def answer(self, request: ChatRequest) -> ChatResponse:  # 根据用户问题生成问答响应。
+        citations = self._build_citations(request)  # 先统一构造引用列表。
+        if not citations:  # 如果连引用都没有，说明还没有可用上下文。
+            return self._build_no_context_response(request.question, citations)  # 直接返回无上下文响应。
+
+        contexts = [citation.snippet for citation in citations]  # 提取引用文本，作为生成模型的上下文输入。
+        try:  # 优先调用 LLM 生成最终回答。
+            answer = self.generation_client.generate(  # 执行回答生成。
+                question=request.question,  # 传入用户问题。
+                contexts=contexts,  # 传入检索证据上下文。
+            )
+            mode = "rag"  # 生成成功时标记为完整 RAG 模式。
+        except LLMGenerationRetryableError:  # 仅在可恢复的远程故障时走降级，避免吞掉配置或协议错误。
+            answer = self._build_retrieval_fallback_answer(citations)  # 用引用片段拼一个稳定可读的兜底回答。
+            mode = "retrieval_fallback"  # 标记为检索兜底模式。
+
+        return self._build_response(  # 组装最终问答响应。
+            question=request.question,
+            answer=answer,
+            mode=mode,
+            citations=citations,
+        )
+
+    def stream_answer_sse(self, request: ChatRequest) -> Iterator[str]:  # 以 SSE 方式流式返回回答内容。
+        citations = self._build_citations(request)  # 先统一构造引用列表。
+        if not citations:  # 没有引用时直接返回无上下文 done 事件。
+            response = self._build_no_context_response(request.question, citations)
+            yield self._to_sse("meta", self._build_meta_payload(response))
+            yield self._to_sse("done", response.model_dump())
+            return
+
+        mode = "rag"  # 默认先按 rag 模式流式生成。
+        contexts = [citation.snippet for citation in citations]  # 提取上下文列表。
+        model = self._response_model_name()  # 提前计算响应模型名，给 meta 事件复用。
+        yield self._to_sse(  # 首帧先发元数据，前端可立即渲染模式和引用占位。
+            "meta",
+            {
+                "question": request.question,
+                "mode": mode,
+                "model": model,
+                "citations": [citation.model_dump() for citation in citations],
+            },
+        )
+
+        answer_parts: list[str] = []  # 累积回答片段，最后拼成完整 answer。
+        try:  # 尝试真实流式生成。
+            for delta in self.generation_client.generate_stream(question=request.question, contexts=contexts):
+                if not delta:
+                    continue
+                answer_parts.append(delta)
+                yield self._to_sse("answer_delta", {"delta": delta})  # 每个片段都立即推给前端。
+            answer = "".join(answer_parts).strip()  # 汇总完整回答文本。
+            if not answer:  # 理论上不应为空，兜底避免前端停在 loading。
+                answer = "No answer content was generated."
+        except LLMGenerationRetryableError:  # 远端临时不可用时切回检索兜底，并保持流式输出形态。
+            mode = "retrieval_fallback"
+            fallback_answer = self._build_retrieval_fallback_answer(citations)
+            answer_parts = []
+            for delta in self._chunk_text(fallback_answer):
+                answer_parts.append(delta)
+                yield self._to_sse("answer_delta", {"delta": delta})
+            answer = "".join(answer_parts)
+        except LLMGenerationFatalError as exc:  # 客户端错误/协议错误：流里返回 error 事件并结束。
+            yield self._to_sse("error", {"message": str(exc)})
+            return
+
+        response = self._build_response(  # 发送最终 done 事件，包含完整结构化响应。
+            question=request.question,
+            answer=answer,
+            mode=mode,
+            citations=citations,
+        )
+        yield self._to_sse("done", response.model_dump())
+
+    def _build_citations(self, request: ChatRequest) -> list[Citation]:  # 统一执行检索+重排并产出引用列表。
         retrieval_result = self.retrieval_service.search(  # 先调用检索服务拿候选片段。
             RetrievalRequest(  # 把问答请求转换成检索请求。
                 query=request.question,
@@ -31,7 +112,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         except RuntimeError:  # rerank 配置不正确或 provider 不可用时，回退到检索原顺序。
             reranked_results = retrieval_result.results[:rerank_top_n]  # 使用原始检索顺序做兜底。
 
-        citations = [  # 把检索结果转换成问答响应里需要的引用结构。
+        return [  # 把检索结果转换成问答响应里需要的引用结构。
             Citation(  # 为每条检索结果创建一条 Citation。
                 chunk_id=result.chunk_id,  # 复制 chunk 唯一标识。
                 document_id=result.document_id,  # 复制文档唯一标识。
@@ -43,32 +124,22 @@ class ChatService:  # 封装问答接口的业务逻辑。
             for result in reranked_results  # 遍历 rerank 后的结果。
         ]
 
-        if not citations:  # 如果连引用都没有，说明还没有可用上下文。
-            return ChatResponse(  # 直接返回 no_context 响应。
-                question=request.question,  # 返回原始问题。
-                answer="No uploaded documents are available yet. Upload a document before asking questions.",  # 返回提示信息。
-                mode="no_context",  # 标记当前模式为无上下文。
-                model=self._response_model_name(),  # 返回当前模型标识。
-                citations=citations,  # 引用列表为空。
-            )
+    def _build_response(self, *, question: str, answer: str, mode: str, citations: list[Citation]) -> ChatResponse:  # 统一构造标准问答响应。
+        return ChatResponse(
+            question=question,
+            answer=answer,
+            mode=mode,
+            model=self._response_model_name(),
+            citations=citations,
+        )
 
-        contexts = [citation.snippet for citation in citations]  # 提取引用文本，作为生成模型的上下文输入。
-        try:  # 优先调用 LLM 生成最终回答。
-            answer = self.generation_client.generate(  # 执行回答生成。
-                question=request.question,  # 传入用户问题。
-                contexts=contexts,  # 传入检索证据上下文。
-            )
-            mode = "rag"  # 生成成功时标记为完整 RAG 模式。
-        except LLMGenerationRetryableError:  # 仅在可恢复的远程故障时走降级，避免吞掉配置或协议错误。
-            answer = self._build_retrieval_fallback_answer(citations)  # 用引用片段拼一个稳定可读的兜底回答。
-            mode = "retrieval_fallback"  # 标记为检索兜底模式。
-
-        return ChatResponse(  # 组装最终问答响应。
-            question=request.question,  # 返回原始问题。
-            answer=answer,  # 返回回答文本。
-            mode=mode,  # 返回本次回答的模式标识。
-            model=self._response_model_name(),  # 返回当前配置的生成模型名称。
-            citations=citations,  # 返回引用片段列表。
+    def _build_no_context_response(self, question: str, citations: list[Citation]) -> ChatResponse:  # 构造无上下文响应。
+        return ChatResponse(
+            question=question,
+            answer="No uploaded documents are available yet. Upload a document before asking questions.",
+            mode="no_context",
+            model=self._response_model_name(),
+            citations=citations,
         )
 
     def _response_model_name(self) -> str:  # 根据 provider 返回当前响应里的模型标识。
@@ -85,6 +156,25 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 snippet = f"{snippet[:177]}..."
             lines.append(f"{index}. {snippet}")  # 追加编号片段摘要。
         return "\n".join(lines)  # 返回多行文本结果。
+
+    @staticmethod
+    def _to_sse(event: str, payload: dict[str, object]) -> str:  # 把事件和数据编码成标准 SSE 格式。
+        return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+    @staticmethod
+    def _build_meta_payload(response: ChatResponse) -> dict[str, object]:  # 从最终响应提取前端流式渲染所需元数据。
+        return {
+            "question": response.question,
+            "mode": response.mode,
+            "model": response.model,
+            "citations": [citation.model_dump() for citation in response.citations],
+        }
+
+    @staticmethod
+    def _chunk_text(text: str, chunk_size: int = 32) -> Iterator[str]:  # 把文本切成小片段，流式输出兜底内容。
+        safe_size = max(1, chunk_size)
+        for start in range(0, len(text), safe_size):
+            yield text[start : start + safe_size]
 
 
 def get_chat_service() -> ChatService:  # 提供 FastAPI 依赖注入入口。

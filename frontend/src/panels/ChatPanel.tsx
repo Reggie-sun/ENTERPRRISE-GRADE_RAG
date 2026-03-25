@@ -6,7 +6,14 @@
 import { useEffect, useState } from 'react';
 import { MessageSquare } from 'lucide-react';  // 引入图标。
 import { Card, Button, StatusPill, Textarea, Input, ResultBox, ResultCard } from '@/components';
-import { askQuestion, type ChatResponse, type Citation } from '@/api';
+import {
+  askQuestionStream,
+  formatApiError,
+  type ChatResponse,
+  type ChatStreamMeta,
+  type Citation,
+  type IngestJobStatus,
+} from '@/api';
 
 // 回答模式中文映射。
 const MODE_TEXT: Record<string, string> = {
@@ -17,6 +24,21 @@ const MODE_TEXT: Record<string, string> = {
   mock: '模拟模式',
 };
 
+const JOB_STATE_TEXT: Record<string, string> = {
+  pending: '待处理',
+  uploaded: '已上传',
+  queued: '已入队',
+  parsing: '解析中',
+  ocr_processing: 'OCR 处理中',
+  chunking: '切块中',
+  embedding: '向量化中',
+  indexing: '索引写入中',
+  completed: '已完成',
+  failed: '失败',
+  dead_letter: '死信',
+  partial_failed: '部分失败',
+};
+
 // 面板状态类型。
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -24,9 +46,12 @@ interface ChatPanelProps {
   resetSignal?: number;
   currentDocumentName?: string;
   currentDocId?: string;
+  currentJobStatus?: IngestJobStatus;
 }
 
-export function ChatPanel({ resetSignal, currentDocumentName, currentDocId }: ChatPanelProps) {
+export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, currentJobStatus }: ChatPanelProps) {
+  const normalizedDocId = currentDocId?.trim();
+
   // 表单状态。
   const [question, setQuestion] = useState('总结这份已上传文档里最相关的内容。');
   const [topK, setTopK] = useState(5);
@@ -46,20 +71,57 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId }: Ch
   // 发起问答。
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (normalizedDocId && currentJobStatus !== 'completed') {
+      const jobText = JOB_STATE_TEXT[currentJobStatus || ''] || currentJobStatus || '-';
+      setStatus('error');
+      setData(null);
+      setError(`当前文档尚未完成入库（状态：${jobText}），暂不能问答。请等待任务完成后重试。`);
+      return;
+    }
     setStatus('loading');
     setError('');
+    setData(null);  // 每次新请求先清空旧结果，避免误判为本轮流式内容。
 
     try {
-      const normalizedDocId = currentDocId?.trim();
-      const result = await askQuestion({
-        question: question.trim(),
-        top_k: topK,
-        document_id: normalizedDocId || undefined,
-      });
+      const result = await askQuestionStream(
+        {
+          question: question.trim(),
+          top_k: topK,
+          document_id: normalizedDocId || undefined,
+        },
+        {
+          onMeta: (meta: ChatStreamMeta) => {
+            setData({
+              question: meta.question,
+              answer: '',
+              mode: meta.mode,
+              model: meta.model,
+              citations: meta.citations,
+            });
+          },
+          onDelta: (delta: string) => {
+            setData((prev) => {
+              if (!prev) {  // 极端情况下 delta 比 meta 先到，给一个兜底结构。
+                return {
+                  question: question.trim(),
+                  answer: delta,
+                  mode: 'rag',
+                  model: '-',
+                  citations: [],
+                };
+              }
+              return { ...prev, answer: `${prev.answer}${delta}` };
+            });
+          },
+          onDone: (done: ChatResponse) => {
+            setData(done);
+          },
+        }
+      );
       setData(result);
       setStatus('success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatApiError(err, '文档问答'));
       setStatus('error');
     }
   };
@@ -67,7 +129,7 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId }: Ch
   // 状态文本映射。
   const statusText = {
     idle: '待执行',
-    loading: '正在生成回答',
+    loading: data ? `流式输出中 | 模型 ${data.model}` : '正在生成回答',
     success: data ? `${MODE_TEXT[data.mode] || data.mode} | 模型 ${data.model}` : '回答完成',
     error: '问答请求失败',
   };
@@ -91,7 +153,15 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId }: Ch
         当前文档：{currentDocumentName || '未选择文件'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        未指定当前文档时，会按全库范围执行问答。
+        当前策略：有当前文档就按文档过滤；未指定时走全库问答（基于已入库 chunk）。
+      </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft break-all">
+        {normalizedDocId ? `document_id: ${normalizedDocId}` : 'document_id: 全库'}
+      </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft break-all">
+        {normalizedDocId
+          ? `当前入库状态: ${currentJobStatus ? (JOB_STATE_TEXT[currentJobStatus] || currentJobStatus) : '-'}`
+          : '当前入库状态: 全库模式（不依赖当前上传任务）'}
       </p>
 
       {/* 表单 */}
@@ -116,7 +186,11 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId }: Ch
             required
           />
           <div className="flex items-end">
-            <Button type="submit" loading={status === 'loading'} className="w-full">
+            <Button
+              type="submit"
+              loading={status === 'loading'}
+              className="w-full"
+            >
               <span className="flex items-center justify-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 发起问答

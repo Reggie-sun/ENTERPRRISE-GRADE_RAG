@@ -1,5 +1,8 @@
 # Local Model Runbook / 本地模型运行手册
 
+> 注意：这是一份“本地模型专用”替代运行手册，不是当前项目默认基线。
+> 当前默认基线请以 [LOCAL_DEV_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/LOCAL_DEV_RUNBOOK.md) 为准。
+
 This project can now be tested locally with:
 本项目现在可以在本地使用以下服务进行测试：
 

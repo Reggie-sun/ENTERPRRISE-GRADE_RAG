@@ -1,10 +1,16 @@
-from pydantic import BaseModel, Field  # 导入 Pydantic 基类和字段约束工具。
+from pydantic import AliasChoices, BaseModel, Field  # 导入 Pydantic 基类、字段约束和别名工具。
 
 
 class RetrievalRequest(BaseModel):  # 定义检索接口的请求结构。
     query: str = Field(min_length=1, max_length=2000)  # 用户输入的检索问题。
     top_k: int = Field(default=5, ge=1, le=20)  # 要返回的检索结果数量。
-    document_id: str | None = Field(default=None, min_length=1, max_length=128)  # 可选文档过滤条件，只检索指定 doc_id。
+    document_id: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=128,
+        validation_alias=AliasChoices("document_id", "doc_id"),  # 兼容历史客户端传 doc_id，统一归一到 document_id。
+        serialization_alias="document_id",
+    )  # 可选文档过滤条件，只检索指定文档。
 
 
 class RetrievedChunk(BaseModel):  # 定义单条检索结果的结构。

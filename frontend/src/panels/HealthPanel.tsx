@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Activity } from 'lucide-react';  // 引入图标。
 import { Card, Button, StatusPill, ResultBox } from '@/components';
-import { getHealth, type HealthResponse } from '@/api';
+import { formatApiError, getHealth, type HealthResponse } from '@/api';
 
 // 面板状态类型定义。
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -27,7 +27,7 @@ export function HealthPanel() {
       setData(result);
       setStatus('success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatApiError(err, '健康检查'));
       setStatus('error');
     }
   };

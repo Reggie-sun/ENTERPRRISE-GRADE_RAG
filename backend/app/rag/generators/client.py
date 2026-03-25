@@ -1,3 +1,6 @@
+import json  # 导入 json，用于解析流式响应片段。
+from typing import Iterator  # 导入 Iterator，用于声明流式输出迭代器类型。
+
 import httpx  # 导入 httpx，用于调用远程 LLM 服务。
 
 from ...core.config import Settings, get_llm_base_url, get_llm_model  # 导入配置对象和统一的 LLM 配置解析函数。
@@ -27,6 +30,20 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             return self._generate_with_ollama(question=question, contexts=contexts)  # 返回模型生成结果。
         if provider == "openai":  # openai 模式调用 OpenAI 兼容的 chat completions 接口。
             return self._generate_with_openai(question=question, contexts=contexts)  # 返回模型生成结果。
+        raise LLMGenerationFatalError(f"Unsupported llm provider: {self.settings.llm_provider}")  # provider 非法时直接抛不可降级错误。
+
+    def generate_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 以流式片段形式返回回答内容。
+        provider = self.settings.llm_provider.lower().strip()  # 读取并标准化 provider 名称。
+        if provider == "mock":  # mock 模式用固定文本切片模拟流式。
+            answer = self._generate_with_mock(question=question, contexts=contexts)
+            yield from self._chunk_text(answer)
+            return
+        if provider == "ollama":  # ollama 模式调用流式接口。
+            yield from self._generate_with_ollama_stream(question=question, contexts=contexts)
+            return
+        if provider == "openai":  # openai 兼容模式调用 SSE 流式接口。
+            yield from self._generate_with_openai_stream(question=question, contexts=contexts)
+            return
         raise LLMGenerationFatalError(f"Unsupported llm provider: {self.settings.llm_provider}")  # provider 非法时直接抛不可降级错误。
 
     def _generate_with_mock(self, *, question: str, contexts: list[str]) -> str:  # 本地 mock 生成逻辑。
@@ -73,6 +90,48 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         if not isinstance(text, str) or not text.strip():  # 返回内容为空或格式不对时抛错。
             raise LLMGenerationFatalError("Unexpected Ollama response format for generation.")  # 返回协议异常属于不可降级错误。
         return text.strip()  # 返回清理后的回答。
+
+    def _generate_with_ollama_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 调用 Ollama 流式生成接口。
+        if not contexts:  # 无上下文时直接返回固定提示。
+            yield from self._chunk_text("No relevant context was retrieved for this question.")
+            return
+
+        base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
+        url = f"{base_url}/api/generate"  # 拼出 Ollama generate 接口地址。
+        payload = {
+            "model": get_llm_model(self.settings),
+            "prompt": self._build_prompt(question=question, contexts=contexts),
+            "stream": True,  # 打开流式输出。
+            "options": {"temperature": self.settings.llm_temperature},
+        }
+
+        try:  # 尝试请求 Ollama 服务。
+            with httpx.stream(  # 使用流式读取，边到达边输出。
+                "POST",
+                url,
+                json=payload,
+                timeout=self.settings.llm_timeout_seconds,
+                trust_env=False,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line:
+                        continue
+                    try:
+                        frame = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue  # 遇到非法片段时跳过，尽量保证主流程不中断。
+                    token = frame.get("response")
+                    if isinstance(token, str) and token:
+                        yield token
+        except httpx.TimeoutException as exc:  # 超时属于可降级故障。
+            raise LLMGenerationRetryableError(f"LLM stream request to Ollama timed out: {exc}") from exc
+        except httpx.HTTPStatusError as exc:  # 按状态码区分是否可降级。
+            if exc.response.status_code >= 500:
+                raise LLMGenerationRetryableError(f"LLM stream request to Ollama failed with server error: {exc}") from exc
+            raise LLMGenerationFatalError(f"LLM stream request to Ollama failed with client error: {exc}") from exc
+        except httpx.RequestError as exc:  # 连接失败、网络错误可降级。
+            raise LLMGenerationRetryableError(f"LLM stream request to Ollama failed: {exc}") from exc
 
     def _generate_with_openai(self, *, question: str, contexts: list[str]) -> str:  # 调用 OpenAI 兼容的 chat completions 接口生成回答。
         if not contexts:  # 如果没有上下文，直接给出简短提示。
@@ -136,6 +195,94 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         if not isinstance(content, str) or not content.strip():  # 返回正文为空或格式不对时抛错。
             raise LLMGenerationFatalError("Unexpected OpenAI-compatible response content for generation.")  # 返回协议异常属于不可降级错误。
         return content.strip()  # 返回清理后的回答。
+
+    def _generate_with_openai_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 调用 OpenAI 兼容流式接口。
+        if not contexts:  # 无上下文时直接返回固定提示。
+            yield from self._chunk_text("No relevant context was retrieved for this question.")
+            return
+
+        base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
+        url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
+        headers = {"Content-Type": "application/json"}
+        if self.settings.llm_api_key:
+            headers["Authorization"] = f"Bearer {self.settings.llm_api_key}"
+
+        payload = {
+            "model": get_llm_model(self.settings),
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are an enterprise assistant. Answer strictly based on the provided context.",
+                },
+                {
+                    "role": "user",
+                    "content": self._build_prompt(question=question, contexts=contexts),
+                },
+            ],
+            "temperature": self.settings.llm_temperature,
+            "stream": True,  # 打开流式输出。
+        }
+
+        try:  # 尝试请求 OpenAI 兼容服务。
+            with httpx.stream(
+                "POST",
+                url,
+                json=payload,
+                headers=headers,
+                timeout=self.settings.llm_timeout_seconds,
+                trust_env=False,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line:
+                        continue
+                    if not line.startswith("data:"):
+                        continue
+                    raw_data = line[len("data:") :].strip()
+                    if not raw_data or raw_data == "[DONE]":
+                        continue
+                    try:
+                        frame = json.loads(raw_data)
+                    except json.JSONDecodeError:
+                        continue  # 遇到非法片段时跳过，尽量保证主流程不中断。
+                    token = self._extract_openai_delta_text(frame)
+                    if token:
+                        yield token
+        except httpx.TimeoutException as exc:  # 超时属于可降级故障。
+            raise LLMGenerationRetryableError(f"LLM stream request to OpenAI-compatible server timed out: {exc}") from exc
+        except httpx.HTTPStatusError as exc:  # 按状态码区分是否可降级。
+            if exc.response.status_code >= 500:
+                raise LLMGenerationRetryableError(
+                    f"LLM stream request to OpenAI-compatible server failed with server error: {exc}"
+                ) from exc
+            raise LLMGenerationFatalError(
+                f"LLM stream request to OpenAI-compatible server failed with client error: {exc}"
+            ) from exc
+        except httpx.RequestError as exc:  # 连接失败、网络错误可降级。
+            raise LLMGenerationRetryableError(f"LLM stream request to OpenAI-compatible server failed: {exc}") from exc
+
+    @staticmethod
+    def _extract_openai_delta_text(frame: dict[str, object]) -> str:  # 提取单个 SSE 片段里的文本增量。
+        choices = frame.get("choices")
+        if not isinstance(choices, list) or not choices:
+            return ""
+        first = choices[0]
+        if not isinstance(first, dict):
+            return ""
+        delta = first.get("delta")
+        if not isinstance(delta, dict):
+            return ""
+        content = delta.get("content")
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):  # 少数实现返回 content block 数组。
+            return "".join(item.get("text", "") for item in content if isinstance(item, dict))
+        return ""
+
+    @staticmethod
+    def _chunk_text(text: str, chunk_size: int = 32) -> Iterator[str]:  # 把文本切成小片段，兼容不支持原生流式的模式。
+        for start in range(0, len(text), max(1, chunk_size)):
+            yield text[start : start + max(1, chunk_size)]
 
     @staticmethod
     def _build_prompt(*, question: str, contexts: list[str]) -> str:  # 组装一个简单稳妥的 RAG prompt。

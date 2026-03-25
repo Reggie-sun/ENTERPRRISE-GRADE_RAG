@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Layout, HeroCard, Card } from '@/components';  // 引入布局和卡片组件。
-import { HealthPanel, UploadPanel, RetrievalPanel, ChatPanel } from '@/panels';  // 引入各功能面板。
+import { HealthPanel, UploadPanel, DocumentListPanel, RetrievalPanel, ChatPanel } from '@/panels';  // 引入各功能面板。
 import type { IngestJobStatusResponse } from '@/api';
 
 type StatusTone = 'default' | 'ok' | 'warn' | 'error';
@@ -33,6 +33,7 @@ export default function App() {
     ? `任务 ${latestJob.status} | 阶段 ${latestJob.stage} | ${latestJob.progress}%`
     : '尚未创建上传任务';
   const currentJobTone = getJobStatusTone(latestJob?.status);
+  const currentJobIdText = latestJob?.job_id || '-';
 
   const handleUploadStart = (fileName: string) => {
     setCurrentDocumentName(fileName);
@@ -100,6 +101,9 @@ export default function App() {
             <p className="m-0 mt-2 text-sm text-ink-soft break-all">
               {currentDocId ? `doc_id: ${currentDocId}` : 'doc_id: -'}
             </p>
+            <p className="m-0 mt-1 text-sm text-ink-soft break-all">
+              {`job_id: ${currentJobIdText}`}
+            </p>
             <p
               className={`
                 m-0 mt-2 text-sm font-semibold
@@ -128,11 +132,15 @@ export default function App() {
           onUploadFailed={handleUploadFailed}
         />
 
+        {/* 文档列表面板 - 占 12 列 */}
+        <DocumentListPanel />
+
         {/* 检索面板 - 占 6 列 */}
         <RetrievalPanel
           resetSignal={panelResetSignal}
           currentDocumentName={currentDocumentName}
           currentDocId={currentDocId}
+          currentJobStatus={latestJob?.status}
         />
 
         {/* 问答面板 - 占 6 列 */}
@@ -140,6 +148,7 @@ export default function App() {
           resetSignal={panelResetSignal}
           currentDocumentName={currentDocumentName}
           currentDocId={currentDocId}
+          currentJobStatus={latestJob?.status}
         />
       </section>
 

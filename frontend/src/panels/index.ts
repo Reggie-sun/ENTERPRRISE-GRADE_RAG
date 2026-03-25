@@ -6,3 +6,4 @@ export { HealthPanel } from './HealthPanel';
 export { UploadPanel } from './UploadPanel';
 export { RetrievalPanel } from './RetrievalPanel';
 export { ChatPanel } from './ChatPanel';
+export { DocumentListPanel } from './DocumentListPanel';

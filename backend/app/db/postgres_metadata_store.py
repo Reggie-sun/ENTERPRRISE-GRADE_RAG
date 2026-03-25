@@ -5,6 +5,7 @@ from uuid import NAMESPACE_URL, uuid5
 
 import psycopg
 from psycopg.rows import dict_row
+from psycopg.types.json import Json
 
 from ..schemas.document import DocumentRecord, IngestJobRecord
 
@@ -40,6 +41,11 @@ class PostgresMetadataStore:
             )
 
     def save_document(self, record: DocumentRecord) -> None:
+        metadata_payload = {
+            "department_id": record.department_id,
+            "category_id": record.category_id,
+            "uploaded_by": record.uploaded_by,
+        }  # 新增主数据字段先落在 metadata JSON，避免强依赖库表结构变更。
         with psycopg.connect(self.psycopg_dsn) as conn:
             with conn.cursor() as cur:
                 cur.execute(
@@ -98,7 +104,7 @@ class PostgresMetadataStore:
                         "current_version": record.current_version,
                         "latest_job_id": record.latest_job_id,
                         "storage_path": record.storage_path,
-                        "metadata": None,
+                        "metadata": Json(metadata_payload),
                         "created_at": record.created_at,
                         "updated_at": record.updated_at,
                     },
@@ -156,7 +162,7 @@ class PostgresMetadataStore:
                 "docId", "tenantId", "fileName", "fileHash", "sourceType",
                 "departmentIds", "roleIds", "ownerId", "visibility", "classification",
                 "tags", "sourceSystem", "status", "currentVersion", "latestJobId",
-                "storagePath", "createdBy", "createdAt", "updatedAt"
+                "storagePath", "createdBy", "metadata", "createdAt", "updatedAt"
             FROM public.rag_source_documents
             WHERE "docId" = %(doc_id)s
             LIMIT 1
@@ -191,7 +197,7 @@ class PostgresMetadataStore:
                 "docId", "tenantId", "fileName", "fileHash", "sourceType",
                 "departmentIds", "roleIds", "ownerId", "visibility", "classification",
                 "tags", "sourceSystem", "status", "currentVersion", "latestJobId",
-                "storagePath", "createdBy", "createdAt", "updatedAt"
+                "storagePath", "createdBy", "metadata", "createdAt", "updatedAt"
             FROM public.rag_source_documents
             ORDER BY "updatedAt" DESC
             """
@@ -206,7 +212,7 @@ class PostgresMetadataStore:
                     "docId", "tenantId", "fileName", "fileHash", "sourceType",
                     "departmentIds", "roleIds", "ownerId", "visibility", "classification",
                     "tags", "sourceSystem", "status", "currentVersion", "latestJobId",
-                    "storagePath", "createdBy", "createdAt", "updatedAt"
+                    "storagePath", "createdBy", "metadata", "createdAt", "updatedAt"
                 FROM public.rag_source_documents
                 WHERE "fileHash" = %(file_hash)s
                 ORDER BY "updatedAt" DESC
@@ -221,7 +227,7 @@ class PostgresMetadataStore:
                     "docId", "tenantId", "fileName", "fileHash", "sourceType",
                     "departmentIds", "roleIds", "ownerId", "visibility", "classification",
                     "tags", "sourceSystem", "status", "currentVersion", "latestJobId",
-                    "storagePath", "createdBy", "createdAt", "updatedAt"
+                    "storagePath", "createdBy", "metadata", "createdAt", "updatedAt"
                 FROM public.rag_source_documents
                 WHERE "fileHash" = %(file_hash)s AND "tenantId" = %(tenant_id)s
                 ORDER BY "updatedAt" DESC
@@ -286,13 +292,20 @@ class PostgresMetadataStore:
         return [str(value)]
 
     def _row_to_document(self, row: dict[str, object]) -> DocumentRecord:
+        metadata = row.get("metadata")
+        metadata_map = metadata if isinstance(metadata, dict) else {}
+        department_id = metadata_map.get("department_id")
+        category_id = metadata_map.get("category_id")
+        uploaded_by = metadata_map.get("uploaded_by")
         return DocumentRecord(
             doc_id=str(row["docId"]),
             tenant_id=str(row["tenantId"]),
             file_name=str(row["fileName"]),
             file_hash=str(row["fileHash"]),
             source_type=str(row["sourceType"]),
+            department_id=None if department_id is None else str(department_id),
             department_ids=self._as_str_list(row.get("departmentIds")),
+            category_id=None if category_id is None else str(category_id),
             role_ids=self._as_str_list(row.get("roleIds")),
             owner_id=None if row.get("ownerId") is None else str(row["ownerId"]),
             visibility=str(row["visibility"]),  # type: ignore[arg-type]
@@ -303,6 +316,7 @@ class PostgresMetadataStore:
             current_version=int(row["currentVersion"]),
             latest_job_id="" if row.get("latestJobId") is None else str(row["latestJobId"]),
             storage_path=str(row["storagePath"]),
+            uploaded_by=None if uploaded_by is None else str(uploaded_by),
             created_by=None if row.get("createdBy") is None else str(row["createdBy"]),
             created_at=row["createdAt"],  # type: ignore[arg-type]
             updated_at=row["updatedAt"],  # type: ignore[arg-type]

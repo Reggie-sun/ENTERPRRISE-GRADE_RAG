@@ -1,5 +1,8 @@
 # Async Ingest Code Reading Guide
 
+> 注意：这份文档以“异步入库链路讲解”为主，里面出现的 `localhost Redis/Qdrant` 和旧启动命令有些是代码默认值或历史基线示例。
+> 当前实际运行基线请以 [LOCAL_DEV_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/LOCAL_DEV_RUNBOOK.md) 和 [backend/WORKER_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/WORKER_RUNBOOK.md) 为准。
+
 这份文档只讲一件事：怎样把这个项目里“上传文档 -> Celery -> Redis -> worker -> 入库完成”这条主链路看懂。
 
 如果你现在的核心困惑是下面这些，这份文档就是为这个准备的：
@@ -87,7 +90,7 @@ Redis 在这个项目里不是主要用来做业务缓存，而是主要给 Cele
 
 - `backend/app/core/config.py`
 
-关键配置：
+关键配置默认值：
 
 ```python
 celery_broker_url: str = "redis://localhost:6379/0"
@@ -855,10 +858,10 @@ worker 是独立进程。
 - `LOCAL_DEV_RUNBOOK.md`
 - `backend/WORKER_RUNBOOK.md`
 
-核心命令是：
+当前默认基线下，核心命令是：
 
 ```bash
-docker compose up -d qdrant redis
+docker compose up -d
 conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
 conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
 ```

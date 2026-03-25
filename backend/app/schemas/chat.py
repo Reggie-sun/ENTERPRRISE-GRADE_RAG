@@ -1,10 +1,16 @@
-from pydantic import BaseModel, Field  # 导入 Pydantic 基类和字段约束工具。
+from pydantic import AliasChoices, BaseModel, Field  # 导入 Pydantic 基类、字段约束和别名工具。
 
 
 class ChatRequest(BaseModel):  # 定义问答接口的请求体结构。
     question: str = Field(min_length=1, max_length=4000)  # 用户输入的问题文本，限制最短和最长长度。
     top_k: int = Field(default=5, ge=1, le=20)  # 检索阶段返回的候选片段数量。
-    document_id: str | None = Field(default=None, min_length=1, max_length=128)  # 可选文档过滤条件，只在指定文档范围内召回引用。
+    document_id: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=128,
+        validation_alias=AliasChoices("document_id", "doc_id"),  # 兼容历史客户端传 doc_id，统一归一到 document_id。
+        serialization_alias="document_id",
+    )  # 可选文档过滤条件，只在指定文档范围内召回引用。
 
 
 class Citation(BaseModel):  # 定义回答里每条引用片段的结构。

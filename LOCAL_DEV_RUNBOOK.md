@@ -4,10 +4,10 @@
 
 - 前端：`http://127.0.0.1:3000`
 - 后端：`http://127.0.0.1:8020`
-- Qdrant：`http://127.0.0.1:6333`
-- Redis：`redis://127.0.0.1:6379`
-- Embedding：`http://127.0.0.1:8002/v1`
-- LLM：服务器 vLLM，当前工作区示例为 `http://192.168.10.200:8000/v1`
+- Qdrant：服务器 `http://192.168.10.200:6333`
+- Redis：服务器 `redis://192.168.10.200:6379`
+- Embedding：服务器 `http://192.168.10.200:8002/v1`
+- LLM：服务器 `http://192.168.10.200:8000/v1`
 
 ## 1. 配置文件
 
@@ -22,34 +22,27 @@ VITE_API_TARGET=http://127.0.0.1:8020
 
 ## 2. 启动顺序
 
-### 2.1 启动基础依赖
-
-```bash
-docker compose up -d qdrant redis
-```
-
-### 2.2 启动 embedding 服务
-
-```bash
-conda run -n rag-embed python scripts/local_embedding_server.py \
-  --model-path /home/reggie/bge-m3 \
-  --host 127.0.0.1 \
-  --port 8002
-```
-
-### 2.3 启动后端 API
+### 2.1 启动后端 API
 
 ```bash
 conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
 ```
 
-### 2.4 启动 Celery worker
+或使用 Docker Compose：
+
+```bash
+docker compose up -d
+```
+
+### 2.2 启动 Celery worker
 
 ```bash
 conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
 ```
 
-### 2.5 启动前端
+如果你已经执行了 `docker compose up -d`，这一步会由 Compose 一起拉起。
+
+### 2.3 启动前端
 
 ```bash
 cd frontend
@@ -66,17 +59,23 @@ curl http://127.0.0.1:8020/api/v1/health
 
 至少确认：
 
-- `vector_store.url = http://localhost:6333`
-- `embedding.base_url = http://127.0.0.1:8002/v1`
+- `vector_store.url = http://192.168.10.200:6333`
+- `embedding.base_url = http://192.168.10.200:8002/v1`
+- `queue.broker_url = redis://192.168.10.200:6379/0`
 - `llm.base_url` 指向当前可用的 vLLM 服务器
 
-### 3.2 vLLM 可用性检查
+如果你走 Compose 模式，当前默认只会启动本地 `api + worker` 两个容器，Qdrant / Redis / PostgreSQL / LLM / Embedding 继续使用 [`.env`](/home/reggie/vscode_folder/Enterprise-grade_RAG/.env) 里配置的服务器地址。
+
+### 3.2 基础设施可用性检查
 
 ```bash
+curl http://192.168.10.200:6333/collections
+redis-cli -u redis://192.168.10.200:6379/0 ping
+curl http://192.168.10.200:8002/health
 curl http://192.168.10.200:8000/v1/models
 ```
 
-如果你换了服务器地址，检查命令和 [`.env`](/home/reggie/vscode_folder/Enterprise-grade_RAG/.env) 里的 `RAG_LLM_BASE_URL` 要一起改。
+如果你换了服务器地址，检查命令和 [`.env`](/home/reggie/vscode_folder/Enterprise-grade_RAG/.env) 里的 `RAG_QDRANT_URL`、`RAG_CELERY_BROKER_URL`、`RAG_CELERY_RESULT_BACKEND`、`RAG_LLM_BASE_URL`、`RAG_EMBEDDING_BASE_URL` 要一起改。
 
 ### 3.3 前端联调检查
 
@@ -97,6 +96,32 @@ curl http://192.168.10.200:8000/v1/models
 
 - `3000` 的 React 页面是当前主前端
 - `8020/demo` 只用于后端单页联调和快速 smoke test
+
+### 3.4 一键 smoke test（推荐）
+
+仓库已提供可执行脚本：
+
+```bash
+bash scripts/smoke_test.sh
+```
+
+脚本覆盖链路：
+
+- `GET /api/v1/health`
+- `POST /api/v1/documents`（异步创建 job）
+- `GET /api/v1/ingest/jobs/{job_id}`（轮询到 `completed`）
+- `POST /api/v1/retrieval/search`（`document_id` 过滤）
+- `POST /api/v1/chat/ask`（`document_id` 过滤 + 引用检查）
+
+可选参数（按需覆盖）：
+
+```bash
+API_BASE_URL=http://127.0.0.1:8020 \
+TENANT_ID=wl \
+TOP_K=3 \
+POLL_TIMEOUT_SECONDS=180 \
+bash scripts/smoke_test.sh
+```
 
 ## 4. 常见故障
 
@@ -154,6 +179,32 @@ curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
 ```
 
 如果还没到 `completed`，不要先怀疑前端。
+
+### 4.5 页面打不开 / 前端空白
+
+按这个顺序排查：
+
+1. 前端进程是否在跑：`cd frontend && npm run dev`
+2. 前端地址是否正确：`http://127.0.0.1:3000`
+3. 前端代理是否正确：`cat frontend/.env`，确认 `VITE_API_TARGET=http://127.0.0.1:8020`
+4. 后端是否可达：`curl http://127.0.0.1:8020/api/v1/health`
+
+### 4.6 worker 未启动（任务卡 queued）
+
+按这个顺序排查：
+
+1. `ps -ef | rg "celery -A backend.app.worker.celery_app:celery_app worker"`
+2. `curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>`
+3. `redis-cli -u redis://192.168.10.200:6379/0 ping`
+
+### 4.7 向量入库失败 / 检索为空
+
+按这个顺序排查：
+
+1. 任务状态是否 `completed`：`GET /api/v1/ingest/jobs/<job_id>`
+2. Embedding 服务是否可达：`curl http://192.168.10.200:8002/health`
+3. Qdrant 是否可达：`curl http://192.168.10.200:6333/collections`
+4. 直接跑一次仓库脚本：`bash scripts/smoke_test.sh`
 
 ## 5. 相关文档
 

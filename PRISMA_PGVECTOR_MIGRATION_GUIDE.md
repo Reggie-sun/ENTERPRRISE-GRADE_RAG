@@ -499,7 +499,7 @@ flowchart LR
 RAG_POSTGRES_METADATA_ENABLED=true
 RAG_POSTGRES_METADATA_DSN=postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public
 DATABASE_URL=postgresql://root:123456@192.168.10.200:5432/welllihaidb?schema=public
-RAG_QDRANT_URL=http://localhost:6333
+RAG_QDRANT_URL=http://192.168.10.200:6333
 RAG_QDRANT_COLLECTION=enterprise_rag_v1_local_bge_m3
 ```
 

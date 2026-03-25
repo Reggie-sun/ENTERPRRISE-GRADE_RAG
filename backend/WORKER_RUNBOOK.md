@@ -23,11 +23,11 @@
 
 ### 3.1 本地开发（推荐先这样）
 
-先启动依赖：
+本地模式默认：
 
-```bash
-docker compose up -d qdrant redis
-```
+- API 跑本机 `127.0.0.1:8020`
+- worker 跑本机进程
+- Redis / Qdrant / LLM / Embedding / PostgreSQL 跑远端服务器
 
 启动 API：
 
@@ -44,7 +44,7 @@ conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app work
 ### 3.2 Docker Compose 一次拉起
 
 ```bash
-docker compose up -d api worker qdrant redis
+docker compose up -d
 ```
 
 查看日志：
@@ -64,8 +64,8 @@ curl -s http://127.0.0.1:8020/api/v1/health
 重点确认：
 
 - `queue.provider = celery`
-- `queue.broker_url` 与当前运行环境一致
-- `vector_store.url` 可达
+- `queue.broker_url = redis://192.168.10.200:6379/0`
+- `vector_store.url = http://192.168.10.200:6333`
 
 ### 4.2 Worker 存活检查
 
@@ -91,6 +91,12 @@ docker compose ps worker
 
 - 正常：`queued -> parsing/chunking/embedding/indexing -> completed`
 - 异常：`queued -> failed`（可自动重试窗口）或 `dead_letter`（达到上限）
+
+也可以直接执行仓库脚本做一轮最小闭环：
+
+```bash
+bash scripts/smoke_test.sh
+```
 
 ## 5. 故障恢复
 

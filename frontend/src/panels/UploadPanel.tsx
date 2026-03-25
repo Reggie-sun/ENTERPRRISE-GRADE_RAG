@@ -9,6 +9,7 @@ import { Card, Button, StatusPill, ResultBox, Input } from '@/components';
 import {
   ApiError,
   createDocument,
+  formatApiError,
   getIngestJobStatus,
   type IngestJobStatusResponse,
   type DocumentCreateResponse,
@@ -50,14 +51,27 @@ interface DuplicateDocumentDetail {
   file_hash: string;
 }
 
+function toRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : null;
+}
+
 function parseDuplicateDocumentDetail(error: unknown): DuplicateDocumentDetail | null {
   if (!(error instanceof ApiError) || error.status !== 409) {
     return null;
   }
 
-  try {
-    const parsed = JSON.parse(error.detail) as { detail?: DuplicateDocumentDetail };
-    const detail = parsed.detail;
+  const candidates: unknown[] = [error.payload];
+  if (typeof error.detail === 'string' && error.detail.trim().startsWith('{')) {
+    try {
+      candidates.push(JSON.parse(error.detail));
+    } catch {
+      // 兼容 detail 不是 JSON 的场景。
+    }
+  }
+
+  for (const candidate of candidates) {
+    const record = toRecord(candidate);
+    const detail = toRecord(record?.detail) as DuplicateDocumentDetail | null;
     if (
       detail?.code === 'DOCUMENT_ALREADY_EXISTS'
       && typeof detail.doc_id === 'string'
@@ -65,8 +79,6 @@ function parseDuplicateDocumentDetail(error: unknown): DuplicateDocumentDetail |
     ) {
       return detail;
     }
-  } catch {
-    return null;
   }
 
   return null;
@@ -95,6 +107,7 @@ export function UploadPanel({
   const [createResult, setCreateResult] = useState<DocumentCreateResponse | null>(null);
   const [jobStatus, setJobStatus] = useState<IngestJobStatusResponse | null>(null);
   const [error, setError] = useState<string>('');
+  const [hint, setHint] = useState<string>('');
 
   // 轮询定时器引用。
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -130,7 +143,7 @@ export function UploadPanel({
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatApiError(err, '任务状态轮询'));
       setStatus('error');
       onUploadFailed?.();
       if (pollTimerRef.current) {
@@ -165,6 +178,9 @@ export function UploadPanel({
 
     setStatus('uploading');
     setError('');
+    setHint('');
+    setCreateResult(null);
+    setJobStatus(null);
     onUploadStart?.(file.name);
 
     try {
@@ -194,12 +210,13 @@ export function UploadPanel({
         setCreateResult(existingResult);
         setJobStatus(null);
         setError('');
+        setHint('检测到重复文档，已复用历史 doc_id，并继续跟踪最新任务状态。');
         onUploadCreated?.(duplicateDetail.doc_id);
         startPolling(duplicateDetail.latest_job_id);
         return;
       }
 
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatApiError(err, '上传并创建入库任务'));
       setStatus('error');
       onUploadFailed?.();
     }
@@ -231,6 +248,11 @@ export function UploadPanel({
   };
 
   const statusInfo = getStatusInfo();
+  const activeDocId = createResult?.doc_id ?? jobStatus?.doc_id ?? '-';
+  const activeJobId = createResult?.job_id ?? jobStatus?.job_id ?? '-';
+  const stageText = jobStatus ? (JOB_STATE_TEXT[jobStatus.stage] || jobStatus.stage) : '-';
+  const failureCode = jobStatus?.error_code || '-';
+  const failureText = jobStatus?.error_message || '-';
 
   return (
     <Card className="col-span-8">
@@ -287,19 +309,21 @@ export function UploadPanel({
 
       {/* 状态徽章 */}
       <StatusPill tone={statusInfo.tone}>{statusInfo.text}</StatusPill>
+      {hint ? <p className="m-0 mt-2 text-sm text-ink-soft">{hint}</p> : null}
 
       {/* 结果展示 */}
       <div className="mt-4">
         <ResultBox>
-          {jobStatus ? (
-            JSON.stringify(jobStatus, null, 2)
-          ) : createResult ? (
-            JSON.stringify(createResult, null, 2)
-          ) : error ? (
-            error
-          ) : (
-            '还没有任务。'
-          )}
+          {`文件: ${file?.name || '-'}
+doc_id: ${activeDocId}
+job_id: ${activeJobId}
+当前阶段: ${stageText}
+当前进度: ${jobStatus ? `${jobStatus.progress}%` : '-'}
+错误码: ${failureCode}
+错误信息: ${failureText}
+
+${error ? `面板错误: ${error}` : '面板错误: -'}
+`}
         </ResultBox>
       </div>
     </Card>

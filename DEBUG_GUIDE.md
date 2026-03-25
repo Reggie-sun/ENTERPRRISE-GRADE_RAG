@@ -21,8 +21,8 @@
         │                       │                       │
         ▼                       ▼                       ▼
 ┌───────────────┐     ┌───────────────┐     ┌───────────────┐
-│    Qdrant     │     │ Redis + Celery│     │ Embedding/LLM │
-│  :6333/:6334  │     │     :6379     │     │  :8002/:8001  │
+│    Qdrant     │     │     Redis     │     │ Embedding/LLM │
+│  server:6333  │     │ server:6379   │     │ server:8002/8000 │
 └───────────────┘     └───────────────┘     └───────────────┘
 ```
 
@@ -38,12 +38,6 @@ conda create -n rag_backend python=3.11 -y
 conda activate rag_backend
 pip install -r requirements.txt
 
-# Embedding 服务环境（单独创建，torch 版本要求不同）
-conda create -n rag-embed python=3.10 -y
-conda activate rag-embed
-pip install --upgrade "torch>=2.6,<2.8" --index-url https://download.pytorch.org/whl/cu124
-pip install -r requirements/embedding.txt
-
 # 前端环境
 cd frontend
 npm install
@@ -55,18 +49,18 @@ npm install
 
 ```env
 # 必须确认的关键配置
-RAG_QDRANT_URL=http://localhost:6333
-RAG_CELERY_BROKER_URL=redis://localhost:6379/0
-RAG_CELERY_RESULT_BACKEND=redis://localhost:6379/1
+RAG_QDRANT_URL=http://192.168.10.200:6333
+RAG_CELERY_BROKER_URL=redis://192.168.10.200:6379/0
+RAG_CELERY_RESULT_BACKEND=redis://192.168.10.200:6379/1
 
-# Embedding 服务地址
+# Embedding 服务地址（远端）
 RAG_EMBEDDING_PROVIDER=openai
-RAG_EMBEDDING_BASE_URL=http://127.0.0.1:8002/v1
+RAG_EMBEDDING_BASE_URL=http://192.168.10.200:8002/v1
 RAG_EMBEDDING_MODEL=BAAI/bge-m3
 
-# LLM 服务地址（远程 vLLM 或本地）
+# LLM 服务地址（远端 vLLM）
 RAG_LLM_PROVIDER=openai
-RAG_LLM_BASE_URL=http://your-vllm-server:8000/v1
+RAG_LLM_BASE_URL=http://192.168.10.200:8000/v1
 RAG_LLM_MODEL=Qwen/Qwen2.5-7B-Instruct
 ```
 
@@ -82,53 +76,28 @@ VITE_API_TARGET=http://127.0.0.1:8020
 
 **严格按照以下顺序启动：**
 
-### Step 1: 启动基础依赖（Docker）
+### Step 1: 启动 API + Worker
 
 ```bash
-docker compose up -d qdrant redis
+docker compose up -d
 ```
 
 验证：
 
 ```bash
-curl http://localhost:6333/collections
-redis-cli ping  # 应返回 PONG
+docker compose ps
 ```
 
-### Step 2: 启动 Embedding 服务
+### Step 2: 验证远端基础设施
 
 ```bash
-conda run -n rag-embed python scripts/local_embedding_server.py \
-  --model-path /home/reggie/bge-m3 \
-  --host 127.0.0.1 \
-  --port 8002
+curl http://192.168.10.200:6333/collections
+redis-cli -u redis://192.168.10.200:6379/0 ping
+curl http://192.168.10.200:8002/health
+curl http://192.168.10.200:8000/v1/models
 ```
 
-验证：
-
-```bash
-curl http://127.0.0.1:8002/health
-```
-
-### Step 3: 启动后端 API
-
-```bash
-conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
-```
-
-验证：
-
-```bash
-curl http://127.0.0.1:8020/api/v1/health
-```
-
-### Step 4: 启动 Celery Worker
-
-```bash
-conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
-```
-
-### Step 5: 启动前端
+### Step 3: 启动前端
 
 ```bash
 cd frontend
@@ -174,13 +143,13 @@ curl -s http://127.0.0.1:8020/api/v1/health | jq
 
 ```json
 {
-  "status": "healthy",
+  "status": "ok",
   "vector_store": {
-    "url": "http://localhost:6333",
+    "url": "http://192.168.10.200:6333",
     "collection": "enterprise_rag_v1"
   },
   "embedding": {
-    "base_url": "http://127.0.0.1:8002/v1",
+    "base_url": "http://192.168.10.200:8002/v1",
     "model": "BAAI/bge-m3"
   },
   "llm": {
@@ -224,7 +193,7 @@ docker compose logs -f worker
 
 ```bash
 # 进入 Redis 查看队列
-redis-cli
+redis-cli -u redis://192.168.10.200:6379/0
 > LLEN ingest  # 查看队列长度
 > KEYS celery*  # 查看所有 Celery 键
 ```
@@ -241,19 +210,19 @@ curl -X POST http://127.0.0.1:8020/api/v1/ingest/jobs/{job_id}/run
 #### 查看集合状态
 
 ```bash
-curl http://localhost:6333/collections/enterprise_rag_v1
+curl http://192.168.10.200:6333/collections/enterprise_rag_v1
 ```
 
 #### 查看向量数量
 
 ```bash
-curl http://localhost:6333/collections/enterprise_rag_v1/points/count
+curl http://192.168.10.200:6333/collections/enterprise_rag_v1/points/count
 ```
 
 #### 清空集合（重新测试）
 
 ```bash
-curl -X DELETE http://localhost:6333/collections/enterprise_rag_v1
+curl -X DELETE http://192.168.10.200:6333/collections/enterprise_rag_v1
 ```
 
 ---
@@ -321,11 +290,13 @@ cd frontend && npm run dev
 ps -ef | grep celery
 
 # 2. 检查 Redis 连接
-redis-cli ping
+redis-cli -u redis://192.168.10.200:6379/0 ping
 
 # 3. 检查 worker 日志是否有错误
+docker compose logs -f worker
 
 # 4. 重启 worker
+docker compose restart worker
 ```
 
 ### 6.3 问答返回 retrieval_fallback
@@ -336,7 +307,7 @@ redis-cli ping
 
 ```bash
 # 1. 检查 LLM 服务
-curl http://your-vllm-server:8000/v1/models
+curl http://192.168.10.200:8000/v1/models
 
 # 2. 检查 .env 中的 LLM 配置
 cat .env | grep LLM
@@ -356,10 +327,10 @@ curl http://127.0.0.1:8020/api/v1/health | jq .llm
 curl http://127.0.0.1:8020/api/v1/ingest/jobs/{job_id}
 
 # 2. 检查 Qdrant 中是否有数据
-curl http://localhost:6333/collections/enterprise_rag_v1/points/count
+curl http://192.168.10.200:6333/collections/enterprise_rag_v1/points/count
 
 # 3. 检查 embedding 服务
-curl http://127.0.0.1:8002/health
+curl http://192.168.10.200:8002/health
 ```
 
 ### 6.5 向量维度不匹配
@@ -388,33 +359,24 @@ RAG_UPLOAD_MAX_FILE_SIZE_BYTES=104857600
 
 ## 7. 快速验证脚本
 
-保存为 `scripts/smoke_test.sh`：
+仓库已内置 `v0.1.2` smoke 脚本，不需要再手工复制：
 
 ```bash
-#!/bin/bash
-set -e
+bash scripts/smoke_test.sh
+```
 
-echo "=== 1. 检查基础依赖 ==="
-curl -s http://localhost:6333/collections > /dev/null && echo "✓ Qdrant OK" || echo "✗ Qdrant FAIL"
-redis-cli ping > /dev/null 2>&1 && echo "✓ Redis OK" || echo "✗ Redis FAIL"
+默认覆盖链路：
 
-echo "=== 2. 检查后端服务 ==="
-curl -s http://127.0.0.1:8020/api/v1/health | jq -r '.status' | grep -q healthy && echo "✓ Backend OK" || echo "✗ Backend FAIL"
+- `health -> documents(create) -> ingest poll -> retrieval(document_id) -> chat(document_id)`
 
-echo "=== 3. 检查 Embedding ==="
-curl -s http://127.0.0.1:8002/health > /dev/null && echo "✓ Embedding OK" || echo "✗ Embedding FAIL"
+常用参数覆盖：
 
-echo "=== 4. 测试上传 ==="
-RESP=$(curl -s -X POST http://127.0.0.1:8020/api/v1/documents/upload \
-  -F "file=@-;filename=test.txt" <<< "test content")
-echo "$RESP" | jq -r '.status' | grep -q ingested && echo "✓ Upload OK" || echo "✗ Upload FAIL"
-
-echo "=== 5. 测试检索 ==="
-curl -s -X POST http://127.0.0.1:8020/api/v1/retrieval/search \
-  -H "Content-Type: application/json" \
-  -d '{"query":"test","top_k":3}' | jq -r '.results | length' | grep -q '[1-9]' && echo "✓ Retrieval OK" || echo "✗ Retrieval FAIL"
-
-echo "=== 全部检查完成 ==="
+```bash
+API_BASE_URL=http://127.0.0.1:8020 \
+TENANT_ID=wl \
+TOP_K=3 \
+POLL_TIMEOUT_SECONDS=180 \
+bash scripts/smoke_test.sh
 ```
 
 ---

@@ -6,7 +6,13 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';  // 引入图标。
 import { Card, Button, StatusPill, Textarea, Input, ResultCard } from '@/components';
-import { searchDocuments, type RetrievalResponse, type RetrievedChunk } from '@/api';
+import {
+  formatApiError,
+  searchDocuments,
+  type RetrievalResponse,
+  type RetrievedChunk,
+  type IngestJobStatus,
+} from '@/api';
 
 // 检索模式中文映射。
 const MODE_TEXT: Record<string, string> = {
@@ -17,6 +23,21 @@ const MODE_TEXT: Record<string, string> = {
   mock: '模拟模式',
 };
 
+const JOB_STATE_TEXT: Record<string, string> = {
+  pending: '待处理',
+  uploaded: '已上传',
+  queued: '已入队',
+  parsing: '解析中',
+  ocr_processing: 'OCR 处理中',
+  chunking: '切块中',
+  embedding: '向量化中',
+  indexing: '索引写入中',
+  completed: '已完成',
+  failed: '失败',
+  dead_letter: '死信',
+  partial_failed: '部分失败',
+};
+
 // 面板状态类型。
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -24,9 +45,17 @@ interface RetrievalPanelProps {
   resetSignal?: number;
   currentDocumentName?: string;
   currentDocId?: string;
+  currentJobStatus?: IngestJobStatus;
 }
 
-export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId }: RetrievalPanelProps) {
+export function RetrievalPanel({
+  resetSignal,
+  currentDocumentName,
+  currentDocId,
+  currentJobStatus,
+}: RetrievalPanelProps) {
+  const normalizedDocId = currentDocId?.trim();
+
   // 表单状态。
   const [query, setQuery] = useState('这份文档主要讲了什么？');
   const [topK, setTopK] = useState(5);
@@ -46,11 +75,17 @@ export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId 
   // 执行检索。
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (normalizedDocId && currentJobStatus !== 'completed') {
+      const jobText = JOB_STATE_TEXT[currentJobStatus || ''] || currentJobStatus || '-';
+      setStatus('error');
+      setData(null);
+      setError(`当前文档尚未完成入库（状态：${jobText}），暂不能检索。请等待任务完成后重试。`);
+      return;
+    }
     setStatus('loading');
     setError('');
 
     try {
-      const normalizedDocId = currentDocId?.trim();
       const result = await searchDocuments({
         query: query.trim(),
         top_k: topK,
@@ -59,7 +94,7 @@ export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId 
       setData(result);
       setStatus('success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatApiError(err, '文档检索'));
       setStatus('error');
     }
   };
@@ -91,7 +126,15 @@ export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId 
         当前文档：{currentDocumentName || '未选择文件'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        未指定当前文档时，会按全库范围执行检索。
+        当前策略：有当前文档就按文档过滤；未指定时走全库检索（读取已入库 chunk）。
+      </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft break-all">
+        {normalizedDocId ? `document_id: ${normalizedDocId}` : 'document_id: 全库'}
+      </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft break-all">
+        {normalizedDocId
+          ? `当前入库状态: ${currentJobStatus ? (JOB_STATE_TEXT[currentJobStatus] || currentJobStatus) : '-'}`
+          : '当前入库状态: 全库模式（不依赖当前上传任务）'}
       </p>
 
       {/* 表单 */}
@@ -116,7 +159,11 @@ export function RetrievalPanel({ resetSignal, currentDocumentName, currentDocId 
             required
           />
           <div className="flex items-end">
-            <Button type="submit" loading={status === 'loading'} className="w-full">
+            <Button
+              type="submit"
+              loading={status === 'loading'}
+              className="w-full"
+            >
               <span className="flex items-center justify-center gap-2">
                 <Search className="w-4 h-4" />
                 执行检索

@@ -1,0 +1,78 @@
+---
+name: auto-feature-smoke-test
+description: "Use this skill after implementing a feature, bug fix, or flow change in this repository. Run a small validation pass before final handoff: targeted API verification for the changed surface and a Chrome MCP smoke test when a localhost UI flow is involved. Trigger for frontend/backend integration work, upload/retrieval/chat flows, form interactions, button behavior, and any user-facing local web page change. Skip only for docs-only work or changes with no runnable behavior."
+---
+
+# Auto Feature Smoke Test
+
+Run this skill after a logical feature slice is implemented, not after every file save.
+
+## Required validation
+
+- If the change affects an API or backend behavior, run one targeted verification against the affected endpoint or the smallest relevant automated test.
+- If the change affects a local UI or an end-to-end user flow, open the affected localhost or `127.0.0.1` page with Chrome MCP and exercise the changed path.
+- If the change is docs-only or has no runnable surface, explicitly say the smoke test is not applicable.
+
+## Workflow
+
+1. Identify the changed surface.
+   Examples:
+   - upload flow
+   - health check
+   - retrieval
+   - chat
+   - a form button
+   - a new page interaction
+
+2. Choose the smallest reliable check.
+   Prefer:
+   - one focused API request
+   - one focused pytest target
+   - one focused Chrome MCP path
+
+3. Run API verification when applicable.
+   Check:
+   - HTTP status
+   - expected fields
+   - obvious error payloads
+
+4. Run Chrome MCP smoke test when UI is involved.
+   Do the minimum path needed to prove the changed behavior works.
+   Examples:
+   - open the page
+   - click the changed button
+   - fill the changed form
+   - upload one small test file when the feature requires it
+
+5. If the smoke test fails and the failure is directly caused by the current change, make the smallest focused fix and rerun once.
+
+6. Report the result in the final handoff.
+   Include:
+   - what was tested
+   - whether API verification passed
+   - whether Chrome MCP smoke passed
+   - what was skipped and why
+
+## Guardrails
+
+- Do not claim a smoke test passed unless you actually ran it.
+- Do not require a fresh upload if the feature can validly run against already persisted data.
+- If a current `doc_id` is unavailable after page refresh, prefer testing full-library behavior before forcing a re-upload.
+- Do not perform a broad refactor just to satisfy smoke coverage.
+- If the UI depends on a local page and the port is unknown, inspect repo config, run scripts, compose files, or recent user instructions first.
+- If the page or dependency is not running, state that clearly and report the smoke test as blocked rather than silently skipping it.
+
+## Failure handling
+
+- First try a focused fix when the failure is clearly inside the changed scope.
+- Do not rewrite unrelated modules.
+- Do not change architecture during smoke fixing.
+- If blocked by missing services, auth, data, or environment state, report the exact blocker.
+
+## Default report shape
+
+Use a short result summary like:
+
+- API verification: passed / failed / not applicable
+- Chrome MCP smoke: passed / failed / blocked / not applicable
+- Notes: one to three concrete lines

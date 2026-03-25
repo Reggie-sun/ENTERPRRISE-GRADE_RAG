@@ -75,6 +75,27 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         )
         return int(result.count)  # 把返回值转换成 Python int。
 
+    def has_document_points(self, document_id: str) -> bool:  # 判断当前 collection 里是否存在指定文档的向量点位。
+        normalized_document_id = document_id.strip()  # 统一清理空白，避免把空字符串当有效文档 ID。
+        if not normalized_document_id:  # 空文档 ID 直接视为不存在。
+            return False
+        if not self._collection_exists(self.settings.qdrant_collection):  # collection 不存在时无需继续查询。
+            return False
+
+        result = self.client.count(  # 按 document_id 过滤当前 collection，判断是否至少存在一个 point。
+            collection_name=self.settings.qdrant_collection,
+            count_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="document_id",
+                        match=models.MatchValue(value=normalized_document_id),
+                    )
+                ]
+            ),
+            exact=True,
+        )
+        return int(result.count) > 0  # 只要有一个 point 就说明该文档已经入向量库。
+
     def search(  # 按查询向量检索最相似的 chunk。
         self,
         query_vector: list[float],
