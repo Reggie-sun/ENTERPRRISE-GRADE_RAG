@@ -11,6 +11,9 @@ export type Visibility = 'public' | 'department' | 'role' | 'private';
 /** 文档密级枚举 */
 export type Classification = 'public' | 'internal' | 'confidential' | 'secret';
 
+/** 最小角色集合 */
+export type UserRole = 'employee' | 'department_admin' | 'sys_admin';
+
 /** 文档生命周期状态 */
 export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
 
@@ -71,6 +74,63 @@ export interface HealthResponse {
     postgres_enabled: boolean;  // 是否启用 PostgreSQL 元数据真源。
     dsn_configured: boolean;  // 是否配置了 DSN。
   };
+}
+
+// ========== 认证相关 ==========
+
+/** 角色定义 */
+export interface RoleDefinition {
+  role_id: UserRole;
+  name: string;
+  description: string;
+  data_scope: 'department' | 'global';
+  is_admin: boolean;
+}
+
+/** 部门记录 */
+export interface DepartmentRecord {
+  department_id: string;
+  tenant_id: string;
+  department_name: string;
+  parent_department_id: string | null;
+  is_active: boolean;
+}
+
+/** 用户记录 */
+export interface UserRecord {
+  user_id: string;
+  tenant_id: string;
+  username: string;
+  display_name: string;
+  department_id: string;
+  role_id: UserRole;
+  is_active: boolean;
+}
+
+/** 当前用户权限上下文 */
+export interface AuthProfileResponse {
+  user: UserRecord;
+  role: RoleDefinition;
+  department: DepartmentRecord;
+  accessible_department_ids: string[];
+}
+
+/** 登录请求 */
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+/** 登录响应 */
+export interface LoginResponse extends AuthProfileResponse {
+  access_token: string;
+  token_type: 'bearer';
+  expires_in_seconds: number;
+}
+
+/** 登出响应 */
+export interface LogoutResponse {
+  status: 'logged_out';
 }
 
 // ========== 文档相关 ==========

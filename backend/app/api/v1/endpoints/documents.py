@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status  # 导入上传接口需要的 FastAPI 组件。
 from fastapi.responses import FileResponse  # 导入文件流响应类型，用于在线预览 PDF。
 
+from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让文档接口复用同一份权限边界。
 from ....schemas.document import (  # 导入文档相关响应模型。
     Classification,
     DocumentBatchCreateResponse,
@@ -14,6 +15,7 @@ from ....schemas.document import (  # 导入文档相关响应模型。
     DocumentUploadResponse,
     Visibility,
 )
+from ....services.auth_service import get_optional_auth_context  # 导入可选鉴权依赖，兼容前端登录接入前的开发流。
 from ....services.document_service import DocumentService, get_document_service  # 导入文档服务和依赖工厂函数。
 
 router = APIRouter(prefix="/documents", tags=["documents"])  # 创建 documents 路由分组，并统一加上 /documents 前缀。
@@ -40,6 +42,7 @@ async def create_document(  # 定义文档创建接口函数。
     source_system: str | None = Form(default=None),  # 接收来源系统。
     uploaded_by: str | None = Form(default=None),  # 接收上传人（v0.2 新命名）。
     created_by: str | None = Form(default=None),  # 接收上传人。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录时以后端权限上下文收敛 tenant/department 范围。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentCreateResponse:
     return await document_service.create_document(  # 调用服务层创建文档和 ingest job。
@@ -56,6 +59,7 @@ async def create_document(  # 定义文档创建接口函数。
         source_system=source_system,
         uploaded_by=uploaded_by,
         created_by=created_by,
+        auth_context=auth_context,
     )
 
 
@@ -80,6 +84,7 @@ async def create_documents_batch(  # 定义批量文档创建接口函数。
     source_system: str | None = Form(default=None),  # 接收来源系统。
     uploaded_by: str | None = Form(default=None),  # 接收上传人（v0.2 新命名）。
     created_by: str | None = Form(default=None),  # 接收上传人。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录时批量上传也复用同一份管理边界。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentBatchCreateResponse:
     return await document_service.create_documents_batch(  # 逐文件复用 create_document 逻辑并汇总结果。
@@ -96,6 +101,7 @@ async def create_documents_batch(  # 定义批量文档创建接口函数。
         source_system=source_system,
         uploaded_by=uploaded_by,
         created_by=created_by,
+        auth_context=auth_context,
     )
 
 
@@ -121,6 +127,7 @@ def list_documents(  # 定义文档列表接口函数。
     department_id: str | None = Query(default=None),  # 主部门筛选。
     category_id: str | None = Query(default=None),  # 分类筛选。
     document_status: DocumentLifecycleStatus | None = Query(default=None, alias="status"),  # 文档生命周期状态筛选。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录场景按部门范围过滤列表结果。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentListResponse:
     return document_service.list_documents(
@@ -130,32 +137,36 @@ def list_documents(  # 定义文档列表接口函数。
         department_id=department_id,
         category_id=category_id,
         document_status=document_status,
+        auth_context=auth_context,
     )  # 返回分页+筛选后的文档列表。
 
 
 @router.get("/{doc_id}", response_model=DocumentDetailResponse)  # 声明 GET /documents/{doc_id} 接口，并指定返回模型。
 def get_document(  # 定义文档详情接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录时校验详情访问范围。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentDetailResponse:
-    return document_service.get_document(doc_id)  # 返回指定文档的元信息。
+    return document_service.get_document(doc_id, auth_context=auth_context)  # 返回指定文档的元信息。
 
 
 @router.get("/{doc_id}/preview", response_model=DocumentPreviewResponse)  # 声明 GET /documents/{doc_id}/preview 接口，返回在线预览内容。
 def preview_document(  # 定义文档预览接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
     max_chars: int = Query(default=12_000, ge=1, le=100_000),  # 文本预览最大字符数，限制区间防止一次读取过大。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录时预览也受部门范围限制。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentPreviewResponse:
-    return document_service.get_document_preview(doc_id, max_chars=max_chars)  # 返回文本预览或 PDF 预览元信息。
+    return document_service.get_document_preview(doc_id, max_chars=max_chars, auth_context=auth_context)  # 返回文本预览或 PDF 预览元信息。
 
 
 @router.get("/{doc_id}/preview/file")  # 声明 GET /documents/{doc_id}/preview/file 接口，返回 PDF 文件流。
 def preview_document_file(  # 定义文档预览文件流接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # PDF 文件流和预览文本共享权限边界。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> FileResponse:
-    path, media_type, filename = document_service.get_document_preview_file(doc_id)  # 读取预览文件信息。
+    path, media_type, filename = document_service.get_document_preview_file(doc_id, auth_context=auth_context)  # 读取预览文件信息。
     return FileResponse(  # 返回 inline 文件流，供前端 iframe 在线预览。
         path=path,
         media_type=media_type,
@@ -164,12 +175,28 @@ def preview_document_file(  # 定义文档预览文件流接口函数。
     )
 
 
+@router.get("/{doc_id}/file")  # 声明 GET /documents/{doc_id}/file 接口，返回原始文件下载流。
+def download_document_file(  # 定义文档原始文件下载接口函数。
+    doc_id: str,  # 接收路径里的文档 ID。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 下载接口同样走统一读权限。
+    document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
+) -> FileResponse:
+    path, media_type, filename = document_service.get_document_file(doc_id, auth_context=auth_context)  # 读取原始文件信息。
+    return FileResponse(  # 返回 attachment 文件流，供前端下载。
+        path=path,
+        media_type=media_type,
+        filename=filename,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @router.delete("/{doc_id}", response_model=DocumentDeleteResponse)  # 声明 DELETE /documents/{doc_id} 接口，删除文档并清理向量副本。
 def delete_document(  # 定义文档删除接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录场景按角色限制删除能力。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentDeleteResponse:
-    return document_service.delete_document(doc_id)  # 先改主数据状态，再清理向量副本并返回结果。
+    return document_service.delete_document(doc_id, auth_context=auth_context)  # 先改主数据状态，再清理向量副本并返回结果。
 
 
 @router.post(
@@ -179,6 +206,7 @@ def delete_document(  # 定义文档删除接口函数。
 )  # 声明 POST /documents/{doc_id}/rebuild 接口，异步触发重建向量。
 def rebuild_document_vectors(  # 定义文档重建向量接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
+    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录场景按角色限制重建能力。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentRebuildResponse:
-    return document_service.rebuild_document_vectors(doc_id)  # 清理旧向量并复用 ingest job 机制触发重建。
+    return document_service.rebuild_document_vectors(doc_id, auth_context=auth_context)  # 清理旧向量并复用 ingest job 机制触发重建。

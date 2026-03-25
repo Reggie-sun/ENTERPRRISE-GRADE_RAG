@@ -3,54 +3,60 @@ import {
   Building2,
   Files,
   LayoutDashboard,
+  LogOut,
   MessageSquare,
   Search,
   Shield,
 } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Card, HeroCard, Layout, StatusPill } from '@/components';
 import { useUploadWorkspace } from '@/app/UploadWorkspaceContext';
 
-const navItems = [
+const baseNavItems = [
   {
-    to: '/',
+    to: '/workspace',
     label: '总览',
-    description: '健康检查与入口导航',
+    description: '健康检查、角色边界与入口导航',
     icon: LayoutDashboard,
   },
   {
-    to: '/documents',
+    to: '/workspace/documents',
     label: '文档中心',
     description: '上传、列表、预览、重建',
     icon: Files,
   },
   {
-    to: '/retrieval',
+    to: '/workspace/retrieval',
     label: '检索验证',
     description: '看召回结果与 chunk 命中',
     icon: Search,
   },
   {
-    to: '/chat',
+    to: '/workspace/chat',
     label: '问答验证',
     description: '流式回答与引用回显',
     icon: MessageSquare,
   },
   {
-    to: '/sop',
+    to: '/workspace/sop',
     label: 'SOP 中心',
-    description: '预留分类、预览、下载页',
+    description: '预留分类、预览、下载入口',
     icon: BookOpenText,
-  },
-  {
-    to: '/admin',
-    label: '管理后台',
-    description: '预留身份、权限、配置页',
-    icon: Shield,
   },
 ];
 
+const adminNavItem = {
+  to: '/workspace/admin',
+  label: '管理后台',
+  description: '身份、权限、配置总入口',
+  icon: Shield,
+};
+
 export function AppShell() {
+  const { profile, canAccessAdmin, logout } = useAuth();
+  const experience = getRoleExperience(profile);
+  const scopeSummary = getDepartmentScopeSummary(profile);
   const {
     currentDocumentName,
     currentDocId,
@@ -58,6 +64,7 @@ export function AppShell() {
     currentJobStageText,
     currentJobTone,
   } = useUploadWorkspace();
+  const navItems = canAccessAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
     <Layout>
@@ -65,14 +72,41 @@ export function AppShell() {
         <aside className="grid gap-4 min-w-0">
           <HeroCard className="sticky top-4 max-[1100px]:static">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-[rgba(182,70,47,0.09)] text-accent-deep text-sm font-bold uppercase tracking-wider">
-              Enterprise RAG
+              Workspace
             </div>
             <h1 className="m-0 text-3xl font-serif leading-tight text-ink">
-              企业知识库工作台
+              {experience.workspaceTitle}
             </h1>
             <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
-              先把单页 demo 拆成稳定的企业页面骨架，后面再叠登录、SOP 和权限，不继续往一个组件里堆。
+              {experience.workspaceDescription}
             </p>
+
+            <div className="mt-5 rounded-3xl bg-[rgba(255,255,255,0.74)] px-4 py-4 text-sm text-ink-soft">
+              <p className="m-0 font-semibold text-ink">
+                {profile?.user.display_name || profile?.user.username}
+              </p>
+              <p className="m-0 mt-1">
+                {experience.roleLabel} / {profile?.department.department_name}
+              </p>
+              <p className="m-0 mt-2 leading-relaxed">{scopeSummary}</p>
+              <p className="m-0 mt-2 leading-relaxed">{experience.workspaceBoundary}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <NavLink
+                  to="/portal"
+                  className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-4 py-2 text-sm font-semibold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  返回门户
+                </NavLink>
+                <button
+                  type="button"
+                  onClick={() => void logout()}
+                  className="inline-flex items-center gap-2 rounded-full border-0 bg-[rgba(182,70,47,0.1)] px-4 py-2 text-sm font-semibold text-accent-deep transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  <LogOut className="h-4 w-4" />
+                  退出登录
+                </button>
+              </div>
+            </div>
 
             <nav className="mt-5 grid gap-2">
               {navItems.map((item) => {
@@ -81,7 +115,7 @@ export function AppShell() {
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    end={item.to === '/'}
+                    end={item.to === '/workspace'}
                     className={({ isActive }) => `
                       rounded-2xl border px-4 py-3 transition-all duration-200
                       ${isActive
@@ -116,7 +150,7 @@ export function AppShell() {
               </div>
               <div className="flex items-center gap-2 text-sm text-ink-soft">
                 <Building2 className="h-4 w-4" />
-                企业页骨架
+                {profile?.department.department_name || '内部入口'}
               </div>
             </div>
 

@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.core.config import Settings
 from backend.app.main import app
+from backend.app.services.auth_service import AuthService
 from backend.app.services.identity_service import IdentityService, get_identity_service
 
 
@@ -66,6 +67,10 @@ def test_identity_service_accepts_custom_bootstrap_file(tmp_path) -> None:
                         "department_id": "dept_custom",
                         "role_id": "employee",
                         "is_active": True,
+                        "password_hash": AuthService.hash_password(
+                            "custom-user-pass",
+                            salt=bytes.fromhex("1234567890abcdef1234567890abcdef"),
+                        ),
                     }
                 ],
             }
@@ -118,6 +123,10 @@ def test_identity_service_rejects_unknown_department_reference(tmp_path) -> None
                         "department_id": "dept_missing",
                         "role_id": "employee",
                         "is_active": True,
+                        "password_hash": AuthService.hash_password(
+                            "broken-user-pass",
+                            salt=bytes.fromhex("abcdef1234567890abcdef1234567890"),
+                        ),
                     }
                 ],
             }

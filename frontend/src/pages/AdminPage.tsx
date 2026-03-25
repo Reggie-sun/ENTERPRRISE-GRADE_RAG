@@ -1,6 +1,11 @@
+import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Card, HeroCard, StatusPill } from '@/components';
 
 export function AdminPage() {
+  const { profile } = useAuth();
+  const experience = getRoleExperience(profile);
+  const scopeSummary = getDepartmentScopeSummary(profile);
+
   return (
     <div className="grid gap-5">
       <HeroCard>
@@ -8,10 +13,11 @@ export function AdminPage() {
           Admin
         </div>
         <h2 className="m-0 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          管理后台也需要独立页面，不然登录和权限只会把 demo 页越堆越乱。
+          管理后台只对系统管理员开放，用来承接全局身份、权限和配置入口。
         </h2>
         <p className="m-0 mt-3 max-w-[62ch] leading-relaxed text-ink-soft">
-          现在先把后台页占出来，后面身份目录、角色权限、租户配置和系统参数都能按模块往这里收，不会再混进业务验证页。
+          {experience.workspaceBoundary}
+          这里不会再混入普通业务页，而是专门留给系统级治理动作。
         </p>
       </HeroCard>
 
@@ -19,19 +25,22 @@ export function AdminPage() {
         <Card className="col-span-7 max-md:col-span-12">
           <h3 className="m-0 text-xl font-semibold text-ink">后续承接内容</h3>
           <div className="mt-4 grid gap-3 text-sm text-ink-soft">
-            <p className="m-0">1. 登录与 token 校验。</p>
-            <p className="m-0">2. 部门、角色、用户目录与权限映射。</p>
-            <p className="m-0">3. 租户配置、模型开关、系统级运行状态。</p>
+            <p className="m-0">1. 用户、部门、角色目录与权限映射。</p>
+            <p className="m-0">2. 模型、检索参数和系统配置入口。</p>
+            <p className="m-0">3. 日志、审计和后续系统级运行状态。</p>
           </div>
         </Card>
 
         <Card className="col-span-5 max-md:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">当前状态</h3>
           <div className="mt-4">
-            <StatusPill tone="warn">页面已预留，等待 v0.3 鉴权接入</StatusPill>
+            <StatusPill tone="warn">已完成入口级鉴权，业务模块待继续落地</StatusPill>
           </div>
           <p className="m-0 mt-4 text-sm leading-relaxed text-ink-soft">
-            后端身份目录底座已经起了，这页后续可以直接接登录、用户详情和权限配置入口。
+            {scopeSummary}
+          </p>
+          <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
+            这一页现在先承接系统管理员视图，后面继续按 v0.4 之后的计划往里补配置和治理模块。
           </p>
         </Card>
       </section>

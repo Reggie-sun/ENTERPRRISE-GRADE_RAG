@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { RefreshCw, Upload } from 'lucide-react';
+import { useAuth } from '@/auth';
 import { Card, Button, Input, ResultBox, StatusPill } from '@/components';
 import {
   ApiError,
@@ -110,9 +111,10 @@ export function UploadPanel({
   onJobStatusChange,
   onUploadFailed,
 }: UploadPanelProps) {
+  const { profile } = useAuth();
   // 表单状态。
-  const [tenantId, setTenantId] = useState('wl');
-  const [createdBy, setCreatedBy] = useState('demo-user');
+  const [tenantId, setTenantId] = useState(profile?.user.tenant_id || 'wl');
+  const [createdBy, setCreatedBy] = useState(profile?.user.user_id || 'demo-user');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // 面板状态。
@@ -149,6 +151,14 @@ export function UploadPanel({
       pollingJobIdsRef.current.clear();
     };
   }, []);
+
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+    setTenantId(profile.user.tenant_id);
+    setCreatedBy(profile.user.user_id);
+  }, [profile]);
 
   // 批量获取当前轮询任务状态。
   const fetchBatchJobStatuses = async (fromTimer = false) => {
@@ -440,13 +450,21 @@ export function UploadPanel({
             value={tenantId}
             onChange={(e) => setTenantId(e.target.value)}
             required
+            disabled={Boolean(profile)}
           />
           <Input
             label="创建人"
             value={createdBy}
             onChange={(e) => setCreatedBy(e.target.value)}
+            disabled={Boolean(profile)}
           />
         </div>
+
+        {profile ? (
+          <p className="m-0 text-sm leading-relaxed text-ink-soft">
+            当前已登录为 {profile.user.display_name || profile.user.username}。租户和上传人会以后端权限上下文自动校准。
+          </p>
+        ) : null}
 
         {/* 文件选择 */}
         <label className="grid gap-1.5 text-sm font-semibold">

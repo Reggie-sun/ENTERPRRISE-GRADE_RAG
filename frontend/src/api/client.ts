@@ -5,6 +5,10 @@
 
 import type {
   HealthResponse,
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
+  AuthProfileResponse,
   DocumentCreateResponse,
   DocumentBatchCreateResponse,
   DocumentUploadResponse,
@@ -26,6 +30,10 @@ const API_PREFIX = '/api/v1';
 const REQUEST_TIMEOUT_MS = 20_000;  // 前端请求超时时间，避免页面无限等待。
 
 type ApiErrorKind = 'http' | 'network' | 'timeout' | 'parse';
+type UnauthorizedListener = (detail: string) => void;
+
+let accessToken: string | null = null;
+let unauthorizedListener: UnauthorizedListener | null = null;
 
 export interface ChatStreamMeta {
   question: string;
@@ -66,7 +74,7 @@ function extractDetail(payload: unknown): string {
 }
 
 /** API 错误类，包含 HTTP 状态码和响应内容 */
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     public kind: ApiErrorKind,  // 错误类型，区分网络、超时、HTTP 错误。
     public detail: string,  // 错误详情。
@@ -77,6 +85,19 @@ class ApiError extends Error {
     super(`API Error${suffix}: ${detail}`);
     this.name = 'ApiError';
   }
+}
+
+export function setApiAccessToken(token: string | null) {
+  accessToken = token?.trim() || null;
+}
+
+export function onApiUnauthorized(listener: UnauthorizedListener | null) {
+  unauthorizedListener = listener;
+  return () => {
+    if (unauthorizedListener === listener) {
+      unauthorizedListener = null;
+    }
+  };
 }
 
 export function formatApiError(error: unknown, context: string): string {
@@ -116,6 +137,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const controller = new AbortController();  // 为请求加可控超时。
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+
   if (!isFormDataBody && !headers.has('Content-Type')) {  // 仅非 FormData 且未显式设置时才默认 JSON。
     headers.set('Content-Type', 'application/json');
   }
@@ -151,6 +176,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   // 处理错误响应。
   if (!response.ok) {
     const detail = extractDetail(data);
+    if (response.status === 401 && accessToken && path !== '/auth/login') {
+      unauthorizedListener?.(detail);
+    }
     throw new ApiError('http', detail, response.status, data);
   }
 
@@ -162,6 +190,28 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 /** 获取后端健康状态 */
 export async function getHealth(): Promise<HealthResponse> {
   return request<HealthResponse>('/health');
+}
+
+// ========== 认证 API ==========
+
+/** 用户名密码登录 */
+export async function login(payload: LoginRequest): Promise<LoginResponse> {
+  return request<LoginResponse>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/** 读取当前用户信息 */
+export async function getCurrentUserProfile(): Promise<AuthProfileResponse> {
+  return request<AuthProfileResponse>('/auth/me');
+}
+
+/** 注销当前会话 */
+export async function logout(): Promise<LogoutResponse> {
+  return request<LogoutResponse>('/auth/logout', {
+    method: 'POST',
+  });
 }
 
 // ========== 文档 API ==========
@@ -202,6 +252,11 @@ export async function getDocumentPreview(docId: string, maxChars = 12000): Promi
   const params = new URLSearchParams();
   params.set('max_chars', String(maxChars));
   return request<DocumentPreviewResponse>(`/documents/${encodeURIComponent(docId)}/preview?${params.toString()}`);
+}
+
+/** 获取文档下载地址 */
+export function getDocumentDownloadUrl(docId: string): string {
+  return `${API_PREFIX}/documents/${encodeURIComponent(docId)}/file`;
 }
 
 /** 删除文档（主数据状态 + 向量副本） */
@@ -280,12 +335,17 @@ export async function askQuestion(req: ChatRequest): Promise<ChatResponse> {
 export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHandlers = {}): Promise<ChatResponse> {
   const controller = new AbortController();  // 复用统一超时逻辑，避免流式请求悬挂。
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
 
   let response: Response;
   try {
     response = await fetch(`${API_PREFIX}/chat/ask/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(req),
       signal: controller.signal,
     });
@@ -305,6 +365,9 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
       throw new ApiError('parse', 'Failed to parse stream error payload: /chat/ask/stream');
     } finally {
       clearTimeout(timeout);
+    }
+    if (response.status === 401 && accessToken) {
+      unauthorizedListener?.(extractDetail(payload));
     }
     throw new ApiError('http', extractDetail(payload), response.status, payload);
   }
@@ -412,6 +475,3 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
   }
   throw new ApiError('parse', 'No valid stream events were received: /chat/ask/stream');
 }
-
-// 导出错误类，供组件使用。
-export { ApiError };

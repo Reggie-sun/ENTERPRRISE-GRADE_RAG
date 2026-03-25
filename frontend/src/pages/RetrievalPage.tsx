@@ -1,8 +1,12 @@
+import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Card, HeroCard, StatusPill } from '@/components';
 import { RetrievalPanel } from '@/panels';
 import { useUploadWorkspace } from '@/app/UploadWorkspaceContext';
 
 export function RetrievalPage() {
+  const { profile } = useAuth();
+  const experience = getRoleExperience(profile);
+  const scopeSummary = getDepartmentScopeSummary(profile);
   const {
     currentDocumentName,
     currentDocId,
@@ -17,10 +21,11 @@ export function RetrievalPage() {
           Retrieval
         </div>
         <h2 className="m-0 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          检索页只负责确认召回是否对，不负责再处理上传动作。
+          检索页只负责确认召回是否正确，并验证结果没有跨出当前权限范围。
         </h2>
         <p className="m-0 mt-3 max-w-[62ch] leading-relaxed text-ink-soft">
-          先看 top chunks 命中什么，再决定问题是 embedding、切块、元数据过滤还是向量索引。这样定位会比直接盯回答结果快很多。
+          {experience.workspaceBoundary}
+          先看 top chunks 命中什么，再决定问题是 embedding、切块、元数据过滤还是向量索引。
         </p>
       </HeroCard>
 
@@ -41,11 +46,9 @@ export function RetrievalPage() {
           </div>
           <div className="mt-4 grid gap-3 text-sm text-ink-soft">
             <p className="m-0 leading-relaxed">
-              有当前 `doc_id` 时，这页会直接按当前文档过滤；没有当前文档时，检索会直接命中数据库里已经存在的 chunk，不需要重新上传。
+              有当前 doc_id 时，这页会直接按当前文档过滤；没有当前文档时，检索会直接命中数据库里已经存在的 chunk，不需要重新上传。
             </p>
-            <p className="m-0 leading-relaxed">
-              如果当前文档任务还没完成，面板会明确拦截并提示等待，而不是无上下文地发请求。
-            </p>
+            <p className="m-0 leading-relaxed">{scopeSummary}</p>
             <p className="m-0 break-all">
               当前文档：{currentDocumentName || '全库模式'}
             </p>

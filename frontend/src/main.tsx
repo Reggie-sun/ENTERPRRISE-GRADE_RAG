@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';  // 引入 React 严格模式，帮助发现潜在问题。
 import { createRoot } from 'react-dom/client';  // 引入 React 18 的 createRoot API。
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from '@/auth';
 import './index.css';  // 引入全局样式文件。
 import App from './App';  // 引入根组件。
 
@@ -8,7 +9,9 @@ import App from './App';  // 引入根组件。
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );
