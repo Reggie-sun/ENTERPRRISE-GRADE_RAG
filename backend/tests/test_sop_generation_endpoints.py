@@ -147,6 +147,46 @@ def test_generate_sop_by_document_endpoint_returns_draft_for_department_admin(tm
     assert [item["document_id"] for item in payload["citations"]] == ["doc_digitalization"]
 
 
+def test_generate_sop_by_document_endpoint_uses_document_preview_fallback_when_retrieval_empty(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_service = AuthService(identity_service=identity_service)
+    sop_generation_service = SopGenerationService(
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService([]),
+        document_service=_FakeDocumentService(
+            {"doc_digitalization": "dept_digitalization"},
+            {"doc_digitalization": "数字化巡检手册.docx"},
+            {"doc_digitalization": "巡检前先检查任务调度服务。\n\n异常时记录时间和影响范围。"},
+        ),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(answer="这是基于预览回退生成的 SOP 草稿。"),
+    )
+
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    app.dependency_overrides[get_sop_generation_service] = lambda: sop_generation_service
+    client = TestClient(app)
+
+    try:
+        headers = _login_headers(
+            client,
+            username="digitalization.employee",
+            password="digitalization-employee-pass",
+        )
+        response = client.post(
+            "/api/v1/sops/generate/document",
+            json={"document_id": "doc_digitalization"},
+            headers=headers,
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["content"] == "这是基于预览回退生成的 SOP 草稿。"
+    assert payload["citations"][0]["chunk_id"] == "doc_digitalization-preview-0"
+
+
 def test_generate_sop_by_topic_endpoint_requires_authentication(tmp_path: Path) -> None:
     client = _build_client(tmp_path)
     try:

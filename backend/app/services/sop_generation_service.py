@@ -223,6 +223,11 @@ class SopGenerationService:
             document_id=document_id,
             auth_context=auth_context,
         )
+        if not citations and request_mode == "document" and document_id is not None:
+            citations = self._build_document_preview_citations(
+                document_id=document_id,
+                auth_context=auth_context,
+            )
         if not citations:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -336,6 +341,45 @@ class SopGenerationService:
             document_id=document_id,
             auth_context=auth_context,
         )
+
+    def _build_document_preview_citations(
+        self,
+        *,
+        document_id: str,
+        auth_context: AuthContext,
+    ) -> list[SopGenerationCitation]:
+        preview = self.document_service.get_document_preview(
+            document_id,
+            max_chars=12_000,
+            auth_context=auth_context,
+        )
+        preview_text = (preview.text_content or "").strip()
+        if not preview_text:
+            return []
+
+        normalized_text = preview_text.replace("\r\n", "\n")
+        snippets = [
+            chunk.strip()
+            for chunk in normalized_text.split("\n\n")
+            if chunk.strip()
+        ] or [normalized_text]
+
+        citations: list[SopGenerationCitation] = []
+        for index, snippet in enumerate(snippets[:3]):
+            trimmed_snippet = snippet[:1200].strip()
+            if not trimmed_snippet:
+                continue
+            citations.append(
+                SopGenerationCitation(
+                    chunk_id=f"{document_id}-preview-{index}",
+                    document_id=document_id,
+                    document_name=preview.file_name,
+                    snippet=trimmed_snippet,
+                    score=1.0 - (index * 0.01),
+                    source_path=preview.preview_file_url or f"document-preview://{document_id}",
+                )
+            )
+        return citations
 
     def _filter_results_by_department(
         self,

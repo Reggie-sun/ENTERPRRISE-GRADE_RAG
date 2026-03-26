@@ -157,15 +157,33 @@ class _FakeGenerationClient:
 
 
 class _FakeDocumentService:
-    def __init__(self, department_map: dict[str, str], file_name_map: dict[str, str] | None = None) -> None:
+    def __init__(
+        self,
+        department_map: dict[str, str],
+        file_name_map: dict[str, str] | None = None,
+        preview_text_map: dict[str, str] | None = None,
+    ) -> None:
         self.department_map = department_map
         self.file_name_map = file_name_map or {}
+        self.preview_text_map = preview_text_map or {}
 
     def get_document(self, doc_id: str, *, auth_context=None):
         return SimpleNamespace(
             doc_id=doc_id,
             department_id=self.department_map[doc_id],
             file_name=self.file_name_map.get(doc_id, f"{doc_id}.txt"),
+        )
+
+    def get_document_preview(self, doc_id: str, *, max_chars=12_000, auth_context=None):
+        preview_text = self.preview_text_map.get(doc_id, "")
+        return SimpleNamespace(
+            doc_id=doc_id,
+            file_name=self.file_name_map.get(doc_id, f"{doc_id}.txt"),
+            preview_type="text",
+            content_type="text/plain; charset=utf-8",
+            text_content=preview_text[:max_chars] if preview_text else None,
+            text_truncated=bool(preview_text and len(preview_text) > max_chars),
+            preview_file_url=None,
         )
 
 
@@ -457,6 +475,71 @@ def test_sop_generation_service_rejects_empty_evidence_after_department_filter(t
                 scenario_name="日常运维",
                 department_id="dept_digitalization",
             ),
+            auth_context=auth_context,
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "No relevant evidence was retrieved for SOP generation."
+
+
+def test_sop_generation_service_uses_document_preview_fallback_when_retrieval_returns_empty(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.employee",
+        password="digitalization-employee-pass",
+    )
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService([]),
+        document_service=_FakeDocumentService(
+            {"doc_digitalization": "dept_digitalization"},
+            {"doc_digitalization": "数字化系统巡检手册.docx"},
+            {
+                "doc_digitalization": "巡检前检查监控面板和服务状态。\n\n发现异常后记录时间、现象和影响范围。\n\n完成处理后更新值班记录并通知相关同事。"
+            },
+        ),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(answer="这是基于文档预览回退生成的 SOP 草稿。"),
+    )
+
+    response = service.generate_from_document(
+        request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
+        auth_context=auth_context,
+    )
+
+    assert response.request_mode == "document"
+    assert response.generation_mode == "rag"
+    assert response.content == "这是基于文档预览回退生成的 SOP 草稿。"
+    assert len(response.citations) == 3
+    assert response.citations[0].chunk_id == "doc_digitalization-preview-0"
+    assert "巡检前检查监控面板和服务状态" in response.citations[0].snippet
+
+
+def test_sop_generation_service_still_rejects_document_generation_when_preview_is_empty(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.employee",
+        password="digitalization-employee-pass",
+    )
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService([]),
+        document_service=_FakeDocumentService(
+            {"doc_digitalization": "dept_digitalization"},
+            {"doc_digitalization": "数字化系统巡检手册.docx"},
+            {"doc_digitalization": ""},
+        ),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.generate_from_document(
+            request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
             auth_context=auth_context,
         )
 
