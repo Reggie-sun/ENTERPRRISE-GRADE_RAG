@@ -1,5 +1,5 @@
 import asyncio  # 导入 asyncio，便于在同步测试里调用异步读取函数。
-from datetime import datetime, timezone  # 导入时间工具，便于构造历史元数据测试记录。
+from datetime import datetime, timedelta, timezone  # 导入时间工具，便于构造历史元数据测试记录和过期任务场景。
 import json  # 导入 json，用来读取 chunk 结果文件里的 JSON 内容。
 from pathlib import Path  # 导入 Path，方便处理临时目录和文件路径。
 import threading  # 导入 threading，用于并发测试客户端缓存是否存在线程竞态。
@@ -9,6 +9,7 @@ from fastapi import HTTPException  # 导入 HTTPException，用于断言上传�
 from fastapi.testclient import TestClient  # 导入 FastAPI 的测试客户端，用来直接调用接口。
 import pytest  # 导入 pytest，方便写参数化测试。
 
+import backend.app.services.asset_store as asset_store_module  # 导入资产存储模块，便于在测试里替换 PostgreSQL 资产后端。
 from backend.app.main import app  # 导入应用实例，测试时直接对这个 app 发请求。
 from backend.app.core.config import Settings, ensure_data_directories  # 导入配置对象和目录初始化函数。
 from backend.app.rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 存储，验证远程模式客户端参数。
@@ -21,7 +22,60 @@ from backend.app.services.document_service import (  # 导入上传服务、依�
 from backend.app.worker.celery_app import INGEST_TASK_NAME, get_celery_app  # 导入 Celery 任务入口，补非 eager worker 回归测试。
 
 
-def build_test_settings(tmp_path: Path, *, task_always_eager: bool = False) -> Settings:  # 定义一个辅助函数，用来构造测试专用配置。
+class _FakePostgresAssetStore:
+    def __init__(self, _dsn: str) -> None:
+        self.assets: dict[str, tuple[bytes, str, str | None]] = {}
+
+    def ping(self) -> None:
+        return None
+
+    def ensure_required_tables(self) -> None:
+        return None
+
+    def upsert_binary_asset(
+        self,
+        *,
+        asset_key: str,
+        relative_path: str,
+        file_name: str,
+        content: bytes,
+        doc_id: str | None = None,
+        job_id: str | None = None,
+        mime_type: str | None = None,
+        kind: str = "upload",
+        metadata: dict[str, object] | None = None,
+    ) -> str:
+        del relative_path, doc_id, job_id, kind, metadata
+        asset_uri = self.build_asset_uri(asset_key)
+        self.assets[asset_uri] = (content, file_name, mime_type)
+        return asset_uri
+
+    def load_binary_asset(self, asset_uri: str) -> tuple[bytes, str, str | None, int]:
+        content, file_name, mime_type = self.assets[asset_uri]
+        return content, file_name, mime_type, len(content)
+
+    def asset_exists(self, asset_uri: str) -> bool:
+        return asset_uri in self.assets
+
+    def get_asset_size(self, asset_uri: str) -> int:
+        return len(self.assets[asset_uri][0]) if asset_uri in self.assets else 0
+
+    @staticmethod
+    def build_asset_uri(asset_key: str) -> str:
+        return f"asset://{asset_key}"
+
+    @staticmethod
+    def is_asset_uri(storage_path: str) -> bool:
+        return storage_path.startswith("asset://")
+
+
+def build_test_settings(
+    tmp_path: Path,
+    *,
+    task_always_eager: bool = False,
+    asset_store_backend: str = "filesystem",
+    database_url: str | None = None,
+) -> Settings:  # 定义一个辅助函数，用来构造测试专用配置。
     data_dir = tmp_path / "data"  # 在 pytest 提供的临时目录下创建 data 根目录路径。
     return Settings(  # 返回一个只用于测试场景的 Settings 配置对象。
         app_name="Enterprise-grade RAG API Test",  # 设置测试环境里的应用名称。
@@ -31,7 +85,7 @@ def build_test_settings(tmp_path: Path, *, task_always_eager: bool = False) -> S
         qdrant_collection="enterprise_rag_v1_test",  # 设置测试专用的 collection 名称。
         postgres_metadata_enabled=False,  # 测试默认固定走本地 JSON，避免受开发 .env 污染。
         postgres_metadata_dsn=None,  # 显式清空 PostgreSQL DSN。
-        database_url=None,  # 测试环境不读取根目录 DATABASE_URL。
+        database_url=database_url,  # 需要验证 postgres 资产后端时传入占位 DATABASE_URL。
         celery_broker_url="memory://",  # Celery broker 使用内存模式，避免依赖真实 Redis。
         celery_result_backend="cache+memory://",  # Celery 结果后端也使用内存模式。
         celery_task_always_eager=task_always_eager,  # 按测试需要决定任务是否在当前进程内直接执行。
@@ -40,6 +94,7 @@ def build_test_settings(tmp_path: Path, *, task_always_eager: bool = False) -> S
         embedding_provider="mock",  # embedding 提供方使用 mock，这样测试不需要真实模型服务。
         embedding_base_url="http://embedding.test",  # 给 embedding 地址填一个测试占位值。
         embedding_model="BAAI/bge-m3",  # 保持测试时的 embedding 模型名与项目配置一致。
+        asset_store_backend=asset_store_backend,  # 按测试需要切换上传原文件后端。
         data_dir=data_dir,  # 指定 data 根目录。
         upload_dir=data_dir / "uploads",  # 指定上传文件落盘目录。
         parsed_dir=data_dir / "parsed",  # 指定解析文本落盘目录。
@@ -124,6 +179,84 @@ def test_create_document_returns_queued_job(tmp_path: Path) -> None:  # 测试�
     assert detail_payload["department_id"] == "after_sales"  # 断言详情返回主部门。
     assert detail_payload["uploaded_by"] == "u001"  # 断言详情返回上传人。
     assert detail_payload["latest_job_id"] == payload["job_id"]  # 断言文档详情里的 latest_job_id 正确。
+
+
+def test_create_and_ingest_document_with_postgres_asset_storage(tmp_path: Path, monkeypatch) -> None:  # PostgreSQL 资产后端应支持 create -> ingest -> preview/download 全链路。
+    monkeypatch.setattr(asset_store_module, "PostgresAssetStore", _FakePostgresAssetStore)
+    settings = build_test_settings(
+        tmp_path,
+        task_always_eager=False,
+        asset_store_backend="postgres",
+        database_url="postgresql://user:pass@localhost:5432/rag",
+    )
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+    content = b"Digitalization team upload asset stored in postgres."
+
+    try:
+        create_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("asset_manual.txt", content, "text/plain")},
+        )
+        assert create_response.status_code == 201
+        payload = create_response.json()
+        document_payload = json.loads((settings.document_dir / f"{payload['doc_id']}.json").read_text(encoding="utf-8"))
+        assert document_payload["storage_path"].startswith("asset://uploads/")
+
+        ingest_status = service.run_ingest_job(payload["job_id"])
+        preview_response = client.get(f"/api/v1/documents/{payload['doc_id']}/preview")
+        download_response = client.get(f"/api/v1/documents/{payload['doc_id']}/file")
+        list_response = client.get("/api/v1/documents")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert ingest_status.status == "completed"
+    assert preview_response.status_code == 200
+    assert "Digitalization team upload asset stored in postgres." in preview_response.json()["text_content"]
+    assert download_response.status_code == 200
+    assert download_response.content == content
+    assert list_response.status_code == 200
+    listed_item = next(item for item in list_response.json()["items"] if item["document_id"] == payload["doc_id"])
+    assert listed_item["size_bytes"] == len(content)
+
+
+def test_document_preview_supports_pdf_inline_stream_from_postgres_asset_storage(tmp_path: Path, monkeypatch) -> None:  # PDF 在线预览接口应支持从 PostgreSQL 二进制资产直接返回文件流。
+    monkeypatch.setattr(asset_store_module, "PostgresAssetStore", _FakePostgresAssetStore)
+    settings = build_test_settings(
+        tmp_path,
+        asset_store_backend="postgres",
+        database_url="postgresql://user:pass@localhost:5432/rag",
+    )
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+    fake_pdf = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
+
+    try:
+        create_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("preview.pdf", fake_pdf, "application/pdf")},
+        )
+        assert create_response.status_code == 201
+        doc_id = create_response.json()["doc_id"]
+        preview_response = client.get(f"/api/v1/documents/{doc_id}/preview")
+        file_response = client.get(f"/api/v1/documents/{doc_id}/preview/file")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert preview_response.status_code == 200
+    assert preview_response.json()["preview_file_url"] == f"/api/v1/documents/{doc_id}/preview/file"
+    assert file_response.status_code == 200
+    assert file_response.headers["content-type"].startswith("application/pdf")
+    assert "inline" in file_response.headers["content-disposition"]
+    assert file_response.content == fake_pdf
 
 
 def test_list_documents_supports_filters_and_pagination(tmp_path: Path) -> None:  # 验证文档列表支持按状态/主数据筛选与分页。
@@ -356,6 +489,59 @@ def test_create_document_requeues_failed_duplicate_with_new_job(tmp_path: Path) 
     assert refreshed_doc_record.uploaded_by == "bob"
 
 
+def test_create_document_requeues_stale_inflight_duplicate_with_new_job(tmp_path: Path) -> None:  # 卡在历史 queued/indexing 的旧任务超过阈值后，重复上传应补发新 job，而不是继续复用旧 job。
+    settings = build_test_settings(tmp_path, task_always_eager=False).model_copy(update={"ingest_inflight_stale_seconds": 60})
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        first_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "alice"},
+            files={"file": ("origin.txt", b"same-hash-content", "text/plain")},
+        )
+        assert first_create.status_code == 201
+        first_payload = first_create.json()
+        doc_id = first_payload["doc_id"]
+        old_job_id = first_payload["job_id"]
+
+        stale_time = datetime.now(timezone.utc) - timedelta(seconds=120)
+        stale_job_record = service._load_job_record(old_job_id)
+        stale_job_record.status = "indexing"
+        stale_job_record.stage = "indexing"
+        stale_job_record.progress = 90
+        stale_job_record.updated_at = stale_time
+        service._save_job_record(stale_job_record)
+
+        stale_doc_record = service._load_document_record(doc_id)
+        stale_doc_record.status = "queued"
+        stale_doc_record.updated_at = stale_time
+        service._save_document_record(stale_doc_record)
+
+        second_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "bob"},
+            files={"file": ("retry_named.txt", b"same-hash-content", "text/plain")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert second_create.status_code == 201
+    second_payload = second_create.json()
+    assert second_payload["status"] == "queued"
+    assert second_payload["doc_id"] == doc_id
+    assert second_payload["job_id"] != old_job_id  # 过期 in-flight job 不应再被复用。
+    assert len(list(settings.job_dir.glob("*.json"))) == 2  # 应创建 follow-up job，供当前上传继续执行。
+
+    refreshed_doc_record = service._load_document_record(doc_id)
+    assert refreshed_doc_record.latest_job_id == second_payload["job_id"]
+    assert refreshed_doc_record.file_name == "retry_named.txt"
+    assert refreshed_doc_record.uploaded_by == "bob"
+
+
 def test_document_preview_returns_text_preview_with_truncation(tmp_path: Path) -> None:  # 验证文本文档预览接口可返回截断后的文本内容。
     settings = build_test_settings(tmp_path)  # 构造测试配置。
     ensure_data_directories(settings)  # 创建测试目录。
@@ -536,6 +722,52 @@ def test_rebuild_document_vectors_creates_followup_job_and_cleans_previous_point
     second_run = service.run_ingest_job(new_job_id)  # 新任务执行后应恢复可检索状态。
     assert second_run.status == "completed"
     assert service.ingestion_service.vector_store.has_document_points(doc_id) is True
+
+
+def test_rebuild_document_vectors_ignores_stale_inflight_job(tmp_path: Path) -> None:  # 历史卡住的 in-flight 任务不应阻塞新的重建请求。
+    settings = build_test_settings(tmp_path, task_always_eager=False).model_copy(update={"ingest_inflight_stale_seconds": 60})
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        create_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("stale_rebuild.txt", b"stale rebuild payload", "text/plain")},
+        )
+        assert create_response.status_code == 201
+        created_payload = create_response.json()
+        doc_id = created_payload["doc_id"]
+        old_job_id = created_payload["job_id"]
+
+        stale_time = datetime.now(timezone.utc) - timedelta(seconds=120)
+        stale_job = service._load_job_record(old_job_id)
+        stale_job.status = "indexing"
+        stale_job.stage = "indexing"
+        stale_job.progress = 90
+        stale_job.updated_at = stale_time
+        service._save_job_record(stale_job)
+
+        stale_doc = service._load_document_record(doc_id)
+        stale_doc.status = "queued"
+        stale_doc.updated_at = stale_time
+        service._save_document_record(stale_doc)
+
+        rebuild_response = client.post(f"/api/v1/documents/{doc_id}/rebuild")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert rebuild_response.status_code == 202
+    rebuild_payload = rebuild_response.json()
+    assert rebuild_payload["doc_id"] == doc_id
+    assert rebuild_payload["job_id"] != old_job_id
+    assert rebuild_payload["status"] == "queued"
+
+    rebuilt_record = service._load_document_record(doc_id)
+    assert rebuilt_record.latest_job_id == rebuild_payload["job_id"]
 
 
 def test_rebuild_document_vectors_rejects_deleted_document(tmp_path: Path) -> None:  # 验证已删除文档不能触发重建向量。

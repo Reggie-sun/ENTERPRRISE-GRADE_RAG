@@ -1,48 +1,77 @@
 # Local Dev Runbook / 本地开发运行手册
 
-本手册覆盖当前已验证的 `v0.2` 开发基线：
+本手册覆盖两种运行方式：
 
-- 前端：`http://127.0.0.1:3000`
-- 后端：`http://127.0.0.1:8020`
-- Qdrant：服务器 `http://192.168.10.200:6333`
-- Redis：服务器 `redis://192.168.10.200:6379`
-- Embedding：服务器 `http://192.168.10.200:8002/v1`
-- LLM：服务器 `http://192.168.10.200:8000/v1`
+- 方式 A（默认，开发推荐）：前端 + API + worker 全在本机
+- 方式 B（可选，试点/演示）：前端本机，API + worker 在服务器
+
+当前基础设施默认仍在服务器：
+
+- Qdrant：`http://192.168.10.200:6333`
+- Redis：`redis://192.168.10.200:6379`
+- Embedding：`http://192.168.10.200:8002/v1`
+- LLM：`http://192.168.10.200:8000/v1`
 
 ## 1. 配置文件
 
 后端使用项目根目录 [`.env`](/home/reggie/vscode_folder/Enterprise-grade_RAG/.env)。
 前端开发代理使用 [`frontend/.env`](/home/reggie/vscode_folder/Enterprise-grade_RAG/frontend/.env)。
 
-前端必须保证：
+方式 A（本机 API）时前端必须保证：
 
 ```env
 VITE_API_TARGET=http://127.0.0.1:8020
 ```
 
+方式 B（服务器 API）时前端改为：
+
+```env
+VITE_API_TARGET=http://192.168.10.200:8020
+```
+
 ## 2. 启动顺序
 
-### 2.1 启动后端 API
+### 2.1 方式 A（默认）：本机启动 API + worker + 前端
+
+启动 API：
 
 ```bash
 conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
 ```
 
-或使用 Docker Compose：
-
-```bash
-docker compose up -d
-```
-
-### 2.2 启动 Celery worker
+启动 worker：
 
 ```bash
 conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
 ```
 
-如果你已经执行了 `docker compose up -d`，这一步会由 Compose 一起拉起。
+或本机 Compose 一次拉起 API + worker：
 
-### 2.3 启动前端
+```bash
+docker compose up -d
+```
+
+启动前端：
+
+```bash
+cd frontend
+npm run dev
+```
+
+### 2.2 方式 B（可选）：服务器启动 API + worker，本机只跑前端
+
+在服务器仓库目录执行：
+
+```bash
+docker compose -f docker-compose.server.yml up -d --build
+docker compose -f docker-compose.server.yml ps
+```
+
+本机前端改 `frontend/.env` 为服务器 API 并启动：
+
+```env
+VITE_API_TARGET=http://192.168.10.200:8020
+```
 
 ```bash
 cd frontend

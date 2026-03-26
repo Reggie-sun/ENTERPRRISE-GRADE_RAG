@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status  # 导入上传接口需要的 FastAPI 组件。
-from fastapi.responses import FileResponse  # 导入文件流响应类型，用于在线预览 PDF。
+from fastapi.responses import FileResponse, Response  # 导入文件流响应和字节响应，兼容本地路径与数据库二进制存储。
 
 from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让文档接口复用同一份权限边界。
 from ....schemas.document import (  # 导入文档相关响应模型。
@@ -165,13 +165,19 @@ def preview_document_file(  # 定义文档预览文件流接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
     auth_context: AuthContext | None = Depends(get_optional_auth_context),  # PDF 文件流和预览文本共享权限边界。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
-) -> FileResponse:
-    path, media_type, filename = document_service.get_document_preview_file(doc_id, auth_context=auth_context)  # 读取预览文件信息。
-    return FileResponse(  # 返回 inline 文件流，供前端 iframe 在线预览。
-        path=path,
-        media_type=media_type,
-        filename=filename,
-        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+) -> Response:
+    payload = document_service.get_document_preview_file(doc_id, auth_context=auth_context)  # 读取预览文件信息。
+    if payload.path is not None:
+        return FileResponse(  # 返回 inline 文件流，供前端 iframe 在线预览。
+            path=payload.path,
+            media_type=payload.media_type,
+            filename=payload.filename,
+            headers={"Content-Disposition": f'inline; filename="{payload.filename}"'},
+        )
+    return Response(
+        content=payload.content or b"",
+        media_type=payload.media_type,
+        headers={"Content-Disposition": f'inline; filename="{payload.filename}"'},
     )
 
 
@@ -180,13 +186,19 @@ def download_document_file(  # 定义文档原始文件下载接口函数。
     doc_id: str,  # 接收路径里的文档 ID。
     auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 下载接口同样走统一读权限。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
-) -> FileResponse:
-    path, media_type, filename = document_service.get_document_file(doc_id, auth_context=auth_context)  # 读取原始文件信息。
-    return FileResponse(  # 返回 attachment 文件流，供前端下载。
-        path=path,
-        media_type=media_type,
-        filename=filename,
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+) -> Response:
+    payload = document_service.get_document_file(doc_id, auth_context=auth_context)  # 读取原始文件信息。
+    if payload.path is not None:
+        return FileResponse(  # 返回 attachment 文件流，供前端下载。
+            path=payload.path,
+            media_type=payload.media_type,
+            filename=payload.filename,
+            headers={"Content-Disposition": f'attachment; filename="{payload.filename}"'},
+        )
+    return Response(
+        content=payload.content or b"",
+        media_type=payload.media_type,
+        headers={"Content-Disposition": f'attachment; filename="{payload.filename}"'},
     )
 
 

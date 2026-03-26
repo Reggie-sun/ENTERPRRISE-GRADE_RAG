@@ -41,7 +41,7 @@ conda run -n rag_backend uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
 conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
 ```
 
-### 3.2 Docker Compose 一次拉起
+### 3.2 本地 Docker Compose 一次拉起
 
 ```bash
 docker compose up -d
@@ -53,12 +53,38 @@ docker compose up -d
 docker compose logs -f worker
 ```
 
+### 3.3 服务器部署（推荐给试点/业务使用）
+
+在服务器仓库目录执行：
+
+```bash
+docker compose -f docker-compose.server.yml up -d --build
+```
+
+查看服务状态：
+
+```bash
+docker compose -f docker-compose.server.yml ps
+docker compose -f docker-compose.server.yml logs -f worker
+```
+
+说明：
+
+- 服务器 compose 不挂载源码目录，不依赖本地文件系统路径。
+- `api` 和 `worker` 同机部署时，任务入队与消费链路更稳定，能减少本地 worker 连远端 Redis 的断连问题。
+
 ## 4. 健康检查
 
 ### 4.1 API 健康检查
 
 ```bash
 curl -s http://127.0.0.1:8020/api/v1/health
+```
+
+如果 API 在服务器，改成服务器地址，例如：
+
+```bash
+curl -s http://192.168.10.200:8020/api/v1/health
 ```
 
 重点确认：

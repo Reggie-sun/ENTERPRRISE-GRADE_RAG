@@ -16,8 +16,12 @@ def test_identity_service_exposes_frozen_roles_and_department_relation() -> None
 
     assert [item.role_id for item in bootstrap.roles] == ["employee", "department_admin", "sys_admin"]
     departments = {item.department_id: item for item in bootstrap.departments}
-    assert departments["dept_after_sales"].parent_department_id == "dept_ops"
-    assert service.get_user("user_department_admin_demo").department_id == "dept_after_sales"
+    assert departments["dept_digitalization"].department_name == "数字化部"
+    assert departments["dept_general_manager_office"].department_name == "总经办"
+    assert service.get_user("user_department_admin_demo").department_id == "dept_digitalization"
+    assert service.get_user("user_digitalization_real_01").display_name == "黄前超"
+    assert service.get_user("user_digitalization_real_01").role_id == "department_admin"
+    assert service.get_user("user_digitalization_real_22").display_name == "应旭冲"
     assert service.get_user("user_sys_admin_demo").role_id == "sys_admin"
 
 
@@ -145,7 +149,8 @@ def test_auth_bootstrap_endpoint_returns_identity_directory() -> None:
     assert response.status_code == 200
     payload = response.json()
     assert [item["role_id"] for item in payload["roles"]] == ["employee", "department_admin", "sys_admin"]
-    assert any(item["department_id"] == "dept_after_sales" for item in payload["departments"])
+    assert any(item["department_id"] == "dept_digitalization" for item in payload["departments"])
+    assert any(item["department_name"] == "品质保障部" for item in payload["departments"])
     assert any(item["user_id"] == "user_employee_demo" for item in payload["users"])
 
 

@@ -7,6 +7,20 @@ description: "Use this skill after implementing a feature, bug fix, or flow chan
 
 Run this skill after a logical feature slice is implemented, not after every file save.
 
+## Repository plan alignment
+
+For `/home/reggie/vscode_folder/Enterprise-grade_RAG`, follow [V1_PLAN.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/V1_PLAN.md) as the execution baseline before choosing validation scope, fixes, or follow-up actions.
+
+- Treat `V1_PLAN.md` as the source of truth for current version priorities, frozen boundaries, and acceptable scope.
+- Stay aligned with the plan's low-coupling rollout strategy. Prefer the smallest change that stabilizes the current feature slice instead of expanding into adjacent roadmap items.
+- Respect the current frozen baseline from the plan unless the user explicitly asks for a deviation:
+  - keep the current vector retrieval foundation
+  - keep the current Embedding / Rerank / LLM integration approach
+  - keep the current async ingest chain
+  - keep the current local and server collaboration baseline
+- Do not let smoke-test fixes turn into architecture rewrites, platform swaps, or roadmap expansion that conflicts with `V1_PLAN.md`.
+- When reporting results or next steps, frame them against the active plan stage. If a request conflicts with `V1_PLAN.md`, call that out explicitly instead of silently drifting scope.
+
 ## Required validation
 
 - If the change affects an API or backend behavior, run one targeted verification against the affected endpoint or the smallest relevant automated test.

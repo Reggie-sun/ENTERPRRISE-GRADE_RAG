@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: enterprise-rag-api
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8020
+    env_file:
+      - .env
+    ports:
+      - "8020:8020"
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: enterprise-rag-worker
+    command: celery -A backend.app.worker.celery_app:celery_app worker --loglevel=info -Q ingest
+    env_file:
+      - .env
+    restart: unless-stopped

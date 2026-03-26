@@ -17,6 +17,84 @@
 
 ---
 
+## 0.5 先把一个边界认清楚：`rerank` 不在异步入库链路里
+
+很多人第一次看 RAG 项目时，会把这几步混在一起：
+
+1. 文档上传和异步入库
+2. 在线检索
+3. `rerank`
+4. LLM 生成回答
+
+这 4 件事不是一条链路里的同一阶段。
+
+在当前项目里：
+
+- 异步入库负责：
+  `上传 -> 解析 -> chunk -> embedding -> Qdrant`
+- 在线问答负责：
+  `query -> query embedding -> Qdrant top_k -> rerank -> LLM`
+
+所以要先明确：
+
+- `rerank` 不是 worker 入库阶段做的事
+- `rerank` 不会改 chunk 落盘逻辑
+- `rerank` 也不要求你重新上传文档
+
+它属于在线检索质量优化，而不是异步入库基础设施。
+
+当前代码里其实已经有一层 `rerank`，但还不是模型服务：
+
+- 位置在 `backend/app/services/chat_service.py`
+- 实现在 `backend/app/rag/rerankers/client.py`
+- 当前 provider 是 `heuristic`
+- 做法是：`token overlap + 向量召回分数` 的线性融合
+
+这意味着当前状态是：
+
+- 系统已经有“二次排序”这个插槽
+- 但还没有接入单独的模型级 reranker 服务
+
+如果后面要接真正的 rerank 模型，应该加在：
+
+```text
+query
+  -> query embedding
+  -> Qdrant top_k
+  -> model reranker
+  -> top_n context
+  -> LLM / SOP generation
+```
+
+而不是加在：
+
+```text
+上传
+  -> worker
+  -> parse
+  -> chunk
+  -> embedding
+  -> Qdrant
+```
+
+所以这份文档里你只需要把异步入库链路看懂，不要试图在这里同时理解模型级 rerank。
+
+从版本节奏上，当前更合理的安排是：
+
+- `v0.4.0` 之前先保留现有 `heuristic rerank`
+- 先用它完成首轮业务试点，验证部门权限、SOP 浏览下载、基础问答闭环
+- 如果试点反馈是“能召回但排序不稳、引用不准、答案证据不够靠前”，再把模型级 rerank 接进来
+- 推荐时机是：
+  `v0.4.0` 试点后，最迟在 `v0.5.0` SOP 智能生成扩展前完成
+
+原因很简单：
+
+- 模型级 rerank 不需要重跑异步入库
+- 但会增加在线问答延迟、部署和运维复杂度
+- 它更适合在“主链路已稳定、用户已经开始给质量反馈”之后接入
+
+---
+
 ## 1. 先建立一个正确的心智模型
 
 这个项目里有 4 个关键角色：

@@ -66,7 +66,7 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         ],
         suggestedQuestions: [
           '本部门最近更新了哪些 SOP 或处理资料？',
-          '售后部门遇到设备报警时，标准处理流程是什么？',
+          `${departmentName}遇到系统、流程或设备异常时，标准处理流程是什么？`,
           '新同事入岗前应该优先阅读哪些资料？',
         ],
         myCapabilityItems: [
