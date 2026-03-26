@@ -342,3 +342,30 @@ def test_department_admin_create_defaults_to_own_department_and_rejects_other_de
 
     assert forbidden_department_response.status_code == 403
     assert forbidden_department_response.json()["detail"] == "Department admins can only manage documents in their accessible departments."
+
+
+def test_employee_create_defaults_to_own_department_and_rejects_other_departments(authz_env) -> None:
+    client, document_service = authz_env
+    employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
+
+    default_department_response = client.post(
+        "/api/v1/documents",
+        data={"tenant_id": "wl"},
+        files={"file": ("employee_scope.txt", "Employee scoped upload.".encode("utf-8"), "text/plain")},
+        headers=employee_headers,
+    )
+    forbidden_department_response = client.post(
+        "/api/v1/documents",
+        data={"tenant_id": "wl", "department_id": "dept_assembly"},
+        files={"file": ("employee_forbidden_scope.txt", "Wrong department upload.".encode("utf-8"), "text/plain")},
+        headers=employee_headers,
+    )
+
+    assert default_department_response.status_code == 201
+    created_doc_id = str(default_department_response.json()["doc_id"])
+    created_record = document_service._load_document_record(created_doc_id)
+    assert created_record.department_id == "dept_after_sales"
+    assert created_record.uploaded_by == "user_employee_demo"
+
+    assert forbidden_department_response.status_code == 403
+    assert forbidden_department_response.json()["detail"] == "Employees can only create documents in their accessible departments."

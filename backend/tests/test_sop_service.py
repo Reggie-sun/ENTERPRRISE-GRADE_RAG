@@ -214,6 +214,8 @@ def _build_sop_service(tmp_path: Path, identity_service: IdentityService) -> Sop
         _env_file=None,
         identity_bootstrap_path=identity_service.settings.identity_bootstrap_path,
         sop_bootstrap_path=sop_bootstrap_path,
+        sop_record_dir=tmp_path / "managed_sops",
+        sop_asset_dir=tmp_path / "sop_assets",
     )
     return SopService(settings, identity_service=identity_service)
 

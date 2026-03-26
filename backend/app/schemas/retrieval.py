@@ -1,9 +1,13 @@
 from pydantic import AliasChoices, BaseModel, Field  # 导入 Pydantic 基类、字段约束和别名工具。
 
+from .query_profile import QueryMode
+
 
 class RetrievalRequest(BaseModel):  # 定义检索接口的请求结构。
     query: str = Field(min_length=1, max_length=2000)  # 用户输入的检索问题。
-    top_k: int = Field(default=5, ge=1, le=20)  # 要返回的检索结果数量。
+    top_k: int | None = Field(default=None, ge=1, le=200)  # 可选覆盖默认档位的返回数量；为空时按档位默认值展开，内部链路允许更大的候选上限。
+    mode: QueryMode | None = Field(default=None)  # 可选查询档位；为空时检索默认走 fast。
+    candidate_top_k: int | None = Field(default=None, ge=1, le=200)  # 可选内部候选召回量，给问答/SOP 的后置 rerank 与权限过滤留余量。
     document_id: str | None = Field(
         default=None,
         min_length=1,

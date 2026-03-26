@@ -9,10 +9,20 @@ import type {
   LoginResponse,
   LogoutResponse,
   AuthProfileResponse,
+  IdentityBootstrapResponse,
   SopListQuery,
   SopListResponse,
   SopDetailResponse,
   SopPreviewResponse,
+  SopGenerateByScenarioRequest,
+  SopGenerateByDocumentRequest,
+  SopGenerateByTopicRequest,
+  SopDraftExportRequest,
+  SopGenerationDraftResponse,
+  SopSaveRequest,
+  SopSaveResponse,
+  SopVersionDetailResponse,
+  SopVersionListResponse,
   DocumentCreateResponse,
   DocumentBatchCreateResponse,
   DocumentUploadResponse,
@@ -205,20 +215,24 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return data as T;
 }
 
-async function downloadBinary(path: string, fallbackFilename: string): Promise<void> {
+async function downloadBinary(path: string, fallbackFilename: string, options: RequestInit = {}): Promise<void> {
   const url = `${API_PREFIX}${path}`;
-  const headers = new Headers();
+  const headers = new Headers(options.headers);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   if (accessToken) {
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
+  if (!(options.body instanceof FormData) && options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
 
   let response: Response;
   try {
     response = await fetch(url, {
       method: 'GET',
+      ...options,
       headers,
       signal: controller.signal,
     });
@@ -278,6 +292,11 @@ export async function getCurrentUserProfile(): Promise<AuthProfileResponse> {
   return request<AuthProfileResponse>('/auth/me');
 }
 
+/** 读取身份目录 bootstrap */
+export async function getAuthBootstrap(): Promise<IdentityBootstrapResponse> {
+  return request<IdentityBootstrapResponse>('/auth/bootstrap');
+}
+
 /** 注销当前会话 */
 export async function logout(): Promise<LogoutResponse> {
   return request<LogoutResponse>('/auth/logout', {
@@ -313,9 +332,57 @@ export async function getSops(query: SopListQuery = {}): Promise<SopListResponse
   return request<SopListResponse>(path);
 }
 
+/** 按场景生成 SOP 草稿 */
+export async function generateSopByScenario(
+  payload: SopGenerateByScenarioRequest,
+): Promise<SopGenerationDraftResponse> {
+  return request<SopGenerationDraftResponse>('/sops/generate/scenario', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/** 按文档直接生成 SOP 草稿 */
+export async function generateSopByDocument(
+  payload: SopGenerateByDocumentRequest,
+): Promise<SopGenerationDraftResponse> {
+  return request<SopGenerationDraftResponse>('/sops/generate/document', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/** 按主题生成 SOP 草稿 */
+export async function generateSopByTopic(
+  payload: SopGenerateByTopicRequest,
+): Promise<SopGenerationDraftResponse> {
+  return request<SopGenerationDraftResponse>('/sops/generate/topic', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/** 保存 SOP 当前版本 */
+export async function saveSop(payload: SopSaveRequest): Promise<SopSaveResponse> {
+  return request<SopSaveResponse>('/sops/save', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 /** 获取 SOP 详情 */
 export async function getSopDetail(sopId: string): Promise<SopDetailResponse> {
   return request<SopDetailResponse>(`/sops/${encodeURIComponent(sopId)}`);
+}
+
+/** 获取 SOP 版本列表 */
+export async function getSopVersions(sopId: string): Promise<SopVersionListResponse> {
+  return request<SopVersionListResponse>(`/sops/${encodeURIComponent(sopId)}/versions`);
+}
+
+/** 获取 SOP 单个版本详情 */
+export async function getSopVersionDetail(sopId: string, version: number): Promise<SopVersionDetailResponse> {
+  return request<SopVersionDetailResponse>(`/sops/${encodeURIComponent(sopId)}/versions/${version}`);
 }
 
 /** 获取 SOP 预览 */
@@ -328,6 +395,18 @@ export async function downloadSopFile(sopId: string, format: 'docx' | 'pdf'): Pr
   return downloadBinary(
     `/sops/${encodeURIComponent(sopId)}/download?format=${encodeURIComponent(format)}`,
     `${sopId}.${format}`,
+  );
+}
+
+/** 导出当前未保存的 SOP 草稿 */
+export async function downloadSopDraftFile(payload: SopDraftExportRequest): Promise<void> {
+  return downloadBinary(
+    '/sops/export',
+    `sop_draft.${payload.format}`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
   );
 }
 

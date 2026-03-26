@@ -88,7 +88,7 @@ export function PortalShell() {
         <Outlet />
 
         <footer className="rounded-[28px] border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.6)] px-5 py-4 text-sm leading-relaxed text-ink-soft">
-          当前门户优先承接问答、SOP 和知识资料入口；上传、重建向量、系统健康检查等研发能力保留在内部工作台。
+          当前门户已经支持员工端问答、SOP 生成、SOP 查看和知识资料浏览；重建向量、系统健康检查等研发能力仍保留在内部工作台。
         </footer>
       </div>
     </Layout>

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status  # 导入上传接口需要的 FastAPI 组件。
 from fastapi.responses import FileResponse, Response  # 导入文件流响应和字节响应，兼容本地路径与数据库二进制存储。
 
+from ._response_headers import build_content_disposition
 from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让文档接口复用同一份权限边界。
 from ....schemas.document import (  # 导入文档相关响应模型。
     Classification,
@@ -29,7 +30,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])  # 创建 documents 
     description="Uploads a document, persists the document/job metadata, enqueues a Celery ingest job, and returns immediately with queued status.",  # 给 Swagger 页面展示详细说明。
 )
 async def create_document(  # 定义文档创建接口函数。
-    file: UploadFile = File(..., description="Supported file types: .pdf, .md, .markdown, .txt"),  # 接收上传文件。
+    file: UploadFile = File(..., description="Supported file types: .pdf, .md, .markdown, .txt, .docx"),  # 接收上传文件。
     tenant_id: str = Form(..., description="Tenant identifier"),  # 接收租户 ID。
     department_id: str | None = Form(default=None),  # 接收主部门（v0.2 新增字段）。
     department_ids: list[str] | None = Form(default=None),  # 接收部门范围。
@@ -71,7 +72,7 @@ async def create_document(  # 定义文档创建接口函数。
     description="Uploads multiple documents and queues one ingest job per file; returns per-file queued/failed result.",  # 给 Swagger 页面展示详细说明。
 )
 async def create_documents_batch(  # 定义批量文档创建接口函数。
-    files: list[UploadFile] = File(..., description="Supported file types: .pdf, .md, .markdown, .txt"),  # 接收多个上传文件。
+    files: list[UploadFile] = File(..., description="Supported file types: .pdf, .md, .markdown, .txt, .docx"),  # 接收多个上传文件。
     tenant_id: str = Form(..., description="Tenant identifier"),  # 接收租户 ID。
     department_id: str | None = Form(default=None),  # 接收主部门（v0.2 新增字段）。
     department_ids: list[str] | None = Form(default=None),  # 接收部门范围。
@@ -110,10 +111,10 @@ async def create_documents_batch(  # 定义批量文档创建接口函数。
     response_model=DocumentUploadResponse,  # 指定成功时返回的响应结构。
     status_code=status.HTTP_201_CREATED,  # 指定成功时返回 201 Created。
     summary="Upload and ingest a document",  # 给 Swagger 页面展示简要标题。
-    description="Uploads a PDF/Markdown/TXT document and runs parse, chunk, embedding, and Qdrant upsert synchronously.",  # 给 Swagger 页面展示详细说明。
+    description="Uploads a PDF/Markdown/TXT/DOCX document and runs parse, chunk, embedding, and Qdrant upsert synchronously.",  # 给 Swagger 页面展示详细说明。
 )
 async def upload_document(  # 定义文档上传接口函数。
-    file: UploadFile = File(..., description="Supported file types: .pdf, .md, .markdown, .txt"),  # 接收上传文件，并在 Swagger 中注明支持格式。
+    file: UploadFile = File(..., description="Supported file types: .pdf, .md, .markdown, .txt, .docx"),  # 接收上传文件，并在 Swagger 中注明支持格式。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentUploadResponse:
     return await document_service.save_upload(file)  # 调用服务层保存文件并执行完整入库流程。
@@ -172,12 +173,12 @@ def preview_document_file(  # 定义文档预览文件流接口函数。
             path=payload.path,
             media_type=payload.media_type,
             filename=payload.filename,
-            headers={"Content-Disposition": f'inline; filename="{payload.filename}"'},
+            headers={"Content-Disposition": build_content_disposition(payload.filename, disposition_type="inline")},
         )
     return Response(
         content=payload.content or b"",
         media_type=payload.media_type,
-        headers={"Content-Disposition": f'inline; filename="{payload.filename}"'},
+        headers={"Content-Disposition": build_content_disposition(payload.filename, disposition_type="inline")},
     )
 
 
@@ -193,12 +194,12 @@ def download_document_file(  # 定义文档原始文件下载接口函数。
             path=payload.path,
             media_type=payload.media_type,
             filename=payload.filename,
-            headers={"Content-Disposition": f'attachment; filename="{payload.filename}"'},
+            headers={"Content-Disposition": build_content_disposition(payload.filename, disposition_type="attachment")},
         )
     return Response(
         content=payload.content or b"",
         media_type=payload.media_type,
-        headers={"Content-Disposition": f'attachment; filename="{payload.filename}"'},
+        headers={"Content-Disposition": build_content_disposition(payload.filename, disposition_type="attachment")},
     )
 
 

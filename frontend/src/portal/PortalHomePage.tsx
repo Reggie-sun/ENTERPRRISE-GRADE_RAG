@@ -37,7 +37,7 @@ export function PortalHomePage() {
     {
       to: '/portal/sop',
       title: 'SOP 中心',
-      description: '按部门、工序和场景查看标准 SOP。',
+      description: '上传文档生成草稿，并继续查看标准 SOP。',
       icon: BookOpenText,
     },
     {
@@ -98,7 +98,7 @@ export function PortalHomePage() {
               to="/portal/sop"
               className="inline-flex items-center gap-2 rounded-full bg-[rgba(255,255,255,0.8)] px-5 py-3 font-semibold text-ink no-underline transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white"
             >
-              查看 SOP
+              生成 SOP
             </Link>
           </div>
         </HeroCard>

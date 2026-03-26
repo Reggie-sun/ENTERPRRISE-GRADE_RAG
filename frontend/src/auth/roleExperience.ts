@@ -57,7 +57,7 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         portalDescription:
           '门户先给你业务入口，工作台再承接本部门资料维护、验证和排障，避免把管理员日常工作和普通员工视角混在一起。',
         portalHeaderNote:
-          '你当前既可以使用门户里的问答和 SOP，也可以进入工作台维护本部门知识资产。',
+          '你当前既可以在门户里直接生成/查看 SOP，也可以进入工作台维护本部门知识资产。',
         homeFocusTitle: '当前更适合从这三类动作开始',
         homeFocusPoints: [
           '快速回答本部门同事常见问题，减少重复解释。',
@@ -77,7 +77,7 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         libraryScopeDescription:
           '资料中心会优先展示你所在部门可访问的资料，适合先确认最近更新和常用内容。',
         sopScopeDescription:
-          'SOP 中心会聚合本部门可见的标准流程，适合直接定位标准操作说明。',
+          'SOP 中心既能基于当前文档直接生成草稿，也会聚合本部门可见的标准流程，适合一边生成一边查标准操作说明。',
         workspaceTitle: '本部门工作台',
         workspaceDescription:
           '工作台保留上传、检索、问答和排障信息，但管理边界严格限制在本部门内。',
@@ -91,7 +91,7 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         portalDescription:
           '系统管理员在门户里看到的是跨部门知识入口，在工作台里处理的是全局级资料治理、配置与排障，不需要再靠一堆调试页跳来跳去。',
         portalHeaderNote:
-          '你当前拥有全局视角，既可以按业务入口查看资料，也可以进入系统级工作台和后台入口。',
+          '你当前拥有全局视角，既可以按业务入口直接生成/查看 SOP，也可以进入系统级工作台和后台入口。',
         homeFocusTitle: '当前更适合从这三类动作开始',
         homeFocusPoints: [
           '跨部门查看知识资料和 SOP，确认各团队的内容覆盖情况。',
@@ -111,7 +111,7 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         libraryScopeDescription:
           '资料中心可作为全局浏览入口，适合跨部门抽查资料覆盖、更新时间和预览内容。',
         sopScopeDescription:
-          'SOP 中心会逐步成为全局标准流程入口，当前可先按部门和分类做浏览与核对。',
+          'SOP 中心当前既可按文档直接生成草稿，也可按部门和分类浏览全局标准流程。',
         workspaceTitle: '系统级工作台',
         workspaceDescription:
           '工作台不仅承接资料维护，也承接全局联调、跨部门排障和系统管理入口。',
@@ -124,13 +124,13 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         roleLabel,
         portalTitle: `先在 ${departmentName} 范围内提问、查 SOP、看资料。`,
         portalDescription:
-          '普通员工不需要理解上传、重建向量和系统排障流程。门户只保留业务上真正需要的入口，让你先找到答案和标准流程。',
+          '普通员工不需要理解重建向量和系统排障流程。门户只保留业务上真正需要的入口，让你先找到答案、生成 SOP 草稿和查看标准流程。',
         portalHeaderNote:
-          '你当前使用的是员工视角，系统会自动按部门过滤资料、检索和问答结果。',
+          '你当前使用的是员工视角，系统会自动按部门过滤资料、检索、问答结果，并支持直接基于文档生成 SOP 草稿。',
         homeFocusTitle: '当前更适合从这三类动作开始',
         homeFocusPoints: [
           '直接提问题，快速拿到带引用的回答。',
-          '去 SOP 中心按部门或场景找到标准流程。',
+          '去 SOP 中心直接上传文档生成草稿，或按部门和场景找到标准流程。',
           '在知识库里预览和下载你当前部门已授权的资料。',
         ],
         suggestedQuestions: [
@@ -139,17 +139,17 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
           '新员工上岗前需要阅读哪些资料？',
         ],
         myCapabilityItems: [
-          '智能问答、SOP 查看和知识资料浏览。',
+          '智能问答、SOP 生成、SOP 查看和知识资料浏览。',
           '系统会自动限制到你当前部门的已授权内容。',
           '不会看到内部工作台、全局管理和跨部门运维入口。',
         ],
         libraryScopeDescription:
           '资料中心只展示你当前部门已授权的资料，适合先通过标题、分类和预览确认是否需要下载。',
         sopScopeDescription:
-          'SOP 中心优先用于查标准流程，不需要先理解后台任务或文档治理过程。',
+          'SOP 中心优先用于直接生成或查找标准流程，不需要先理解后台任务或文档治理过程。',
         workspaceTitle: '内部工作台',
         workspaceDescription:
-          '普通员工不进入内部工作台，上传、治理和排障能力由管理员处理。',
+          '普通员工不进入内部工作台；员工端生成 SOP 走门户主流程，治理和排障能力由管理员处理。',
         workspaceBoundary: '当前角色没有工作台入口，只保留知识消费能力。',
         workspaceEntryLabel: '进入工作台',
       };

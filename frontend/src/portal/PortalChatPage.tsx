@@ -9,10 +9,19 @@ import {
   type ChatResponse,
   type ChatStreamMeta,
   type Citation,
+  type QueryMode,
 } from '@/api';
 import { rememberDocument, rememberQuestion } from '@/portal/portalStorage';
 
 type PortalChatStatus = 'idle' | 'loading' | 'success' | 'error';
+const QUERY_MODE_OPTIONS: Array<{
+  value: QueryMode;
+  label: string;
+  description: string;
+}> = [
+  { value: 'fast', label: '快速', description: '优先响应速度，适合常规提问。' },
+  { value: 'accurate', label: '准确', description: '优先证据质量，响应会慢一些。' },
+];
 
 export function PortalChatPage() {
   const { profile } = useAuth();
@@ -21,6 +30,7 @@ export function PortalChatPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuestion = searchParams.get('q') || experience.suggestedQuestions[0];
   const [question, setQuestion] = useState(initialQuestion);
+  const [queryMode, setQueryMode] = useState<QueryMode>('fast');
   const [status, setStatus] = useState<PortalChatStatus>('idle');
   const [data, setData] = useState<ChatResponse | null>(null);
   const [error, setError] = useState('');
@@ -57,7 +67,7 @@ export function PortalChatPage() {
 
     try {
       const response = await askQuestionStream(
-        { question: normalizedQuestion, top_k: 5 },
+        { question: normalizedQuestion, mode: queryMode },
         {
           onMeta: (meta: ChatStreamMeta) => {
             setData({
@@ -161,6 +171,33 @@ export function PortalChatPage() {
                   {item}
                 </button>
               ))}
+            </div>
+            <div className="grid gap-2">
+              <div className="text-sm font-semibold text-ink">回答档位</div>
+              <div className="flex flex-wrap gap-2">
+                {QUERY_MODE_OPTIONS.map((item) => {
+                  const active = queryMode === item.value;
+                  return (
+                    <button
+                      key={item.value}
+                      type="button"
+                      className={`
+                        rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200
+                        ${active
+                          ? 'bg-[rgba(182,70,47,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(182,70,47,0.14)]'
+                          : 'bg-[rgba(23,32,42,0.06)] text-ink hover:-translate-y-0.5'
+                        }
+                      `}
+                      onClick={() => setQueryMode(item.value)}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="m-0 text-sm leading-relaxed text-ink-soft">
+                {QUERY_MODE_OPTIONS.find((item) => item.value === queryMode)?.description}
+              </p>
             </div>
             <div className="flex items-center justify-between gap-3">
               <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>

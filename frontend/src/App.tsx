@@ -87,7 +87,7 @@ export default function App() {
       <Route path="documents" element={<Navigate to="/workspace/documents" replace />} />
       <Route path="retrieval" element={<Navigate to="/workspace/retrieval" replace />} />
       <Route path="chat" element={<Navigate to="/workspace/chat" replace />} />
-      <Route path="sop" element={<Navigate to="/workspace/sop" replace />} />
+      <Route path="sop" element={<Navigate to="/portal/sop" replace />} />
       <Route path="admin" element={<Navigate to="/workspace/admin" replace />} />
       <Route path="*" element={<RootRedirect />} />
     </Routes>

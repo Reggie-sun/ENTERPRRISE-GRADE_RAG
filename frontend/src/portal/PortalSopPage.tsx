@@ -15,6 +15,7 @@ import {
   type SopStatus,
   type SopSummary,
 } from '@/api';
+import { PortalSopGeneratePanel } from './PortalSopGeneratePanel';
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -234,10 +235,10 @@ export function PortalSopPage() {
             SOP Center
           </div>
           <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
-            按部门、工序和场景统一查看标准 SOP。
+            先基于文档直接生成 SOP，再统一查看标准 SOP。
           </h2>
           <p className="m-0 mt-3 max-w-[64ch] text-base leading-relaxed text-ink-soft">
-            当前先把 SOP 主数据、在线预览和格式下载接进来，让员工和管理员都能先稳定找到、看到并带走标准流程，不把生成和版本管理一次性绑死。
+            员工端主流程已经收敛成“上传文档 → 生成 SOP 草稿 → 下载本地修改”。下方仍保留已沉淀 SOP 的统一查看、预览和格式下载入口。
           </p>
         </HeroCard>
 
@@ -263,8 +264,16 @@ export function PortalSopPage() {
         </Card>
       </section>
 
+      <PortalSopGeneratePanel />
+
       <section className="grid grid-cols-12 gap-5">
         <Card className="col-span-7 max-lg:col-span-12">
+          <div className="mb-4">
+            <h3 className="m-0 text-xl font-semibold text-ink">已沉淀 SOP 资产</h3>
+            <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+              这里保留已经沉淀到系统里的 SOP 资产，适合按部门、工序、场景继续查阅、预览和下载。
+            </p>
+          </div>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <Input
               label="搜索 SOP"

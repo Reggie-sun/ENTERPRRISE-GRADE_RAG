@@ -99,6 +99,11 @@ function parseDuplicateDocumentDetail(error: unknown): DuplicateDocumentDetail |
 }
 
 interface UploadPanelProps {
+  title?: string;
+  description?: string;
+  className?: string;
+  allowMultiple?: boolean;
+  showIdentityFields?: boolean;
   onUploadStart?: (fileName: string) => void;
   onUploadCreated?: (docId: string) => void;
   onJobStatusChange?: (job: IngestJobStatusResponse) => void;
@@ -106,6 +111,11 @@ interface UploadPanelProps {
 }
 
 export function UploadPanel({
+  title = '上传文档并轮询入库',
+  description = '支持单文件和批量上传；每个文件都会创建独立 ingest job 并显示状态进度。',
+  className = '',
+  allowMultiple = true,
+  showIdentityFields = true,
   onUploadStart,
   onUploadCreated,
   onJobStatusChange,
@@ -434,31 +444,33 @@ export function UploadPanel({
       : `${selectedFiles[0].name} 等 ${selectedFiles.length} 个文件`;
 
   return (
-    <Card className="col-span-8">
+    <Card className={`col-span-8 ${className}`}>
       {/* 标题 */}
-      <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">上传文档并轮询入库</h2>
+      <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">{title}</h2>
       <p className="m-0 mb-4 text-ink-soft leading-relaxed">
-        支持单文件和批量上传；每个文件都会创建独立 ingest job 并显示状态进度。
+        {description}
       </p>
 
       {/* 表单 */}
       <form onSubmit={handleSubmit} className="grid gap-3">
         {/* 两列布局 */}
-        <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
-          <Input
-            label="租户 ID"
-            value={tenantId}
-            onChange={(e) => setTenantId(e.target.value)}
-            required
-            disabled={Boolean(profile)}
-          />
-          <Input
-            label="创建人"
-            value={createdBy}
-            onChange={(e) => setCreatedBy(e.target.value)}
-            disabled={Boolean(profile)}
-          />
-        </div>
+        {showIdentityFields ? (
+          <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
+            <Input
+              label="租户 ID"
+              value={tenantId}
+              onChange={(e) => setTenantId(e.target.value)}
+              required
+              disabled={Boolean(profile)}
+            />
+            <Input
+              label="创建人"
+              value={createdBy}
+              onChange={(e) => setCreatedBy(e.target.value)}
+              disabled={Boolean(profile)}
+            />
+          </div>
+        ) : null}
 
         {profile ? (
           <p className="m-0 text-sm leading-relaxed text-ink-soft">
@@ -468,11 +480,11 @@ export function UploadPanel({
 
         {/* 文件选择 */}
         <label className="grid gap-1.5 text-sm font-semibold">
-          文件（可多选）
+          {allowMultiple ? '文件（可多选）' : '文件'}
           <input
             type="file"
-            multiple
-            accept=".pdf,.md,.markdown,.txt"
+            multiple={allowMultiple}
+            accept=".pdf,.md,.markdown,.txt,.docx"
             onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
             className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-accent-deep"
           />
@@ -483,7 +495,7 @@ export function UploadPanel({
           <Button type="submit" loading={status === 'uploading'}>
             <span className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
-              {selectedFiles.length > 1 ? '批量创建入库任务' : '创建入库任务'}
+              {allowMultiple && selectedFiles.length > 1 ? '批量创建入库任务' : '创建入库任务'}
             </span>
           </Button>
           <Button

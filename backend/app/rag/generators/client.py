@@ -22,27 +22,27 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
     def __init__(self, settings: Settings) -> None:  # 初始化生成客户端。
         self.settings = settings  # 保存配置对象。
 
-    def generate(self, *, question: str, contexts: list[str]) -> str:  # 基于问题和上下文生成最终回答文本。
+    def generate(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:  # 基于问题和上下文生成最终回答文本。
         provider = self.settings.llm_provider.lower().strip()  # 读取并标准化 provider 名称。
         if provider == "mock":  # mock 模式用于本地开发和测试。
             return self._generate_with_mock(question=question, contexts=contexts)  # 返回确定性 mock 回答。
         if provider == "ollama":  # ollama 模式调用远程生成服务。
-            return self._generate_with_ollama(question=question, contexts=contexts)  # 返回模型生成结果。
+            return self._generate_with_ollama(question=question, contexts=contexts, timeout_seconds=timeout_seconds)  # 返回模型生成结果。
         if provider == "openai":  # openai 模式调用 OpenAI 兼容的 chat completions 接口。
-            return self._generate_with_openai(question=question, contexts=contexts)  # 返回模型生成结果。
+            return self._generate_with_openai(question=question, contexts=contexts, timeout_seconds=timeout_seconds)  # 返回模型生成结果。
         raise LLMGenerationFatalError(f"Unsupported llm provider: {self.settings.llm_provider}")  # provider 非法时直接抛不可降级错误。
 
-    def generate_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 以流式片段形式返回回答内容。
+    def generate_stream(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> Iterator[str]:  # 以流式片段形式返回回答内容。
         provider = self.settings.llm_provider.lower().strip()  # 读取并标准化 provider 名称。
         if provider == "mock":  # mock 模式用固定文本切片模拟流式。
             answer = self._generate_with_mock(question=question, contexts=contexts)
             yield from self._chunk_text(answer)
             return
         if provider == "ollama":  # ollama 模式调用流式接口。
-            yield from self._generate_with_ollama_stream(question=question, contexts=contexts)
+            yield from self._generate_with_ollama_stream(question=question, contexts=contexts, timeout_seconds=timeout_seconds)
             return
         if provider == "openai":  # openai 兼容模式调用 SSE 流式接口。
-            yield from self._generate_with_openai_stream(question=question, contexts=contexts)
+            yield from self._generate_with_openai_stream(question=question, contexts=contexts, timeout_seconds=timeout_seconds)
             return
         raise LLMGenerationFatalError(f"Unsupported llm provider: {self.settings.llm_provider}")  # provider 非法时直接抛不可降级错误。
 
@@ -54,12 +54,13 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             top_context = f"{top_context[:277]}..."
         return f"Mock answer for '{question}': {top_context}"  # 组合成可读回答。
 
-    def _generate_with_ollama(self, *, question: str, contexts: list[str]) -> str:  # 调用 Ollama 风格接口生成回答。
+    def _generate_with_ollama(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:  # 调用 Ollama 风格接口生成回答。
         if not contexts:  # 如果没有上下文，直接给出简短提示。
             return "No relevant context was retrieved for this question."
 
         base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
         url = f"{base_url}/api/generate"  # 拼出 Ollama generate 接口地址。
+        request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算，未显式传入时回退到全局默认。
         prompt = self._build_prompt(question=question, contexts=contexts)  # 先构造提示词。
         payload = {  # 组织请求体。
             "model": get_llm_model(self.settings),  # 指定模型名。
@@ -72,7 +73,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             response = httpx.post(  # 发起 POST 请求。
                 url,  # 目标地址。
                 json=payload,  # 请求体。
-                timeout=self.settings.llm_timeout_seconds,  # 超时时间。
+                timeout=request_timeout,  # 超时时间。
                 trust_env=False,  # 忽略系统代理配置，避免本地代理环境影响服务互调。
             )
             response.raise_for_status()  # 检查 HTTP 状态码。
@@ -91,13 +92,14 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             raise LLMGenerationFatalError("Unexpected Ollama response format for generation.")  # 返回协议异常属于不可降级错误。
         return text.strip()  # 返回清理后的回答。
 
-    def _generate_with_ollama_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 调用 Ollama 流式生成接口。
+    def _generate_with_ollama_stream(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> Iterator[str]:  # 调用 Ollama 流式生成接口。
         if not contexts:  # 无上下文时直接返回固定提示。
             yield from self._chunk_text("No relevant context was retrieved for this question.")
             return
 
         base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
         url = f"{base_url}/api/generate"  # 拼出 Ollama generate 接口地址。
+        request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算。
         payload = {
             "model": get_llm_model(self.settings),
             "prompt": self._build_prompt(question=question, contexts=contexts),
@@ -110,7 +112,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 "POST",
                 url,
                 json=payload,
-                timeout=self.settings.llm_timeout_seconds,
+                timeout=request_timeout,
                 trust_env=False,
             ) as response:
                 response.raise_for_status()
@@ -133,12 +135,13 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         except httpx.RequestError as exc:  # 连接失败、网络错误可降级。
             raise LLMGenerationRetryableError(f"LLM stream request to Ollama failed: {exc}") from exc
 
-    def _generate_with_openai(self, *, question: str, contexts: list[str]) -> str:  # 调用 OpenAI 兼容的 chat completions 接口生成回答。
+    def _generate_with_openai(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:  # 调用 OpenAI 兼容的 chat completions 接口生成回答。
         if not contexts:  # 如果没有上下文，直接给出简短提示。
             return "No relevant context was retrieved for this question."
 
         base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
         url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"  # 自动兼容 base_url 是否已带完整路径。
+        request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算。
         headers = {"Content-Type": "application/json"}  # 设置基础请求头。
         if self.settings.llm_api_key:  # 如果配置了 API Key。
             headers["Authorization"] = f"Bearer {self.settings.llm_api_key}"  # 就带上 Bearer 鉴权头。
@@ -164,7 +167,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 url,  # 目标地址。
                 json=payload,  # 请求体。
                 headers=headers,  # 请求头。
-                timeout=self.settings.llm_timeout_seconds,  # 超时时间。
+                timeout=request_timeout,  # 超时时间。
                 trust_env=False,  # 忽略系统代理配置，避免本地代理环境影响服务互调。
             )
             response.raise_for_status()  # 检查 HTTP 状态码。
@@ -196,13 +199,14 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             raise LLMGenerationFatalError("Unexpected OpenAI-compatible response content for generation.")  # 返回协议异常属于不可降级错误。
         return content.strip()  # 返回清理后的回答。
 
-    def _generate_with_openai_stream(self, *, question: str, contexts: list[str]) -> Iterator[str]:  # 调用 OpenAI 兼容流式接口。
+    def _generate_with_openai_stream(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> Iterator[str]:  # 调用 OpenAI 兼容流式接口。
         if not contexts:  # 无上下文时直接返回固定提示。
             yield from self._chunk_text("No relevant context was retrieved for this question.")
             return
 
         base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
         url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
+        request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算。
         headers = {"Content-Type": "application/json"}
         if self.settings.llm_api_key:
             headers["Authorization"] = f"Bearer {self.settings.llm_api_key}"
@@ -229,7 +233,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 url,
                 json=payload,
                 headers=headers,
-                timeout=self.settings.llm_timeout_seconds,
+                timeout=request_timeout,
                 trust_env=False,
             ) as response:
                 response.raise_for_status()

@@ -41,7 +41,7 @@ const baseNavItems = [
   {
     to: '/workspace/sop',
     label: 'SOP 中心',
-    description: '预留分类、预览、下载入口',
+    description: '生成、编辑、保存和版本管理',
     icon: BookOpenText,
   },
 ];

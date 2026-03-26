@@ -15,6 +15,7 @@ export type Classification = 'public' | 'internal' | 'confidential' | 'secret';
 export type UserRole = 'employee' | 'department_admin' | 'sys_admin';
 export type SopStatus = 'draft' | 'active' | 'archived';
 export type SopDownloadFormat = 'docx' | 'pdf';
+export type QueryMode = 'fast' | 'accurate';
 
 /** 文档生命周期状态 */
 export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
@@ -135,7 +136,80 @@ export interface LogoutResponse {
   status: 'logged_out';
 }
 
+/** 身份目录 bootstrap */
+export interface IdentityBootstrapResponse {
+  roles: RoleDefinition[];
+  departments: DepartmentRecord[];
+  users: UserRecord[];
+}
+
 // ========== SOP 相关 ==========
+
+export type SopGenerationRequestMode = 'scenario' | 'topic' | 'document';
+
+export interface SopGenerationCitation {
+  chunk_id: string;
+  document_id: string;
+  document_name: string;
+  snippet: string;
+  score: number;
+  source_path: string;
+}
+
+export interface SopGenerateByScenarioRequest {
+  scenario_name: string;
+  process_name?: string;
+  mode?: QueryMode;
+  top_k?: number;
+  department_id?: string;
+  document_id?: string;
+  title_hint?: string;
+}
+
+export interface SopGenerateByTopicRequest {
+  topic: string;
+  process_name?: string;
+  scenario_name?: string;
+  mode?: QueryMode;
+  top_k?: number;
+  department_id?: string;
+  document_id?: string;
+  title_hint?: string;
+}
+
+export interface SopGenerateByDocumentRequest {
+  document_id: string;
+  process_name?: string;
+  scenario_name?: string;
+  mode?: QueryMode;
+  top_k?: number;
+  department_id?: string;
+  title_hint?: string;
+}
+
+export interface SopDraftExportRequest {
+  title: string;
+  content: string;
+  format: SopDownloadFormat;
+  department_id?: string;
+  process_name?: string;
+  scenario_name?: string;
+  source_document_id?: string;
+}
+
+export interface SopGenerationDraftResponse {
+  request_mode: SopGenerationRequestMode;
+  generation_mode: string;
+  title: string;
+  department_id: string;
+  department_name: string;
+  process_name: string | null;
+  scenario_name: string | null;
+  topic: string | null;
+  content: string;
+  model: string;
+  citations: SopGenerationCitation[];
+}
 
 /** SOP 摘要 - 列表项 */
 export interface SopSummary {
@@ -202,6 +276,71 @@ export interface SopPreviewResponse {
   text_content: string | null;
   preview_file_url: string | null;
   updated_at: string;
+}
+
+export interface SopSaveRequest {
+  sop_id?: string;
+  title: string;
+  department_id?: string;
+  process_name?: string;
+  scenario_name?: string;
+  topic?: string;
+  status: SopStatus;
+  content: string;
+  request_mode?: SopGenerationRequestMode;
+  generation_mode: string;
+  citations: SopGenerationCitation[];
+  tags?: string[];
+}
+
+export interface SopSaveResponse {
+  sop_id: string;
+  version: number;
+  status: SopStatus;
+  title: string;
+  saved_at: string;
+}
+
+export interface SopVersionSummary {
+  sop_id: string;
+  version: number;
+  title: string;
+  status: SopStatus;
+  generation_mode: string;
+  request_mode: SopGenerationRequestMode | null;
+  citations_count: number;
+  created_by: string | null;
+  updated_by: string | null;
+  updated_at: string;
+  is_current: boolean;
+}
+
+export interface SopVersionListResponse {
+  sop_id: string;
+  current_version: number;
+  items: SopVersionSummary[];
+}
+
+export interface SopVersionDetailResponse {
+  sop_id: string;
+  version: number;
+  title: string;
+  tenant_id: string;
+  department_id: string;
+  process_name: string | null;
+  scenario_name: string | null;
+  topic: string | null;
+  status: SopStatus;
+  content: string;
+  request_mode: SopGenerationRequestMode | null;
+  generation_mode: string;
+  citations: SopGenerationCitation[];
+  tags: string[];
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+  is_current: boolean;
 }
 
 // ========== 文档相关 ==========
@@ -350,7 +489,8 @@ export interface IngestJobStatusResponse {
 /** 检索请求 */
 export interface RetrievalRequest {
   query: string;  // 用户输入的检索问题。
-  top_k: number;  // 要返回的检索结果数量。
+  top_k?: number;  // 要返回的检索结果数量。
+  mode?: QueryMode;  // 可选查询档位。
   document_id?: string;  // 可选文档过滤条件，只检索指定文档。
 }
 
@@ -377,7 +517,8 @@ export interface RetrievalResponse {
 /** 问答请求 */
 export interface ChatRequest {
   question: string;  // 用户输入的问题文本。
-  top_k: number;  // 检索阶段返回的候选片段数量。
+  top_k?: number;  // 检索阶段返回的候选片段数量。
+  mode?: QueryMode;  // 可选查询档位。
   document_id?: string;  // 可选文档过滤条件，只在指定文档范围内召回引用。
 }
 
