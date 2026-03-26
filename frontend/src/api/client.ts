@@ -9,6 +9,10 @@ import type {
   LoginResponse,
   LogoutResponse,
   AuthProfileResponse,
+  SopListQuery,
+  SopListResponse,
+  SopDetailResponse,
+  SopPreviewResponse,
   DocumentCreateResponse,
   DocumentBatchCreateResponse,
   DocumentUploadResponse,
@@ -46,6 +50,22 @@ export interface ChatStreamHandlers {
   onMeta?: (meta: ChatStreamMeta) => void;
   onDelta?: (delta: string) => void;
   onDone?: (response: ChatResponse) => void;
+}
+
+function extractFilenameFromDisposition(disposition: string | null, fallback: string): string {
+  if (!disposition) {
+    return fallback;
+  }
+  const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) {
+    try {
+      return decodeURIComponent(utf8Match[1]);
+    } catch {
+      return utf8Match[1];
+    }
+  }
+  const filenameMatch = disposition.match(/filename=\"?([^\";]+)\"?/i);
+  return filenameMatch?.[1] || fallback;
 }
 
 function toText(value: unknown): string {
@@ -185,6 +205,57 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return data as T;
 }
 
+async function downloadBinary(path: string, fallbackFilename: string): Promise<void> {
+  const url = `${API_PREFIX}${path}`;
+  const headers = new Headers();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  if (accessToken) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError('timeout', `Request timeout: ${path}`);
+    }
+    throw new ApiError('network', `Network error: ${path}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!response.ok) {
+    const contentType = response.headers.get('content-type') || '';
+    let payload: unknown;
+    try {
+      payload = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
+    } catch {
+      payload = null;
+    }
+    throw new ApiError('http', extractDetail(payload), response.status, payload);
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = extractFilenameFromDisposition(response.headers.get('content-disposition'), fallbackFilename);
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
 // ========== 健康检查 API ==========
 
 /** 获取后端健康状态 */
@@ -212,6 +283,52 @@ export async function logout(): Promise<LogoutResponse> {
   return request<LogoutResponse>('/auth/logout', {
     method: 'POST',
   });
+}
+
+// ========== SOP API ==========
+
+/** 获取 SOP 列表 */
+export async function getSops(query: SopListQuery = {}): Promise<SopListResponse> {
+  const params = new URLSearchParams();
+  if (query.page !== undefined) {
+    params.set('page', String(query.page));
+  }
+  if (query.page_size !== undefined) {
+    params.set('page_size', String(query.page_size));
+  }
+  if (query.department_id) {
+    params.set('department_id', query.department_id);
+  }
+  if (query.process_name) {
+    params.set('process_name', query.process_name);
+  }
+  if (query.scenario_name) {
+    params.set('scenario_name', query.scenario_name);
+  }
+  if (query.status) {
+    params.set('status', query.status);
+  }
+  const suffix = params.toString();
+  const path = suffix ? `/sops?${suffix}` : '/sops';
+  return request<SopListResponse>(path);
+}
+
+/** 获取 SOP 详情 */
+export async function getSopDetail(sopId: string): Promise<SopDetailResponse> {
+  return request<SopDetailResponse>(`/sops/${encodeURIComponent(sopId)}`);
+}
+
+/** 获取 SOP 预览 */
+export async function getSopPreview(sopId: string): Promise<SopPreviewResponse> {
+  return request<SopPreviewResponse>(`/sops/${encodeURIComponent(sopId)}/preview`);
+}
+
+/** 下载 SOP 文件 */
+export async function downloadSopFile(sopId: string, format: 'docx' | 'pdf'): Promise<void> {
+  return downloadBinary(
+    `/sops/${encodeURIComponent(sopId)}/download?format=${encodeURIComponent(format)}`,
+    `${sopId}.${format}`,
+  );
 }
 
 // ========== 文档 API ==========

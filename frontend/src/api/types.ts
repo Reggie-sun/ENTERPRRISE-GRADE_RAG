@@ -13,6 +13,8 @@ export type Classification = 'public' | 'internal' | 'confidential' | 'secret';
 
 /** 最小角色集合 */
 export type UserRole = 'employee' | 'department_admin' | 'sys_admin';
+export type SopStatus = 'draft' | 'active' | 'archived';
+export type SopDownloadFormat = 'docx' | 'pdf';
 
 /** 文档生命周期状态 */
 export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
@@ -131,6 +133,75 @@ export interface LoginResponse extends AuthProfileResponse {
 /** 登出响应 */
 export interface LogoutResponse {
   status: 'logged_out';
+}
+
+// ========== SOP 相关 ==========
+
+/** SOP 摘要 - 列表项 */
+export interface SopSummary {
+  sop_id: string;
+  title: string;
+  department_id: string;
+  department_name: string;
+  process_name: string | null;
+  scenario_name: string | null;
+  version: number;
+  status: SopStatus;
+  preview_available: boolean;
+  downloadable_formats: SopDownloadFormat[];
+  updated_at: string;
+}
+
+/** SOP 列表查询参数 */
+export interface SopListQuery {
+  page?: number;
+  page_size?: number;
+  department_id?: string;
+  process_name?: string;
+  scenario_name?: string;
+  status?: SopStatus;
+}
+
+/** GET /sops 响应 */
+export interface SopListResponse {
+  total: number;
+  page: number;
+  page_size: number;
+  items: SopSummary[];
+}
+
+/** SOP 详情 */
+export interface SopDetailResponse {
+  sop_id: string;
+  title: string;
+  tenant_id: string;
+  department_id: string;
+  department_name: string;
+  process_name: string | null;
+  scenario_name: string | null;
+  version: number;
+  status: SopStatus;
+  preview_resource_path: string | null;
+  preview_resource_type: 'text' | 'html' | 'pdf';
+  download_docx_available: boolean;
+  download_pdf_available: boolean;
+  tags: string[];
+  source_document_id: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** SOP 预览响应 */
+export interface SopPreviewResponse {
+  sop_id: string;
+  title: string;
+  preview_type: 'text' | 'html' | 'pdf';
+  content_type: string;
+  text_content: string | null;
+  preview_file_url: string | null;
+  updated_at: string;
 }
 
 // ========== 文档相关 ==========
