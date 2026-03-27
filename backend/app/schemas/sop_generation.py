@@ -54,6 +54,7 @@ class SopGenerateByDocumentRequest(SopGenerationRequestBase):
 
 
 class SopGenerationDraftResponse(BaseModel):
+    snapshot_id: str | None = None
     request_mode: SopGenerationRequestMode
     generation_mode: str
     title: str

@@ -13,6 +13,7 @@ from ..rag.rerankers.client import RerankerClient
 from ..schemas.auth import AuthContext, DepartmentRecord
 from ..schemas.query_profile import QueryMode, QueryProfile
 from ..schemas.retrieval import RetrievalRequest, RetrievedChunk
+from ..schemas.request_snapshot import RequestSnapshotRecord
 from ..schemas.sop_generation import (
     SopGenerateByDocumentRequest,
     SopGenerateByScenarioRequest,
@@ -25,7 +26,9 @@ from .document_service import DocumentService, get_document_service
 from .event_log_service import EventLogService, get_event_log_service
 from .identity_service import IdentityService, get_identity_service
 from .query_profile_service import QueryProfileService
+from .request_snapshot_service import RequestSnapshotService, get_request_snapshot_service
 from .retrieval_service import RetrievalService, get_retrieval_service
+from .runtime_gate_service import RuntimeGateBusyError, RuntimeGateLease, RuntimeGateService, get_runtime_gate_service
 from .system_config_service import SystemConfigService
 
 
@@ -48,6 +51,8 @@ class SopGenerationService:
         generation_client: LLMGenerationClient | None = None,
         query_profile_service: QueryProfileService | None = None,
         event_log_service: EventLogService | None = None,
+        request_snapshot_service: RequestSnapshotService | None = None,
+        runtime_gate_service: RuntimeGateService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         if query_profile_service is None:
@@ -68,6 +73,12 @@ class SopGenerationService:
             system_config_service=self.system_config_service,
         )
         self.event_log_service = event_log_service or get_event_log_service()
+        self.request_snapshot_service = request_snapshot_service or get_request_snapshot_service()
+        self.runtime_gate_service = runtime_gate_service or (
+            RuntimeGateService(self.settings, system_config_service=self.system_config_service)
+            if settings is not None
+            else get_runtime_gate_service()
+        )
 
     def generate_from_scenario(
         self,
@@ -98,6 +109,7 @@ class SopGenerationService:
         )
         return self._generate_draft(
             request_mode="scenario",
+            request_payload=request,
             title=title,
             department=department,
             process_name=normalized_process_name,
@@ -142,6 +154,7 @@ class SopGenerationService:
         )
         return self._generate_draft(
             request_mode="topic",
+            request_payload=request,
             title=title,
             department=department,
             process_name=normalized_process_name,
@@ -198,6 +211,7 @@ class SopGenerationService:
         )
         return self._generate_draft(
             request_mode="document",
+            request_payload=request,
             title=title,
             department=department,
             process_name=normalized_process_name,
@@ -215,6 +229,7 @@ class SopGenerationService:
         self,
         *,
         request_mode: SopGenerationRequestMode,
+        request_payload: SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest,
         title: str,
         department: DepartmentRecord,
         process_name: str | None,
@@ -234,7 +249,14 @@ class SopGenerationService:
             requested_top_k=requested_top_k,
         )
         rerank_strategy = "skipped"
+        snapshot_record: RequestSnapshotRecord | None = None
+        runtime_details: dict[str, object] = {}
+        runtime_lease: RuntimeGateLease | None = None
         try:
+            runtime_lease, runtime_details = self._acquire_generation_runtime_slot(
+                profile,
+                auth_context=auth_context,
+            )
             citations = self._build_citations(
                 search_query=search_query,
                 target_department_id=department.department_id,
@@ -319,8 +341,83 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
+                extra_details=runtime_details,
             )
+            snapshot_record = self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="success",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=citations,
+                response=response,
+                rerank_strategy=rerank_strategy,
+                model=response_model,
+                content=response.content,
+                downgraded_from=downgraded_from,
+                details={
+                    "title": title,
+                    "generation_mode": response.generation_mode,
+                    "citation_count": len(response.citations),
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    **runtime_details,
+                },
+            )
+            response.snapshot_id = snapshot_record.snapshot_id
             return response
+        except RuntimeGateBusyError as exc:
+            runtime_details = {
+                **runtime_details,
+                "runtime_channel": exc.channel,
+                "busy_rejected": True,
+                "busy_rejected_reason": exc.reason,
+                "retry_after_seconds": exc.retry_after_seconds,
+            }
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="failed",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode="failed",
+                citation_count=0,
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                error_message=exc.detail,
+                extra_details=runtime_details,
+            )
+            self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="failed",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=[],
+                response=None,
+                rerank_strategy=rerank_strategy,
+                model=self._response_model_name(profile=profile),
+                content=None,
+                error_message=exc.detail,
+                details={
+                    "title": title,
+                    "generation_mode": "failed",
+                    "citation_count": 0,
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    **runtime_details,
+                },
+            )
+            raise exc.to_http_exception()
         except Exception as exc:
             self._record_generation_event(
                 request_mode=request_mode,
@@ -334,8 +431,37 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=str(exc),
+                extra_details=runtime_details,
+            )
+            self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="failed",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=[],
+                response=None,
+                rerank_strategy=rerank_strategy,
+                model=self._response_model_name(profile=profile),
+                content=None,
+                error_message=str(exc),
+                details={
+                    "title": title,
+                    "generation_mode": "failed",
+                    "citation_count": 0,
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    **runtime_details,
+                },
             )
             raise
+        finally:
+            if runtime_lease is not None:
+                runtime_lease.release()
 
     def _build_citations(
         self,
@@ -401,6 +527,38 @@ class SopGenerationService:
             profile=fallback_profile,
             document_id=document_id,
             auth_context=auth_context,
+        )
+
+    def _acquire_generation_runtime_slot(
+        self,
+        profile: QueryProfile,
+        *,
+        auth_context: AuthContext,
+    ) -> tuple[RuntimeGateLease, dict[str, object]]:
+        concurrency_controls = self.system_config_service.get_concurrency_controls()
+        owner_key = auth_context.user.user_id
+        lease, reject_reason = self.runtime_gate_service.acquire_with_reason(
+            "sop_generation",
+            timeout_ms=concurrency_controls.acquire_timeout_ms,
+            owner_key=owner_key,
+        )
+        if lease is not None:
+            return lease, {
+                "runtime_channel": "sop_generation",
+                "acquire_timeout_ms": concurrency_controls.acquire_timeout_ms,
+                "requested_mode": profile.mode,
+                "runtime_owner_key": owner_key,
+            }
+        raise RuntimeGateBusyError(
+            detail=(
+                "System is busy. Your concurrent request limit is reached. Wait for an earlier request to finish and retry."
+                if reject_reason == "user_limit"
+                else "System is busy. SOP generation capacity is saturated. Retry later."
+            ),
+            channel="sop_generation",
+            reason=reject_reason or "channel_limit",
+            retry_after_seconds=concurrency_controls.busy_retry_after_seconds,
+            requested_mode=profile.mode,
         )
 
     def _build_document_preview_citations(
@@ -663,8 +821,9 @@ class SopGenerationService:
         duration_ms: int,
         downgraded_from: str | None = None,
         error_message: str | None = None,
+        extra_details: dict[str, object] | None = None,
     ) -> None:
-        details: dict[str, object] = {
+        payload: dict[str, object] = {
             "request_mode": request_mode,
             "title": title,
             "generation_mode": generation_mode,
@@ -673,7 +832,9 @@ class SopGenerationService:
             "document_id": document_id,
         }
         if error_message:
-            details["error_message"] = error_message
+            payload["error_message"] = error_message
+        if extra_details is not None:
+            payload.update(extra_details)
         self.event_log_service.record(
             category="sop_generation",
             action=f"generate_{request_mode}",
@@ -687,7 +848,7 @@ class SopGenerationService:
             rerank_top_n=profile.rerank_top_n,
             duration_ms=duration_ms,
             downgraded_from=downgraded_from,
-            details=details,
+            details=payload,
         )
 
     @staticmethod

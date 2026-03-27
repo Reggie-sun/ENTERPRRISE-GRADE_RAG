@@ -9,6 +9,7 @@ from ..db.system_config_repository import FilesystemSystemConfigRepository, Syst
 from ..schemas.auth import AuthContext
 from ..schemas.query_profile import QueryMode, QueryPurpose
 from ..schemas.system_config import (
+    ConcurrencyControlsConfig,
     DegradeControlsConfig,
     ModelRoutingConfig,
     QueryModeConfig,
@@ -46,11 +47,13 @@ class SystemConfigService:
         self._validate_query_profiles(payload.query_profiles)
         self._validate_model_routing(payload.model_routing)
         self._validate_retry_controls(payload.retry_controls)
+        self._validate_concurrency_controls(payload.concurrency_controls)
         record = SystemConfigResponse(
             query_profiles=payload.query_profiles,
             model_routing=payload.model_routing,
             degrade_controls=payload.degrade_controls,
             retry_controls=payload.retry_controls,
+            concurrency_controls=payload.concurrency_controls,
             updated_at=datetime.now(timezone.utc),
             updated_by=auth_context.user.user_id,
         )
@@ -71,6 +74,9 @@ class SystemConfigService:
 
     def get_retry_controls(self) -> RetryControlsConfig:
         return self._load_config().retry_controls
+
+    def get_concurrency_controls(self) -> ConcurrencyControlsConfig:
+        return self._load_config().concurrency_controls
 
     def get_llm_model_for_request(self, *, purpose: QueryPurpose, mode: QueryMode) -> str:
         config = self.get_model_routing()
@@ -111,6 +117,14 @@ class SystemConfigService:
             ),
             degrade_controls=DegradeControlsConfig(),
             retry_controls=RetryControlsConfig(),
+            concurrency_controls=ConcurrencyControlsConfig(
+                fast_max_inflight=self.settings.concurrency_fast_max_inflight,
+                accurate_max_inflight=self.settings.concurrency_accurate_max_inflight,
+                sop_generation_max_inflight=self.settings.concurrency_sop_generation_max_inflight,
+                per_user_online_max_inflight=self.settings.concurrency_per_user_online_max_inflight,
+                acquire_timeout_ms=self.settings.concurrency_acquire_timeout_ms,
+                busy_retry_after_seconds=self.settings.concurrency_busy_retry_after_seconds,
+            ),
         )
 
     @staticmethod
@@ -164,6 +178,24 @@ class SystemConfigService:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="llm_retry_backoff_ms cannot be negative.",
+            )
+
+    @staticmethod
+    def _validate_concurrency_controls(concurrency_controls: ConcurrencyControlsConfig) -> None:
+        if concurrency_controls.accurate_max_inflight > concurrency_controls.fast_max_inflight:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="accurate_max_inflight cannot be greater than fast_max_inflight.",
+            )
+        if concurrency_controls.sop_generation_max_inflight > concurrency_controls.fast_max_inflight:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="sop_generation_max_inflight cannot be greater than fast_max_inflight.",
+            )
+        if concurrency_controls.per_user_online_max_inflight > concurrency_controls.fast_max_inflight:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="per_user_online_max_inflight cannot be greater than fast_max_inflight.",
             )
 
     @staticmethod

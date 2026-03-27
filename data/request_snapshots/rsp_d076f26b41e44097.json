@@ -1,0 +1,121 @@
+{
+  "snapshot_id": "rsp_d076f26b41e44097",
+  "trace_id": "trc_191c9a247d1d4dfe",
+  "request_id": "req_8e7875b49fc24d9b",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-27T06:19:15.656657Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "数字化部常见异常处理流程是什么？",
+    "top_k": 5,
+    "mode": "fast",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "数字化部常见异常处理流程是什么？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+      "document_id": "doc_20260327001645_07fd1ab7",
+      "document_name": "sop_pdf_smoke.txt",
+      "snippet": "数字化部巡检流程\n1. 检查数据库连接状态。\n2. 检查任务调度服务。\n3. 记录异常并升级。",
+      "score": 0.646291,
+      "source_path": "/app/data/uploads/doc_20260327001645_07fd1ab7__sop_pdf_smoke.txt"
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+      "document_id": "doc_20260326065846_b619236e",
+      "document_name": "portal_sop_employee_smoke.txt",
+      "snippet": "数字化部系统巡检SOP测试文档\n\n巡检前检查监控面板和服务状态。\n发现异常后先记录时间、现象、影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": 0.5926981,
+      "source_path": "/app/data/uploads/doc_20260326065846_b619236e__portal_sop_employee_smoke.txt"
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": 0.5904689,
+      "source_path": "/app/data/uploads/doc_20260326054237_2605c799__sop_document_flow_smoke.txt"
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+      "document_id": "doc_20260327001645_07fd1ab7",
+      "document_name": "sop_pdf_smoke.txt",
+      "snippet": "数字化部巡检流程\n1. 检查数据库连接状态。\n2. 检查任务调度服务。\n3. 记录异常并升级。",
+      "score": 0.646291,
+      "source_path": "/app/data/uploads/doc_20260327001645_07fd1ab7__sop_pdf_smoke.txt"
+    },
+    {
+      "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+      "document_id": "doc_20260326065846_b619236e",
+      "document_name": "portal_sop_employee_smoke.txt",
+      "snippet": "数字化部系统巡检SOP测试文档\n\n巡检前检查监控面板和服务状态。\n发现异常后先记录时间、现象、影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": 0.5926981,
+      "source_path": "/app/data/uploads/doc_20260326065846_b619236e__portal_sop_employee_smoke.txt"
+    },
+    {
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": 0.5904689,
+      "source_path": "/app/data/uploads/doc_20260326054237_2605c799__sop_document_flow_smoke.txt"
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "heuristic",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "根据提供的上下文信息，数字化部的常见异常处理流程如下：\n\n1. 发现异常后，首先记录时间、现象以及影响范围。\n2. 接下来通知值班负责人。\n3. 完成处理后，更新值班记录，并归档相关的截图。",
+    "answer_chars": 95,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {}
+}

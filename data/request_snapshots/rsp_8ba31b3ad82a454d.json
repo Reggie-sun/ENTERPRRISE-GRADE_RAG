@@ -1,0 +1,125 @@
+{
+  "snapshot_id": "rsp_8ba31b3ad82a454d",
+  "trace_id": "trc_0203ac89ec714e03",
+  "request_id": "req_d0c28dc008c44923",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-27T07:16:50.910679Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "concurrency_probe_1774595790: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "top_k": null,
+    "mode": "accurate",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 8,
+    "candidate_top_k": 16,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "concurrency_probe_1774595790: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325004749_c5e5de67-chunk-0",
+      "document_id": "doc_20260325004749_c5e5de67",
+      "document_name": "smoke.txt",
+      "snippet": "hello enterprise rag smoke test",
+      "score": 0.51215536,
+      "source_path": "/app/data/uploads/doc_20260325004749_c5e5de67__smoke.txt"
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.50650685,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260321051036_1eb6b16f-chunk-9",
+      "document_id": "doc_20260321051036_1eb6b16f",
+      "document_name": "requirements.txt",
+      "snippet": ".3.4\nrfc3986==1.5.0\nrich==14.2.0\nrotary-embedding-torch==0.8.9\nrpds-py==0.27.1\nrsa==4.9.1\nruff==0.14.2\nsafehttpx==0.1.7\nsafetensors==0.6.2\nsageattention @ file:///home/reggie/sage_wheel_cache/sageattention-2.2.0-cp311-cp311-linux_x86_64.whl#sha256=36b2772af33b1ebebf5ed481d96e91513d92620feb2940898bb06e681c4537ee\nscikit-image==0.25.2\nscikit-learn==1.7.2\nscipy==1.16.3\nsegments==2.3.0\nsemantic-version==2.10.0\nsentencepiece==0.2.1\nsentry-sdk==2.43.0\nsgm @ git+https://github.com/Stability-AI/generative-models@8f41cbc50b50a7863e9df0d5efb024449c419478\nshellingham==1.5.4\nsimsimd==6.5.3\nsix==1.17.0\nsmmap==5.0.2\nsniffio==1.3.1\nsoundfile==0.13.1\nsoupsieve==2.8\nsoxr==1.0.0\nspandrel==0.4.1\nspecific==0.0.1\nSQLAlchemy==2.0.44\nstack-data==0.6.3\nstarlette==0.49.1\nstempeg==0.2.4\nstreamlit==1.50.0",
+      "score": 0.348042884,
+      "source_path": "/app/data/uploads/doc_20260321051036_1eb6b16f__requirements.txt"
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325004749_c5e5de67-chunk-0",
+      "document_id": "doc_20260325004749_c5e5de67",
+      "document_name": "smoke.txt",
+      "snippet": "hello enterprise rag smoke test",
+      "score": 0.51215536,
+      "source_path": "/app/data/uploads/doc_20260325004749_c5e5de67__smoke.txt"
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.50650685,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    },
+    {
+      "chunk_id": "doc_20260321051036_1eb6b16f-chunk-9",
+      "document_id": "doc_20260321051036_1eb6b16f",
+      "document_name": "requirements.txt",
+      "snippet": ".3.4\nrfc3986==1.5.0\nrich==14.2.0\nrotary-embedding-torch==0.8.9\nrpds-py==0.27.1\nrsa==4.9.1\nruff==0.14.2\nsafehttpx==0.1.7\nsafetensors==0.6.2\nsageattention @ file:///home/reggie/sage_wheel_cache/sageattention-2.2.0-cp311-cp311-linux_x86_64.whl#sha256=36b2772af33b1ebebf5ed481d96e91513d92620feb2940898bb06e681c4537ee\nscikit-image==0.25.2\nscikit-learn==1.7.2\nscipy==1.16.3\nsegments==2.3.0\nsemantic-version==2.10.0\nsentencepiece==0.2.1\nsentry-sdk==2.43.0\nsgm @ git+https://github.com/Stability-AI/generative-models@8f41cbc50b50a7863e9df0d5efb024449c419478\nshellingham==1.5.4\nsimsimd==6.5.3\nsix==1.17.0\nsmmap==5.0.2\nsniffio==1.3.1\nsoundfile==0.13.1\nsoupsieve==2.8\nsoxr==1.0.0\nspandrel==0.4.1\nspecific==0.0.1\nSQLAlchemy==2.0.44\nstack-data==0.6.3\nstarlette==0.49.1\nstempeg==0.2.4\nstreamlit==1.50.0",
+      "score": 0.348042884,
+      "source_path": "/app/data/uploads/doc_20260321051036_1eb6b16f__requirements.txt"
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "heuristic",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "根据提供的信息，企业级RAG（检索增强生成）平台已经实现了以下主要能力，可以结构化总结如下：\n\n### 1. 报警/工单联动助手\n- **功能**：在系统报警或工单详情中提供处理建议。\n- **用户视角**：\n  - 报警原因建议\n  - 处理步骤建议\n  - 参考手册链接\n  - 注意事项提示\n\n### 2. 生产数据分析助手\n- **功能**：支持管理层和业务人员通过自然语言查询获取生产数据分析。\n- **用户视角**：\n  - 指标结果展示\n  - 统计图表\n  - 趋势分析\n  - 直接可读的管理结论\n\n### 3. 企业微信移动入口\n- **功能**：通过企业微信提供报警消息通...",
+    "answer_chars": 634,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": "accurate",
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "runtime_channel": "chat_fast",
+    "runtime_busy_fallback": true,
+    "acquire_timeout_ms": 800
+  }
+}

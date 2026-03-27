@@ -196,7 +196,7 @@ class DocumentUploadResponse(BaseModel):  # 定义上传接口成功后的响应
     filename: str  # 原始文件名。
     content_type: str | None = None  # 文件 MIME 类型，可为空。
     size_bytes: int = Field(ge=0)  # 文件大小，单位是字节。
-    status: Literal["ingested"] = "ingested"  # 当前上传状态，固定表示已完成入库。
+    status: Literal["ingested", "partial_failed"] = "ingested"  # 当前上传状态，OCR 非致命告警时允许落 partial_failed。
     parse_supported: bool  # 当前文件类型是否属于系统支持解析的范围。
     storage_path: str  # 原始文件的落盘路径。
     parsed_path: str  # 解析后纯文本文件的路径。
@@ -205,6 +205,7 @@ class DocumentUploadResponse(BaseModel):  # 定义上传接口成功后的响应
     parser_name: str  # 本次使用的解析器名称。
     chunk_count: int = Field(ge=0)  # 本次生成的 chunk 数量。
     vector_count: int = Field(ge=0)  # 本次写入的向量数量。
+    warning_message: str | None = None  # OCR fallback 告警等非致命问题。
     created_at: datetime  # 本次上传完成的时间。
 
 

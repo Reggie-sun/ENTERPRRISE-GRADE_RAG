@@ -168,6 +168,25 @@ class _FakeGenerationClient:
         return self.answer
 
 
+class _FakeRuntimeGateLease:
+    def release(self) -> None:
+        return None
+
+
+class _FakeRuntimeGateService:
+    def __init__(self, *, outcomes: dict[str, list[bool]]) -> None:
+        self.outcomes = {channel: list(items) for channel, items in outcomes.items()}
+        self.calls: list[tuple[str, int | None]] = []
+
+    def acquire(self, channel: str, *, timeout_ms: int | None = None):
+        self.calls.append((channel, timeout_ms))
+        items = self.outcomes.setdefault(channel, [True])
+        allowed = items.pop(0) if items else True
+        if not allowed:
+            return None
+        return _FakeRuntimeGateLease()
+
+
 class _FakeDocumentService:
     def __init__(
         self,
@@ -361,6 +380,7 @@ def test_sop_generation_service_respects_retrieval_fallback_toggle(tmp_path: Pat
                 update={"retrieval_fallback_enabled": False}
             ),
             retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
         ),
         auth_context=admin_context,
     )
@@ -464,6 +484,7 @@ def test_sop_generation_service_uses_configured_sop_model_route(tmp_path: Path) 
             ),
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
         ),
         auth_context=_build_auth_context(identity_service, username="sys.admin", password="sys-admin-pass"),
     )
@@ -667,3 +688,40 @@ def test_sop_generation_service_still_rejects_document_generation_when_preview_i
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "No relevant evidence was retrieved for SOP generation."
+
+
+def test_sop_generation_service_returns_429_when_runtime_gate_is_busy(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.employee",
+        password="digitalization-employee-pass",
+    )
+    fake_gate = _FakeRuntimeGateService(outcomes={"sop_generation": [False]})
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService([]),
+        document_service=_FakeDocumentService(
+            {"doc_digitalization": "dept_digitalization"},
+            file_name_map={"doc_digitalization": "数字化巡检手册.txt"},
+            preview_text_map={"doc_digitalization": "巡检前先确认服务在线。"},
+        ),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(answer="占位 SOP 草稿"),
+        runtime_gate_service=fake_gate,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.generate_from_document(
+            request=SopGenerateByDocumentRequest(
+                document_id="doc_digitalization",
+                mode="accurate",
+            ),
+            auth_context=auth_context,
+        )
+
+    assert exc_info.value.status_code == 429
+    assert exc_info.value.detail == "System is busy. SOP generation capacity is saturated. Retry later."
+    assert exc_info.value.headers == {"Retry-After": "5"}
+    assert fake_gate.calls == [("sop_generation", 800)]

@@ -59,6 +59,9 @@ def test_get_system_config_endpoint_returns_defaults_for_sys_admin(tmp_path: Pat
     assert payload["model_routing"]["fast_model"] == "qwen2.5:7b"
     assert payload["degrade_controls"]["rerank_fallback_enabled"] is True
     assert payload["retry_controls"]["llm_retry_max_attempts"] == 2
+    assert payload["concurrency_controls"]["fast_max_inflight"] == 24
+    assert payload["concurrency_controls"]["accurate_max_inflight"] == 6
+    assert payload["concurrency_controls"]["per_user_online_max_inflight"] == 3
 
 
 def test_get_system_config_endpoint_rejects_department_admin(tmp_path: Path) -> None:
@@ -112,6 +115,14 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
                     "llm_retry_max_attempts": 3,
                     "llm_retry_backoff_ms": 900,
                 },
+                "concurrency_controls": {
+                    "fast_max_inflight": 30,
+                    "accurate_max_inflight": 8,
+                    "sop_generation_max_inflight": 4,
+                    "per_user_online_max_inflight": 3,
+                    "acquire_timeout_ms": 1200,
+                    "busy_retry_after_seconds": 9,
+                },
             },
         )
         follow_up = client.get("/api/v1/system-config", headers=headers)
@@ -126,6 +137,9 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
     assert follow_up.json()["model_routing"]["accurate_model"] == "Qwen/Accurate-14B"
     assert follow_up.json()["degrade_controls"]["retrieval_fallback_enabled"] is False
     assert follow_up.json()["retry_controls"]["llm_retry_max_attempts"] == 3
+    assert follow_up.json()["concurrency_controls"]["fast_max_inflight"] == 30
+    assert follow_up.json()["concurrency_controls"]["per_user_online_max_inflight"] == 3
+    assert follow_up.json()["concurrency_controls"]["busy_retry_after_seconds"] == 9
 
 
 def test_update_system_config_endpoint_validates_profile_relationships(tmp_path: Path) -> None:
@@ -165,6 +179,14 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
                     "llm_retry_enabled": True,
                     "llm_retry_max_attempts": 2,
                     "llm_retry_backoff_ms": 400,
+                },
+                "concurrency_controls": {
+                    "fast_max_inflight": 24,
+                    "accurate_max_inflight": 6,
+                    "sop_generation_max_inflight": 3,
+                    "per_user_online_max_inflight": 3,
+                    "acquire_timeout_ms": 800,
+                    "busy_retry_after_seconds": 5,
                 },
             },
         )

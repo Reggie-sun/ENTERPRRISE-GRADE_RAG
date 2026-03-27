@@ -1,0 +1,158 @@
+{
+  "snapshot_id": "rsp_844444235d6941ac",
+  "trace_id": "trc_a6e17c40b1734ad9",
+  "request_id": "req_cfeb6b36b118459f",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-27T07:16:37.197086Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "concurrency_probe_1774595790: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "top_k": null,
+    "mode": "accurate",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "concurrency_probe_1774595790: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325004749_c5e5de67-chunk-0",
+      "document_id": "doc_20260325004749_c5e5de67",
+      "document_name": "smoke.txt",
+      "snippet": "hello enterprise rag smoke test",
+      "score": 0.51215536,
+      "source_path": "/app/data/uploads/doc_20260325004749_c5e5de67__smoke.txt"
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.50650685,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260321051036_1eb6b16f-chunk-9",
+      "document_id": "doc_20260321051036_1eb6b16f",
+      "document_name": "requirements.txt",
+      "snippet": ".3.4\nrfc3986==1.5.0\nrich==14.2.0\nrotary-embedding-torch==0.8.9\nrpds-py==0.27.1\nrsa==4.9.1\nruff==0.14.2\nsafehttpx==0.1.7\nsafetensors==0.6.2\nsageattention @ file:///home/reggie/sage_wheel_cache/sageattention-2.2.0-cp311-cp311-linux_x86_64.whl#sha256=36b2772af33b1ebebf5ed481d96e91513d92620feb2940898bb06e681c4537ee\nscikit-image==0.25.2\nscikit-learn==1.7.2\nscipy==1.16.3\nsegments==2.3.0\nsemantic-version==2.10.0\nsentencepiece==0.2.1\nsentry-sdk==2.43.0\nsgm @ git+https://github.com/Stability-AI/generative-models@8f41cbc50b50a7863e9df0d5efb024449c419478\nshellingham==1.5.4\nsimsimd==6.5.3\nsix==1.17.0\nsmmap==5.0.2\nsniffio==1.3.1\nsoundfile==0.13.1\nsoupsieve==2.8\nsoxr==1.0.0\nspandrel==0.4.1\nspecific==0.0.1\nSQLAlchemy==2.0.44\nstack-data==0.6.3\nstarlette==0.49.1\nstempeg==0.2.4\nstreamlit==1.50.0",
+      "score": 0.348042884,
+      "source_path": "/app/data/uploads/doc_20260321051036_1eb6b16f__requirements.txt"
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-17",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "查看这些比较。然后是一些跨方法验证，这在计算上相当密集。所以我们将使用一个叫做slingshot的库，或者你可以使用monocle three，随你选择。\nAnd you'll kind of compare those inferred trajectories and branch assignments from the paga and the dpt results, and you'll kind of discuss those concordances or discrepancies.\n然后你会比较那些从塔和dpt结果中推断出的轨迹和分支分配，并讨论这些一致性或差异。\nAnd then there'll be some advanced stretches, if you want to, some things into, like dynamic time warping, which is pretty interesting.\n然后会有一些高级的拉伸动作，如果你想的话，比如动态时间扭曲，这挺有意思的。\nAnd then maybe some pathway enrichments or some rna velocities, but I'll leave it up to you how deep you want to get into that stuff, but it gets, it gets pretty in depth, and you'll be able to quantify things from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay,",
+      "score": 0.33931407999999996,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt"
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "│\n│ 私有化部署 / 混合云部署 / 安全审计 / 监控运维             │\n└──────────────────────────────────────────────────────────┘\n```\n\n---\n\n## 4. 核心架构分层\n\n### 4.1 使用入口层\n\n这一层负责承接不同使用场景，让用户在熟悉的入口中使用智能助手。\n\n主要入口包括：\n\n- DFMS 系统内嵌入口\n- 企业微信工作台入口\n- 企业微信告警消息 / 通知入口\n- 管理后台入口\n- 外部业务系统接口入口\n\n这层的价值，不是增加一个新系统，而是把 AI 能力放进现有工作流程里。\n\n### 4.2 智能交互层\n\n这一层负责把不同业务场景组织成统一交互体验。\n\n包括：\n\n- 智能问答\n- 报警辅助处理\n- 工单协同\n- 数据分析入口\n- 结果展示与引用查看\n\n这一层面向用户，强调“好用”和“可进入实际业务流程”。\n\n### 4.3 智能能力层\n\n这一层是系统核心，负责把知识、数据和模型能力变成可用的业务能力。\n\n主要包含：\n\n- 页面和业务上下文识别\n- 企业知识检索与回答生成\n- 故障维修建议生成\n- 自然语言数据分析\n- 多轮问题理解与结果组织\n\n这层是项目真正的“智能中台”。\n\n### 4.4 数据与业务层\n\n这一层是智能能力的业务基础，包含两类关键数据：\n\n1. 业务数据\n   来自 DFMS 的设备、报警、工单、生产、效率等数据\n\n2. 知识数据\n   来自手册、维修文档、技术规范、历史案例等资料\n\n这层同时统一承接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维",
+      "score": 0.33414870999999996,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325004749_c5e5de67-chunk-0",
+      "document_id": "doc_20260325004749_c5e5de67",
+      "document_name": "smoke.txt",
+      "snippet": "hello enterprise rag smoke test",
+      "score": 0.51215536,
+      "source_path": "/app/data/uploads/doc_20260325004749_c5e5de67__smoke.txt"
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.50650685,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    },
+    {
+      "chunk_id": "doc_20260321051036_1eb6b16f-chunk-9",
+      "document_id": "doc_20260321051036_1eb6b16f",
+      "document_name": "requirements.txt",
+      "snippet": ".3.4\nrfc3986==1.5.0\nrich==14.2.0\nrotary-embedding-torch==0.8.9\nrpds-py==0.27.1\nrsa==4.9.1\nruff==0.14.2\nsafehttpx==0.1.7\nsafetensors==0.6.2\nsageattention @ file:///home/reggie/sage_wheel_cache/sageattention-2.2.0-cp311-cp311-linux_x86_64.whl#sha256=36b2772af33b1ebebf5ed481d96e91513d92620feb2940898bb06e681c4537ee\nscikit-image==0.25.2\nscikit-learn==1.7.2\nscipy==1.16.3\nsegments==2.3.0\nsemantic-version==2.10.0\nsentencepiece==0.2.1\nsentry-sdk==2.43.0\nsgm @ git+https://github.com/Stability-AI/generative-models@8f41cbc50b50a7863e9df0d5efb024449c419478\nshellingham==1.5.4\nsimsimd==6.5.3\nsix==1.17.0\nsmmap==5.0.2\nsniffio==1.3.1\nsoundfile==0.13.1\nsoupsieve==2.8\nsoxr==1.0.0\nspandrel==0.4.1\nspecific==0.0.1\nSQLAlchemy==2.0.44\nstack-data==0.6.3\nstarlette==0.49.1\nstempeg==0.2.4\nstreamlit==1.50.0",
+      "score": 0.348042884,
+      "source_path": "/app/data/uploads/doc_20260321051036_1eb6b16f__requirements.txt"
+    },
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-17",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "查看这些比较。然后是一些跨方法验证，这在计算上相当密集。所以我们将使用一个叫做slingshot的库，或者你可以使用monocle three，随你选择。\nAnd you'll kind of compare those inferred trajectories and branch assignments from the paga and the dpt results, and you'll kind of discuss those concordances or discrepancies.\n然后你会比较那些从塔和dpt结果中推断出的轨迹和分支分配，并讨论这些一致性或差异。\nAnd then there'll be some advanced stretches, if you want to, some things into, like dynamic time warping, which is pretty interesting.\n然后会有一些高级的拉伸动作，如果你想的话，比如动态时间扭曲，这挺有意思的。\nAnd then maybe some pathway enrichments or some rna velocities, but I'll leave it up to you how deep you want to get into that stuff, but it gets, it gets pretty in depth, and you'll be able to quantify things from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay,",
+      "score": 0.33931407999999996,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt"
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "│\n│ 私有化部署 / 混合云部署 / 安全审计 / 监控运维             │\n└──────────────────────────────────────────────────────────┘\n```\n\n---\n\n## 4. 核心架构分层\n\n### 4.1 使用入口层\n\n这一层负责承接不同使用场景，让用户在熟悉的入口中使用智能助手。\n\n主要入口包括：\n\n- DFMS 系统内嵌入口\n- 企业微信工作台入口\n- 企业微信告警消息 / 通知入口\n- 管理后台入口\n- 外部业务系统接口入口\n\n这层的价值，不是增加一个新系统，而是把 AI 能力放进现有工作流程里。\n\n### 4.2 智能交互层\n\n这一层负责把不同业务场景组织成统一交互体验。\n\n包括：\n\n- 智能问答\n- 报警辅助处理\n- 工单协同\n- 数据分析入口\n- 结果展示与引用查看\n\n这一层面向用户，强调“好用”和“可进入实际业务流程”。\n\n### 4.3 智能能力层\n\n这一层是系统核心，负责把知识、数据和模型能力变成可用的业务能力。\n\n主要包含：\n\n- 页面和业务上下文识别\n- 企业知识检索与回答生成\n- 故障维修建议生成\n- 自然语言数据分析\n- 多轮问题理解与结果组织\n\n这层是项目真正的“智能中台”。\n\n### 4.4 数据与业务层\n\n这一层是智能能力的业务基础，包含两类关键数据：\n\n1. 业务数据\n   来自 DFMS 的设备、报警、工单、生产、效率等数据\n\n2. 知识数据\n   来自手册、维修文档、技术规范、历史案例等资料\n\n这层同时统一承接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维",
+      "score": 0.33414870999999996,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md"
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "heuristic",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "企业级RAG平台当前已实现的主要能力可以结构化总结如下：\n\n### 1. 使用入口层\n- **DFMS系统内嵌入口**\n- **企业微信工作台入口**\n- **企业微信告警消息/通知入口**\n- **管理后台入口**\n- **外部业务系统接口入口**\n\n### 2. 智能交互层\n- **智能问答**\n- **报警辅助处理**\n- **工单协同**\n- **数据分析入口**\n- **结果展示与引用查看**\n\n### 3. 智能能力层\n- **页面和业务上下文识别**\n- **企业知识检索与回答生成**\n- **故障维修建议生成**\n- **自然语言数据分析**\n- **多轮问题理解与结果组...",
+    "answer_chars": 515,
+    "citation_count": 5,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "runtime_channel": "chat_accurate",
+    "acquire_timeout_ms": 800
+  }
+}

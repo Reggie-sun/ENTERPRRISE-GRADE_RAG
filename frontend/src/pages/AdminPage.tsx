@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, Input, StatusPill } from '@/components';
 import {
+  type ConcurrencyControlsConfig,
   type DegradeControlsConfig,
   formatApiError,
   getAuthBootstrap,
@@ -75,6 +76,21 @@ function buildEmptyRetryControls(): RetryControlsConfig {
 
 function cloneRetryControls(retryControls: RetryControlsConfig): RetryControlsConfig {
   return { ...retryControls };
+}
+
+function buildEmptyConcurrencyControls(): ConcurrencyControlsConfig {
+  return {
+    fast_max_inflight: 24,
+    accurate_max_inflight: 6,
+    sop_generation_max_inflight: 3,
+    per_user_online_max_inflight: 3,
+    acquire_timeout_ms: 800,
+    busy_retry_after_seconds: 5,
+  };
+}
+
+function cloneConcurrencyControls(concurrencyControls: ConcurrencyControlsConfig): ConcurrencyControlsConfig {
+  return { ...concurrencyControls };
 }
 
 function normalizeNumber(value: string, fallback: number): number {
@@ -205,6 +221,8 @@ export function AdminPage() {
   const [savedDegradeControls, setSavedDegradeControls] = useState<DegradeControlsConfig>(buildEmptyDegradeControls());
   const [retryControls, setRetryControls] = useState<RetryControlsConfig>(buildEmptyRetryControls());
   const [savedRetryControls, setSavedRetryControls] = useState<RetryControlsConfig>(buildEmptyRetryControls());
+  const [concurrencyControls, setConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
+  const [savedConcurrencyControls, setSavedConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [refreshTick, setRefreshTick] = useState(0);
 
@@ -225,6 +243,8 @@ export function AdminPage() {
         setSavedDegradeControls(cloneDegradeControls(configPayload.degrade_controls));
         setRetryControls(cloneRetryControls(configPayload.retry_controls));
         setSavedRetryControls(cloneRetryControls(configPayload.retry_controls));
+        setConcurrencyControls(cloneConcurrencyControls(configPayload.concurrency_controls));
+        setSavedConcurrencyControls(cloneConcurrencyControls(configPayload.concurrency_controls));
         setUpdatedAt(configPayload.updated_at);
         setUpdatedBy(configPayload.updated_by);
         setUsers(bootstrapPayload.users);
@@ -244,8 +264,9 @@ export function AdminPage() {
       || JSON.stringify(modelRouting) !== JSON.stringify(savedModelRouting)
       || JSON.stringify(degradeControls) !== JSON.stringify(savedDegradeControls)
       || JSON.stringify(retryControls) !== JSON.stringify(savedRetryControls)
+      || JSON.stringify(concurrencyControls) !== JSON.stringify(savedConcurrencyControls)
     ),
-    [profiles, savedProfiles, modelRouting, savedModelRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls],
+    [profiles, savedProfiles, modelRouting, savedModelRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls, concurrencyControls, savedConcurrencyControls],
   );
 
   const updatedByLabel = useMemo(() => {
@@ -286,6 +307,13 @@ export function AdminPage() {
     }));
   };
 
+  const updateConcurrencyControl = (field: keyof ConcurrencyControlsConfig, value: number) => {
+    setConcurrencyControls((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
   const handleSave = async () => {
     setSaveStatus('loading');
     setSaveError('');
@@ -295,6 +323,7 @@ export function AdminPage() {
         model_routing: modelRouting,
         degrade_controls: degradeControls,
         retry_controls: retryControls,
+        concurrency_controls: concurrencyControls,
       });
       setProfiles(cloneProfiles(payload.query_profiles));
       setSavedProfiles(cloneProfiles(payload.query_profiles));
@@ -304,6 +333,8 @@ export function AdminPage() {
       setSavedDegradeControls(cloneDegradeControls(payload.degrade_controls));
       setRetryControls(cloneRetryControls(payload.retry_controls));
       setSavedRetryControls(cloneRetryControls(payload.retry_controls));
+      setConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
+      setSavedConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
       setUpdatedAt(payload.updated_at);
       setUpdatedBy(payload.updated_by);
       setSaveStatus('success');
@@ -506,6 +537,74 @@ export function AdminPage() {
           </Card>
         </div>
 
+        <div className="mt-5">
+          <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">并发阈值</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                控制在线问答和 SOP 生成各通道最多同时占用多少槽位，同时限制单个用户最多能占多少在线请求，避免一人把 fast / accurate / SOP 槽位吃满。
+              </p>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <Input
+                label="fast_max_inflight"
+                type="number"
+                min={1}
+                max={200}
+                value={String(concurrencyControls.fast_max_inflight)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('fast_max_inflight', normalizeNumber(event.target.value, concurrencyControls.fast_max_inflight))}
+              />
+              <Input
+                label="accurate_max_inflight"
+                type="number"
+                min={1}
+                max={100}
+                value={String(concurrencyControls.accurate_max_inflight)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('accurate_max_inflight', normalizeNumber(event.target.value, concurrencyControls.accurate_max_inflight))}
+              />
+              <Input
+                label="sop_generation_max_inflight"
+                type="number"
+                min={1}
+                max={50}
+                value={String(concurrencyControls.sop_generation_max_inflight)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('sop_generation_max_inflight', normalizeNumber(event.target.value, concurrencyControls.sop_generation_max_inflight))}
+              />
+              <Input
+                label="per_user_online_max_inflight"
+                type="number"
+                min={1}
+                max={20}
+                value={String(concurrencyControls.per_user_online_max_inflight)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('per_user_online_max_inflight', normalizeNumber(event.target.value, concurrencyControls.per_user_online_max_inflight))}
+              />
+              <Input
+                label="acquire_timeout_ms"
+                type="number"
+                min={0}
+                max={30000}
+                step="50"
+                value={String(concurrencyControls.acquire_timeout_ms)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('acquire_timeout_ms', normalizeNumber(event.target.value, concurrencyControls.acquire_timeout_ms))}
+              />
+              <Input
+                label="busy_retry_after_seconds"
+                type="number"
+                min={1}
+                max={300}
+                value={String(concurrencyControls.busy_retry_after_seconds)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateConcurrencyControl('busy_retry_after_seconds', normalizeNumber(event.target.value, concurrencyControls.busy_retry_after_seconds))}
+              />
+            </div>
+          </Card>
+        </div>
+
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-[rgba(255,255,255,0.72)] px-4 py-4">
           <div className="grid gap-2 text-sm text-ink-soft">
             <div className="inline-flex items-center gap-2 text-ink">
@@ -514,7 +613,7 @@ export function AdminPage() {
             </div>
             <div className="inline-flex items-center gap-2">
               <Wrench className="h-4 w-4" />
-              后续再继续往这一页补模型 provider、rewrite、轻记忆和并发阈值控制。
+              后续再继续往这一页补模型 provider、rewrite 和轻记忆控制。
             </div>
           </div>
           <div className="flex items-center gap-2">

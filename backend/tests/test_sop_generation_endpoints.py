@@ -2,11 +2,13 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from backend.app.core.config import Settings, ensure_data_directories
 from backend.app.main import app
 from backend.app.rag.generators.client import LLMGenerationRetryableError
 from backend.app.schemas.retrieval import RetrievalResponse, RetrievedChunk
 from backend.app.services.auth_service import AuthService, get_auth_service
 from backend.app.services.identity_service import get_identity_service
+from backend.app.services.request_snapshot_service import RequestSnapshotService
 from backend.app.services.sop_generation_service import SopGenerationService, get_sop_generation_service
 from backend.tests.test_sop_generation_service import _FakeDocumentService, _FakeRetrievalService, _build_identity_service
 
@@ -35,9 +37,21 @@ class _FakeGenerationClient:
 
 
 def _build_client(tmp_path: Path) -> TestClient:
+    settings = Settings(
+        _env_file=None,
+        app_env="test",
+        debug=True,
+        data_dir=tmp_path / "data",
+        request_snapshot_dir=(tmp_path / "data" / "request_snapshots"),
+        llm_provider="openai",
+        llm_base_url="http://llm.test/v1",
+        llm_model="Qwen/Test-14B",
+    )
+    ensure_data_directories(settings)
     identity_service = _build_identity_service(tmp_path)
     auth_service = AuthService(identity_service=identity_service)
     sop_generation_service = SopGenerationService(
+        settings=settings,
         identity_service=identity_service,
         retrieval_service=_FakeRetrievalService(
             [
@@ -67,6 +81,7 @@ def _build_client(tmp_path: Path) -> TestClient:
         ),
         reranker_client=_FakeRerankerClient(),
         generation_client=_FakeGenerationClient(answer="这是生成后的 SOP 草稿。"),
+        request_snapshot_service=RequestSnapshotService(settings),
     )
 
     app.dependency_overrides[get_identity_service] = lambda: identity_service
@@ -150,6 +165,7 @@ def test_generate_sop_by_document_endpoint_returns_draft_for_department_admin(tm
     assert payload["request_mode"] == "document"
     assert payload["department_id"] == "dept_digitalization"
     assert payload["content"] == "这是生成后的 SOP 草稿。"
+    assert payload["snapshot_id"]
     assert payload["topic"] == "doc_digitalization"
     assert [item["document_id"] for item in payload["citations"]] == ["doc_digitalization"]
 

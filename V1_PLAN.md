@@ -47,17 +47,20 @@
 
 以下内容在这一轮计划中视为固定底座，不主动推翻：
 
-- 当前向量检索底座继续沿用
+- 当前在线检索底座继续沿用：
+  `query -> embedding -> Qdrant vector search -> results`
 - 当前 Embedding / Rerank / LLM 接入方式继续沿用
 - 当前异步入库主链路继续沿用：
   `上传 -> document/job -> worker -> 向量入库 -> 检索 / 问答`
 - 当前本地开发与服务器协同的运行基线继续沿用
+- 当前不把关键词检索 / BM25 / RRF 混合检索视为已完成能力
 
 这意味着：
 
 - 本轮先做产品能力，不先做基础设施重构
 - 文档里可以保留需求文档的目标表述，但实现计划不能倒逼切库、切模型、重写部署
 - 模型级 `rerank` 暂时不阻塞 `v0.4.0`，先用当前 `heuristic rerank` 跑通首轮业务试点
+- OCR 图片处理不纳入当前冻结底座，但必须在 `v0.5.0` SOP 直生前补上最小可用版，否则扫描件和图片资料无法进入主链路
 
 补充说明：
 
@@ -66,6 +69,9 @@
   `vLLM(OpenAI-compatible)` 
 - 同时预留统一的外部 LLM API provider 边界，便于后续接公司外部模型服务、云 API 或高峰期兜底
 - 业务层不直接依赖某一家 provider 的特有字段，问答、SOP、日志、配置统一只依赖内部 LLM provider 抽象
+- 当前 retrieval 主召回是纯向量召回，不要在计划里把它误写成“已经有关键词检索”
+- 当前代码里只有轻量 token overlap `heuristic rerank`，它属于重排信号，不等同于第一阶段关键词召回
+- 关键词 / BM25 / hybrid retrieval 属于后续在线检索质量增强，不属于当前已冻结底座
 - 当前代码已经有 `rerank` 插槽，但 provider 仍是 `heuristic`
 - 模型级 `rerank` 不属于异步入库改造，而属于在线检索质量增强
 - 更合适的接入时机是：
@@ -87,6 +93,13 @@
 - 问答生成
 - citations 返回
 - 前端基础上传 / 检索 / 问答联调
+- 在线主检索当前是：
+  `query -> embedding -> Qdrant vector search -> results`
+- 问答和 SOP 上层链路当前再接：
+  `retrieval -> heuristic rerank -> LLM`
+- 当前还没有正式的关键词检索 / BM25 / RRF hybrid retrieval
+- 当前 `heuristic rerank` 里的 token overlap 只是重排信号，不是第一阶段关键词召回
+- 但当前主链路还不支持扫描件 / 图片 OCR，也还没有正式的模型级 `rerank` 服务
 
 所以接下来的计划，不应该从“零开始搭系统”写，而应该从“基于已跑通链路逐步扩功能”写。
 
@@ -137,7 +150,7 @@
 - 后端：
   认证鉴权、异步入库、RAG 问答、SOP 生成、日志审计、企业微信接入
 
-但实现上不按一个版本做完，而是拆成下面 6 个连续小版本。
+但实现上不按一个版本做完，而是拆成下面这些连续小版本。
 
 ---
 
@@ -664,6 +677,158 @@
 - 问答与检索先继续使用当前 `heuristic rerank`
 - 如果首轮业务试点已经暴露出“召回有了，但排序不准、引用不稳、上下文质量不够”的问题，再把模型级 `rerank` 拉进下一步
 - 不建议为了 `v0.4.0` 先引入新的 rerank 模型服务，把试点时间推迟
+- OCR 图片处理和模型级 `rerank` 单独收敛到 `v0.4.5`，作为 `v0.5.0` SOP 直生前的能力增强版
+
+### 6.4.5 `v0.4.5` OCR 图片处理、混合检索与检索质量增强
+
+目标：
+
+- 在 SOP 直生前补齐扫描件 / 图片资料可入库能力，并提升在线召回与证据排序质量
+
+必须完成：
+
+- 扫描 PDF / 图片文件 OCR 入库
+- 原生解析优先、文本不足时 OCR fallback
+- 把已预留的 `ocr_processing` ingest 阶段真正接上主链路，并补页级失败语义
+- 在线轻量混合检索接入：
+  `vector recall + keyword/BM25 recall + fusion`
+- 在线模型级 `rerank` 接入
+- `fast / accurate` 两档的 `candidate_top_k / lexical_top_k / rerank_top_n / timeout` 参数冻结
+
+明确不做：
+
+- 完整版面分析
+- 复杂表格结构化抽取
+- 引用高亮 bbox 坐标
+- 独立 OCR 集群调度
+- 历史文档全量重跑
+- 为了关键词召回单独引入 `Elasticsearch / OpenSearch` 集群
+
+低耦合要求：
+
+- OCR 只进入异步入库链路：
+  `上传 -> document/job -> parse/native_extract -> ocr -> chunk -> embedding -> index`
+- 混合检索只进入在线检索链路：
+  `query -> embedding/vector recall + keyword recall -> fusion -> rerank -> LLM / chat / SOP generation`
+- 模型级 `rerank` 只进入在线检索链路：
+  `Qdrant top_k -> rerank -> LLM / chat / SOP generation`
+- OCR 不反向阻塞已有原生 PDF / DOCX / TXT 文档主链路
+- 关键词索引优先复用当前 chunk 文本和元数据做轻量副本，不把关键词索引当新的主数据真源
+- 模型级 `rerank` 保留 `heuristic` 作为降级路径，不把线上可用性绑死到单一服务
+- 关键词召回分支不可用时必须能自动退回纯向量召回
+- 需要 OCR 的历史文档按需重入库，不把一次性全量补跑作为上线前置
+
+验收标准：
+
+- 能上传一份扫描 PDF 或图片并完成异步入库
+- 能从 OCR 文档里检索到有效 chunk，并用于问答引用
+- 对明显依赖专有名词、设备名、料号、工序名的查询，混合检索结果明显优于纯向量召回基线
+- `document_id` 过滤在向量召回和关键词召回两条分支上都语义一致
+- `accurate` 档能稳定走模型级 `rerank`，不可用时自动降级到 `heuristic`
+- OCR 页级失败时任务可落到 `partial_failed` 并继续完成可用结果，不要求整份文档直接失败
+
+具体拆分：
+
+后端：
+
+- 在文档解析链路增加最小文件判别：
+  区分原生可抽取文本文档和需要 OCR 的扫描页 / 图片
+- 引入主 OCR provider：
+  先以 `PaddleOCR` 为主，不把 `Tesseract` 当线上主方案
+- 新增 OCR 中间产物与文本归一逻辑：
+  至少输出页级文本、基础置信度和可回溯路径
+- 把已预留的 ingest 状态真正落到执行链路：
+  `queued / parsing / ocr_processing / chunking / embedding / indexing / completed / partial_failed / failed / dead_letter`
+- 在现有检索链路上新增轻量 lexical retriever 抽象，优先实现 BM25 或同级别关键词召回，不额外引入重量级搜索集群
+- 在 `RetrievalService` 增加 hybrid fusion：
+  统一收口向量候选、关键词候选和最终融合结果
+- 在现有 `RerankerClient` 抽象上新增 provider 实现，保留 `heuristic` 兜底
+- 给 query profile 冻结两套在线参数：
+  `fast` 偏速度，`accurate` 偏质量
+- 问答、检索、SOP 生成统一复用同一套 hybrid retrieval + rerank 输出，不各自实现一份召回 / 排序逻辑
+
+前端：
+
+- 上传 / 入库状态里展示 `ocr_processing`
+- 对 OCR 中、OCR 页级失败、`partial_failed` 给出明确提示
+- 问答页和 SOP 页明确标注 `fast / accurate` 的质量差异
+- 不要求前端额外区分 OCR 文档和原生文本文档的操作入口，保持统一上传入口
+
+数据与接口：
+
+- 文档 / chunk 元数据至少预留：
+  `ocr_used / page_no / parser_name / quality_score`
+- OCR 中间产物和最终 parsed text 分开存放，避免后续重跑 OCR 时互相覆盖
+- `fast / accurate` 先共享同一套 chunk 数据，不为 OCR 文档单独维护第二套索引
+- 为关键词召回预留轻量索引副本或缓存层，但不把它设计成新的主数据真源
+- trace / snapshot / debug 输出里预留：
+  `retrieval_strategy / vector_score / lexical_score / fused_score`
+- 模型级 `rerank` 不进入异步入库链路，不要求重跑历史 embedding
+
+测试与验收：
+
+- 覆盖原生 PDF 不走 OCR
+- 覆盖扫描 PDF / 图片走 OCR 成功
+- 覆盖 OCR 页级失败后任务进入 `partial_failed`
+- 覆盖明显关键词查询在 hybrid 下比 vector-only 更稳
+- 覆盖关键词召回分支失败后自动退回纯向量召回
+- 覆盖模型级 `rerank` 成功、超时、远端不可用后降级到 `heuristic`
+- 覆盖问答与 SOP 生成看到同一批 rerank 后证据
+
+建议按 issue 拆分：
+
+1. OCR 文件判别与 ingest 状态扩展
+
+- 补最小文件类型判断
+- 把已预留的 `ocr_processing / partial_failed` 状态口径真正落到入库执行
+- 明确 job 进度和错误语义
+
+2. OCR 处理链路
+
+- 接入 `PaddleOCR`
+- 实现扫描 PDF / 图片页文本抽取
+- 保存页级 OCR 结果和归一化文本
+
+3. 轻量混合检索接入
+
+- 增加 lexical retriever 抽象
+- 接入 BM25 或等价关键词召回
+- 在 `RetrievalService` 实现 hybrid fusion 和 vector-only fallback
+
+4. 模型级 `rerank` 接入
+
+- 扩展当前 `RerankerClient` provider
+- 接入独立 reranker 服务或 openai-compatible rerank 接口
+- 保留 `heuristic` 作为降级路径
+
+5. 在线参数档位冻结
+
+- 固化 `fast / accurate` 两档参数
+- 固化 `candidate_top_k / lexical_top_k / rerank_top_n / timeout_budget` 口径
+- 明确 `accurate -> fast`、`model rerank -> heuristic` 的降级路径
+
+6. 前端状态与模式提示
+
+- 上传状态展示 OCR 阶段
+- 问答 / SOP 页面补质量档位说明
+- 对 `partial_failed` 给出可理解提示
+
+7. 回归测试与小样本验收
+
+- 覆盖 OCR 与 rerank 成功路径
+- 覆盖 OCR / rerank 降级路径
+- 覆盖 hybrid retrieval 成功与退回 vector-only 路径
+- 至少准备一组扫描件 / 图片样例做人工验证
+
+建议执行顺序：
+
+1. 先做 `OCR 文件判别与 ingest 状态扩展`
+2. 再做 `OCR 处理链路`
+3. 再做 `轻量混合检索接入`
+4. 再做 `模型级 rerank 接入`
+5. 然后做 `在线参数档位冻结`
+6. 再做 `前端状态与模式提示`
+7. 最后做 `回归测试与小样本验收`
 
 ### 6.5 `v0.5.0` SOP 文档直生与轻交付
 
@@ -695,6 +860,7 @@
 低耦合要求：
 
 - SOP 生成服务复用现有检索能力
+- 复用上一版 OCR 解析结果和模型级 `rerank` 输出，不在这版再单独造第二套文档理解链路
 - 生成结果单独存为 SOP 对象，不直接混写原始文档对象
 - `fast / accurate` 两档先共享同一套 chunk 数据，不在这版先做双索引或双 chunk 规则
 - 员工端主流程不强依赖后台工作台；如果保留内部工作台，只作为调试和补录入口，不作为产品主路径
@@ -711,10 +877,8 @@
 
 后端：
 
-- 新增模型级 `rerank` 接入，替换或扩展当前 `heuristic rerank`
-- 模型级 `rerank` 只放在在线检索链路：
-  `Qdrant top_k -> rerank -> LLM / SOP generation`
-- 明确模型级 `rerank` 不进入异步入库链路，不要求重跑历史文档 embedding
+- 复用上一版模型级 `rerank` 输出，不在这版重复建设排序链路
+- 复用上一版 OCR 入库结果；如果来源文档是扫描件，SOP 生成直接使用已入库 OCR 文本，不在生成请求里同步跑 OCR
 - 给问答链路补两套在线参数档位：
   `fast / accurate`
 - SOP 生成默认走 `accurate` 档，普通问答默认走 `fast` 档
@@ -768,56 +932,48 @@
 
 建议按 issue 拆分：
 
-1. 模型级 `rerank` 接入
-
-- 扩展当前 `RerankerClient` provider
-- 接入独立 reranker 服务或 openai-compatible rerank 接口
-- 保留 `heuristic` 作为降级路径
-- 固化 `top_k -> rerank_top_n` 的参数口径
-- 验证不需要重跑文档入库
-
-2. SOP 生成接口骨架
+1. SOP 生成接口骨架
 
 - 增加按当前文档直接生成接口
 - 增加按场景生成接口
 - 增加自定义主题生成接口
 - 明确输入参数、返回结构和错误语义
 
-3. 复用现有检索链路
+2. 复用现有检索链路
 
 - SOP 生成统一复用现有检索和问答能力
 - 不额外维护另一套知识抽取服务
 - 统一复用模型级 `rerank` 输出，保证问答和 SOP 生成看到的是同一批高质量证据
 - 生成时保留来源文档引用
 
-4. 员工轻记忆与多轮上下文
+3. 员工轻记忆与多轮上下文
 
 - 新增轻量会话记忆模型
 - 先按“用户 + 会话 + 最近 `6~8` 轮”保留上下文
 - 先不做长期记忆召回，不把记忆写进知识库
 - 明确多轮记忆的裁剪、过期和清理策略
 
-5. 员工端 SOP 生成页
+4. 员工端 SOP 生成页
 
 - 前端在员工端增加 SOP 生成页
 - 默认主流程是“上传或选中文档 -> 生成 -> 下载”
 - `topic/scenario` 保留为次入口，不喧宾夺主
 - 页面不要求先切换到工作台才能使用
 
-6. 轻量预览与下载
+5. 轻量预览与下载
 
 - 支持 Markdown 草稿下载
 - 支持 `docx / pdf` 下载
 - 页面内提供轻量预览和少量字段调整
 - 不把复杂在线编辑器作为这版阻塞项
 
-7. 来源追溯展示
+6. 来源追溯展示
 
 - 在 SOP 详情中展示来源文档信息
 - 在生成结果中能看到来源引用
 - 确保后续审计和复核可用
 
-8. 回归测试
+7. 回归测试
 
 - 覆盖模型级 `rerank` 成功、降级到 `heuristic`、远端不可用三条路径
 - 覆盖按当前文档直接生成
@@ -830,13 +986,12 @@
 
 建议执行顺序：
 
-1. 先做 `模型级 rerank 接入`
-2. 再做 `SOP 生成接口骨架`
-3. 再做 `复用现有检索链路`
-4. 然后做 `员工轻记忆与多轮上下文`
-5. 再做 `员工端 SOP 生成页`
-6. 再做 `轻量预览与下载`
-7. 最后做 `来源追溯展示`、`回归测试`
+1. 先做 `SOP 生成接口骨架`
+2. 再做 `复用现有检索链路`
+3. 然后做 `员工轻记忆与多轮上下文`
+4. 再做 `员工端 SOP 生成页`
+5. 再做 `轻量预览与下载`
+6. 最后做 `来源追溯展示`、`回归测试`
 
 ### 6.6 `v0.6.0` 日志、配置与企业微信接入
 
@@ -1609,16 +1764,17 @@ trace 建议最少覆盖这条链路：
 - `v0.4.0`：
   只做基线记录，不抢先做大规模并发优化
 - `v0.5.0`：
-  加 `fast / accurate` 两档、模型级 `rerank`、SOP 默认走 `accurate`、轻记忆
+  加 `fast / accurate` 两档、SOP 默认走 `accurate`、轻记忆
 - `v0.6.0`：
   加外部 LLM API provider、Query Rewrite、tokenizer-aware 上下文预算、并发控制、降级策略、日志字段、参数配置、压测和 runbook
 
 也就是说：
 
+- `OCR + 轻量 hybrid retrieval + 模型级 rerank` 属于 `v0.4.5`
 - `双档质量` 属于 `v0.5.0`
 - `轻记忆` 属于 `v0.5.0`
 - `Query Rewrite / tokenizer 预算 / 外部 API provider / 并发与降级收口` 属于 `v0.6.0`
-- `更大模型 / 更复杂检索` 放到 `v0.6.0` 之后再评估
+- `更大模型 / 更复杂检索集群形态` 放到 `v0.6.0` 之后再评估
 
 ---
 
@@ -1940,9 +2096,213 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 - 一份更新后的 [RAG架构.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RAG架构.md)
 - 一份更新后的 [V1_PLAN.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/V1_PLAN.md)
+- 一份运行侧最小验证清单 [OPS_SMOKE_TEST.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/OPS_SMOKE_TEST.md)
 - 一个 `v0.1.2` 最小验收清单
 - 一个后续版本的接口和数据模型待办表
 
 一句话总结：
 
 **需求文档是目标，当前实现必须拆成小版本逐步靠近；先稳现有代码，再低耦合扩功能。**
+
+---
+
+## 14. 并行切片：模型级 Rerank
+
+如果 `OCR` 和 `rerank` 需要分人并行推进，当前代码现实更适合把 `rerank` 单独拆成一个并行切片，而不是和 `OCR` 绑成同一批开发任务。
+
+原因：
+
+- 当前代码已经有 `RerankerClient` 抽象，但 provider 还只有 `heuristic`
+- 当前代码已经有 `QueryProfileService`
+  其中已冻结 `top_k / candidate_top_k / rerank_top_n / timeout / fallback_mode`
+- `ChatService` 和 `SopGenerationService` 已经统一走同一套 rerank 调用与降级逻辑
+- `rerank` 不进入异步入库链路，不依赖 OCR 完成后才能先做 provider 接入
+
+代码现实锚点：
+
+- `backend/app/rag/rerankers/client.py`
+- `backend/app/services/query_profile_service.py`
+- `backend/app/services/chat_service.py`
+- `backend/app/services/sop_generation_service.py`
+- `backend/app/core/config.py`
+- `backend/app/services/system_config_service.py`
+
+目标：
+
+- 在不改动异步入库主链路的前提下，把当前 `heuristic rerank` 扩展为“模型级 provider + 启发式兜底”的正式在线重排能力
+
+必须完成：
+
+- 在现有 `RerankerClient` 上新增可配置 provider
+- 保留 `heuristic` 作为统一降级路径
+- 统一 `fast / accurate` 两档的 `candidate_top_k / rerank_top_n / timeout_budget`
+- 问答与 SOP 生成复用同一套 rerank 输出
+- trace / snapshot / event log 中保留 `rerank_strategy` 和降级信息
+
+明确不做：
+
+- 不重跑历史 embedding
+- 不改 chunk 规则
+- 不进入异步入库 worker
+- 不为了 rerank 单独新造一套 query profile 体系
+- 不在问答和 SOP 各写一份独立重排逻辑
+
+低耦合要求：
+
+- `rerank` 只放在在线链路：
+  `retrieval -> rerank -> llm`
+- provider 接入优先复用现有 `RerankerClient.rerank()`
+- 降级统一走 `QueryProfileService.rerank_with_fallback()`
+- 配置入口统一复用当前 `Settings + SystemConfigService`
+
+验收标准：
+
+- `fast` 与 `accurate` 都能走统一 rerank 入口
+- provider 正常时返回 `provider` 策略
+- provider 不可用时自动降级到 `heuristic`
+- 问答与 SOP 生成拿到同一批 rerank 后证据
+- 不需要改异步入库链路也能上线
+
+建议按 issue 拆分：
+
+1. Reranker provider 接入
+
+- 扩展 `RerankerClient`
+- 接入独立 reranker 服务或 openai-compatible rerank 接口
+- 统一异常语义和超时处理
+
+2. 参数与配置收口
+
+- 收口 `candidate_top_k / rerank_top_n / timeout_budget`
+- 校验 `fast / accurate` 两档参数边界
+- 保持 `accurate -> fast` 的降级路径不变
+
+3. 问答链路验证
+
+- 验证 `ChatService` 走 provider 成功路径
+- 验证 provider 不可用后走 `heuristic`
+- 验证 trace / snapshot / event log 字段一致
+
+4. SOP 链路验证
+
+- 验证 `SopGenerationService` 复用同一套 rerank 输出
+- 验证和问答链路的降级语义一致
+- 验证 `accurate` 档默认行为符合预期
+
+5. 回归测试
+
+- 覆盖 provider 成功
+- 覆盖 provider 超时
+- 覆盖 provider 不可用
+- 覆盖 `heuristic` 降级
+- 覆盖问答 / SOP 双链路一致性
+
+建议执行顺序：
+
+1. 先做 `Reranker provider 接入`
+2. 再做 `参数与配置收口`
+3. 然后做 `问答链路验证`
+4. 再做 `SOP 链路验证`
+5. 最后做 `回归测试`
+
+---
+
+## 15. 并行切片：Hybrid Retrieval
+
+如果试点已经暴露出“能大致召回语义相近内容，但专有名词、料号、工序名、设备名不稳”的问题，当前代码现实适合把 `hybrid retrieval` 单独拆成一个并行切片推进。
+
+原因：
+
+- 当前在线主检索是纯向量召回：
+  `query -> embedding -> Qdrant vector search`
+- 当前代码还没有正式的关键词检索 / BM25 / RRF 融合能力
+- 当前 `heuristic rerank` 里的 token overlap 只能重排已有候选，不能替代第一阶段关键词召回
+- `document_id` 过滤、问答、SOP 生成已经复用统一检索入口，适合在入口层统一扩展，不必分别侵入多个业务服务
+
+代码现实锚点：
+
+- `backend/app/services/retrieval_service.py`
+- `backend/app/rag/vectorstores/qdrant_store.py`
+- `backend/app/schemas/retrieval.py`
+- `backend/app/services/chat_service.py`
+- `backend/app/services/sop_generation_service.py`
+- `backend/app/services/query_profile_service.py`
+- `backend/app/core/config.py`
+
+目标：
+
+- 在不替换当前 Qdrant 主链路的前提下，把在线检索从“纯向量召回”扩展为“向量召回 + 关键词/BM25 召回 + 融合排序”的可降级能力
+
+必须完成：
+
+- 新增统一的在线检索策略：
+  `vector_only | hybrid`
+- 新增 lexical retriever 抽象，优先落地轻量 BM25 或同级别关键词召回
+- 统一收口向量候选、关键词候选和融合后的结果，不让 chat / SOP 各自做一套
+- `document_id` 过滤在两条召回分支上都语义一致
+- 关键词召回分支不可用时自动退回 `vector_only`
+- trace / snapshot / debug 信息里保留 `retrieval_strategy`
+
+明确不做：
+
+- 不切 `pgvector`
+- 不重做 chunk 规则
+- 不为了 V1 单独引入 `Elasticsearch / OpenSearch` 集群
+- 不把关键词索引当系统主数据真源
+- 不在前端暴露一堆实验性检索策略按钮
+
+低耦合要求：
+
+- hybrid retrieval 只放在在线链路：
+  `query -> vector recall + lexical recall -> fusion -> rerank -> llm`
+- 关键词索引优先复用当前 chunk 文本和元数据构建轻量副本
+- 问答和 SOP 生成只消费统一检索结果，不自行再补一层关键词匹配
+- 配置入口统一复用当前 `Settings + SystemConfigService + QueryProfileService`
+
+验收标准：
+
+- 对专有名词、设备名、料号、工序名类查询，hybrid 检索结果优于当前 vector-only 基线
+- `document_id` 限定下，hybrid 不会串文档
+- 关键词分支不可用时，系统自动退回 vector-only，不影响主流程可用性
+- 问答与 SOP 生成拿到同一批 fusion 后证据
+
+建议按 issue 拆分：
+
+1. Lexical retriever 抽象
+
+- 增加统一接口
+- 选择轻量 BM25 或等价实现
+- 明确索引构建、更新和异常语义
+
+2. Hybrid fusion 接入
+
+- 在 `RetrievalService` 合并向量候选与关键词候选
+- 明确融合策略，优先用稳定、可解释的方案如 `RRF`
+- 保留 `vector_only` fallback
+
+3. 配置与档位收口
+
+- 增加 `retrieval_strategy`
+- 收口 `candidate_top_k / lexical_top_k / rerank_top_n / timeout_budget`
+- 保持 `accurate -> fast` 的降级路径不变
+
+4. 问答与 SOP 链路验证
+
+- 验证 `ChatService` 和 `SopGenerationService` 看到同一批 fusion 后证据
+- 验证 `document_id` 过滤和权限语义不变
+- 验证 debug / trace / snapshot 字段一致
+
+5. 回归测试
+
+- 覆盖 vector-only
+- 覆盖 hybrid
+- 覆盖 lexical 分支失败后退回 vector-only
+- 覆盖专有名词类查询的改进样例
+
+建议执行顺序：
+
+1. 先做 `Lexical retriever 抽象`
+2. 再做 `Hybrid fusion 接入`
+3. 然后做 `配置与档位收口`
+4. 再做 `问答与 SOP 链路验证`
+5. 最后做 `回归测试`

@@ -17,6 +17,7 @@ import {
 // 检索模式中文映射。
 const MODE_TEXT: Record<string, string> = {
   qdrant: 'Qdrant 向量检索',
+  hybrid: 'Hybrid 混合检索',
   rag: 'RAG 回答',
   retrieval_fallback: '检索回退',
   no_context: '无上下文',

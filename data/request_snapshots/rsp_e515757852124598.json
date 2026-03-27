@@ -1,0 +1,125 @@
+{
+  "snapshot_id": "rsp_e515757852124598",
+  "trace_id": "trc_804927971ffa4884",
+  "request_id": "req_24992e9b50834d14",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-27T07:40:54.616448Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "总结这份已上传文档里最相关的内容。",
+    "top_k": 5,
+    "mode": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "总结这份已上传文档里最相关的内容。",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325093238_d5edec1e-chunk-0",
+      "document_id": "doc_20260325093238_d5edec1e",
+      "document_name": "upload_stuck_probe.txt",
+      "snippet": "upload stuck probe\n2026-03-25",
+      "score": 0.5460201,
+      "source_path": "/app/data/uploads/doc_20260325093238_d5edec1e__upload_stuck_probe.txt"
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326010213_bffe6db0-chunk-0",
+      "document_id": "doc_20260326010213_bffe6db0",
+      "document_name": "admin_upload_probe.txt",
+      "snippet": "admin upload probe at 2026-03-26",
+      "score": 0.54114187,
+      "source_path": "/app/data/uploads/doc_20260326010213_bffe6db0__admin_upload_probe.txt"
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": 0.5388281,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt"
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325093238_d5edec1e-chunk-0",
+      "document_id": "doc_20260325093238_d5edec1e",
+      "document_name": "upload_stuck_probe.txt",
+      "snippet": "upload stuck probe\n2026-03-25",
+      "score": 0.5460201,
+      "source_path": "/app/data/uploads/doc_20260325093238_d5edec1e__upload_stuck_probe.txt"
+    },
+    {
+      "chunk_id": "doc_20260326010213_bffe6db0-chunk-0",
+      "document_id": "doc_20260326010213_bffe6db0",
+      "document_name": "admin_upload_probe.txt",
+      "snippet": "admin upload probe at 2026-03-26",
+      "score": 0.54114187,
+      "source_path": "/app/data/uploads/doc_20260326010213_bffe6db0__admin_upload_probe.txt"
+    },
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": 0.5388281,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt"
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "heuristic",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "无法找到足够的证据来总结一个具体的、与上传文档最相关的内容，因为提供的上下文信息不包含明确的文档内容或讨论重点。上下文主要涉及日期、上传操作以及一些关于工作流程和沟通的对话片段。",
+    "answer_chars": 89,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800
+  }
+}

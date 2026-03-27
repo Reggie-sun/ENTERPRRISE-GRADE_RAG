@@ -18,6 +18,9 @@ export type SopDownloadFormat = 'docx' | 'pdf';
 export type QueryMode = 'fast' | 'accurate';
 export type EventLogCategory = 'chat' | 'document' | 'sop_generation';
 export type EventLogOutcome = 'success' | 'failed';
+export type RequestTraceStageName = 'query_rewrite' | 'retrieval' | 'rerank' | 'llm' | 'answer';
+export type RequestTraceStageStatus = 'success' | 'failed' | 'skipped' | 'degraded';
+export type RequestSnapshotReplayMode = 'original' | 'current';
 
 /** 文档生命周期状态 */
 export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
@@ -78,6 +81,15 @@ export interface HealthResponse {
     provider: string;  // 元数据存储类型。
     postgres_enabled: boolean;  // 是否启用 PostgreSQL 元数据真源。
     dsn_configured: boolean;  // 是否配置了 DSN。
+  };
+  ocr: {
+    provider: string;  // OCR provider 类型。
+    language: string;  // OCR 默认语言。
+    enabled: boolean;  // 是否启用 OCR。
+    ready: boolean;  // 当前 provider 是否已具备运行依赖。
+    pdf_native_text_min_chars: number;  // PDF 原生文本低于该阈值时尝试 OCR fallback。
+    angle_cls_enabled: boolean;  // PaddleOCR 是否启用 angle cls。
+    detail: string | null;  // OCR 运行状态说明。
   };
 }
 
@@ -195,6 +207,137 @@ export interface EventLogListResponse {
   page_size: number;
 }
 
+// ========== Trace 相关 ==========
+
+export interface RequestTraceStage {
+  stage: RequestTraceStageName;
+  status: RequestTraceStageStatus;
+  duration_ms: number | null;
+  input_size: number | null;
+  output_size: number | null;
+  cache_hit: boolean | null;
+  details: Record<string, unknown>;
+}
+
+export interface RequestTraceRecord {
+  trace_id: string;
+  request_id: string;
+  category: EventLogCategory;
+  action: string;
+  outcome: EventLogOutcome;
+  occurred_at: string;
+  actor: EventLogActor;
+  target_type: string | null;
+  target_id: string | null;
+  mode: string | null;
+  top_k: number | null;
+  candidate_top_k: number | null;
+  rerank_top_n: number | null;
+  total_duration_ms: number | null;
+  timeout_flag: boolean;
+  downgraded_from: string | null;
+  response_mode: string | null;
+  error_message: string | null;
+  stages: RequestTraceStage[];
+  details: Record<string, unknown>;
+}
+
+export interface RequestTraceListResponse {
+  items: RequestTraceRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+// ========== Request Snapshot 相关 ==========
+
+export interface RequestSnapshotRewrite {
+  status: 'skipped' | 'applied' | 'failed';
+  original_question: string;
+  rewritten_question: string | null;
+  details: Record<string, unknown>;
+}
+
+export interface RequestSnapshotContext {
+  rank: number;
+  chunk_id: string;
+  document_id: string;
+  document_name: string;
+  snippet: string;
+  score: number;
+  source_path: string;
+}
+
+export interface RequestSnapshotModelRoute {
+  provider: string;
+  base_url: string | null;
+  model: string;
+}
+
+export interface RequestSnapshotComponentVersions {
+  prompt_version: string;
+  embedding_provider: string;
+  embedding_model: string;
+  reranker_provider: string;
+  reranker_model: string;
+}
+
+export interface RequestSnapshotResult {
+  response_mode: string;
+  model: string;
+  answer_preview: string | null;
+  answer_chars: number;
+  citation_count: number;
+  rerank_strategy: string;
+  downgraded_from: string | null;
+  timeout_flag: boolean;
+  error_message: string | null;
+}
+
+export interface RequestSnapshotRecord {
+  snapshot_id: string;
+  trace_id: string;
+  request_id: string;
+  category: EventLogCategory;
+  action: string;
+  outcome: EventLogOutcome;
+  occurred_at: string;
+  actor: EventLogActor;
+  target_type: string | null;
+  target_id: string | null;
+  request: ChatRequest | SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest;
+  profile: {
+    purpose: 'retrieval' | 'chat' | 'sop_generation';
+    mode: QueryMode;
+    top_k: number;
+    candidate_top_k: number;
+    rerank_top_n: number;
+    timeout_budget_seconds: number;
+    fallback_mode: QueryMode | null;
+  };
+  memory_summary: string | null;
+  rewrite: RequestSnapshotRewrite;
+  contexts: RequestSnapshotContext[];
+  citations: ChatResponse['citations'];
+  model_route: RequestSnapshotModelRoute;
+  component_versions: RequestSnapshotComponentVersions;
+  result: RequestSnapshotResult;
+  details: Record<string, unknown>;
+}
+
+export interface RequestSnapshotReplayRequest {
+  replay_mode: RequestSnapshotReplayMode;
+}
+
+export interface RequestSnapshotReplayResponse {
+  snapshot_id: string;
+  replay_mode: RequestSnapshotReplayMode;
+  original_trace_id: string;
+  original_request_id: string;
+  replayed_request: ChatRequest | SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest;
+  response: ChatResponse | SopGenerationDraftResponse;
+}
+
 // ========== 系统配置相关 ==========
 
 export interface QueryModeConfig {
@@ -227,11 +370,21 @@ export interface RetryControlsConfig {
   llm_retry_backoff_ms: number;
 }
 
+export interface ConcurrencyControlsConfig {
+  fast_max_inflight: number;
+  accurate_max_inflight: number;
+  sop_generation_max_inflight: number;
+  per_user_online_max_inflight: number;
+  acquire_timeout_ms: number;
+  busy_retry_after_seconds: number;
+}
+
 export interface SystemConfigResponse {
   query_profiles: QueryProfilesConfig;
   model_routing: ModelRoutingConfig;
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
+  concurrency_controls: ConcurrencyControlsConfig;
   updated_at: string | null;
   updated_by: string | null;
 }
@@ -241,6 +394,7 @@ export interface SystemConfigUpdateRequest {
   model_routing: ModelRoutingConfig;
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
+  concurrency_controls: ConcurrencyControlsConfig;
 }
 
 // ========== 运行态汇总相关 ==========
@@ -273,14 +427,33 @@ export interface OpsCategorySummary {
   last_failed_at: string | null;
 }
 
+export interface OpsRuntimeChannelSummary {
+  channel: 'chat_fast' | 'chat_accurate' | 'sop_generation';
+  inflight: number;
+  limit: number;
+  available_slots: number;
+}
+
+export interface OpsRuntimeGateSummary {
+  acquire_timeout_ms: number;
+  busy_retry_after_seconds: number;
+  per_user_online_max_inflight: number;
+  active_users: number;
+  max_user_inflight: number;
+  channels: OpsRuntimeChannelSummary[];
+}
+
 export interface OpsSummaryResponse {
   checked_at: string;
   health: HealthResponse;
   queue: OpsQueueSummary;
+  runtime_gate: OpsRuntimeGateSummary;
   recent_window: OpsRecentWindowSummary;
   categories: OpsCategorySummary[];
   recent_failures: EventLogRecord[];
   recent_degraded: EventLogRecord[];
+  recent_traces: RequestTraceRecord[];
+  recent_snapshots: RequestSnapshotRecord[];
   config: SystemConfigResponse;
 }
 
@@ -339,6 +512,7 @@ export interface SopDraftExportRequest {
 }
 
 export interface SopGenerationDraftResponse {
+  snapshot_id: string | null;
   request_mode: SopGenerationRequestMode;
   generation_mode: string;
   title: string;

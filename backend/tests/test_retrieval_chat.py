@@ -1,15 +1,20 @@
 import json  # 导入 json，用于解析 SSE 事件数据。
 from pathlib import Path  # 导入 Path，方便创建测试目录路径。
+from types import SimpleNamespace
 
 from fastapi.testclient import TestClient  # 导入 FastAPI 测试客户端。
 import httpx  # 导入 httpx，用于构造 OpenAI 兼容接口错误响应。
+import pytest
 
 from backend.app.core.config import Settings, ensure_data_directories  # 导入配置对象和目录初始化函数。
 from backend.app.main import app  # 导入应用实例。
-from backend.app.schemas.retrieval import RetrievalRequest  # 导入检索请求模型，用于直接调用服务层测试过滤逻辑。
+from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefinition, UserRecord
+from backend.app.schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求/响应模型，用于直接调用服务层测试过滤逻辑。
 from backend.app.services.chat_service import ChatService, get_chat_service  # 导入问答服务和依赖入口。
 from backend.app.services.document_service import DocumentService, get_document_service  # 导入文档服务和依赖入口。
+from backend.app.services.runtime_gate_service import RuntimeGateBusyError, RuntimeGateService
 from backend.app.services.retrieval_service import RetrievalService, get_retrieval_service  # 导入检索服务和依赖入口。
+from backend.app.services.system_config_service import SystemConfigService
 
 
 def parse_sse_events(raw_stream: str) -> list[tuple[str, dict[str, object]]]:  # 解析 text/event-stream 文本为结构化事件列表。
@@ -54,6 +59,86 @@ def build_test_settings(tmp_path: Path) -> Settings:  # 构造 retrieval/chat �
         chunk_dir=data_dir / "chunks",  # 配置 chunk 目录。
         document_dir=data_dir / "documents",  # 配置 document 元数据目录。
         job_dir=data_dir / "jobs",  # 配置 job 元数据目录。
+        event_log_dir=data_dir / "event_logs",  # 事件日志目录隔离到测试目录，避免读取真实运行日志。
+        request_trace_dir=data_dir / "request_traces",  # 请求 trace 目录隔离到测试目录，避免受仓库根 data 污染。
+        request_snapshot_dir=data_dir / "request_snapshots",  # 请求快照目录隔离到测试目录。
+        system_config_path=data_dir / "system_config.json",  # 系统配置真源隔离到测试目录，避免真实 model route 干扰测试。
+    )
+
+
+class _FakeRuntimeGateLease:
+    def __init__(self) -> None:
+        self.released = False
+
+    def release(self) -> None:
+        self.released = True
+
+
+class _FakeRuntimeGateService:
+    def __init__(self, *, outcomes: dict[str, list[bool]]) -> None:
+        self.outcomes = {channel: list(items) for channel, items in outcomes.items()}
+        self.calls: list[tuple[str, int | None, str | None]] = []
+
+    def acquire_with_reason(self, channel: str, *, timeout_ms: int | None = None, owner_key: str | None = None):
+        self.calls.append((channel, timeout_ms, owner_key))
+        items = self.outcomes.setdefault(channel, [True])
+        allowed = items.pop(0) if items else True
+        if not allowed:
+            return None, "channel_limit"
+        return _FakeRuntimeGateLease(), None
+
+    def acquire(self, channel: str, *, timeout_ms: int | None = None):
+        lease, _ = self.acquire_with_reason(channel, timeout_ms=timeout_ms)
+        return lease
+
+
+class _FakeRetrievalService:
+    def __init__(self, results: list[RetrievedChunk]) -> None:
+        self.results = results
+
+    def search(self, request, *, auth_context=None):
+        return RetrievalResponse(query=request.query, top_k=request.top_k or 0, mode="fake", results=self.results)
+
+
+def _build_auth_context(
+    role_id: str = "department_admin",
+    department_ids: list[str] | None = None,
+    *,
+    user_id: str = "user_test",
+    username: str = "test.user",
+) -> AuthContext:
+    from datetime import datetime, timedelta, timezone
+
+    effective_department_ids = department_ids or ["dept_digitalization"]
+    department = DepartmentRecord(
+        department_id=effective_department_ids[0],
+        tenant_id="wl",
+        department_name="数字化部",
+    )
+    role = RoleDefinition(
+        role_id=role_id,  # type: ignore[arg-type]
+        name=role_id,
+        description=role_id,
+        data_scope="global" if role_id == "sys_admin" else "department",
+        is_admin=role_id != "employee",
+    )
+    user = UserRecord(
+        user_id=user_id,
+        tenant_id="wl",
+        username=username,
+        display_name="Test User",
+        department_id=department.department_id,
+        role_id=role_id,  # type: ignore[arg-type]
+    )
+    issued_at = datetime.now(timezone.utc)
+    return AuthContext(
+        user=user,
+        role=role,
+        department=department,
+        accessible_department_ids=effective_department_ids,
+        token_id="token-test",
+        issued_at=issued_at,
+        expires_at=issued_at + timedelta(hours=1),
     )
 
 
@@ -91,7 +176,7 @@ def test_retrieval_search_returns_real_qdrant_chunks(tmp_path: Path) -> None:  #
     assert upload_response.status_code == 201  # 上传入库应成功。
     assert search_response.status_code == 200  # 检索接口应返回 200。
     payload = search_response.json()  # 解析检索响应。
-    assert payload["mode"] == "qdrant"  # 检索模式应是 qdrant。
+    assert payload["mode"] == "hybrid"  # 默认应启用 hybrid 检索，兼容向量召回 + 关键词召回融合。
     assert payload["results"]  # 至少应该返回一条命中结果。
     assert payload["results"][0]["text"]  # 结果文本不应为空。
     assert "Vector search, embeddings, and rerank are not wired yet." not in payload["results"][0]["text"]  # 不应再返回旧的占位文案。
@@ -138,6 +223,80 @@ def test_chat_ask_uses_real_retrieval_citations(tmp_path: Path) -> None:  # 验�
     assert payload["citations"]  # 至少应该返回一条引用。
     assert payload["citations"][0]["snippet"]  # 引用片段文本不应为空。
     assert "Vector search, embeddings, and rerank are not wired yet." not in payload["citations"][0]["snippet"]  # 引用内容不应是旧占位文本。
+
+
+def test_chat_ask_endpoint_uses_openai_reranker_for_citation_order(tmp_path: Path, monkeypatch) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "reranker_provider": "openai",
+            "reranker_base_url": "http://127.0.0.1:8001/v1",
+        }
+    )
+    ensure_data_directories(settings)
+    chat_service = ChatService(settings)
+    chat_service.retrieval_service = _FakeRetrievalService(
+        [
+            RetrievedChunk(
+                chunk_id="chunk_1",
+                document_id="doc_1",
+                document_name="设备告警处理手册",
+                text="alarm E201 发生后先检查温控模块和线缆连接。",
+                score=0.91,
+                source_path="/tmp/doc_1.txt",
+            ),
+            RetrievedChunk(
+                chunk_id="chunk_2",
+                document_id="doc_2",
+                document_name="伺服维修指南",
+                text="servo reset 前先确认急停释放，再重新上电。",
+                score=0.86,
+                source_path="/tmp/doc_2.txt",
+            ),
+            RetrievedChunk(
+                chunk_id="chunk_3",
+                document_id="doc_3",
+                document_name="真空阀排障记录",
+                text="vacuum valve 异常时检查阀体污染和供气压力。",
+                score=0.82,
+                source_path="/tmp/doc_3.txt",
+            ),
+        ]
+    )
+    client = TestClient(app)
+
+    class FakeResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        @staticmethod
+        def json() -> dict[str, object]:
+            return {
+                "results": [
+                    {"index": 1, "relevance_score": 0.95},
+                    {"index": 0, "relevance_score": 0.88},
+                    {"index": 2, "relevance_score": 0.72},
+                ]
+            }
+
+    def fake_post(url: str, **kwargs):
+        assert url == "http://127.0.0.1:8001/v1/rerank"
+        assert kwargs["json"]["query"] == "servo reset"
+        return FakeResponse()
+
+    monkeypatch.setattr("backend.app.rag.rerankers.client.httpx.post", fake_post)
+    app.dependency_overrides[get_chat_service] = lambda: chat_service
+    try:
+        response = client.post(
+            "/api/v1/chat/ask",
+            json={"question": "servo reset", "top_k": 3},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["mode"] == "rag"
+    assert [item["chunk_id"] for item in payload["citations"]] == ["chunk_2", "chunk_1", "chunk_3"]
 
 
 def test_chat_stream_returns_sse_events_and_done_payload(tmp_path: Path) -> None:  # 验证流式问答接口会返回 meta/delta/done 三类事件。
@@ -265,6 +424,96 @@ def test_chat_stream_returns_error_event_when_llm_config_is_invalid_after_meta(t
     assert "done" not in event_names
     error_payload = next(payload for event_name, payload in events if event_name == "error")
     assert "RAG_LLM_API_KEY" in error_payload["message"]
+
+
+def test_chat_ask_returns_429_when_runtime_gate_is_busy(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    fake_gate = _FakeRuntimeGateService(outcomes={"chat_fast": [False]})
+    chat_service = ChatService(settings, runtime_gate_service=fake_gate)
+    client = TestClient(app)
+
+    app.dependency_overrides[get_chat_service] = lambda: chat_service
+    try:
+        response = client.post(
+            "/api/v1/chat/ask",
+            json={"question": "系统忙的时候会返回什么？", "mode": "fast", "top_k": 3},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 429
+    assert response.headers["Retry-After"] == "5"
+    assert "System is busy" in response.json()["detail"]
+    assert fake_gate.calls == [("chat_fast", 800, None)]
+
+
+def test_chat_stream_returns_busy_error_event_when_runtime_gate_is_busy(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    fake_gate = _FakeRuntimeGateService(outcomes={"chat_fast": [False]})
+    chat_service = ChatService(settings, runtime_gate_service=fake_gate)
+    client = TestClient(app)
+
+    app.dependency_overrides[get_chat_service] = lambda: chat_service
+    try:
+        with client.stream(
+            "POST",
+            "/api/v1/chat/ask/stream",
+            json={"question": "系统忙的时候流式会返回什么？", "mode": "fast", "top_k": 3},
+        ) as stream_response:
+            raw_stream = "".join(stream_response.iter_text())
+            status_code = stream_response.status_code
+    finally:
+        app.dependency_overrides.clear()
+
+    assert status_code == 200
+    events = parse_sse_events(raw_stream)
+    event_names = [event_name for event_name, _ in events]
+    assert "error" in event_names
+    error_payload = next(payload for event_name, payload in events if event_name == "error")
+    assert error_payload["busy"] is True
+    assert error_payload["retry_after_seconds"] == 5
+    assert "System is busy" in error_payload["message"]
+    assert fake_gate.calls == [("chat_fast", 800, None)]
+
+
+def test_chat_runtime_gate_enforces_single_user_limit(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    system_config_service = SystemConfigService(settings)
+    system_config_service.repository.write(
+        {
+            "concurrency_controls": {
+                "fast_max_inflight": 4,
+                "accurate_max_inflight": 2,
+                "sop_generation_max_inflight": 1,
+                "per_user_online_max_inflight": 1,
+                "acquire_timeout_ms": 0,
+                "busy_retry_after_seconds": 5,
+            }
+        }
+    )
+    runtime_gate_service = RuntimeGateService(settings, system_config_service=system_config_service)
+    chat_service = ChatService(settings, runtime_gate_service=runtime_gate_service)
+    profile = chat_service.query_profile_service.resolve(purpose="chat", requested_mode="fast")
+    same_user_context = _build_auth_context(role_id="employee", user_id="user_employee_a", username="employee.a")
+    other_user_context = _build_auth_context(role_id="employee", user_id="user_employee_b", username="employee.b")
+
+    _, first_lease, _, first_details = chat_service._acquire_chat_runtime_slot(profile, auth_context=same_user_context)
+
+    with pytest.raises(RuntimeGateBusyError) as exc_info:
+        chat_service._acquire_chat_runtime_slot(profile, auth_context=same_user_context)
+
+    _, other_user_lease, _, other_user_details = chat_service._acquire_chat_runtime_slot(profile, auth_context=other_user_context)
+
+    assert first_details["runtime_owner_key"] == "user_employee_a"
+    assert exc_info.value.reason == "user_limit"
+    assert "concurrent request limit" in exc_info.value.detail
+    assert other_user_details["runtime_owner_key"] == "user_employee_b"
+
+    first_lease.release()
+    other_user_lease.release()
 
 
 def test_retrieval_search_can_filter_by_document_id(tmp_path: Path) -> None:  # 验证检索接口支持按 document_id 过滤。
@@ -635,3 +884,144 @@ def test_retrieval_service_enforces_document_id_filter_even_when_store_returns_m
 
     assert response.results  # 目标文档结果应被保留。
     assert all(item.document_id == "doc_target" for item in response.results)  # 结果里不能混入其他文档。
+
+
+def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-b",
+                score=0.97,
+                payload={
+                    "chunk_id": "chunk-b",
+                    "document_id": "doc_b",
+                    "document_name": "doc_b.txt",
+                    "text": "general troubleshooting context",
+                    "source_path": "/tmp/doc_b.txt",
+                },
+            ),
+            SimpleNamespace(
+                id="point-a",
+                score=0.84,
+                payload={
+                    "chunk_id": "chunk-a",
+                    "document_id": "doc_a",
+                    "document_name": "doc_a.txt",
+                    "text": "ZX14 alarm reset guide",
+                    "source_path": "/tmp/doc_a.txt",
+                },
+            ),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-a",
+                score=2.4,
+                payload={
+                    "chunk_id": "chunk-a",
+                    "document_id": "doc_a",
+                    "document_name": "doc_a.txt",
+                    "text": "ZX14 alarm reset guide",
+                    "source_path": "/tmp/doc_a.txt",
+                },
+            )
+        ]
+    )
+
+    response = retrieval_service.search(request=RetrievalRequest(query="ZX14", top_k=2))
+
+    assert response.mode == "hybrid"
+    assert [item.chunk_id for item in response.results] == ["chunk-a", "chunk-b"]
+
+
+def test_retrieval_service_falls_back_to_qdrant_when_lexical_retriever_errors(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-b",
+                score=0.97,
+                payload={
+                    "chunk_id": "chunk-b",
+                    "document_id": "doc_b",
+                    "document_name": "doc_b.txt",
+                    "text": "general troubleshooting context",
+                    "source_path": "/tmp/doc_b.txt",
+                },
+            )
+        ]
+    )
+
+    class BrokenLexicalRetriever:
+        def search(self, query, *, limit, document_id=None):
+            raise RuntimeError("lexical branch unavailable")
+
+    retrieval_service.lexical_retriever = BrokenLexicalRetriever()
+
+    response = retrieval_service.search(request=RetrievalRequest(query="ZX14", top_k=2))
+
+    assert response.mode == "qdrant"
+    assert [item.chunk_id for item in response.results] == ["chunk-b"]
+
+
+def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.calls: list[list[str]] = []
+
+        def is_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> bool:  # pragma: no cover
+            raise AssertionError("retrieval should batch readability checks instead of loading one document at a time")
+
+        def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            self.calls.append(doc_ids)
+            return {
+                "doc_a": True,
+                "doc_b": False,
+            }
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-a",
+                score=0.99,
+                payload={
+                    "chunk_id": "chunk-a",
+                    "document_id": "doc_a",
+                    "document_name": "doc_a.txt",
+                    "text": "alpha",
+                    "source_path": "/tmp/doc_a.txt",
+                },
+            ),
+            SimpleNamespace(
+                id="point-b",
+                score=0.98,
+                payload={
+                    "chunk_id": "chunk-b",
+                    "document_id": "doc_b",
+                    "document_name": "doc_b.txt",
+                    "text": "beta",
+                    "source_path": "/tmp/doc_b.txt",
+                },
+            ),
+        ]
+    )
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="test", top_k=5),
+        auth_context=_build_auth_context(),
+    )
+
+    assert [item.document_id for item in response.results] == ["doc_a"]
+    assert retrieval_service.document_service.calls == [["doc_a", "doc_b"]]

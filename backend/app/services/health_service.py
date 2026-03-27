@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from ..core.config import Settings, get_llm_base_url, get_llm_model, get_postgres_metadata_dsn, get_settings
+from ..rag.ocr.client import OCRClient
 from ..schemas.health import HealthResponse
 
 
@@ -40,6 +41,7 @@ class HealthService:
                 "postgres_enabled": settings.postgres_metadata_enabled,
                 "dsn_configured": bool(get_postgres_metadata_dsn(settings)),
             },
+            ocr=OCRClient(settings).get_runtime_status(),
         )
 
 

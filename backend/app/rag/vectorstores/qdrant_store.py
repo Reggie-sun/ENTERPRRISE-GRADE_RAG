@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from pathlib import Path  # 导入 Path，用于统一本地路径配置的缓存 key。
 import threading  # 导入线程锁，避免多线程并发创建客户端时产生竞态。
 from uuid import NAMESPACE_URL, uuid5  # 导入 uuid5，用来为 Qdrant point 生成稳定 UUID。
@@ -168,6 +169,36 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         )
         return list(response.points)  # 统一返回 ScoredPoint 列表。
 
+    def scroll_records(  # 顺序遍历当前 collection 里的 payload 记录，供轻量 lexical retrieval 复用。
+        self,
+        *,
+        document_id: str | None = None,
+        batch_size: int = 256,
+    ) -> Iterator[models.Record]:
+        if batch_size <= 0:  # 非法批大小直接视为空迭代，避免落到 Qdrant 参数错误。
+            return
+        if not self._collection_exists(self.settings.qdrant_collection):  # collection 不存在时直接返回空迭代。
+            return
+
+        scroll_filter = self._build_document_filter(document_id)  # 复用统一文档过滤条件，保证 vector / lexical 语义一致。
+        offset: int | str | models.PointId | None = None
+        while True:
+            records, next_offset = self.client.scroll(
+                collection_name=self.settings.qdrant_collection,
+                scroll_filter=scroll_filter,
+                offset=offset,
+                limit=batch_size,
+                with_payload=True,
+                with_vectors=False,
+            )
+            if not records:
+                break
+            for record in records:
+                yield record
+            if next_offset is None:
+                break
+            offset = next_offset
+
     def _ensure_collection(self, vector_size: int) -> None:  # 确保目标 collection 已创建。
         if self._collection_exists(self.settings.qdrant_collection):  # 如果目标 collection 已存在。
             return  # 直接返回，不重复创建。
@@ -213,3 +244,16 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
     def _collection_exists(self, collection_name: str) -> bool:  # 判断指定 collection 是否存在。
         collection_names = {item.name for item in self.client.get_collections().collections}  # 读取当前所有 collection 名称。
         return collection_name in collection_names  # 返回是否包含目标 collection。
+
+    @staticmethod
+    def _build_document_filter(document_id: str | None) -> models.Filter | None:  # 统一构造 document_id 过滤条件。
+        if not document_id:
+            return None
+        return models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="document_id",
+                    match=models.MatchValue(value=document_id),
+                )
+            ]
+        )

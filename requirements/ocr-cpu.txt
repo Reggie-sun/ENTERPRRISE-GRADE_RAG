@@ -6,5 +6,6 @@
 
 paddlepaddle==3.3.0
 paddleocr
+PyMuPDF
 opencv-python-headless
 Pillow

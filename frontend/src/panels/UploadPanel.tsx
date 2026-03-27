@@ -484,7 +484,7 @@ export function UploadPanel({
           <input
             type="file"
             multiple={allowMultiple}
-            accept=".pdf,.md,.markdown,.txt,.docx"
+            accept=".pdf,.md,.markdown,.txt,.docx,.png,.jpg,.jpeg,.webp,.bmp"
             onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
             className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-accent-deep"
           />

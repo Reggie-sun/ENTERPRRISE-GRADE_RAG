@@ -2,6 +2,7 @@ import json  # 导入 json，用于序列化 SSE 事件数据。
 from dataclasses import dataclass
 from time import perf_counter
 from typing import Iterator  # 导入 Iterator，用于声明流式输出类型。
+from uuid import uuid4
 
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
 from ..rag.generators.client import (  # 导入 LLM 生成客户端和异常类型。
@@ -13,10 +14,14 @@ from ..rag.rerankers.client import RerankerClient  # 导入 rerank 客户端。
 from ..schemas.auth import AuthContext  # 导入统一鉴权上下文，问答要与检索保持同一份权限边界。
 from ..schemas.chat import ChatRequest, ChatResponse, Citation  # 导入问答请求、响应和引用片段模型。
 from ..schemas.query_profile import QueryProfile
+from ..schemas.request_trace import RequestTraceStage, RequestTraceStageStatus
 from ..schemas.retrieval import RetrievalRequest  # 导入检索请求模型，问答前要先做检索。
 from .event_log_service import EventLogService, get_event_log_service
 from .query_profile_service import QueryProfileService
+from .request_snapshot_service import RequestSnapshotService
+from .request_trace_service import RequestTraceService
 from .retrieval_service import RetrievalService  # 导入检索服务。
+from .runtime_gate_service import RuntimeGateBusyError, RuntimeGateLease, RuntimeGateService, get_runtime_gate_service
 from .system_config_service import SystemConfigService
 
 
@@ -24,6 +29,8 @@ from .system_config_service import SystemConfigService
 class CitationBuildResult:
     citations: list[Citation]
     rerank_strategy: str
+    retrieved_count: int
+    reranked_count: int
 
 
 class ChatService:  # 封装问答接口的业务逻辑。
@@ -32,6 +39,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
         settings: Settings | None = None,
         query_profile_service: QueryProfileService | None = None,
         event_log_service: EventLogService | None = None,
+        request_trace_service: RequestTraceService | None = None,
+        request_snapshot_service: RequestSnapshotService | None = None,
+        runtime_gate_service: RuntimeGateService | None = None,
     ) -> None:  # 初始化问答服务。
         self.settings = settings or get_settings()  # 优先使用传入配置，否则读取全局配置。
         if query_profile_service is None:
@@ -50,20 +60,77 @@ class ChatService:  # 封装问答接口的业务逻辑。
             system_config_service=self.system_config_service,
         )  # 创建生成客户端，负责最终回答。
         self.event_log_service = event_log_service or get_event_log_service()  # 统一写问答事件日志，后续查询/追溯复用这一层。
+        self.request_trace_service = request_trace_service or RequestTraceService(self.settings)  # 请求级 trace 独立于审计日志持久化，给 v0.6 的阶段耗时和后续重放复用。
+        self.request_snapshot_service = request_snapshot_service or RequestSnapshotService(self.settings)  # 请求快照给 v0.6 的 replay 复用，独立于日志/trace 存储。
+        self.runtime_gate_service = runtime_gate_service or (
+            RuntimeGateService(self.settings, system_config_service=self.system_config_service)
+            if settings is not None
+            else get_runtime_gate_service()
+        )
 
     def answer(self, request: ChatRequest, *, auth_context: AuthContext | None = None) -> ChatResponse:  # 根据用户问题生成问答响应。
         started_at = perf_counter()
+        trace_id, request_id = self._new_trace_identifiers()
+        trace_stages: list[RequestTraceStage] = []
         profile = self.query_profile_service.resolve(
             purpose="chat",
             requested_mode=request.mode,
             requested_top_k=request.top_k,
         )  # 先把请求展开为统一查询档位配置。
+        self._append_trace_stage(
+            trace_stages,
+            stage="query_rewrite",
+            status="skipped",
+            duration_ms=0,
+            input_size=len(request.question),
+            output_size=len(request.question),
+            details={"reason": "query rewrite is not enabled in the current V1 slice."},
+        )
+        citations: list[Citation] = []
+        rerank_strategy = "skipped"
+        response_mode = "failed"
+        downgraded_from: str | None = None
+        error_message: str | None = None
+        response_model = self._response_model_name(profile=profile)
+        answer_text = ""
+        runtime_details: dict[str, object] = {}
+        runtime_lease: RuntimeGateLease | None = None
         try:
-            citation_result = self._build_citations(request, profile, auth_context=auth_context)  # 先统一构造引用列表。
+            profile, runtime_lease, downgraded_from, runtime_details = self._acquire_chat_runtime_slot(
+                profile,
+                auth_context=auth_context,
+            )
+            response_model = self._response_model_name(profile=profile)
+            citation_result = self._build_citations(
+                request,
+                profile,
+                auth_context=auth_context,
+                trace_stages=trace_stages,
+            )  # 先统一构造引用列表。
             citations = citation_result.citations
             rerank_strategy = citation_result.rerank_strategy
             if not citations:  # 如果连引用都没有，说明还没有可用上下文。
                 response = self._build_no_context_response(request.question, citations)
+                response_mode = response.mode
+                answer_text = response.answer
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="skipped",
+                    duration_ms=0,
+                    input_size=0,
+                    output_size=0,
+                    details={"reason": "No citations were retrieved for answer generation."},
+                )
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="success",
+                    duration_ms=0,
+                    input_size=0,
+                    output_size=len(response.answer),
+                    details={"response_mode": response.mode, "model": response.model},
+                )
                 self._record_chat_event(
                     action="answer",
                     outcome="success",
@@ -74,21 +141,50 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     citation_count=0,
                     rerank_strategy=rerank_strategy,
                     duration_ms=self._elapsed_ms(started_at),
+                    details=runtime_details,
+                    trace_id=trace_id,
+                    request_id=request_id,
                 )
                 return response
 
             contexts = [citation.snippet for citation in citations]  # 提取引用文本，作为生成模型的上下文输入。
-            downgraded_from: str | None = None
-            response_model = self._response_model_name(profile=profile)
             try:  # 优先调用 LLM 生成最终回答。
+                llm_started_at = perf_counter()
                 answer = self.generation_client.generate(  # 执行回答生成。
                     question=request.question,  # 传入用户问题。
                     contexts=contexts,  # 传入检索证据上下文。
                     timeout_seconds=profile.timeout_budget_seconds,  # 问答超时预算统一来自查询档位配置。
                     model_name=response_model,
                 )
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="success",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=len(answer),
+                    cache_hit=False,
+                    details={
+                        "context_chars": sum(len(context) for context in contexts),
+                        "model": response_model,
+                    },
+                )
                 mode = "rag"  # 生成成功时标记为完整 RAG 模式。
-            except LLMGenerationRetryableError:  # 仅在可恢复的远程故障时走降级，避免吞掉配置或协议错误。
+            except LLMGenerationRetryableError as exc:  # 仅在可恢复的远程故障时走降级，避免吞掉配置或协议错误。
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=0,
+                    cache_hit=False,
+                    details={
+                        "context_chars": sum(len(context) for context in contexts),
+                        "error_message": str(exc),
+                        "model": response_model,
+                    },
+                )
                 degraded_result = self._build_degraded_citations(request, profile, auth_context=auth_context)
                 if degraded_result is not None and degraded_result.citations:
                     citations = degraded_result.citations
@@ -106,6 +202,17 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 citations=citations,
                 model=response_model,
             )
+            response_mode = response.mode
+            answer_text = response.answer
+            self._append_trace_stage(
+                trace_stages,
+                stage="answer",
+                status="degraded" if downgraded_from else "success",
+                duration_ms=0,
+                input_size=len(citations),
+                output_size=len(response.answer),
+                details={"response_mode": response.mode, "model": response.model},
+            )
             self._record_chat_event(
                 action="answer",
                 outcome="success",
@@ -117,9 +224,30 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
+                details=runtime_details,
+                trace_id=trace_id,
+                request_id=request_id,
             )
             return response
-        except Exception as exc:
+        except RuntimeGateBusyError as exc:
+            error_message = exc.detail
+            runtime_details = {
+                **runtime_details,
+                "runtime_channel": exc.channel,
+                "busy_rejected": True,
+                "busy_rejected_reason": exc.reason,
+                "retry_after_seconds": exc.retry_after_seconds,
+            }
+            if not self._has_answer_stage(trace_stages):
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="failed",
+                    duration_ms=0,
+                    input_size=len(citations),
+                    output_size=0,
+                    details={"error_message": error_message, **runtime_details},
+                )
             self._record_chat_event(
                 action="answer",
                 outcome="failed",
@@ -130,136 +258,384 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 citation_count=0,
                 rerank_strategy="skipped",
                 duration_ms=self._elapsed_ms(started_at),
-                error_message=str(exc),
+                error_message=error_message,
+                details=runtime_details,
+                trace_id=trace_id,
+                request_id=request_id,
+            )
+            raise exc.to_http_exception()
+        except Exception as exc:
+            error_message = str(exc)
+            if not self._has_answer_stage(trace_stages):
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="failed",
+                    duration_ms=0,
+                    input_size=len(citations),
+                    output_size=0,
+                    details={"error_message": error_message, **runtime_details},
+                )
+            self._record_chat_event(
+                action="answer",
+                outcome="failed",
+                request=request,
+                profile=profile,
+                auth_context=auth_context,
+                response_mode="failed",
+                citation_count=0,
+                rerank_strategy="skipped",
+                duration_ms=self._elapsed_ms(started_at),
+                error_message=error_message,
+                details=runtime_details,
+                trace_id=trace_id,
+                request_id=request_id,
             )
             raise
+        finally:
+            if runtime_lease is not None:
+                runtime_lease.release()
+            self._record_chat_trace(
+                action="answer",
+                request=request,
+                profile=profile,
+                auth_context=auth_context,
+                trace_id=trace_id,
+                request_id=request_id,
+                stages=trace_stages,
+                outcome="failed" if error_message else "success",
+                response_mode=response_mode,
+                citation_count=len(citations),
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                downgraded_from=downgraded_from,
+                error_message=error_message,
+                model=response_model,
+                details=runtime_details,
+            )
+            self._record_chat_snapshot(
+                action="answer",
+                request=request,
+                profile=profile,
+                auth_context=auth_context,
+                trace_id=trace_id,
+                request_id=request_id,
+                outcome="failed" if error_message else "success",
+                response_mode=response_mode,
+                citations=citations,
+                rerank_strategy=rerank_strategy,
+                model=response_model,
+                answer_text=answer_text,
+                downgraded_from=downgraded_from,
+                error_message=error_message,
+                details=runtime_details,
+            )
 
     def stream_answer_sse(self, request: ChatRequest, *, auth_context: AuthContext | None = None) -> Iterator[str]:  # 以 SSE 方式流式返回回答内容。
         started_at = perf_counter()
+        trace_id, request_id = self._new_trace_identifiers()
+        trace_stages: list[RequestTraceStage] = []
         profile = self.query_profile_service.resolve(
             purpose="chat",
             requested_mode=request.mode,
             requested_top_k=request.top_k,
         )  # 先把请求展开为统一查询档位配置。
-        citation_result = self._build_citations(request, profile, auth_context=auth_context)  # 先统一构造引用列表。
-        citations = citation_result.citations
-        rerank_strategy = citation_result.rerank_strategy
-        if not citations:  # 没有引用时直接返回无上下文 done 事件。
-            response = self._build_no_context_response(request.question, citations)
-            self._record_chat_event(
-                action="stream_answer",
-                outcome="success",
-                request=request,
-                profile=profile,
-                auth_context=auth_context,
-                response_mode=response.mode,
-                citation_count=0,
-                rerank_strategy=rerank_strategy,
-                duration_ms=self._elapsed_ms(started_at),
-                details={"streaming": True},
-            )
-            yield self._to_sse("meta", self._build_meta_payload(response))
-            yield self._to_sse("done", response.model_dump())
-            return
-
-        mode = "rag"  # 默认先按 rag 模式流式生成。
-        contexts = [citation.snippet for citation in citations]  # 提取上下文列表。
-        model = self._response_model_name(profile=profile)  # 提前计算响应模型名，给 meta 事件复用。
+        self._append_trace_stage(
+            trace_stages,
+            stage="query_rewrite",
+            status="skipped",
+            duration_ms=0,
+            input_size=len(request.question),
+            output_size=len(request.question),
+            details={"reason": "query rewrite is not enabled in the current V1 slice."},
+        )
+        citations: list[Citation] = []
+        rerank_strategy = "skipped"
+        response_mode = "failed"
         downgraded_from: str | None = None
-        yield self._to_sse(  # 首帧先发元数据，前端可立即渲染模式和引用占位。
-            "meta",
-            {
-                "question": request.question,
-                "mode": mode,
-                "model": model,
-                "citations": [citation.model_dump() for citation in citations],
-            },
-        )
+        error_message: str | None = None
+        model = self._response_model_name(profile=profile)  # 提前计算响应模型名，给 meta 事件复用。
+        answer_text = ""
+        runtime_details: dict[str, object] = {}
+        runtime_lease: RuntimeGateLease | None = None
 
-        answer_parts: list[str] = []  # 累积回答片段，最后拼成完整 answer。
-        try:  # 尝试真实流式生成。
-            for delta in self.generation_client.generate_stream(
+        try:
+            profile, runtime_lease, downgraded_from, runtime_details = self._acquire_chat_runtime_slot(
+                profile,
+                auth_context=auth_context,
+            )
+            model = self._response_model_name(profile=profile)
+            citation_result = self._build_citations(
+                request,
+                profile,
+                auth_context=auth_context,
+                trace_stages=trace_stages,
+            )  # 先统一构造引用列表。
+            citations = citation_result.citations
+            rerank_strategy = citation_result.rerank_strategy
+            if not citations:  # 没有引用时直接返回无上下文 done 事件。
+                response = self._build_no_context_response(request.question, citations)
+                response_mode = response.mode
+                answer_text = response.answer
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="skipped",
+                    duration_ms=0,
+                    input_size=0,
+                    output_size=0,
+                    details={"reason": "No citations were retrieved for streamed answer generation."},
+                )
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="success",
+                    duration_ms=0,
+                    input_size=0,
+                    output_size=len(response.answer),
+                    details={"response_mode": response.mode, "model": response.model},
+                )
+                yield self._to_sse("meta", self._build_meta_payload(response))
+                yield self._to_sse("done", response.model_dump())
+                return
+
+            mode = "rag"  # 默认先按 rag 模式流式生成。
+            contexts = [citation.snippet for citation in citations]  # 提取上下文列表。
+            yield self._to_sse(  # 首帧先发元数据，前端可立即渲染模式和引用占位。
+                "meta",
+                {
+                    "question": request.question,
+                    "mode": mode,
+                    "model": model,
+                    "citations": [citation.model_dump() for citation in citations],
+                },
+            )
+
+            answer_parts: list[str] = []  # 累积回答片段，最后拼成完整 answer。
+            llm_started_at = perf_counter()
+            try:  # 尝试真实流式生成。
+                for delta in self.generation_client.generate_stream(
+                    question=request.question,
+                    contexts=contexts,
+                    timeout_seconds=profile.timeout_budget_seconds,
+                    model_name=model,
+                ):
+                    if not delta:
+                        continue
+                    answer_parts.append(delta)
+                    yield self._to_sse("answer_delta", {"delta": delta})  # 每个片段都立即推给前端。
+                answer = "".join(answer_parts).strip()  # 汇总完整回答文本。
+                if not answer:  # 理论上不应为空，兜底避免前端停在 loading。
+                    answer = "No answer content was generated."
+                answer_text = answer
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="success",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=len(answer),
+                    cache_hit=False,
+                    details={
+                        "context_chars": sum(len(context) for context in contexts),
+                        "model": model,
+                        "streaming": True,
+                    },
+                )
+            except LLMGenerationRetryableError as exc:  # 远端临时不可用时切回检索兜底，并保持流式输出形态。
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=0,
+                    cache_hit=False,
+                    details={
+                        "context_chars": sum(len(context) for context in contexts),
+                        "error_message": str(exc),
+                        "model": model,
+                        "streaming": True,
+                    },
+                )
+                mode = "retrieval_fallback"
+                degraded_result = self._build_degraded_citations(request, profile, auth_context=auth_context)
+                if degraded_result is not None and degraded_result.citations:
+                    citations = degraded_result.citations
+                    rerank_strategy = degraded_result.rerank_strategy
+                    downgraded_from = profile.mode
+                if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
+                    raise
+                fallback_answer = self._build_retrieval_fallback_answer(citations)
+                answer_parts = []
+                for delta in self._chunk_text(fallback_answer):
+                    answer_parts.append(delta)
+                    yield self._to_sse("answer_delta", {"delta": delta})
+                answer = "".join(answer_parts)
+                answer_text = answer
+            except LLMGenerationFatalError as exc:  # 客户端错误/协议错误：流里返回 error 事件并结束。
+                error_message = str(exc)
+                answer_text = "".join(answer_parts).strip()
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=0,
+                    cache_hit=False,
+                    details={"error_message": error_message, "model": model, "streaming": True},
+                )
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="failed",
+                    duration_ms=0,
+                    input_size=len(citations),
+                    output_size=0,
+                    details={"error_message": error_message},
+                )
+                yield self._to_sse("error", {"message": error_message})
+                return
+            except Exception as exc:  # 已经开始推流后，任何未预期异常都要收口成 error 事件，避免浏览器只看到中断。
+                error_message = str(exc) or "Unexpected stream error."
+                answer_text = "".join(answer_parts).strip()
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="llm",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(llm_started_at),
+                    input_size=len(contexts),
+                    output_size=0,
+                    cache_hit=False,
+                    details={"error_message": error_message, "model": model, "streaming": True, "unexpected_error": True},
+                )
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="failed",
+                    duration_ms=0,
+                    input_size=len(citations),
+                    output_size=0,
+                    details={"error_message": error_message, "unexpected_error": True},
+                )
+                yield self._to_sse("error", {"message": error_message})
+                return
+
+            response = self._build_response(  # 发送最终 done 事件，包含完整结构化响应。
                 question=request.question,
-                contexts=contexts,
-                timeout_seconds=profile.timeout_budget_seconds,
-                model_name=model,
-            ):
-                if not delta:
-                    continue
-                answer_parts.append(delta)
-                yield self._to_sse("answer_delta", {"delta": delta})  # 每个片段都立即推给前端。
-            answer = "".join(answer_parts).strip()  # 汇总完整回答文本。
-            if not answer:  # 理论上不应为空，兜底避免前端停在 loading。
-                answer = "No answer content was generated."
-        except LLMGenerationRetryableError:  # 远端临时不可用时切回检索兜底，并保持流式输出形态。
-            mode = "retrieval_fallback"
-            degraded_result = self._build_degraded_citations(request, profile, auth_context=auth_context)
-            if degraded_result is not None and degraded_result.citations:
-                citations = degraded_result.citations
-                rerank_strategy = degraded_result.rerank_strategy
-                downgraded_from = profile.mode
-            if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
-                raise
-            fallback_answer = self._build_retrieval_fallback_answer(citations)
-            answer_parts = []
-            for delta in self._chunk_text(fallback_answer):
-                answer_parts.append(delta)
-                yield self._to_sse("answer_delta", {"delta": delta})
-            answer = "".join(answer_parts)
-        except LLMGenerationFatalError as exc:  # 客户端错误/协议错误：流里返回 error 事件并结束。
+                answer=answer,
+                mode=mode,
+                citations=citations,
+                model=model,
+            )
+            response_mode = response.mode
+            answer_text = response.answer
+            self._append_trace_stage(
+                trace_stages,
+                stage="answer",
+                status="degraded" if downgraded_from else "success",
+                duration_ms=0,
+                input_size=len(citations),
+                output_size=len(response.answer),
+                details={"response_mode": response.mode, "model": response.model, "streaming": True},
+            )
+            yield self._to_sse("done", response.model_dump())
+        except RuntimeGateBusyError as exc:
+            error_message = exc.detail
+            runtime_details = {
+                **runtime_details,
+                "runtime_channel": exc.channel,
+                "busy_rejected": True,
+                "busy_rejected_reason": exc.reason,
+                "retry_after_seconds": exc.retry_after_seconds,
+            }
+            self._append_trace_stage(
+                trace_stages,
+                stage="answer",
+                status="failed",
+                duration_ms=0,
+                input_size=len(citations),
+                output_size=0,
+                details={"error_message": error_message, **runtime_details},
+            )
+            yield self._to_sse(
+                "error",
+                {
+                    "message": error_message,
+                    "busy": True,
+                    "retry_after_seconds": exc.retry_after_seconds,
+                },
+            )
+            return
+        except Exception as exc:
+            error_message = str(exc)
+            if not self._has_answer_stage(trace_stages):
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="answer",
+                    status="failed",
+                    duration_ms=0,
+                    input_size=len(citations),
+                    output_size=0,
+                    details={"error_message": error_message, **runtime_details},
+                )
+            raise
+        finally:
+            if runtime_lease is not None:
+                runtime_lease.release()
+            outcome = "failed" if error_message else "success"
             self._record_chat_event(
                 action="stream_answer",
-                outcome="failed",
+                outcome=outcome,
                 request=request,
                 profile=profile,
                 auth_context=auth_context,
-                response_mode="failed",
+                response_mode=response_mode,
                 citation_count=len(citations),
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
-                error_message=str(exc),
-                details={"streaming": True},
+                downgraded_from=downgraded_from,
+                error_message=error_message,
+                details={"streaming": True, **runtime_details},
+                trace_id=trace_id,
+                request_id=request_id,
             )
-            yield self._to_sse("error", {"message": str(exc)})
-            return
-        except Exception as exc:  # 已经开始推流后，任何未预期异常都要收口成 error 事件，避免浏览器只看到中断。
-            self._record_chat_event(
+            self._record_chat_trace(
                 action="stream_answer",
-                outcome="failed",
                 request=request,
                 profile=profile,
                 auth_context=auth_context,
-                response_mode="failed",
+                trace_id=trace_id,
+                request_id=request_id,
+                stages=trace_stages,
+                outcome=outcome,
+                response_mode=response_mode,
                 citation_count=len(citations),
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
-                error_message=str(exc),
-                details={"streaming": True, "unexpected_error": True},
+                downgraded_from=downgraded_from,
+                error_message=error_message,
+                model=model,
+                details={"streaming": True, **runtime_details},
             )
-            yield self._to_sse("error", {"message": str(exc) or "Unexpected stream error."})
-            return
-
-        response = self._build_response(  # 发送最终 done 事件，包含完整结构化响应。
-            question=request.question,
-            answer=answer,
-            mode=mode,
-            citations=citations,
-            model=model,
-        )
-        self._record_chat_event(
-            action="stream_answer",
-            outcome="success",
-            request=request,
-            profile=profile,
-            auth_context=auth_context,
-            response_mode=response.mode,
-            citation_count=len(citations),
-            rerank_strategy=rerank_strategy,
-            duration_ms=self._elapsed_ms(started_at),
-            downgraded_from=downgraded_from,
-            details={"streaming": True},
-        )
-        yield self._to_sse("done", response.model_dump())
+            self._record_chat_snapshot(
+                action="stream_answer",
+                request=request,
+                profile=profile,
+                auth_context=auth_context,
+                trace_id=trace_id,
+                request_id=request_id,
+                outcome=outcome,
+                response_mode=response_mode,
+                citations=citations,
+                rerank_strategy=rerank_strategy,
+                model=model,
+                answer_text=answer_text,
+                downgraded_from=downgraded_from,
+                error_message=error_message,
+                details={"streaming": True, **runtime_details},
+            )
 
     def _build_citations(
         self,
@@ -267,23 +643,77 @@ class ChatService:  # 封装问答接口的业务逻辑。
         profile: QueryProfile,
         *,
         auth_context: AuthContext | None = None,
+        trace_stages: list[RequestTraceStage] | None = None,
     ) -> CitationBuildResult:  # 统一执行检索+重排并产出引用列表。
-        retrieval_result = self.retrieval_service.search(  # 先调用检索服务拿候选片段。
-            RetrievalRequest(  # 把问答请求转换成检索请求。
+        retrieval_started_at = perf_counter()
+        try:
+            retrieval_result = self.retrieval_service.search(  # 先调用检索服务拿候选片段。
+                RetrievalRequest(  # 把问答请求转换成检索请求。
+                    query=request.question,
+                    top_k=profile.top_k,
+                    mode=profile.mode,
+                    candidate_top_k=profile.candidate_top_k,
+                    document_id=request.document_id,
+                ),
+                auth_context=auth_context,
+            )
+        except Exception as exc:
+            if trace_stages is not None:
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="retrieval",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(retrieval_started_at),
+                    input_size=len(request.question),
+                    output_size=0,
+                    cache_hit=False,
+                    details={"document_id": request.document_id, "error_message": str(exc)},
+                )
+            raise
+        if trace_stages is not None:
+            self._append_trace_stage(
+                trace_stages,
+                stage="retrieval",
+                status="success",
+                duration_ms=self._elapsed_ms(retrieval_started_at),
+                input_size=len(request.question),
+                output_size=len(retrieval_result.results),
+                cache_hit=False,
+                details={"document_id": request.document_id},
+            )
+
+        rerank_started_at = perf_counter()
+        try:
+            reranked_results, rerank_strategy = self.query_profile_service.rerank_with_fallback(
                 query=request.question,
-                top_k=profile.top_k,
-                mode=profile.mode,
-                candidate_top_k=profile.candidate_top_k,
-                document_id=request.document_id,
-            ),
-            auth_context=auth_context,
-        )
-        reranked_results, rerank_strategy = self.query_profile_service.rerank_with_fallback(
-            query=request.question,
-            candidates=retrieval_result.results,
-            profile=profile,
-            reranker_client=self.reranker_client,
-        )  # rerank provider 不可用时统一回退到 heuristic，而不是每个服务各写一套异常处理。
+                candidates=retrieval_result.results,
+                profile=profile,
+                reranker_client=self.reranker_client,
+            )  # rerank provider 不可用时统一回退到 heuristic，而不是每个服务各写一套异常处理。
+        except Exception as exc:
+            if trace_stages is not None:
+                self._append_trace_stage(
+                    trace_stages,
+                    stage="rerank",
+                    status="failed",
+                    duration_ms=self._elapsed_ms(rerank_started_at),
+                    input_size=len(retrieval_result.results),
+                    output_size=0,
+                    cache_hit=False,
+                    details={"error_message": str(exc)},
+                )
+            raise
+        if trace_stages is not None:
+            self._append_trace_stage(
+                trace_stages,
+                stage="rerank",
+                status=self._trace_status_for_rerank_strategy(rerank_strategy),
+                duration_ms=self._elapsed_ms(rerank_started_at),
+                input_size=len(retrieval_result.results),
+                output_size=len(reranked_results),
+                cache_hit=False,
+                details={"strategy": rerank_strategy},
+            )
 
         return CitationBuildResult(
             citations=[  # 把检索结果转换成问答响应里需要的引用结构。
@@ -298,6 +728,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 for result in reranked_results  # 遍历 rerank 后的结果。
             ],
             rerank_strategy=rerank_strategy,
+            retrieved_count=len(retrieval_result.results),
+            reranked_count=len(reranked_results),
         )
 
     def _build_degraded_citations(
@@ -311,6 +743,75 @@ class ChatService:  # 封装问答接口的业务逻辑。
         if fallback_profile is None:
             return None
         return self._build_citations(request, fallback_profile, auth_context=auth_context)
+
+    def _acquire_chat_runtime_slot(
+        self,
+        profile: QueryProfile,
+        *,
+        auth_context: AuthContext | None = None,
+    ) -> tuple[QueryProfile, RuntimeGateLease, str | None, dict[str, object]]:
+        concurrency_controls = self.system_config_service.get_concurrency_controls()
+        primary_channel = "chat_accurate" if profile.mode == "accurate" else "chat_fast"
+        owner_key = self._runtime_owner_key(auth_context)
+        primary_lease, primary_reject_reason = self.runtime_gate_service.acquire_with_reason(
+            primary_channel,
+            timeout_ms=concurrency_controls.acquire_timeout_ms,
+            owner_key=owner_key,
+        )
+        if primary_lease is not None:
+            return (
+                profile,
+                primary_lease,
+                None,
+                {
+                    "runtime_channel": primary_channel,
+                    "acquire_timeout_ms": concurrency_controls.acquire_timeout_ms,
+                    "runtime_owner_key": owner_key,
+                },
+            )
+
+        fallback_profile = self.query_profile_service.build_fallback_profile(profile)
+        if primary_channel == "chat_accurate" and fallback_profile is not None and primary_reject_reason != "user_limit":
+            fallback_channel = "chat_fast"
+            fallback_lease, _ = self.runtime_gate_service.acquire_with_reason(
+                fallback_channel,
+                timeout_ms=concurrency_controls.acquire_timeout_ms,
+                owner_key=owner_key,
+            )
+            if fallback_lease is not None:
+                return (
+                    fallback_profile,
+                    fallback_lease,
+                    profile.mode,
+                    {
+                        "runtime_channel": fallback_channel,
+                        "runtime_busy_fallback": True,
+                        "acquire_timeout_ms": concurrency_controls.acquire_timeout_ms,
+                        "runtime_owner_key": owner_key,
+                    },
+                )
+
+        raise RuntimeGateBusyError(
+            detail=self._busy_detail_for_chat_channel(primary_channel, reject_reason=primary_reject_reason or "channel_limit"),
+            channel=primary_channel,
+            reason=primary_reject_reason or "channel_limit",
+            retry_after_seconds=concurrency_controls.busy_retry_after_seconds,
+            requested_mode=profile.mode,
+        )
+
+    @staticmethod
+    def _busy_detail_for_chat_channel(channel: str, *, reject_reason: str) -> str:
+        if reject_reason == "user_limit":
+            return "System is busy. Your concurrent request limit is reached. Wait for an earlier request to finish and retry."
+        if channel == "chat_accurate":
+            return "System is busy. Accurate chat capacity is saturated. Retry later or switch to fast mode."
+        return "System is busy. Fast chat capacity is saturated. Retry later."
+
+    @staticmethod
+    def _runtime_owner_key(auth_context: AuthContext | None) -> str | None:
+        if auth_context is None:
+            return None
+        return auth_context.user.user_id
 
     def _record_chat_event(
         self,
@@ -327,6 +828,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
         downgraded_from: str | None = None,
         error_message: str | None = None,
         details: dict[str, object] | None = None,
+        trace_id: str | None = None,
+        request_id: str | None = None,
     ) -> None:
         payload = {
             "question_length": len(request.question),
@@ -335,6 +838,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
             "citation_count": citation_count,
             "rerank_strategy": rerank_strategy,
         }
+        if trace_id:
+            payload["trace_id"] = trace_id
+        if request_id:
+            payload["request_id"] = request_id
         if error_message:
             payload["error_message"] = error_message
         if details:
@@ -355,9 +862,143 @@ class ChatService:  # 封装问答接口的业务逻辑。
             details=payload,
         )
 
+    def _record_chat_trace(
+        self,
+        *,
+        action: str,
+        request: ChatRequest,
+        profile: QueryProfile,
+        auth_context: AuthContext | None,
+        trace_id: str,
+        request_id: str,
+        stages: list[RequestTraceStage],
+        outcome: str,
+        response_mode: str,
+        citation_count: int,
+        rerank_strategy: str,
+        duration_ms: int,
+        model: str,
+        downgraded_from: str | None = None,
+        error_message: str | None = None,
+        details: dict[str, object] | None = None,
+    ) -> None:
+        payload = {
+            "question_length": len(request.question),
+            "citation_count": citation_count,
+            "rerank_strategy": rerank_strategy,
+            "model": model,
+        }
+        if details:
+            payload.update(details)
+        self.request_trace_service.record(
+            trace_id=trace_id,
+            request_id=request_id,
+            category="chat",
+            action=action,
+            outcome="success" if outcome == "success" else "failed",
+            auth_context=auth_context,
+            target_type="document" if request.document_id else None,
+            target_id=request.document_id,
+            mode=profile.mode,
+            top_k=profile.top_k,
+            candidate_top_k=profile.candidate_top_k,
+            rerank_top_n=profile.rerank_top_n,
+            total_duration_ms=duration_ms,
+            timeout_flag=self._looks_like_timeout(error_message),
+            downgraded_from=downgraded_from,
+            response_mode=response_mode,
+            error_message=error_message,
+            stages=stages,
+            details=payload,
+        )
+
+    def _record_chat_snapshot(
+        self,
+        *,
+        action: str,
+        request: ChatRequest,
+        profile: QueryProfile,
+        auth_context: AuthContext | None,
+        trace_id: str,
+        request_id: str,
+        outcome: str,
+        response_mode: str,
+        citations: list[Citation],
+        rerank_strategy: str,
+        model: str,
+        answer_text: str | None,
+        downgraded_from: str | None = None,
+        error_message: str | None = None,
+        details: dict[str, object] | None = None,
+    ) -> None:
+        self.request_snapshot_service.record_chat_snapshot(
+            trace_id=trace_id,
+            request_id=request_id,
+            action=action,
+            outcome=outcome,
+            request=request,
+            profile=profile,
+            auth_context=auth_context,
+            citations=citations,
+            response_mode=response_mode,
+            rerank_strategy=rerank_strategy,
+            model=model,
+            answer_text=answer_text,
+            downgraded_from=downgraded_from,
+            error_message=error_message,
+            details=details,
+        )
+
     @staticmethod
     def _elapsed_ms(started_at: float) -> int:
         return max(0, int((perf_counter() - started_at) * 1000))
+
+    @staticmethod
+    def _new_trace_identifiers() -> tuple[str, str]:
+        return f"trc_{uuid4().hex[:16]}", f"req_{uuid4().hex[:16]}"
+
+    @staticmethod
+    def _trace_status_for_rerank_strategy(rerank_strategy: str) -> RequestTraceStageStatus:
+        if rerank_strategy == "provider":
+            return "success"
+        if rerank_strategy == "heuristic":
+            return "degraded"
+        return "skipped"
+
+    @staticmethod
+    def _has_answer_stage(stages: list[RequestTraceStage]) -> bool:
+        return any(stage.stage == "answer" for stage in stages)
+
+    @staticmethod
+    def _append_trace_stage(
+        stages: list[RequestTraceStage],
+        *,
+        stage: str,
+        status: RequestTraceStageStatus,
+        duration_ms: int | None,
+        input_size: int | None,
+        output_size: int | None,
+        cache_hit: bool | None = None,
+        details: dict[str, object] | None = None,
+    ) -> None:
+        stages.append(
+            RequestTraceStage(
+                stage=stage,
+                status=status,
+                duration_ms=duration_ms,
+                input_size=input_size,
+                output_size=output_size,
+                cache_hit=cache_hit,
+                details=details or {},
+            )
+        )
+
+    @staticmethod
+    def _looks_like_timeout(error_message: str | None) -> bool:
+        if not error_message:
+            return False
+        lowered = error_message.lower()
+        return "timed out" in lowered or "timeout" in lowered
 
     def _build_response(
         self,

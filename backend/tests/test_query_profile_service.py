@@ -127,6 +127,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
                 }
             ),
             retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
         ),
         auth_context=_build_sys_admin_context(),
     )
@@ -156,7 +157,7 @@ def test_chat_service_defaults_to_fast_profile_when_request_omits_mode_and_top_k
     chat_service.retrieval_service = fake_retrieval
     chat_service.generation_client = fake_generation
 
-    response = chat_service.answer(ChatRequest(question="数字化部巡检怎么做？"), auth_context=SimpleNamespace())
+    response = chat_service.answer(ChatRequest(question="数字化部巡检怎么做？"), auth_context=None)
 
     assert fake_retrieval.last_request.mode == "fast"
     assert fake_retrieval.last_request.top_k == 5

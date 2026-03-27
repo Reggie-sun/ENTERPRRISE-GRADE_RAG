@@ -32,6 +32,16 @@ class HealthMetadataStore(BaseModel):
     dsn_configured: bool
 
 
+class HealthOCR(BaseModel):
+    provider: str
+    language: str
+    enabled: bool
+    ready: bool
+    pdf_native_text_min_chars: int
+    angle_cls_enabled: bool
+    detail: str | None = None
+
+
 class HealthResponse(BaseModel):
     status: str
     app_name: str
@@ -41,3 +51,4 @@ class HealthResponse(BaseModel):
     embedding: HealthEmbedding
     queue: HealthQueue
     metadata_store: HealthMetadataStore
+    ocr: HealthOCR

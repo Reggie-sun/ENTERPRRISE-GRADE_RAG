@@ -33,6 +33,7 @@ def test_llm_generation_client_retries_when_enabled(tmp_path: Path, monkeypatch:
                     "llm_retry_backoff_ms": 0,
                 }
             ),
+            concurrency_controls=current_config.concurrency_controls,
         ),
         auth_context=_build_auth_context(),
     )
@@ -69,6 +70,7 @@ def test_llm_generation_client_skips_retry_when_disabled(tmp_path: Path, monkeyp
                     "llm_retry_backoff_ms": 0,
                 }
             ),
+            concurrency_controls=current_config.concurrency_controls,
         ),
         auth_context=_build_auth_context(),
     )

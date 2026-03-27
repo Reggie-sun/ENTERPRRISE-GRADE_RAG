@@ -176,6 +176,25 @@ class PostgresMetadataStore:
             return None
         return self._row_to_document(rows[0])
 
+    def load_documents(self, doc_ids: list[str]) -> dict[str, DocumentRecord]:
+        normalized_doc_ids = [doc_id.strip() for doc_id in doc_ids if doc_id and doc_id.strip()]
+        if not normalized_doc_ids:
+            return {}
+
+        rows = self._fetchall(
+            """
+            SELECT
+                "docId", "tenantId", "fileName", "fileHash", "sourceType",
+                "departmentIds", "roleIds", "ownerId", "visibility", "classification",
+                "tags", "sourceSystem", "status", "currentVersion", "latestJobId",
+                "storagePath", "createdBy", "metadata", "createdAt", "updatedAt"
+            FROM public.rag_source_documents
+            WHERE "docId" = ANY(%(doc_ids)s)
+            """,
+            {"doc_ids": normalized_doc_ids},
+        )
+        return {record.doc_id: record for record in (self._row_to_document(row) for row in rows)}
+
     def load_job(self, job_id: str) -> IngestJobRecord | None:
         rows = self._fetchall(
             """

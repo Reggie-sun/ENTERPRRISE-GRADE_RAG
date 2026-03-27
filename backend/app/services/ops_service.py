@@ -14,10 +14,15 @@ from ..schemas.ops import (
     OpsCategorySummary,
     OpsQueueSummary,
     OpsRecentWindowSummary,
+    OpsRuntimeChannelSummary,
+    OpsRuntimeGateSummary,
     OpsSummaryResponse,
 )
 from .event_log_service import EventLogService
 from .health_service import HealthService
+from .request_snapshot_service import RequestSnapshotService
+from .request_trace_service import RequestTraceService
+from .runtime_gate_service import RuntimeGateService, get_runtime_gate_service
 from .system_config_service import SystemConfigService
 
 
@@ -28,14 +33,24 @@ class OpsService:
         *,
         health_service: HealthService | None = None,
         event_log_service: EventLogService | None = None,
+        request_trace_service: RequestTraceService | None = None,
+        request_snapshot_service: RequestSnapshotService | None = None,
         system_config_service: SystemConfigService | None = None,
+        runtime_gate_service: RuntimeGateService | None = None,
         queue_probe: Callable[[], OpsQueueSummary] | None = None,
         recent_window_size: int = 200,
     ) -> None:
         self.settings = settings or get_settings()
         self.health_service = health_service or HealthService(self.settings)
         self.event_log_service = event_log_service or EventLogService(self.settings)
+        self.request_trace_service = request_trace_service or RequestTraceService(self.settings)
+        self.request_snapshot_service = request_snapshot_service or RequestSnapshotService(self.settings)
         self.system_config_service = system_config_service or SystemConfigService(self.settings)
+        self.runtime_gate_service = runtime_gate_service or (
+            RuntimeGateService(self.settings, system_config_service=self.system_config_service)
+            if settings is not None
+            else get_runtime_gate_service()
+        )
         self.queue_probe = queue_probe or self._probe_queue
         self.recent_window_size = recent_window_size
 
@@ -49,11 +64,33 @@ class OpsService:
             checked_at=datetime.now(UTC),
             health=self.health_service.get_snapshot(),
             queue=self.queue_probe(),
+            runtime_gate=self._build_runtime_gate_summary(),
             recent_window=self._build_recent_window(records),
             categories=self._build_category_summaries(records),
             recent_failures=[record for record in records if record.outcome == "failed"][:5],
             recent_degraded=[record for record in records if record.downgraded_from][:5],
+            recent_traces=self.request_trace_service.list_recent(auth_context=auth_context, limit=5),
+            recent_snapshots=self.request_snapshot_service.list_recent(auth_context=auth_context, limit=5),
             config=self.system_config_service.get_effective_config(),
+        )
+
+    def _build_runtime_gate_summary(self) -> OpsRuntimeGateSummary:
+        snapshot = self.runtime_gate_service.get_snapshot()
+        return OpsRuntimeGateSummary(
+            acquire_timeout_ms=snapshot.acquire_timeout_ms,
+            busy_retry_after_seconds=snapshot.busy_retry_after_seconds,
+            per_user_online_max_inflight=snapshot.per_user_online_max_inflight,
+            active_users=snapshot.active_users,
+            max_user_inflight=snapshot.max_user_inflight,
+            channels=[
+                OpsRuntimeChannelSummary(
+                    channel=item.channel,
+                    inflight=item.inflight,
+                    limit=item.limit,
+                    available_slots=item.available_slots,
+                )
+                for item in snapshot.channels
+            ],
         )
 
     @staticmethod

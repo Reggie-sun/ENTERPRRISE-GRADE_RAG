@@ -33,11 +33,21 @@ class RetryControlsConfig(BaseModel):
     llm_retry_backoff_ms: int = Field(default=400, ge=0, le=10_000)
 
 
+class ConcurrencyControlsConfig(BaseModel):
+    fast_max_inflight: int = Field(default=24, ge=1, le=200)
+    accurate_max_inflight: int = Field(default=6, ge=1, le=100)
+    sop_generation_max_inflight: int = Field(default=3, ge=1, le=50)
+    per_user_online_max_inflight: int = Field(default=3, ge=1, le=20)
+    acquire_timeout_ms: int = Field(default=800, ge=0, le=30_000)
+    busy_retry_after_seconds: int = Field(default=5, ge=1, le=300)
+
+
 class SystemConfigUpdateRequest(BaseModel):
     query_profiles: QueryProfilesConfig
     model_routing: ModelRoutingConfig
     degrade_controls: DegradeControlsConfig
     retry_controls: RetryControlsConfig
+    concurrency_controls: ConcurrencyControlsConfig
 
 
 class SystemConfigResponse(BaseModel):
@@ -45,5 +55,6 @@ class SystemConfigResponse(BaseModel):
     model_routing: ModelRoutingConfig
     degrade_controls: DegradeControlsConfig
     retry_controls: RetryControlsConfig
+    concurrency_controls: ConcurrencyControlsConfig
     updated_at: datetime | None = None
     updated_by: str | None = None

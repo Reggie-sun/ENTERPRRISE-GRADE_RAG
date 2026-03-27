@@ -13,6 +13,8 @@ import type {
   EventLogListQuery,
   EventLogListResponse,
   OpsSummaryResponse,
+  RequestSnapshotReplayRequest,
+  RequestSnapshotReplayResponse,
   SystemConfigResponse,
   SystemConfigUpdateRequest,
   SopListQuery,
@@ -375,6 +377,16 @@ export async function updateSystemConfig(payload: SystemConfigUpdateRequest): Pr
 /** 读取运行态汇总 */
 export async function getOpsSummary(): Promise<OpsSummaryResponse> {
   return request<OpsSummaryResponse>('/ops/summary');
+}
+
+export async function replayRequestSnapshot(
+  snapshotId: string,
+  payload: RequestSnapshotReplayRequest,
+): Promise<RequestSnapshotReplayResponse> {
+  return request<RequestSnapshotReplayResponse>(`/request-snapshots/${snapshotId}/replay`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
 // ========== SOP API ==========

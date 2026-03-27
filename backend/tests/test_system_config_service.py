@@ -8,6 +8,7 @@ from backend.app.core.config import Settings
 from backend.app.db.system_config_repository import FilesystemSystemConfigRepository
 from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefinition, UserRecord
 from backend.app.schemas.system_config import (
+    ConcurrencyControlsConfig,
     DegradeControlsConfig,
     ModelRoutingConfig,
     QueryModeConfig,
@@ -71,6 +72,10 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
     assert payload.model_routing.fast_model == "qwen2.5:7b"
     assert payload.degrade_controls.rerank_fallback_enabled is True
     assert payload.retry_controls.llm_retry_max_attempts == 2
+    assert payload.concurrency_controls.fast_max_inflight == 24
+    assert payload.concurrency_controls.accurate_max_inflight == 6
+    assert payload.concurrency_controls.sop_generation_max_inflight == 3
+    assert payload.concurrency_controls.per_user_online_max_inflight == 3
     assert payload.updated_at is None
     assert payload.updated_by is None
 
@@ -111,6 +116,14 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
                 llm_retry_max_attempts=3,
                 llm_retry_backoff_ms=800,
             ),
+            concurrency_controls=ConcurrencyControlsConfig(
+                fast_max_inflight=30,
+                accurate_max_inflight=8,
+                sop_generation_max_inflight=4,
+                per_user_online_max_inflight=3,
+                acquire_timeout_ms=1200,
+                busy_retry_after_seconds=9,
+            ),
         ),
         auth_context=_build_auth_context(),
     )
@@ -125,6 +138,9 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert reloaded.model_routing.fast_model == "Qwen/Fast-7B"
     assert reloaded.degrade_controls.retrieval_fallback_enabled is False
     assert reloaded.retry_controls.llm_retry_max_attempts == 3
+    assert reloaded.concurrency_controls.fast_max_inflight == 30
+    assert reloaded.concurrency_controls.per_user_online_max_inflight == 3
+    assert reloaded.concurrency_controls.acquire_timeout_ms == 1200
     assert fast_profile.top_k == 6
     assert fast_profile.candidate_top_k == 18
     assert fast_profile.rerank_top_n == 4
@@ -172,6 +188,7 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
                 ),
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -194,9 +211,62 @@ def test_system_config_service_rejects_empty_model_route(tmp_path: Path) -> None
                 ),
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(),
             ),
             auth_context=_build_auth_context(),
         )
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "fast_model cannot be empty."
+
+
+def test_system_config_service_validates_concurrency_relationships(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.update_config(
+            SystemConfigUpdateRequest(
+                query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
+                model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                degrade_controls=DegradeControlsConfig(),
+                retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(
+                    fast_max_inflight=4,
+                    accurate_max_inflight=5,
+                    sop_generation_max_inflight=3,
+                    per_user_online_max_inflight=2,
+                    acquire_timeout_ms=800,
+                    busy_retry_after_seconds=5,
+                ),
+            ),
+            auth_context=_build_auth_context(),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "accurate_max_inflight cannot be greater than fast_max_inflight."
+
+
+def test_system_config_service_validates_per_user_concurrency_relationships(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.update_config(
+            SystemConfigUpdateRequest(
+                query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
+                model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                degrade_controls=DegradeControlsConfig(),
+                retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(
+                    fast_max_inflight=4,
+                    accurate_max_inflight=2,
+                    sop_generation_max_inflight=1,
+                    per_user_online_max_inflight=5,
+                    acquire_timeout_ms=800,
+                    busy_retry_after_seconds=5,
+                ),
+            ),
+            auth_context=_build_auth_context(),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "per_user_online_max_inflight cannot be greater than fast_max_inflight."

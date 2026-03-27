@@ -1,0 +1,41 @@
+{
+  "query_profiles": {
+    "fast": {
+      "top_k_default": 5,
+      "candidate_multiplier": 2,
+      "rerank_top_n": 3,
+      "timeout_budget_seconds": 12.0
+    },
+    "accurate": {
+      "top_k_default": 8,
+      "candidate_multiplier": 4,
+      "rerank_top_n": 5,
+      "timeout_budget_seconds": 24.0
+    }
+  },
+  "model_routing": {
+    "fast_model": "Qwen2.5-14B-Instruct",
+    "accurate_model": "Qwen2.5-14B-Instruct",
+    "sop_generation_model": "Qwen2.5-14B-Instruct"
+  },
+  "degrade_controls": {
+    "rerank_fallback_enabled": true,
+    "accurate_to_fast_fallback_enabled": true,
+    "retrieval_fallback_enabled": true
+  },
+  "retry_controls": {
+    "llm_retry_enabled": true,
+    "llm_retry_max_attempts": 2,
+    "llm_retry_backoff_ms": 400
+  },
+  "concurrency_controls": {
+    "fast_max_inflight": 24,
+    "accurate_max_inflight": 6,
+    "sop_generation_max_inflight": 3,
+    "per_user_online_max_inflight": 3,
+    "acquire_timeout_ms": 800,
+    "busy_retry_after_seconds": 5
+  },
+  "updated_at": "2026-03-27T07:50:45.831711Z",
+  "updated_by": "user_sys_admin_demo"
+}

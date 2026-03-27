@@ -1,8 +1,18 @@
-import { AlertTriangle, Clock3, Gauge, RefreshCw, ServerCog, Workflow } from 'lucide-react';
+import { AlertTriangle, Clock3, Gauge, RefreshCw, RotateCcw, Route, ServerCog, Workflow } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, StatusPill } from '@/components';
-import { formatApiError, getOpsSummary, type EventLogRecord, type OpsSummaryResponse } from '@/api';
+import {
+  formatApiError,
+  getOpsSummary,
+  replayRequestSnapshot,
+  type EventLogRecord,
+  type OpsSummaryResponse,
+  type RequestSnapshotRecord,
+  type RequestSnapshotReplayMode,
+  type RequestSnapshotReplayResponse,
+  type RequestTraceRecord,
+} from '@/api';
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -34,6 +44,58 @@ function renderEventSubtitle(record: EventLogRecord): string {
   return parts.join(' / ');
 }
 
+function renderTraceSubtitle(record: RequestTraceRecord): string {
+  const parts = [
+    record.actor.username || '-',
+    record.mode || '-',
+    record.total_duration_ms !== null ? `${record.total_duration_ms} ms` : '-',
+    record.response_mode || '-',
+  ];
+  return parts.join(' / ');
+}
+
+function traceTone(record: RequestTraceRecord): 'ok' | 'warn' | 'error' | 'default' {
+  if (record.outcome === 'failed') {
+    return 'error';
+  }
+  if (record.downgraded_from) {
+    return 'warn';
+  }
+  return 'ok';
+}
+
+function snapshotPrompt(snapshot: RequestSnapshotRecord): string {
+  if ('question' in snapshot.request) {
+    return snapshot.request.question;
+  }
+  if ('topic' in snapshot.request) {
+    const topic = snapshot.request.topic;
+    const processName = snapshot.request.process_name || '未指定工序';
+    const scenarioName = snapshot.request.scenario_name || '未指定场景';
+    return `按主题生成 SOP：${topic} / ${processName} / ${scenarioName}`;
+  }
+  if ('scenario_name' in snapshot.request && !('document_id' in snapshot.request)) {
+    const processName = snapshot.request.process_name || '未指定工序';
+    return `按场景生成 SOP：${processName} / ${snapshot.request.scenario_name}`;
+  }
+  if ('document_id' in snapshot.request) {
+    return `根据文档 ${snapshot.request.document_id} 生成 SOP 草稿`;
+  }
+  return '未识别的请求快照';
+}
+
+function snapshotPreviewLabel(snapshot: RequestSnapshotRecord): string {
+  return snapshot.category === 'sop_generation' ? '草稿预览' : '答案预览';
+}
+
+function replayResponseMode(response: RequestSnapshotReplayResponse['response']): string {
+  return 'mode' in response ? response.mode : response.generation_mode;
+}
+
+function replayResponseContent(response: RequestSnapshotReplayResponse['response']): string {
+  return 'answer' in response ? response.answer : response.content;
+}
+
 export function OpsPage() {
   const { profile } = useAuth();
   const experience = getRoleExperience(profile);
@@ -42,6 +104,9 @@ export function OpsPage() {
   const [error, setError] = useState('');
   const [refreshTick, setRefreshTick] = useState(0);
   const [summary, setSummary] = useState<OpsSummaryResponse | null>(null);
+  const [replayStatusBySnapshotId, setReplayStatusBySnapshotId] = useState<Record<string, PanelStatus>>({});
+  const [replayErrorBySnapshotId, setReplayErrorBySnapshotId] = useState<Record<string, string>>({});
+  const [replayResultBySnapshotId, setReplayResultBySnapshotId] = useState<Record<string, RequestSnapshotReplayResponse>>({});
 
   useEffect(() => {
     const loadSummary = async () => {
@@ -68,6 +133,22 @@ export function OpsPage() {
     : 'error';
   const overallTone = status === 'error' ? 'error' : status === 'loading' ? 'warn' : 'ok';
   const categoryCards = useMemo(() => summary?.categories || [], [summary]);
+
+  const triggerReplay = async (snapshotId: string, replayMode: RequestSnapshotReplayMode) => {
+    setReplayStatusBySnapshotId((current) => ({ ...current, [snapshotId]: 'loading' }));
+    setReplayErrorBySnapshotId((current) => ({ ...current, [snapshotId]: '' }));
+    try {
+      const payload = await replayRequestSnapshot(snapshotId, { replay_mode: replayMode });
+      setReplayResultBySnapshotId((current) => ({ ...current, [snapshotId]: payload }));
+      setReplayStatusBySnapshotId((current) => ({ ...current, [snapshotId]: 'success' }));
+    } catch (err) {
+      setReplayStatusBySnapshotId((current) => ({ ...current, [snapshotId]: 'error' }));
+      setReplayErrorBySnapshotId((current) => ({
+        ...current,
+        [snapshotId]: formatApiError(err, replayMode === 'original' ? '原样重放' : '当前配置重放'),
+      }));
+    }
+  };
 
   return (
     <div className="grid gap-5">
@@ -208,6 +289,73 @@ export function OpsPage() {
       </section>
 
       <section className="grid grid-cols-12 gap-5">
+        <Card className="col-span-12">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">在线并发通道</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                这里直接展示 fast / accurate / SOP 生成三条通道的实时占用、上限和剩余槽位，同时补一层单用户上限，避免一个人把在线资源全吃满。
+              </p>
+            </div>
+            <StatusPill tone="ok">
+              acquire {summary?.runtime_gate.acquire_timeout_ms ?? '-'} ms / retry {summary?.runtime_gate.busy_retry_after_seconds ?? '-'} s / per-user {summary?.runtime_gate.per_user_online_max_inflight ?? '-'}
+            </StatusPill>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <strong className="block text-ink">单用户上限</strong>
+              <p className="m-0 mt-2 text-3xl font-serif text-ink">
+                {summary?.runtime_gate.per_user_online_max_inflight ?? '-'}
+              </p>
+              <p className="m-0 mt-2">同一用户最多同时占用的在线请求槽位</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <strong className="block text-ink">活跃用户数</strong>
+              <p className="m-0 mt-2 text-3xl font-serif text-ink">
+                {summary?.runtime_gate.active_users ?? '-'}
+              </p>
+              <p className="m-0 mt-2">当前正在占用在线通道的用户数量</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <strong className="block text-ink">单用户峰值</strong>
+              <p className="m-0 mt-2 text-3xl font-serif text-ink">
+                {summary?.runtime_gate.max_user_inflight ?? '-'}
+              </p>
+              <p className="m-0 mt-2">当前快照里同一用户实际占用的最大槽位</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {(summary?.runtime_gate.channels || []).map((channel) => {
+              const tone = channel.available_slots === 0 ? 'error' : channel.available_slots <= 2 ? 'warn' : 'ok';
+              const label = channel.channel === 'chat_fast'
+                ? 'fast 问答'
+                : channel.channel === 'chat_accurate'
+                  ? 'accurate 问答'
+                  : 'SOP 生成';
+              return (
+                <div key={channel.channel} className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <strong className="text-ink">{label}</strong>
+                    <StatusPill tone={tone}>
+                      {channel.available_slots > 0 ? '可用' : '已打满'}
+                    </StatusPill>
+                  </div>
+                  <p className="m-0 mt-4 text-3xl font-serif text-ink">
+                    {channel.inflight} / {channel.limit}
+                  </p>
+                  <p className="m-0 mt-2 text-sm text-ink-soft">
+                    available slots: {channel.available_slots}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-12 gap-5">
         <Card className="col-span-7 max-lg:col-span-12">
           <h3 className="m-0 text-xl font-semibold text-ink">依赖与当前配置</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
@@ -228,6 +376,19 @@ export function OpsPage() {
               <p className="m-0 mt-1 break-all">{summary?.health.vector_store.collection || '-'}</p>
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="block text-ink">OCR</strong>
+                <StatusPill tone={summary?.health.ocr.ready ? 'ok' : summary?.health.ocr.enabled ? 'error' : 'default'}>
+                  {summary?.health.ocr.ready ? 'ready' : summary?.health.ocr.enabled ? 'not ready' : 'disabled'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-2">{summary?.health.ocr.provider || '-'}</p>
+              <p className="m-0 mt-1">lang: {summary?.health.ocr.language || '-'}</p>
+              <p className="m-0 mt-1">pdf fallback threshold: {summary?.health.ocr.pdf_native_text_min_chars ?? '-'} chars</p>
+              <p className="m-0 mt-1">angle cls: {summary?.health.ocr.angle_cls_enabled ? 'on' : 'off'}</p>
+              <p className="m-0 mt-1 leading-relaxed">{summary?.health.ocr.detail || '-'}</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
               <strong className="block text-ink">模型路由</strong>
               <p className="m-0 mt-2">fast: {summary?.config.model_routing.fast_model || '-'}</p>
               <p className="m-0 mt-1">accurate: {summary?.config.model_routing.accurate_model || '-'}</p>
@@ -239,6 +400,9 @@ export function OpsPage() {
               <p className="m-0 mt-1">accurate → fast: {summary?.config.degrade_controls.accurate_to_fast_fallback_enabled ? 'on' : 'off'}</p>
               <p className="m-0 mt-1">retrieval fallback: {summary?.config.degrade_controls.retrieval_fallback_enabled ? 'on' : 'off'}</p>
               <p className="m-0 mt-1">retry: {summary?.config.retry_controls.llm_retry_enabled ? `${summary.config.retry_controls.llm_retry_max_attempts} 次 / ${summary.config.retry_controls.llm_retry_backoff_ms}ms` : 'off'}</p>
+              <p className="m-0 mt-1">gate timeout: {summary?.config.concurrency_controls.acquire_timeout_ms ?? '-'} ms</p>
+              <p className="m-0 mt-1">retry-after: {summary?.config.concurrency_controls.busy_retry_after_seconds ?? '-'} s</p>
+              <p className="m-0 mt-1">per-user limit: {summary?.config.concurrency_controls.per_user_online_max_inflight ?? '-'} </p>
             </div>
           </div>
         </Card>
@@ -263,6 +427,187 @@ export function OpsPage() {
                 <p className="m-0 mt-1">last failed: {formatLocalTime(item.last_failed_at)}</p>
               </div>
             ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-12 gap-5">
+        <Card className="col-span-12">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">最近请求 Trace</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                先把 chat 的最小链路 trace 收进来：`query_rewrite → retrieval → rerank → llm → answer`。
+              </p>
+            </div>
+            <StatusPill tone={summary?.recent_traces.length ? 'ok' : 'default'}>
+              {summary?.recent_traces.length ? `${summary.recent_traces.length} 条` : '暂无'}
+            </StatusPill>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            {(summary?.recent_traces || []).map((trace) => (
+              <div key={trace.trace_id} className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Route className="h-4 w-4 text-accent-deep" />
+                      <strong className="text-ink">{trace.action}</strong>
+                      <StatusPill tone={traceTone(trace)}>
+                        {trace.outcome === 'failed' ? '失败' : trace.downgraded_from ? '已降级' : '正常'}
+                      </StatusPill>
+                    </div>
+                    <p className="m-0 mt-2 text-sm text-ink-soft">{renderTraceSubtitle(trace)}</p>
+                    <p className="m-0 mt-1 text-xs text-ink-soft">
+                      trace_id {trace.trace_id} / request_id {trace.request_id}
+                    </p>
+                  </div>
+                  <div className="text-right text-sm text-ink-soft">
+                    <p className="m-0">发生时间：{formatLocalTime(trace.occurred_at)}</p>
+                    <p className="m-0 mt-1">target：{trace.target_id || '-'}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-2 md:grid-cols-5">
+                  {trace.stages.map((stage) => (
+                    <div key={`${trace.trace_id}-${stage.stage}`} className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-white/80 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <strong className="text-sm text-ink">{stage.stage}</strong>
+                        <StatusPill tone={stage.status === 'failed' ? 'error' : stage.status === 'degraded' ? 'warn' : stage.status === 'success' ? 'ok' : 'default'}>
+                          {stage.status}
+                        </StatusPill>
+                      </div>
+                      <p className="m-0 mt-2 text-xs text-ink-soft">
+                        {renderNullable(stage.duration_ms)} ms / in {renderNullable(stage.input_size)} / out {renderNullable(stage.output_size)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {trace.error_message && (
+                  <div className="mt-3 rounded-2xl bg-[rgba(177,67,46,0.08)] px-4 py-3 text-sm text-[rgb(147,43,26)]">
+                    {trace.error_message}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {!summary?.recent_traces.length && (
+              <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-6 text-sm text-ink-soft">
+                还没有最近 trace。先去问答页触发一条 chat 请求，再回来这里看各阶段耗时。
+              </div>
+            )}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-12 gap-5">
+        <Card className="col-span-12">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">最近请求快照与重放</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                先把 chat 和 SOP 生成的最小可复现链路收进来：保存原始请求、实际参数、命中证据和模型路由，再支持原样或当前配置重放。
+              </p>
+            </div>
+            <StatusPill tone={summary?.recent_snapshots.length ? 'ok' : 'default'}>
+              {summary?.recent_snapshots.length ? `${summary.recent_snapshots.length} 条` : '暂无'}
+            </StatusPill>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            {(summary?.recent_snapshots || []).map((snapshot: RequestSnapshotRecord) => {
+              const replayStatus = replayStatusBySnapshotId[snapshot.snapshot_id] || 'idle';
+              const replayResult = replayResultBySnapshotId[snapshot.snapshot_id];
+              const replayError = replayErrorBySnapshotId[snapshot.snapshot_id];
+              return (
+                <div key={snapshot.snapshot_id} className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <RotateCcw className="h-4 w-4 text-accent-deep" />
+                        <strong className="text-ink">{snapshot.action}</strong>
+                        <StatusPill tone={snapshot.outcome === 'failed' ? 'error' : 'ok'}>
+                          {snapshot.outcome === 'failed' ? '失败快照' : '可重放'}
+                        </StatusPill>
+                      </div>
+                      <p className="m-0 mt-2 break-words text-sm font-medium text-ink">{snapshotPrompt(snapshot)}</p>
+                      <p className="m-0 mt-2 text-sm text-ink-soft">
+                        {snapshot.actor.username || '-'} / {snapshot.profile.mode} / top_k {snapshot.profile.top_k} / 引用 {snapshot.result.citation_count}
+                      </p>
+                      <p className="m-0 mt-1 text-xs text-ink-soft">
+                        snapshot_id {snapshot.snapshot_id} / trace_id {snapshot.trace_id} / request_id {snapshot.request_id}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={replayStatus === 'loading'}
+                        onClick={() => void triggerReplay(snapshot.snapshot_id, 'original')}
+                      >
+                        原样重放
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={replayStatus === 'loading'}
+                        onClick={() => void triggerReplay(snapshot.snapshot_id, 'current')}
+                      >
+                        当前配置重放
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    <div className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-white/80 p-3 text-sm text-ink-soft">
+                      <strong className="block text-ink">模型路由</strong>
+                      <p className="m-0 mt-2">{snapshot.model_route.provider}</p>
+                      <p className="m-0 mt-1 break-all">{snapshot.model_route.model}</p>
+                    </div>
+                    <div className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-white/80 p-3 text-sm text-ink-soft">
+                      <strong className="block text-ink">Rewrite / Memory</strong>
+                      <p className="m-0 mt-2">rewrite: {snapshot.rewrite.status}</p>
+                      <p className="m-0 mt-1">memory: {snapshot.memory_summary || '-'}</p>
+                    </div>
+                    <div className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-white/80 p-3 text-sm text-ink-soft">
+                      <strong className="block text-ink">{snapshotPreviewLabel(snapshot)}</strong>
+                      <p className="m-0 mt-2 leading-relaxed">{snapshot.result.answer_preview || '暂无答案预览。'}</p>
+                    </div>
+                  </div>
+
+                  {replayError && (
+                    <div className="mt-3 rounded-2xl bg-[rgba(177,67,46,0.08)] px-4 py-3 text-sm text-[rgb(147,43,26)]">
+                      {replayError}
+                    </div>
+                  )}
+
+                  {replayResult && (
+                    <div className="mt-3 rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.86)] p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <strong className="text-ink">
+                          最近一次重放：{replayResult.replay_mode === 'original' ? '原样重放' : '当前配置重放'}
+                        </strong>
+                        <StatusPill tone={replayStatus === 'success' ? 'ok' : replayStatus === 'error' ? 'error' : replayStatus === 'loading' ? 'warn' : 'default'}>
+                          {replayStatus === 'loading' ? '重放中' : replayStatus === 'success' ? '已完成' : replayStatus === 'error' ? '失败' : '待重放'}
+                        </StatusPill>
+                      </div>
+                      <p className="m-0 mt-3 text-sm text-ink-soft">
+                        mode {replayResult.replayed_request.mode || '-'} / top_k {renderNullable(replayResult.replayed_request.top_k)} / response {replayResponseMode(replayResult.response)}
+                      </p>
+                      <p className="m-0 mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink">
+                        {replayResponseContent(replayResult.response)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {!summary?.recent_snapshots.length && (
+              <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-6 text-sm text-ink-soft">
+                还没有最近快照。先去问答页触发一条 chat 请求，再回来这里做重放。
+              </div>
+            )}
           </div>
         </Card>
       </section>

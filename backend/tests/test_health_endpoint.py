@@ -13,4 +13,7 @@ def test_health_returns_metadata_store_status() -> None:
     assert payload["metadata_store"]["provider"] in {"local_json", "postgres"}
     assert isinstance(payload["metadata_store"]["postgres_enabled"], bool)
     assert isinstance(payload["metadata_store"]["dsn_configured"], bool)
-
+    assert "ocr" in payload
+    assert payload["ocr"]["provider"] in {"disabled", "mock", "paddleocr"}
+    assert isinstance(payload["ocr"]["enabled"], bool)
+    assert isinstance(payload["ocr"]["ready"], bool)

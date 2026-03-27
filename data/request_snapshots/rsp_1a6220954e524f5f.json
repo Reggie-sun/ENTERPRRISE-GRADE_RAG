@@ -1,0 +1,71 @@
+{
+  "snapshot_id": "rsp_1a6220954e524f5f",
+  "trace_id": "trc_8a1447a7ca7f493b",
+  "request_id": "req_21108b48fccb4eed",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "failed",
+  "occurred_at": "2026-03-27T07:21:25.854503Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "concurrency_fast_probe_1774596080: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "top_k": null,
+    "mode": "fast",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "concurrency_fast_probe_1774596080: 请结合当前知识库概括企业级RAG平台当前已实现的主要能力，并尽量给出结构化总结。",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "heuristic",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "timed out"
+  },
+  "details": {
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800
+  }
+}
