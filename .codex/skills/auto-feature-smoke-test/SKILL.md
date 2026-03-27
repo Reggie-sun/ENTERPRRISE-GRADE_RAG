@@ -27,6 +27,18 @@ For `/home/reggie/vscode_folder/Enterprise-grade_RAG`, follow [V1_PLAN.md](/home
 - If the change affects a local UI or an end-to-end user flow, open the affected localhost or `127.0.0.1` page with Chrome MCP and exercise the changed path.
 - If the change is docs-only or has no runnable surface, explicitly say the smoke test is not applicable.
 
+## MCP usage strategy
+
+This skill only declares MCP usage strategy. It must not contain MCP startup commands, filesystem paths, URLs, ports, token names, or authentication values.
+
+- Keep MCP registration, transport details, auth wiring, and local wrapper commands in Codex config, not in this skill.
+- Use Chrome MCP as the default tool for localhost UI smoke tests and short end-to-end interaction checks.
+- Use filesystem, git, or codegraph tools only to discover the changed surface, local route, relevant fixture, or likely validation target before running the smoke test.
+- Use a vector-store MCP such as Qdrant only when the changed behavior directly depends on retrieval, indexing, collection state, or vector-side evidence.
+- Do not use GitHub MCP or diagram-generation MCPs by default for this skill. They are only relevant when the feature being validated explicitly depends on those integrations.
+- Prefer the smallest tool set that can prove the changed behavior. Do not widen validation just because more MCP servers are available.
+- If a recommended MCP is unavailable, blocked, or unnecessary, fall back to the smallest reliable local check and report the limitation explicitly.
+
 ## Workflow
 
 1. Identify the changed surface.

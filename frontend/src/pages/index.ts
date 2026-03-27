@@ -2,6 +2,8 @@ export { AdminPage } from './AdminPage';
 export { ChatPage } from './ChatPage';
 export { DocumentsPage } from './DocumentsPage';
 export { LoginPage } from './LoginPage';
+export { LogsPage } from './LogsPage';
+export { OpsPage } from './OpsPage';
 export { OverviewPage } from './OverviewPage';
 export { RetrievalPage } from './RetrievalPage';
 export { SopPage } from './SopPage';

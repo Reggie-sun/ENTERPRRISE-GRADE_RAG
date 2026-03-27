@@ -28,3 +28,19 @@ args = [
 ]
 cwd = "/home/reggie/vscode_folder/MCP/mcp-server-codegraph"
 startup_timeout_sec = 60
+
+[mcp_servers."mcp-streamable-http"]
+command = "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-streamable-http-mcp.sh"
+startup_timeout_sec = 30
+
+[mcp_servers."next-ai-draw-io"]
+command = "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-next-ai-drawio-mcp.sh"
+startup_timeout_sec = 60
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_PAT_TOKEN"
+
+[mcp_servers.qdrant]
+command = "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-qdrant-mcp.sh"
+startup_timeout_sec = 60

@@ -1,7 +1,9 @@
 import {
+  Activity,
   BookOpenText,
   Building2,
   Files,
+  Gauge,
   LayoutDashboard,
   LogOut,
   MessageSquare,
@@ -37,6 +39,18 @@ const baseNavItems = [
     label: '问答验证',
     description: '流式回答与引用回显',
     icon: MessageSquare,
+  },
+  {
+    to: '/workspace/logs',
+    label: '日志查询',
+    description: '事件追溯、参数核对与排障入口',
+    icon: Activity,
+  },
+  {
+    to: '/workspace/ops',
+    label: '运行态',
+    description: '健康、积压、失败和降级汇总',
+    icon: Gauge,
   },
   {
     to: '/workspace/sop',

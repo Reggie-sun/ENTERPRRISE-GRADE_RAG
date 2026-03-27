@@ -217,6 +217,56 @@ def test_chat_stream_returns_no_context_done_when_empty_library(tmp_path: Path) 
     assert done_payload["citations"] == []
 
 
+def test_chat_stream_returns_error_event_when_llm_config_is_invalid_after_meta(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "llm_provider": "deepseek",
+            "llm_base_url": "https://api.deepseek.com/v1",
+            "llm_model": "deepseek-chat",
+            "llm_api_key": "你的key",
+        }
+    )
+    ensure_data_directories(settings)
+    document_service = DocumentService(settings)
+    retrieval_service = RetrievalService(settings)
+    chat_service = ChatService(settings)
+    client = TestClient(app)
+
+    app.dependency_overrides[get_document_service] = lambda: document_service
+    app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
+    app.dependency_overrides[get_chat_service] = lambda: chat_service
+    try:
+        upload_response = client.post(
+            "/api/v1/documents/upload",
+            files={
+                "file": (
+                    "stream.txt",
+                    "Stream error should be emitted instead of breaking the connection.".encode("utf-8"),
+                    "text/plain",
+                )
+            },
+        )
+        with client.stream(
+            "POST",
+            "/api/v1/chat/ask/stream",
+            json={"question": "What does this stream doc talk about?", "top_k": 3},
+        ) as stream_response:
+            raw_stream = "".join(stream_response.iter_text())
+            status_code = stream_response.status_code
+    finally:
+        app.dependency_overrides.clear()
+
+    assert upload_response.status_code == 201
+    assert status_code == 200
+    events = parse_sse_events(raw_stream)
+    event_names = [event_name for event_name, _ in events]
+    assert "meta" in event_names
+    assert "error" in event_names
+    assert "done" not in event_names
+    error_payload = next(payload for event_name, payload in events if event_name == "error")
+    assert "RAG_LLM_API_KEY" in error_payload["message"]
+
+
 def test_retrieval_search_can_filter_by_document_id(tmp_path: Path) -> None:  # 验证检索接口支持按 document_id 过滤。
     settings = build_test_settings(tmp_path)  # 构造测试配置。
     ensure_data_directories(settings)  # 创建测试目录。

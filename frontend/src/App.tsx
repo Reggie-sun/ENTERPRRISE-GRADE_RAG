@@ -8,6 +8,8 @@ import {
   ChatPage,
   DocumentsPage,
   LoginPage,
+  LogsPage,
+  OpsPage,
   OverviewPage,
   RetrievalPage,
   SopPage,
@@ -77,6 +79,8 @@ export default function App() {
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="retrieval" element={<RetrievalPage />} />
           <Route path="chat" element={<ChatPage />} />
+          <Route path="logs" element={<LogsPage />} />
+          <Route path="ops" element={<OpsPage />} />
           <Route path="sop" element={<SopPage />} />
           <Route path="admin" element={<RequireAuth allowedRoles={['sys_admin']} embedded />}>
             <Route index element={<AdminPage />} />
@@ -87,6 +91,8 @@ export default function App() {
       <Route path="documents" element={<Navigate to="/workspace/documents" replace />} />
       <Route path="retrieval" element={<Navigate to="/workspace/retrieval" replace />} />
       <Route path="chat" element={<Navigate to="/workspace/chat" replace />} />
+      <Route path="logs" element={<Navigate to="/workspace/logs" replace />} />
+      <Route path="ops" element={<Navigate to="/workspace/ops" replace />} />
       <Route path="sop" element={<Navigate to="/portal/sop" replace />} />
       <Route path="admin" element={<Navigate to="/workspace/admin" replace />} />
       <Route path="*" element={<RootRedirect />} />

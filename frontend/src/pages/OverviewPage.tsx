@@ -28,6 +28,16 @@ export function OverviewPage() {
       title: '问答验证',
       description: '看流式回答和引用是否与当前权限范围一致。',
     },
+    {
+      to: '/workspace/logs',
+      title: '日志查询',
+      description: '按时间、动作、用户和目标追溯最近的系统事件。',
+    },
+    {
+      to: '/workspace/ops',
+      title: '运行态',
+      description: '看健康、队列积压、失败/降级和当前模型配置。',
+    },
     ...(canAccessAdmin
       ? [{
         to: '/workspace/admin',
@@ -83,7 +93,7 @@ export function OverviewPage() {
             先从文档中心维护资料，再去检索和问答页做验证。角色边界已经固定：普通员工留在门户，管理员才进入工作台。
           </p>
 
-          <div className={`mt-4 grid gap-3 ${quickLinks.length === 4 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
+          <div className={`mt-4 grid gap-3 ${quickLinks.length <= 4 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
             {quickLinks.map((item) => (
               <Link
                 key={item.to}

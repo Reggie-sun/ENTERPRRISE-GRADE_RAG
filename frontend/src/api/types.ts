@@ -16,6 +16,8 @@ export type UserRole = 'employee' | 'department_admin' | 'sys_admin';
 export type SopStatus = 'draft' | 'active' | 'archived';
 export type SopDownloadFormat = 'docx' | 'pdf';
 export type QueryMode = 'fast' | 'accurate';
+export type EventLogCategory = 'chat' | 'document' | 'sop_generation';
+export type EventLogOutcome = 'success' | 'failed';
 
 /** 文档生命周期状态 */
 export type DocumentLifecycleStatus = 'queued' | 'uploaded' | 'active' | 'failed' | 'partial_failed' | 'deleted';
@@ -141,6 +143,145 @@ export interface IdentityBootstrapResponse {
   roles: RoleDefinition[];
   departments: DepartmentRecord[];
   users: UserRecord[];
+}
+
+// ========== 日志相关 ==========
+
+export interface EventLogActor {
+  tenant_id: string | null;
+  user_id: string | null;
+  username: string | null;
+  role_id: UserRole | null;
+  department_id: string | null;
+}
+
+export interface EventLogRecord {
+  event_id: string;
+  category: EventLogCategory;
+  action: string;
+  outcome: EventLogOutcome;
+  occurred_at: string;
+  actor: EventLogActor;
+  target_type: string | null;
+  target_id: string | null;
+  mode: string | null;
+  top_k: number | null;
+  candidate_top_k: number | null;
+  rerank_top_n: number | null;
+  duration_ms: number | null;
+  timeout_flag: boolean;
+  downgraded_from: string | null;
+  details: Record<string, unknown>;
+}
+
+export interface EventLogListQuery {
+  page?: number;
+  page_size?: number;
+  category?: EventLogCategory;
+  action?: string;
+  outcome?: EventLogOutcome;
+  username?: string;
+  user_id?: string;
+  department_id?: string;
+  target_id?: string;
+  date_from?: string;
+  date_to?: string;
+}
+
+export interface EventLogListResponse {
+  items: EventLogRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+// ========== 系统配置相关 ==========
+
+export interface QueryModeConfig {
+  top_k_default: number;
+  candidate_multiplier: number;
+  rerank_top_n: number;
+  timeout_budget_seconds: number;
+}
+
+export interface QueryProfilesConfig {
+  fast: QueryModeConfig;
+  accurate: QueryModeConfig;
+}
+
+export interface ModelRoutingConfig {
+  fast_model: string;
+  accurate_model: string;
+  sop_generation_model: string;
+}
+
+export interface DegradeControlsConfig {
+  rerank_fallback_enabled: boolean;
+  accurate_to_fast_fallback_enabled: boolean;
+  retrieval_fallback_enabled: boolean;
+}
+
+export interface RetryControlsConfig {
+  llm_retry_enabled: boolean;
+  llm_retry_max_attempts: number;
+  llm_retry_backoff_ms: number;
+}
+
+export interface SystemConfigResponse {
+  query_profiles: QueryProfilesConfig;
+  model_routing: ModelRoutingConfig;
+  degrade_controls: DegradeControlsConfig;
+  retry_controls: RetryControlsConfig;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
+export interface SystemConfigUpdateRequest {
+  query_profiles: QueryProfilesConfig;
+  model_routing: ModelRoutingConfig;
+  degrade_controls: DegradeControlsConfig;
+  retry_controls: RetryControlsConfig;
+}
+
+// ========== 运行态汇总相关 ==========
+
+export interface OpsQueueSummary {
+  available: boolean;
+  ingest_queue: string;
+  backlog: number | null;
+  error: string | null;
+}
+
+export interface OpsRecentWindowSummary {
+  sample_size: number;
+  failed_count: number;
+  timeout_count: number;
+  downgraded_count: number;
+  duration_count: number;
+  duration_p50_ms: number | null;
+  duration_p95_ms: number | null;
+  duration_p99_ms: number | null;
+}
+
+export interface OpsCategorySummary {
+  category: EventLogCategory;
+  total: number;
+  failed_count: number;
+  timeout_count: number;
+  downgraded_count: number;
+  last_event_at: string | null;
+  last_failed_at: string | null;
+}
+
+export interface OpsSummaryResponse {
+  checked_at: string;
+  health: HealthResponse;
+  queue: OpsQueueSummary;
+  recent_window: OpsRecentWindowSummary;
+  categories: OpsCategorySummary[];
+  recent_failures: EventLogRecord[];
+  recent_degraded: EventLogRecord[];
+  config: SystemConfigResponse;
 }
 
 // ========== SOP 相关 ==========

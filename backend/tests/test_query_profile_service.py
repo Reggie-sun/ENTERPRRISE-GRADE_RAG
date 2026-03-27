@@ -5,8 +5,10 @@ from backend.app.rag.rerankers.client import RerankerClient
 from backend.app.schemas.chat import ChatRequest
 from backend.app.schemas.query_profile import QueryProfile
 from backend.app.schemas.retrieval import RetrievalResponse, RetrievedChunk
+from backend.app.schemas.system_config import SystemConfigUpdateRequest
 from backend.app.services.chat_service import ChatService
 from backend.app.services.query_profile_service import QueryProfileService
+from backend.app.services.system_config_service import SystemConfigService
 
 
 def _build_chunks(count: int = 12) -> list[RetrievedChunk]:
@@ -36,9 +38,18 @@ class _FakeRetrievalService:
 class _FakeGenerationClient:
     def __init__(self) -> None:
         self.last_timeout_seconds = None
+        self.last_model_name = None
 
-    def generate(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:
+    def generate(
+        self,
+        *,
+        question: str,
+        contexts: list[str],
+        timeout_seconds: float | None = None,
+        model_name: str | None = None,
+    ) -> str:
         self.last_timeout_seconds = timeout_seconds
+        self.last_model_name = model_name
         return "基于证据生成的回答"
 
 
@@ -97,6 +108,47 @@ def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailabl
     assert len(reranked) == 4
 
 
+def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_off(tmp_path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        reranker_provider="mock-provider",
+    )
+    system_config_service = SystemConfigService(settings)
+    current_config = system_config_service.get_config(auth_context=_build_sys_admin_context())
+    system_config_service.update_config(
+        payload=SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing,
+            degrade_controls=current_config.degrade_controls.model_copy(
+                update={
+                    "rerank_fallback_enabled": False,
+                    "accurate_to_fast_fallback_enabled": False,
+                }
+            ),
+            retry_controls=current_config.retry_controls,
+        ),
+        auth_context=_build_sys_admin_context(),
+    )
+    service = QueryProfileService(settings, system_config_service=system_config_service)
+    reranker_client = RerankerClient(settings)
+    accurate_profile = service.resolve(purpose="chat", requested_mode="accurate", requested_top_k=4)
+
+    assert service.build_fallback_profile(accurate_profile) is None
+
+    try:
+        service.rerank_with_fallback(
+            query="数字化部巡检步骤",
+            candidates=_build_chunks(6),
+            profile=accurate_profile,
+            reranker_client=reranker_client,
+        )
+    except RuntimeError as exc:
+        assert "Unsupported reranker provider" in str(exc)
+    else:
+        raise AssertionError("Expected rerank provider failure when rerank fallback is disabled.")
+
+
 def test_chat_service_defaults_to_fast_profile_when_request_omits_mode_and_top_k() -> None:
     fake_retrieval = _FakeRetrievalService(_build_chunks())
     fake_generation = _FakeGenerationClient()
@@ -110,5 +162,15 @@ def test_chat_service_defaults_to_fast_profile_when_request_omits_mode_and_top_k
     assert fake_retrieval.last_request.top_k == 5
     assert fake_retrieval.last_request.candidate_top_k == 10
     assert fake_generation.last_timeout_seconds == 12.0
+    assert fake_generation.last_model_name == "mock"
     assert response.mode == "rag"
     assert len(response.citations) == 3
+
+
+def _build_sys_admin_context():
+    return SimpleNamespace(
+        user=SimpleNamespace(user_id="user_sys_admin", role_id="sys_admin"),
+        role=SimpleNamespace(role_id="sys_admin"),
+        department=SimpleNamespace(department_id="dept_digitalization"),
+        accessible_department_ids=["dept_digitalization"],
+    )

@@ -10,6 +10,11 @@ import type {
   LogoutResponse,
   AuthProfileResponse,
   IdentityBootstrapResponse,
+  EventLogListQuery,
+  EventLogListResponse,
+  OpsSummaryResponse,
+  SystemConfigResponse,
+  SystemConfigUpdateRequest,
   SopListQuery,
   SopListResponse,
   SopDetailResponse,
@@ -139,6 +144,9 @@ export function formatApiError(error: unknown, context: string): string {
       return `${context}失败：无法连接后端接口，请确认 FastAPI 是否已启动且前端代理配置正确。`;
     }
     if (error.kind === 'http') {
+      if (!error.status) {
+        return `${context}失败：${error.detail}`;
+      }
       if (error.status === 502 || error.status === 503 || error.status === 504) {
         return `${context}失败：后端依赖未就绪或不可达（HTTP ${error.status}）。${error.detail}`;
       }
@@ -302,6 +310,71 @@ export async function logout(): Promise<LogoutResponse> {
   return request<LogoutResponse>('/auth/logout', {
     method: 'POST',
   });
+}
+
+// ========== 日志 API ==========
+
+/** 获取事件日志列表 */
+export async function getEventLogs(query: EventLogListQuery = {}): Promise<EventLogListResponse> {
+  const params = new URLSearchParams();
+  if (query.page !== undefined) {
+    params.set('page', String(query.page));
+  }
+  if (query.page_size !== undefined) {
+    params.set('page_size', String(query.page_size));
+  }
+  if (query.category) {
+    params.set('category', query.category);
+  }
+  if (query.action) {
+    params.set('action', query.action);
+  }
+  if (query.outcome) {
+    params.set('outcome', query.outcome);
+  }
+  if (query.username) {
+    params.set('username', query.username);
+  }
+  if (query.user_id) {
+    params.set('user_id', query.user_id);
+  }
+  if (query.department_id) {
+    params.set('department_id', query.department_id);
+  }
+  if (query.target_id) {
+    params.set('target_id', query.target_id);
+  }
+  if (query.date_from) {
+    params.set('date_from', query.date_from);
+  }
+  if (query.date_to) {
+    params.set('date_to', query.date_to);
+  }
+  const suffix = params.toString();
+  const path = suffix ? `/logs?${suffix}` : '/logs';
+  return request<EventLogListResponse>(path);
+}
+
+// ========== 系统配置 API ==========
+
+/** 读取系统配置 */
+export async function getSystemConfig(): Promise<SystemConfigResponse> {
+  return request<SystemConfigResponse>('/system-config');
+}
+
+/** 更新系统配置 */
+export async function updateSystemConfig(payload: SystemConfigUpdateRequest): Promise<SystemConfigResponse> {
+  return request<SystemConfigResponse>('/system-config', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+// ========== 运行态汇总 API ==========
+
+/** 读取运行态汇总 */
+export async function getOpsSummary(): Promise<OpsSummaryResponse> {
+  return request<OpsSummaryResponse>('/ops/summary');
 }
 
 // ========== SOP API ==========
@@ -651,9 +724,25 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
     if (buffer.trim()) {  // 处理最后一个可能完整但未被分隔的帧。
       handleFrame(buffer);
     }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    if ((error instanceof Error && error.name === 'AbortError') || controller.signal.aborted) {
+      throw new ApiError('timeout', 'Request timeout: /chat/ask/stream');
+    }
+    if (message.includes('BodyStreamBuffer was aborted')) {
+      throw new ApiError('network', 'Stream was aborted before the server finished sending data: /chat/ask/stream');
+    }
+    throw new ApiError('network', `Stream read failed: ${message}`);
   } finally {
     clearTimeout(timeout);
-    reader.releaseLock();
+    try {
+      reader.releaseLock();
+    } catch {
+      // 流已经关闭时 releaseLock 可能抛错，这里忽略避免覆盖原始异常。
+    }
   }
 
   if (finalResponse) {

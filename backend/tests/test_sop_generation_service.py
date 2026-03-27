@@ -13,9 +13,12 @@ from backend.app.schemas.sop_generation import (
     SopGenerateByScenarioRequest,
     SopGenerateByTopicRequest,
 )
+from backend.app.schemas.system_config import SystemConfigUpdateRequest
 from backend.app.services.auth_service import AuthService
 from backend.app.services.identity_service import IdentityService
+from backend.app.services.query_profile_service import QueryProfileService
 from backend.app.services.sop_generation_service import SopGenerationService
+from backend.app.services.system_config_service import SystemConfigService
 
 
 def _write_identity_bootstrap(path: Path) -> None:
@@ -147,10 +150,19 @@ class _FakeGenerationClient:
         self.retryable_error = retryable_error
         self.last_question = None
         self.last_timeout_seconds = None
+        self.last_model_name = None
 
-    def generate(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:
+    def generate(
+        self,
+        *,
+        question: str,
+        contexts: list[str],
+        timeout_seconds: float | None = None,
+        model_name: str | None = None,
+    ) -> str:
         self.last_question = question
         self.last_timeout_seconds = timeout_seconds
+        self.last_model_name = model_name
         if self.retryable_error:
             raise LLMGenerationRetryableError("temporary llm issue")
         return self.answer
@@ -330,6 +342,57 @@ def test_sop_generation_service_uses_fallback_when_llm_retryable(tmp_path: Path)
     assert "交接前核对当班未闭环告警" in response.content
 
 
+def test_sop_generation_service_respects_retrieval_fallback_toggle(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.admin",
+        password="digitalization-admin-pass",
+    )
+    settings = Settings(_env_file=None, system_config_path=tmp_path / "data" / "system_config.json")
+    system_config_service = SystemConfigService(settings)
+    admin_context = _build_auth_context(identity_service, username="sys.admin", password="sys-admin-pass")
+    current_config = system_config_service.get_config(auth_context=admin_context)
+    system_config_service.update_config(
+        SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing,
+            degrade_controls=current_config.degrade_controls.model_copy(
+                update={"retrieval_fallback_enabled": False}
+            ),
+            retry_controls=current_config.retry_controls,
+        ),
+        auth_context=admin_context,
+    )
+    query_profile_service = QueryProfileService(settings, system_config_service=system_config_service)
+    service = SopGenerationService(
+        settings,
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService(
+            [
+                RetrievedChunk(
+                    chunk_id="chunk_1",
+                    document_id="doc_digitalization",
+                    document_name="数字化巡检手册",
+                    text="交接前核对当班未闭环告警和待处理事项。",
+                    score=0.91,
+                    source_path="/tmp/digitalization.txt",
+                )
+            ]
+        ),
+        document_service=_FakeDocumentService({"doc_digitalization": "dept_digitalization"}),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(retryable_error=True),
+        query_profile_service=query_profile_service,
+    )
+
+    with pytest.raises(LLMGenerationRetryableError):
+        service.generate_from_topic(
+            request=SopGenerateByTopicRequest(topic="值班交接"),
+            auth_context=auth_context,
+        )
+
+
 def test_sop_generation_service_generates_document_draft_for_selected_doc(tmp_path: Path) -> None:
     identity_service = _build_identity_service(tmp_path)
     auth_context = _build_auth_context(
@@ -374,7 +437,66 @@ def test_sop_generation_service_generates_document_draft_for_selected_doc(tmp_pa
     assert retrieval_service.last_request.document_id == "doc_digitalization"
     assert "数字化巡检手册" in (retrieval_service.last_request.query or "")
     assert generation_client.last_question is not None
+    assert generation_client.last_model_name == "mock"
     assert "来源文档：数字化巡检手册.pdf" in generation_client.last_question
+
+
+def test_sop_generation_service_uses_configured_sop_model_route(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.admin",
+        password="digitalization-admin-pass",
+    )
+    settings = Settings(
+        _env_file=None,
+        llm_provider="openai",
+        llm_model="Qwen/Shared-Default",
+        system_config_path=tmp_path / "data" / "system_config.json",
+    )
+    system_config_service = SystemConfigService(settings)
+    current_config = system_config_service.get_config(auth_context=_build_auth_context(identity_service, username="sys.admin", password="sys-admin-pass"))
+    system_config_service.update_config(
+        SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing.model_copy(
+                update={"sop_generation_model": "Qwen/SOP-14B"}
+            ),
+            degrade_controls=current_config.degrade_controls,
+            retry_controls=current_config.retry_controls,
+        ),
+        auth_context=_build_auth_context(identity_service, username="sys.admin", password="sys-admin-pass"),
+    )
+    query_profile_service = QueryProfileService(settings, system_config_service=system_config_service)
+    generation_client = _FakeGenerationClient(answer="基于独立 SOP 模型生成的草稿。")
+    service = SopGenerationService(
+        settings,
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService(
+            [
+                RetrievedChunk(
+                    chunk_id="chunk_1",
+                    document_id="doc_digitalization",
+                    document_name="数字化巡检手册",
+                    text="根据文档执行巡检并记录异常。",
+                    score=0.95,
+                    source_path="/tmp/digitalization.txt",
+                )
+            ]
+        ),
+        document_service=_FakeDocumentService({"doc_digitalization": "dept_digitalization"}),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=generation_client,
+        query_profile_service=query_profile_service,
+    )
+
+    response = service.generate_from_document(
+        request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
+        auth_context=auth_context,
+    )
+
+    assert response.model == "Qwen/SOP-14B"
+    assert generation_client.last_model_name == "Qwen/SOP-14B"
 
 
 def test_sop_generation_service_allows_employee_generation_within_scope(tmp_path: Path) -> None:

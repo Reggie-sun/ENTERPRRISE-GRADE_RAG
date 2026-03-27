@@ -598,6 +598,134 @@
         return data;
       }
 
+      async function requestChatStream(payload, handlers = {}) {
+        const response = await fetch(`${apiPrefix}/chat/ask/stream`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const contentType = response.headers.get("content-type") || "";
+          const data = contentType.includes("application/json")
+            ? await response.json()
+            : await response.text();
+          const detail = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+          throw new Error(`HTTP ${response.status}: ${detail}`);
+        }
+
+        if (!response.body) {
+          throw new Error("Stream body is empty: /chat/ask/stream");
+        }
+
+        const decoder = new TextDecoder();
+        const reader = response.body.getReader();
+        let buffer = "";
+        let finalResponse = null;
+        let latestMeta = null;
+        let partialAnswer = "";
+
+        const handleFrame = (frame) => {
+          const lines = frame
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+
+          if (!lines.length) {
+            return;
+          }
+
+          let eventName = "";
+          const dataLines = [];
+          for (const line of lines) {
+            if (line.startsWith("event:")) {
+              eventName = line.slice("event:".length).trim();
+            } else if (line.startsWith("data:")) {
+              dataLines.push(line.slice("data:".length).trim());
+            }
+          }
+
+          if (!eventName || !dataLines.length) {
+            return;
+          }
+
+          let data;
+          try {
+            data = JSON.parse(dataLines.join("\n"));
+          } catch {
+            return;
+          }
+
+          if (eventName === "meta") {
+            latestMeta = data;
+            if (handlers.onMeta) {
+              handlers.onMeta(data);
+            }
+            return;
+          }
+
+          if (eventName === "answer_delta") {
+            const delta = typeof data.delta === "string" ? data.delta : "";
+            if (!delta) {
+              return;
+            }
+            partialAnswer += delta;
+            if (handlers.onDelta) {
+              handlers.onDelta(delta);
+            }
+            return;
+          }
+
+          if (eventName === "done") {
+            finalResponse = data;
+            if (handlers.onDone) {
+              handlers.onDone(data);
+            }
+            return;
+          }
+
+          if (eventName === "error") {
+            throw new Error(typeof data.message === "string" ? data.message : "Unknown stream error");
+          }
+        };
+
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+              break;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            const frames = buffer.split("\n\n");
+            buffer = frames.pop() || "";
+            frames.forEach(handleFrame);
+          }
+
+          buffer += decoder.decode();
+          if (buffer.trim()) {
+            handleFrame(buffer);
+          }
+        } finally {
+          reader.releaseLock();
+        }
+
+        if (finalResponse) {
+          return finalResponse;
+        }
+
+        if (latestMeta) {
+          return {
+            question: latestMeta.question,
+            answer: partialAnswer,
+            mode: latestMeta.mode,
+            model: latestMeta.model,
+            citations: latestMeta.citations || [],
+          };
+        }
+
+        throw new Error("No valid stream events were received: /chat/ask/stream");
+      }
+
       async function runHealthCheck() {
         setStatus("health-status", "正在检查后端", "warn");
         writePre("health-output", "加载中...");
@@ -872,22 +1000,38 @@
       async function runChat(event) {
         event.preventDefault();
         const button = document.getElementById("chat-button");
+        const answerNode = document.getElementById("chat-answer");
         button.disabled = true;
-        setStatus("chat-status", "正在生成回答", "warn");
+        setStatus("chat-status", "正在建立流式连接", "warn");
         writePre("chat-answer", "等待模型响应...");
         clearNode("chat-citations");
 
         try {
-          const data = await request("/chat/ask", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          const data = await requestChatStream(
+            {
               question: document.getElementById("chat-question").value.trim(),
               top_k: Number(document.getElementById("chat-top-k").value),
-            }),
-          });
+            },
+            {
+              onMeta(meta) {
+                setStatus("chat-status", `${translateMode(meta.mode)} | 模型 ${meta.model} | 流式输出中`, "warn");
+                writePre("chat-answer", "");
+                renderCitations(meta.citations || []);
+              },
+              onDelta(delta) {
+                if (answerNode.textContent === "等待模型响应...") {
+                  answerNode.textContent = "";
+                }
+                answerNode.textContent += delta;
+              },
+              onDone(done) {
+                setStatus("chat-status", `${translateMode(done.mode)} | 模型 ${done.model}`, "ok");
+                renderCitations(done.citations || []);
+              },
+            },
+          );
           setStatus("chat-status", `${translateMode(data.mode)} | 模型 ${data.model}`, "ok");
-          writePre("chat-answer", data.answer);
+          answerNode.textContent = data.answer;
           renderCitations(data.citations);
         } catch (error) {
           setStatus("chat-status", "问答请求失败", "error");

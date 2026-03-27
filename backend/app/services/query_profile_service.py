@@ -4,11 +4,18 @@ from ..core.config import Settings, get_settings
 from ..rag.rerankers.client import RerankerClient
 from ..schemas.query_profile import QueryMode, QueryProfile, QueryPurpose
 from ..schemas.retrieval import RetrievedChunk
+from .system_config_service import SystemConfigService
 
 
 class QueryProfileService:
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        *,
+        system_config_service: SystemConfigService | None = None,
+    ) -> None:
         self.settings = settings or get_settings()
+        self.system_config_service = system_config_service or SystemConfigService(self.settings)
 
     def resolve(
         self,
@@ -35,6 +42,8 @@ class QueryProfileService:
         )
 
     def build_fallback_profile(self, profile: QueryProfile) -> QueryProfile | None:
+        if not self.system_config_service.get_degrade_controls().accurate_to_fast_fallback_enabled:
+            return None
         if profile.fallback_mode is None:
             return None
         return self.resolve(
@@ -57,6 +66,8 @@ class QueryProfileService:
         try:
             return reranker_client.rerank(query=query, candidates=candidates, top_n=safe_top_n), "provider"
         except RuntimeError:
+            if not self.system_config_service.get_degrade_controls().rerank_fallback_enabled:
+                raise
             return reranker_client.rerank_heuristic(query=query, candidates=candidates, top_n=safe_top_n), "heuristic"
 
     @staticmethod
@@ -66,24 +77,16 @@ class QueryProfileService:
         return "fast"
 
     def _mode_default_top_k(self, mode: QueryMode) -> int:
-        if mode == "accurate":
-            return self.settings.query_accurate_top_k_default
-        return self.settings.query_fast_top_k_default
+        return self.system_config_service.get_query_mode_settings(mode).top_k_default
 
     def _mode_default_rerank_top_n(self, mode: QueryMode) -> int:
-        if mode == "accurate":
-            return self.settings.query_accurate_rerank_top_n
-        return self.settings.query_fast_rerank_top_n
+        return self.system_config_service.get_query_mode_settings(mode).rerank_top_n
 
     def _mode_candidate_multiplier(self, mode: QueryMode) -> int:
-        if mode == "accurate":
-            return self.settings.query_accurate_candidate_multiplier
-        return self.settings.query_fast_candidate_multiplier
+        return self.system_config_service.get_query_mode_settings(mode).candidate_multiplier
 
     def _mode_timeout_budget_seconds(self, mode: QueryMode) -> float:
-        if mode == "accurate":
-            return self.settings.query_accurate_timeout_budget_seconds
-        return self.settings.query_fast_timeout_budget_seconds
+        return self.system_config_service.get_query_mode_settings(mode).timeout_budget_seconds
 
 
 @lru_cache

@@ -1,9 +1,10 @@
 from functools import lru_cache
 from pathlib import Path
+from time import perf_counter
 
 from fastapi import HTTPException, status
 
-from ..core.config import Settings, get_llm_model, get_settings
+from ..core.config import Settings, get_settings
 from ..rag.generators.client import (
     LLMGenerationClient,
     LLMGenerationRetryableError,
@@ -21,9 +22,11 @@ from ..schemas.sop_generation import (
     SopGenerationRequestMode,
 )
 from .document_service import DocumentService, get_document_service
+from .event_log_service import EventLogService, get_event_log_service
 from .identity_service import IdentityService, get_identity_service
 from .query_profile_service import QueryProfileService
 from .retrieval_service import RetrievalService, get_retrieval_service
+from .system_config_service import SystemConfigService
 
 
 def _normalize_optional_str(value: str | None) -> str | None:
@@ -44,14 +47,27 @@ class SopGenerationService:
         reranker_client: RerankerClient | None = None,
         generation_client: LLMGenerationClient | None = None,
         query_profile_service: QueryProfileService | None = None,
+        event_log_service: EventLogService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
+        if query_profile_service is None:
+            self.system_config_service = SystemConfigService(self.settings)
+            self.query_profile_service = QueryProfileService(
+                self.settings,
+                system_config_service=self.system_config_service,
+            )
+        else:
+            self.query_profile_service = query_profile_service
+            self.system_config_service = query_profile_service.system_config_service
         self.identity_service = identity_service or get_identity_service()
         self.retrieval_service = retrieval_service or get_retrieval_service()
         self.document_service = document_service or get_document_service()
         self.reranker_client = reranker_client or RerankerClient(self.settings)
-        self.generation_client = generation_client or LLMGenerationClient(self.settings)
-        self.query_profile_service = query_profile_service or QueryProfileService(self.settings)
+        self.generation_client = generation_client or LLMGenerationClient(
+            self.settings,
+            system_config_service=self.system_config_service,
+        )
+        self.event_log_service = event_log_service or get_event_log_service()
 
     def generate_from_scenario(
         self,
@@ -211,70 +227,115 @@ class SopGenerationService:
         document_id: str | None,
         auth_context: AuthContext,
     ) -> SopGenerationDraftResponse:
+        started_at = perf_counter()
         profile = self.query_profile_service.resolve(
             purpose="sop_generation",
             requested_mode=requested_mode,
             requested_top_k=requested_top_k,
         )
-        citations = self._build_citations(
-            search_query=search_query,
-            target_department_id=department.department_id,
-            profile=profile,
-            document_id=document_id,
-            auth_context=auth_context,
-        )
-        if not citations and request_mode == "document" and document_id is not None:
-            citations = self._build_document_preview_citations(
-                document_id=document_id,
-                auth_context=auth_context,
-            )
-        if not citations:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="No relevant evidence was retrieved for SOP generation.",
-            )
-
-        contexts = [item.snippet for item in citations]
+        rerank_strategy = "skipped"
         try:
-            content = self._strip_markdown_code_fence(
-                self.generation_client.generate(
-                    question=generation_instruction,
-                    contexts=contexts,
-                    timeout_seconds=profile.timeout_budget_seconds,
-                )
-            )
-            generation_mode = "rag"
-        except LLMGenerationRetryableError:
-            citations = self._build_degraded_citations(
+            citations = self._build_citations(
                 search_query=search_query,
                 target_department_id=department.department_id,
                 profile=profile,
                 document_id=document_id,
                 auth_context=auth_context,
-            ) or citations
-            content = self._build_retrieval_fallback_draft(
+            )
+            if citations:
+                rerank_strategy = "provider_or_fallback"
+            if not citations and request_mode == "document" and document_id is not None:
+                citations = self._build_document_preview_citations(
+                    document_id=document_id,
+                    auth_context=auth_context,
+                )
+                if citations:
+                    rerank_strategy = "document_preview"
+            if not citations:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="No relevant evidence was retrieved for SOP generation.",
+                )
+
+            contexts = [item.snippet for item in citations]
+            downgraded_from: str | None = None
+            response_model = self._response_model_name(profile=profile)
+            try:
+                content = self._strip_markdown_code_fence(
+                    self.generation_client.generate(
+                        question=generation_instruction,
+                        contexts=contexts,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                    )
+                )
+                generation_mode = "rag"
+            except LLMGenerationRetryableError:
+                degraded_citations = self._build_degraded_citations(
+                    search_query=search_query,
+                    target_department_id=department.department_id,
+                    profile=profile,
+                    document_id=document_id,
+                    auth_context=auth_context,
+                )
+                if degraded_citations:
+                    citations = degraded_citations
+                    rerank_strategy = "fallback_profile"
+                    downgraded_from = profile.mode
+                if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
+                    raise
+                content = self._build_retrieval_fallback_draft(
+                    title=title,
+                    department=department,
+                    process_name=process_name,
+                    scenario_name=scenario_name,
+                    topic=topic,
+                    citations=citations,
+                )
+                generation_mode = "retrieval_fallback"
+
+            response = SopGenerationDraftResponse(
+                request_mode=request_mode,
+                generation_mode=generation_mode,
                 title=title,
-                department=department,
+                department_id=department.department_id,
+                department_name=department.department_name,
                 process_name=process_name,
                 scenario_name=scenario_name,
                 topic=topic,
+                content=content,
+                model=response_model,
                 citations=citations,
             )
-            generation_mode = "retrieval_fallback"
-
-        return SopGenerationDraftResponse(
-            request_mode=request_mode,
-            generation_mode=generation_mode,
-            title=title,
-            department_id=department.department_id,
-            department_name=department.department_name,
-            process_name=process_name,
-            scenario_name=scenario_name,
-            topic=topic,
-            content=content,
-            model=self._response_model_name(),
-            citations=citations,
-        )
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="success",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode=response.generation_mode,
+                citation_count=len(response.citations),
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                downgraded_from=downgraded_from,
+            )
+            return response
+        except Exception as exc:
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="failed",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode="failed",
+                citation_count=0,
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                error_message=str(exc),
+            )
+            raise
 
     def _build_citations(
         self,
@@ -578,10 +639,60 @@ class SopGenerationService:
         merged_lines = inner_lines + trailing_lines
         return "\n".join(merged_lines).strip()
 
-    def _response_model_name(self) -> str:
+    def _response_model_name(self, *, profile: QueryProfile | None = None) -> str:
         if self.settings.llm_provider.lower().strip() == "mock":
             return "mock"
-        return get_llm_model(self.settings)
+        resolved_profile = profile or self.query_profile_service.resolve(purpose="sop_generation")
+        return self.system_config_service.get_llm_model_for_request(
+            purpose=resolved_profile.purpose,
+            mode=resolved_profile.mode,
+        )
+
+    def _record_generation_event(
+        self,
+        *,
+        request_mode: SopGenerationRequestMode,
+        outcome: str,
+        auth_context: AuthContext,
+        profile: QueryProfile,
+        document_id: str | None,
+        title: str,
+        generation_mode: str,
+        citation_count: int,
+        rerank_strategy: str,
+        duration_ms: int,
+        downgraded_from: str | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        details: dict[str, object] = {
+            "request_mode": request_mode,
+            "title": title,
+            "generation_mode": generation_mode,
+            "citation_count": citation_count,
+            "rerank_strategy": rerank_strategy,
+            "document_id": document_id,
+        }
+        if error_message:
+            details["error_message"] = error_message
+        self.event_log_service.record(
+            category="sop_generation",
+            action=f"generate_{request_mode}",
+            outcome="success" if outcome == "success" else "failed",
+            auth_context=auth_context,
+            target_type="document" if document_id else None,
+            target_id=document_id,
+            mode=profile.mode,
+            top_k=profile.top_k,
+            candidate_top_k=profile.candidate_top_k,
+            rerank_top_n=profile.rerank_top_n,
+            duration_ms=duration_ms,
+            downgraded_from=downgraded_from,
+            details=details,
+        )
+
+    @staticmethod
+    def _elapsed_ms(started_at: float) -> int:
+        return max(0, int((perf_counter() - started_at) * 1000))
 
 
 @lru_cache

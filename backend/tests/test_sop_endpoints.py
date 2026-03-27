@@ -1,6 +1,8 @@
 from pathlib import Path
+from io import BytesIO
 
 from fastapi.testclient import TestClient
+from pypdf import PdfReader
 
 from backend.app.main import app
 from backend.app.services.auth_service import AuthService, get_auth_service
@@ -301,6 +303,38 @@ def test_sop_export_endpoint_supports_non_ascii_filename_in_content_disposition(
     assert "filename*=UTF-8''" in disposition
     assert "%E6%95%B0%E5%AD%97%E5%8C%96%E9%83%A8%E5%B7%A1%E6%A3%80_SOP_%E8%8D%89%E7%A8%BF.docx" in disposition
     assert response.content.startswith(b"PK")
+
+
+def test_sop_export_endpoint_pdf_preserves_chinese_text(tmp_path: Path) -> None:
+    client, _ = _build_client(tmp_path)
+
+    try:
+        employee_headers = _login_headers(
+            client,
+            username="digitalization.employee",
+            password="digitalization-employee-pass",
+        )
+        response = client.post(
+            "/api/v1/sops/export",
+            headers=employee_headers,
+            json={
+                "title": "数字化部巡检 SOP 草稿",
+                "content": "## 目的\n规范日常巡检。\n\n## 步骤\n1. 检查数据库连接。\n2. 记录异常。",
+                "format": "pdf",
+                "department_id": "dept_digitalization",
+                "source_document_id": "doc_digitalization_source",
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/pdf")
+    assert response.content.startswith(b"%PDF")
+
+    extracted_text = "".join(page.extract_text() or "" for page in PdfReader(BytesIO(response.content)).pages)
+    assert "数字化部巡检 SOP 草稿" in extracted_text
+    assert "检查数据库连接" in extracted_text
 
 
 def test_sop_export_endpoint_rejects_cross_department_request_for_employee(tmp_path: Path) -> None:

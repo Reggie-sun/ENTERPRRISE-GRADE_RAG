@@ -28,7 +28,9 @@ export function PortalChatPage() {
   const experience = getRoleExperience(profile);
   const scopeSummary = getDepartmentScopeSummary(profile);
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialQuestion = searchParams.get('q') || experience.suggestedQuestions[0];
+  const searchQuestion = searchParams.get('q');
+  const suggestedDefaultQuestion = experience.suggestedQuestions[0] ?? '';
+  const initialQuestion = searchQuestion || suggestedDefaultQuestion;
   const [question, setQuestion] = useState(initialQuestion);
   const [queryMode, setQueryMode] = useState<QueryMode>('fast');
   const [status, setStatus] = useState<PortalChatStatus>('idle');
@@ -36,20 +38,12 @@ export function PortalChatPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const nextQuestion = searchParams.get('q');
-    if (nextQuestion && nextQuestion !== question) {
-      setQuestion(nextQuestion);
+    if (searchQuestion) {
+      setQuestion(searchQuestion);
       return;
     }
-
-    if (!nextQuestion && question !== experience.suggestedQuestions[0]) {
-      return;
-    }
-
-    if (!nextQuestion) {
-      setQuestion(experience.suggestedQuestions[0]);
-    }
-  }, [experience.suggestedQuestions, question, searchParams]);
+    setQuestion((current) => current || suggestedDefaultQuestion);
+  }, [searchQuestion, suggestedDefaultQuestion]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

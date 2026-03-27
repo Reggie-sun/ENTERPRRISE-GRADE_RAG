@@ -21,7 +21,14 @@ class _FakeGenerationClient:
         self.answer = answer or "生成的 SOP 草稿"
         self.retryable_error = retryable_error
 
-    def generate(self, *, question: str, contexts: list[str], timeout_seconds: float | None = None) -> str:
+    def generate(
+        self,
+        *,
+        question: str,
+        contexts: list[str],
+        timeout_seconds: float | None = None,
+        model_name: str | None = None,
+    ) -> str:
         if self.retryable_error:
             raise LLMGenerationRetryableError("temporary llm issue")
         return self.answer
