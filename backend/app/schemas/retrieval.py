@@ -24,6 +24,10 @@ class RetrievedChunk(BaseModel):  # 定义单条检索结果的结构。
     text: str  # chunk 文本内容。
     score: float  # chunk 匹配分数。
     source_path: str  # 原始文档路径。
+    ocr_used: bool = False  # 当前结果是否来自 OCR 参与的解析链路。
+    parser_name: str | None = None  # 当前结果的解析器名称。
+    page_no: int | None = None  # OCR 可可靠定位时返回页码。
+    ocr_confidence: float | None = None  # OCR 置信度摘要，供前端和后续排序策略复用。
 
 
 class RetrievalResponse(BaseModel):  # 定义检索接口的响应结构。

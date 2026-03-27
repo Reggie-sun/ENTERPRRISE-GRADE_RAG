@@ -176,15 +176,19 @@ class _FakeRuntimeGateLease:
 class _FakeRuntimeGateService:
     def __init__(self, *, outcomes: dict[str, list[bool]]) -> None:
         self.outcomes = {channel: list(items) for channel, items in outcomes.items()}
-        self.calls: list[tuple[str, int | None]] = []
+        self.calls: list[tuple[str, int | None, str | None]] = []
 
-    def acquire(self, channel: str, *, timeout_ms: int | None = None):
-        self.calls.append((channel, timeout_ms))
+    def acquire_with_reason(self, channel: str, *, timeout_ms: int | None = None, owner_key: str | None = None):
+        self.calls.append((channel, timeout_ms, owner_key))
         items = self.outcomes.setdefault(channel, [True])
         allowed = items.pop(0) if items else True
         if not allowed:
-            return None
-        return _FakeRuntimeGateLease()
+            return None, "channel_limit"
+        return _FakeRuntimeGateLease(), None
+
+    def acquire(self, channel: str, *, timeout_ms: int | None = None):
+        lease, _ = self.acquire_with_reason(channel, timeout_ms=timeout_ms)
+        return lease
 
 
 class _FakeDocumentService:

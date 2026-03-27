@@ -8,7 +8,7 @@ from ..rag.retrievers import LexicalMatch, QdrantLexicalRetriever
 from ..rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 向量存储，用于执行向量检索。
 from ..schemas.auth import AuthContext  # 导入统一鉴权上下文，供检索结果过滤复用。
 from ..schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求、响应和结果模型。
-from .document_service import DocumentService, get_document_service  # 导入文档服务，复用统一的文档读权限判断。
+from .document_service import DocumentService  # 导入文档服务，复用统一的文档读权限判断。
 from .query_profile_service import QueryProfileService
 
 
@@ -33,7 +33,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.embedding_client = EmbeddingClient(self.settings)  # 创建 embedding 客户端，把查询问题转换成向量。
         self.vector_store = QdrantVectorStore(self.settings)  # 创建向量存储实例，负责执行 Qdrant 相似度检索。
         self.lexical_retriever = lexical_retriever  # 轻量关键词召回默认按需绑定当前 vector store，测试里可单独注入。
-        self.document_service = document_service or get_document_service()  # 复用文档服务统一判断文档可见范围。
+        self.document_service = document_service or DocumentService(self.settings)  # 复用同一份 settings 创建文档服务，避免自定义配置时又回退到全局 .env。
         self.query_profile_service = query_profile_service or QueryProfileService(self.settings)  # 统一解析 fast/accurate 档位，避免参数散落在检索服务里。
 
     def search(self, request: RetrievalRequest, *, auth_context: AuthContext | None = None) -> RetrievalResponse:  # 执行检索并返回结果。
@@ -86,6 +86,10 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 text=str(payload.get("text") or ""),  # 返回检索命中的 chunk 文本。
                 score=float(candidate.score),  # 返回最终排序得分；hybrid 模式下这里是融合分数。
                 source_path=str(payload.get("source_path") or ""),  # 返回原始文档路径，缺失时返回空字符串。
+                ocr_used=bool(payload.get("ocr_used") or False),  # 返回 OCR 标记，便于前端和生成链路判断文本来源。
+                parser_name=str(payload.get("parser_name")) if payload.get("parser_name") else None,  # 返回解析器名称。
+                page_no=int(payload["page_no"]) if payload.get("page_no") is not None else None,  # 返回 OCR 页码。
+                ocr_confidence=float(payload["ocr_confidence"]) if payload.get("ocr_confidence") is not None else None,  # 返回 OCR 置信度摘要。
             )
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
                 continue

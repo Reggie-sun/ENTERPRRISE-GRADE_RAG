@@ -9,6 +9,10 @@ class TextChunk:  # 表示切分后的一个文本片段。
     text: str  # chunk 里的文本内容。
     char_start: int  # chunk 在原文中的起始字符位置。
     char_end: int  # chunk 在原文中的结束字符位置。
+    ocr_used: bool = False  # 当前 chunk 是否来自 OCR 参与的解析链路。
+    parser_name: str | None = None  # 生成当前 chunk 的解析器名称，便于后续追踪来源。
+    page_no: int | None = None  # OCR 可可靠定位时返回页码；普通文本和无法映射时为空。
+    ocr_confidence: float | None = None  # OCR 置信度摘要，供后续排序和质量评估复用。
 
 
 class TextChunker:  # 按字符长度切分文本的简单 chunker。

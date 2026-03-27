@@ -201,6 +201,7 @@ class DocumentUploadResponse(BaseModel):  # 定义上传接口成功后的响应
     storage_path: str  # 原始文件的落盘路径。
     parsed_path: str  # 解析后纯文本文件的路径。
     chunk_path: str  # chunk 结果 JSON 文件的路径。
+    ocr_artifact_path: str | None = None  # OCR 中间产物路径；非 OCR 文档时为空。
     collection_name: str  # 向量写入的 Qdrant collection 名称。
     parser_name: str  # 本次使用的解析器名称。
     chunk_count: int = Field(ge=0)  # 本次生成的 chunk 数量。

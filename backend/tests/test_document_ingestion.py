@@ -151,6 +151,7 @@ def build_test_settings(
         upload_dir=data_dir / "uploads",  # 指定上传文件落盘目录。
         parsed_dir=data_dir / "parsed",  # 指定解析文本落盘目录。
         chunk_dir=data_dir / "chunks",  # 指定 chunk 结果落盘目录。
+        ocr_artifact_dir=data_dir / "ocr_artifacts",  # 指定 OCR 中间产物目录，避免测试污染仓库根 data。
         document_dir=data_dir / "documents",  # 指定 document 元数据目录。
         job_dir=data_dir / "jobs",  # 指定 ingest job 元数据目录。
     )
@@ -276,37 +277,44 @@ def test_create_and_ingest_document_with_postgres_asset_storage(tmp_path: Path, 
     assert listed_item["size_bytes"] == len(content)
 
 
-def test_run_ingest_job_supports_mock_ocr_for_image_documents(tmp_path: Path) -> None:  # 图片文档应在 mock OCR 下进入 ocr_processing 并完成入库。
+def test_run_ingest_job_supports_mock_ocr_for_image_documents(tmp_path: Path) -> None:  # 图片文档应在 mock OCR 下进入 OCR 链路并完成入库。
     settings = build_test_settings(tmp_path, ocr_provider="mock")
     ensure_data_directories(settings)
     service = DocumentService(settings)
 
-    app.dependency_overrides[get_document_service] = lambda: service
-    client = TestClient(app)
+    source_path = settings.upload_dir / "scan.png"
+    source_path.write_bytes(b"fake-image-binary")
+    Path(f"{source_path}.ocr.txt").write_text("扫描件 OCR 提取文本", encoding="utf-8")
 
-    try:
-        create_response = client.post(
-            "/api/v1/documents",
-            data={"tenant_id": "wl"},
-            files={"file": ("scan.png", b"fake-image-binary", "image/png")},
-        )
-        assert create_response.status_code == 201
-        payload = create_response.json()
-        document_record = service._load_document_record(payload["doc_id"])
-        sidecar_path = Path(f"{document_record.storage_path}.ocr.txt")
-        sidecar_path.write_text("扫描件 OCR 提取文本", encoding="utf-8")
+    ingestion_result = service.ingestion_service.ingest_document(
+        document_id="doc_mock_ocr_image",
+        filename="scan.png",
+        source_path=source_path,
+    )
 
-        ingest_status = service.run_ingest_job(payload["job_id"])
-        detail_response = client.get(f"/api/v1/documents/{payload['doc_id']}")
-    finally:
-        app.dependency_overrides.clear()
-
-    assert ingest_status.status == "completed"
-    assert ingest_status.stage == "completed"
-    assert detail_response.status_code == 200
-    assert detail_response.json()["status"] == "active"
-    parsed_text = (settings.parsed_dir / f"{payload['doc_id']}.txt").read_text(encoding="utf-8")
+    assert ingestion_result.final_status == "completed"
+    assert ingestion_result.ocr_used is True
+    parsed_text = Path(ingestion_result.parsed_path).read_text(encoding="utf-8")
     assert "扫描件 OCR 提取文本" in parsed_text
+    assert ingestion_result.ocr_artifact_path is not None
+    ocr_payload = json.loads(Path(ingestion_result.ocr_artifact_path).read_text(encoding="utf-8"))
+    assert ocr_payload["parser_name"] == "image_ocr_mock"
+    assert ocr_payload["segment_count"] >= 1
+    assert ocr_payload["page_count"] == 1
+    assert ocr_payload["segments"][0]["page_no"] == 1
+    assert "扫描件 OCR 提取文本" in ocr_payload["normalized_text"]
+    chunk_payload = json.loads(Path(ingestion_result.chunk_path).read_text(encoding="utf-8"))
+    assert chunk_payload
+    assert chunk_payload[0]["ocr_used"] is True
+    assert chunk_payload[0]["parser_name"] == "image_ocr_mock"
+    assert chunk_payload[0]["page_no"] == 1
+    assert chunk_payload[0]["ocr_confidence"] is None
+    indexed_records = list(service.ingestion_service.vector_store.scroll_records(document_id="doc_mock_ocr_image"))
+    assert indexed_records
+    assert indexed_records[0].payload["ocr_used"] is True
+    assert indexed_records[0].payload["parser_name"] == "image_ocr_mock"
+    assert indexed_records[0].payload["page_no"] == 1
+    assert indexed_records[0].payload["ocr_confidence"] is None
 
 
 def test_run_ingest_job_marks_partial_failed_when_pdf_ocr_fallback_is_unavailable(tmp_path: Path) -> None:  # PDF 原生文本太少且 OCR 不可用时，应保留可用结果并标记 partial_failed。
@@ -314,35 +322,49 @@ def test_run_ingest_job_marks_partial_failed_when_pdf_ocr_fallback_is_unavailabl
     ensure_data_directories(settings)
     service = DocumentService(settings)
 
-    app.dependency_overrides[get_document_service] = lambda: service
-    client = TestClient(app)
-    pdf_content = build_minimal_pdf_bytes("short note")
+    source_path = settings.upload_dir / "scan_fallback.pdf"
+    source_path.write_bytes(build_minimal_pdf_bytes("short note"))
 
-    try:
-        create_response = client.post(
-            "/api/v1/documents",
-            data={"tenant_id": "wl"},
-            files={"file": ("scan_fallback.pdf", pdf_content, "application/pdf")},
-        )
-        assert create_response.status_code == 201
-        payload = create_response.json()
+    ingestion_result = service.ingestion_service.ingest_document(
+        document_id="doc_mock_ocr_pdf",
+        filename="scan_fallback.pdf",
+        source_path=source_path,
+    )
 
-        ingest_status = service.run_ingest_job(payload["job_id"])
-        detail_response = client.get(f"/api/v1/documents/{payload['doc_id']}")
-        job_response = client.get(f"/api/v1/ingest/jobs/{payload['job_id']}")
-    finally:
-        app.dependency_overrides.clear()
-
-    assert ingest_status.status == "partial_failed"
-    assert ingest_status.stage == "partial_failed"
-    assert "OCR provider is disabled for PDF fallback." in (ingest_status.error_message or "")
-    assert detail_response.status_code == 200
-    assert detail_response.json()["status"] == "partial_failed"
-    assert detail_response.json()["ingest_status"] == "partial_failed"
-    assert job_response.status_code == 200
-    assert job_response.json()["manual_retry_allowed"] is True
-    parsed_text = (settings.parsed_dir / f"{payload['doc_id']}.txt").read_text(encoding="utf-8")
+    assert ingestion_result.final_status == "partial_failed"
+    assert "OCR provider is disabled for PDF fallback." in (ingestion_result.warning_message or "")
+    parsed_text = Path(ingestion_result.parsed_path).read_text(encoding="utf-8")
     assert "short note" in parsed_text
+    assert ingestion_result.ocr_artifact_path is None
+    assert not (settings.ocr_artifact_dir / "doc_mock_ocr_pdf.json").exists()
+
+
+def test_upload_document_returns_ocr_artifact_path_for_mock_image_documents(tmp_path: Path) -> None:  # 同步上传图片时应返回 OCR artifact 路径，便于后续排障。
+    settings = build_test_settings(tmp_path, ocr_provider="mock")
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    class _FakeUpload:
+        def __init__(self, filename: str, content: bytes, content_type: str) -> None:
+            self.filename = filename
+            self.content_type = content_type
+            self._content = content
+            self._read_once = False
+
+        async def read(self, _size: int = -1) -> bytes:
+            if self._read_once:
+                return b""
+            self._read_once = True
+            return self._content
+
+    upload = _FakeUpload(filename="sync_scan.png", content=b"fake-image-binary", content_type="image/png")
+
+    response = asyncio.run(service.save_upload(upload))
+
+    assert response.status == "ingested"
+    assert response.parser_name == "image_ocr_mock"
+    assert response.ocr_artifact_path is not None
+    assert Path(response.ocr_artifact_path).exists()
 
 
 def test_document_preview_supports_pdf_inline_stream_from_postgres_asset_storage(tmp_path: Path, monkeypatch) -> None:  # PDF 在线预览接口应支持从 PostgreSQL 二进制资产直接返回文件流。

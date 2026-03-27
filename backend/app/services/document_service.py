@@ -505,6 +505,7 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
             storage_path=storage_path,  # 返回原始文件存储引用。
             parsed_path=ingestion_result.parsed_path,  # 返回解析文本路径。
             chunk_path=ingestion_result.chunk_path,  # 返回 chunk 文件路径。
+            ocr_artifact_path=ingestion_result.ocr_artifact_path,  # 返回 OCR 中间产物路径，供排障和质量分析复用。
             collection_name=ingestion_result.collection_name,  # 返回写入的 Qdrant collection。
             parser_name=ingestion_result.parser_name,  # 返回本次使用的解析器名称。
             chunk_count=ingestion_result.chunk_count,  # 返回生成的 chunk 数量。

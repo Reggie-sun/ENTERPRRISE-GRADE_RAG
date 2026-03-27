@@ -5,3 +5,4 @@
 
 transformers  # HuggingFace transformers 库 / HuggingFace transformers library
 sentence-transformers  # sentence-transformers 库 / sentence-transformers library
+huggingface-hub>=0.34,<1.0  # transformers 本地模型链路当前需要 <1.0，避免 1.x 版本破坏兼容性。

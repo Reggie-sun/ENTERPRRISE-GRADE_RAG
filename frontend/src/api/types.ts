@@ -692,11 +692,12 @@ export interface DocumentUploadResponse {
   filename: string;  // 原始文件名。
   content_type: string | null;  // 文件 MIME 类型。
   size_bytes: number;  // 文件大小（字节）。
-  status: 'ingested';  // 当前上传状态。
+  status: 'ingested' | 'partial_failed';  // 当前上传状态。
   parse_supported: boolean;  // 是否支持解析。
   storage_path: string;  // 原始文件落盘路径。
   parsed_path: string;  // 解析后文本文件路径。
   chunk_path: string;  // chunk 结果 JSON 文件路径。
+  ocr_artifact_path: string | null;  // OCR 中间产物路径；非 OCR 文档为空。
   collection_name: string;  // 向量写入的 Qdrant collection 名称。
   parser_name: string;  // 使用的解析器名称。
   chunk_count: number;  // 生成的 chunk 数量。
