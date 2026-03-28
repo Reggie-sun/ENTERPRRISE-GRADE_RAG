@@ -40,7 +40,7 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
 
         route = self.system_config_service.get_reranker_routing()
         provider = route.provider.lower().strip()  # 读取并标准化 reranker provider。
-        if provider == "heuristic":  # heuristic 继续保留为默认和降级路径。
+        if provider == "heuristic" or route.default_strategy == "heuristic":  # heuristic 继续保留为默认和降级路径；provider 配好但策略锁回 heuristic 时也不打远端。
             return self._rerank_with_heuristic(query=query, candidates=candidates, top_n=top_n)  # 调用启发式重排实现。
         if provider in {"openai", "openai-compatible", "openai_compatible"}:  # OpenAI-compatible rerank 接口统一复用一套实现。
             status = self.get_runtime_status()
@@ -67,6 +67,45 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
 
         raise RuntimeError(f"Unsupported reranker provider: {route.provider}")  # 抛出明确错误，方便定位配置问题。
 
+    def rerank_provider_candidate(
+        self,
+        *,
+        query: str,
+        candidates: list[RetrievedChunk],
+        top_n: int,
+    ) -> list[RetrievedChunk]:  # 显式验证模型级 provider 路由，忽略 default_strategy 的 heuristic 固定策略。
+        if not candidates or top_n <= 0:
+            return []
+
+        route = self.system_config_service.get_reranker_routing()
+        provider = route.provider.lower().strip()
+        if provider == "heuristic":
+            raise RuntimeError("Model rerank provider is not configured.")
+        if provider in {"openai", "openai-compatible", "openai_compatible"}:
+            status = self.get_runtime_status()
+            if not status["ready"]:
+                raise RuntimeError(str(status["detail"]))
+            try:
+                reranked = self._rerank_with_openai(
+                    query=query,
+                    candidates=candidates,
+                    top_n=top_n,
+                    model_name=route.model,
+                    timeout_seconds=route.timeout_seconds,
+                )
+            except RuntimeError as exc:
+                self._update_cached_route_health(route=route, ready=False, detail=str(exc), source="request")
+                raise
+            self._update_cached_route_health(
+                route=route,
+                ready=True,
+                detail="OpenAI-compatible reranker requests are succeeding.",
+                source="request",
+            )
+            return reranked
+
+        raise RuntimeError(f"Unsupported reranker provider: {route.provider}")
+
     def get_runtime_status(self, *, force_refresh: bool = False) -> dict[str, str | float | bool]:
         route = self.system_config_service.get_reranker_routing()
         degrade_controls = self.system_config_service.get_degrade_controls()
@@ -78,6 +117,7 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                 "provider": route.provider,
                 "base_url": "",
                 "model": route.model,
+                "default_strategy": route.default_strategy,
                 "timeout_seconds": route.timeout_seconds,
                 "failure_cooldown_seconds": cooldown_seconds,
                 "effective_provider": "heuristic",
@@ -98,11 +138,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                 "provider": route.provider,
                 "base_url": "",
                 "model": route.model,
+                "default_strategy": route.default_strategy,
                 "timeout_seconds": route.timeout_seconds,
                 "failure_cooldown_seconds": cooldown_seconds,
                 **self._resolve_effective_route(
                     route_provider=route.provider,
                     route_model=route.model,
+                    default_strategy=route.default_strategy,
                     ready=False,
                     fallback_enabled=fallback_enabled,
                 ),
@@ -122,11 +164,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                 "provider": route.provider,
                 "base_url": base_url,
                 "model": route.model,
+                "default_strategy": route.default_strategy,
                 "timeout_seconds": route.timeout_seconds,
                 "failure_cooldown_seconds": cooldown_seconds,
                 **self._resolve_effective_route(
                     route_provider=route.provider,
                     route_model=route.model,
+                    default_strategy=route.default_strategy,
                     ready=cached.ready,
                     fallback_enabled=fallback_enabled,
                 ),
@@ -155,11 +199,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                     "provider": route.provider,
                     "base_url": base_url,
                     "model": route.model,
+                    "default_strategy": route.default_strategy,
                     "timeout_seconds": route.timeout_seconds,
                     "failure_cooldown_seconds": cooldown_seconds,
                     **self._resolve_effective_route(
                         route_provider=route.provider,
                         route_model=route.model,
+                        default_strategy=route.default_strategy,
                         ready=False,
                         fallback_enabled=fallback_enabled,
                     ),
@@ -177,11 +223,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                     "provider": route.provider,
                     "base_url": base_url,
                     "model": route.model,
+                    "default_strategy": route.default_strategy,
                     "timeout_seconds": route.timeout_seconds,
                     "failure_cooldown_seconds": cooldown_seconds,
                     **self._resolve_effective_route(
                         route_provider=route.provider,
                         route_model=route.model,
+                        default_strategy=route.default_strategy,
                         ready=False,
                         fallback_enabled=fallback_enabled,
                     ),
@@ -199,11 +247,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                     "provider": route.provider,
                     "base_url": base_url,
                     "model": route.model,
+                    "default_strategy": route.default_strategy,
                     "timeout_seconds": route.timeout_seconds,
                     "failure_cooldown_seconds": cooldown_seconds,
                     **self._resolve_effective_route(
                         route_provider=route.provider,
                         route_model=route.model,
+                        default_strategy=route.default_strategy,
                         ready=False,
                         fallback_enabled=fallback_enabled,
                     ),
@@ -216,16 +266,20 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
                 }
 
             detail = "OpenAI-compatible reranker health probe succeeded."
+            if route.default_strategy == "heuristic":
+                detail = f"{detail} Default route is pinned to heuristic by policy."
             self._write_cached_route_health(cache_key, ready=True, detail=detail, source="probe")
             return {
                 "provider": route.provider,
                 "base_url": base_url,
                 "model": route.model,
+                "default_strategy": route.default_strategy,
                 "timeout_seconds": route.timeout_seconds,
                 "failure_cooldown_seconds": cooldown_seconds,
                 **self._resolve_effective_route(
                     route_provider=route.provider,
                     route_model=route.model,
+                    default_strategy=route.default_strategy,
                     ready=True,
                     fallback_enabled=fallback_enabled,
                 ),
@@ -242,11 +296,13 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
             "provider": route.provider,
             "base_url": base_url,
             "model": route.model,
+            "default_strategy": route.default_strategy,
             "timeout_seconds": route.timeout_seconds,
             "failure_cooldown_seconds": cooldown_seconds,
             **self._resolve_effective_route(
                 route_provider=route.provider,
                 route_model=route.model,
+                default_strategy=route.default_strategy,
                 ready=False,
                 fallback_enabled=fallback_enabled,
             ),
@@ -362,10 +418,11 @@ class RerankerClient:  # 封装 rerank 逻辑，当前提供可离线运行的�
         *,
         route_provider: str,
         route_model: str,
+        default_strategy: str,
         ready: bool,
         fallback_enabled: bool,
     ) -> dict[str, str]:
-        if route_provider.lower().strip() == "heuristic":
+        if route_provider.lower().strip() == "heuristic" or default_strategy == "heuristic":
             return {
                 "effective_provider": "heuristic",
                 "effective_model": "heuristic",

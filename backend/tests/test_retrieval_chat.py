@@ -1247,6 +1247,7 @@ def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, 
             "reranker_routing": {
                 "provider": "openai_compatible",
                 "model": "BAAI/bge-reranker-v2-m3",
+                "default_strategy": "provider",
                 "timeout_seconds": 9.0,
             }
         }
@@ -1290,10 +1291,16 @@ def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, 
     )
     monkeypatch.setattr(
         retrieval_service.reranker_client,
+        "rerank_provider_candidate",
+        lambda **kwargs: [base_results[1].model_copy(update={"score": 0.99}), base_results[0].model_copy(update={"score": 0.88})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
         "get_runtime_status",
         lambda force_refresh=False: {
             "provider": "openai_compatible",
             "model": "BAAI/bge-reranker-v2-m3",
+            "default_strategy": "provider",
             "failure_cooldown_seconds": 15.0,
             "effective_provider": "openai_compatible",
             "effective_model": "BAAI/bge-reranker-v2-m3",
@@ -1316,12 +1323,20 @@ def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, 
     assert response.configured.strategy == "provider"
     assert [item.chunk_id for item in response.configured.results] == ["chunk-b", "chunk-a"]
     assert [item.chunk_id for item in response.heuristic.results] == ["chunk-a", "chunk-b"]
+    assert response.provider_candidate is not None
+    assert response.provider_candidate.strategy == "provider"
+    assert [item.chunk_id for item in response.provider_candidate.results] == ["chunk-b", "chunk-a"]
+    assert response.provider_candidate_summary is not None
+    assert response.provider_candidate_summary.top1_same is False
+    assert response.route_status.default_strategy == "provider"
     assert response.route_status.effective_provider == "openai_compatible"
     assert response.route_status.effective_strategy == "provider"
     assert response.route_status.lock_active is False
     assert response.route_status.ready is True
     assert response.summary.top1_same is False
     assert response.summary.overlap_count == 2
+    assert response.recommendation.decision == "provider_active"
+    assert response.recommendation.should_switch_default_strategy is False
 
 
 def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1333,6 +1348,7 @@ def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path:
             "reranker_routing": {
                 "provider": "openai_compatible",
                 "model": "BAAI/bge-reranker-v2-m3",
+                "default_strategy": "provider",
                 "timeout_seconds": 9.0,
             },
             "degrade_controls": {
@@ -1376,12 +1392,14 @@ def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path:
 
     monkeypatch.setattr(retrieval_service.reranker_client, "rerank", fail_provider)
     monkeypatch.setattr(retrieval_service.reranker_client, "rerank_heuristic", lambda **kwargs: heuristic_results)
+    monkeypatch.setattr(retrieval_service.reranker_client, "rerank_provider_candidate", fail_provider)
     monkeypatch.setattr(
         retrieval_service.reranker_client,
         "get_runtime_status",
         lambda force_refresh=False: {
             "provider": "openai_compatible",
             "model": "BAAI/bge-reranker-v2-m3",
+            "default_strategy": "provider",
             "failure_cooldown_seconds": 15.0,
             "effective_provider": "heuristic",
             "effective_model": "heuristic",
@@ -1401,12 +1419,109 @@ def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path:
     assert response.configured.error_message == "reranker upstream unavailable"
     assert [item.chunk_id for item in response.configured.results] == ["chunk-a", "chunk-b"]
     assert [item.chunk_id for item in response.heuristic.results] == ["chunk-a", "chunk-b"]
+    assert response.provider_candidate is not None
+    assert response.provider_candidate.strategy == "failed"
+    assert response.provider_candidate.error_message == "reranker upstream unavailable"
+    assert response.provider_candidate_summary is None
+    assert response.route_status.default_strategy == "provider"
     assert response.route_status.effective_provider == "heuristic"
     assert response.route_status.effective_strategy == "heuristic"
     assert response.route_status.lock_active is True
     assert response.route_status.lock_source == "request"
     assert response.route_status.ready is False
     assert response.summary.top1_same is True
+    assert response.recommendation.decision == "rollback_active"
+    assert response.recommendation.should_switch_default_strategy is False
+
+
+def test_retrieval_compare_rerank_recommends_provider_when_pinned_heuristic_has_meaningful_delta(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    system_config_service = SystemConfigService(settings)
+    system_config_service.repository.write(
+        {
+            "reranker_routing": {
+                "provider": "openai_compatible",
+                "model": "BAAI/bge-reranker-v2-m3",
+                "default_strategy": "heuristic",
+                "timeout_seconds": 9.0,
+            }
+        }
+    )
+    retrieval_service = RetrievalService(settings)
+    base_results = [
+        RetrievedChunk(
+            chunk_id="chunk-a",
+            document_id="doc_a",
+            document_name="doc_a.txt",
+            text="servo reset requires checking alarm signal first",
+            score=0.91,
+            source_path="/tmp/doc_a.txt",
+            retrieval_strategy="hybrid",
+        ),
+        RetrievedChunk(
+            chunk_id="chunk-b",
+            document_id="doc_b",
+            document_name="doc_b.txt",
+            text="servo reset should release e-stop before reboot",
+            score=0.87,
+            source_path="/tmp/doc_b.txt",
+            retrieval_strategy="hybrid",
+        ),
+    ]
+    retrieval_service.search = lambda request, auth_context=None: RetrievalResponse(  # type: ignore[method-assign]
+        query=request.query,
+        top_k=request.top_k or 2,
+        mode="hybrid",
+        results=base_results,
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "rerank",
+        lambda **kwargs: [base_results[0].model_copy(update={"score": 0.95}), base_results[1].model_copy(update={"score": 0.84})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "rerank_heuristic",
+        lambda **kwargs: [base_results[0].model_copy(update={"score": 0.95}), base_results[1].model_copy(update={"score": 0.84})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "rerank_provider_candidate",
+        lambda **kwargs: [base_results[1].model_copy(update={"score": 0.99}), base_results[0].model_copy(update={"score": 0.88})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "get_runtime_status",
+        lambda force_refresh=False: {
+            "provider": "openai_compatible",
+            "model": "BAAI/bge-reranker-v2-m3",
+            "default_strategy": "heuristic",
+            "failure_cooldown_seconds": 15.0,
+            "effective_provider": "heuristic",
+            "effective_model": "heuristic",
+            "effective_strategy": "heuristic",
+            "fallback_enabled": True,
+            "lock_active": False,
+            "lock_source": None,
+            "cooldown_remaining_seconds": 0.0,
+            "ready": True,
+            "detail": "OpenAI-compatible reranker health probe succeeded. Default route is pinned to heuristic by policy.",
+        },
+    )
+
+    response = retrieval_service.compare_rerank(RetrievalRequest(query="servo reset", top_k=2))
+
+    assert response.configured.strategy == "heuristic"
+    assert response.provider_candidate is not None
+    assert response.provider_candidate.strategy == "provider"
+    assert response.provider_candidate_summary is not None
+    assert response.provider_candidate_summary.top1_same is False
+    assert response.recommendation.decision == "eligible"
+    assert response.recommendation.should_switch_default_strategy is True
 
 
 def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: Path) -> None:
@@ -1422,6 +1537,7 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
                 "route_status": {
                     "provider": "openai_compatible",
                     "model": "BAAI/bge-reranker-v2-m3",
+                    "default_strategy": "provider",
                     "failure_cooldown_seconds": 15.0,
                     "effective_provider": "heuristic",
                     "effective_model": "heuristic",
@@ -1435,6 +1551,32 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
                 },
                 "configured": {
                     "label": "configured",
+                    "provider": "openai_compatible",
+                    "model": "BAAI/bge-reranker-v2-m3",
+                    "strategy": "heuristic",
+                    "error_message": None,
+                    "results": [
+                        {
+                            "chunk_id": "chunk-a",
+                            "document_id": "doc_a",
+                            "document_name": "doc_a.txt",
+                            "text": "servo reset requires checking alarm signal first",
+                            "score": 0.95,
+                            "source_path": "/tmp/doc_a.txt",
+                            "retrieval_strategy": "hybrid",
+                            "vector_score": 0.91,
+                            "lexical_score": 1.1,
+                            "fused_score": 0.92,
+                            "ocr_used": False,
+                            "parser_name": None,
+                            "page_no": None,
+                            "ocr_confidence": None,
+                            "quality_score": None,
+                        }
+                    ],
+                },
+                "provider_candidate": {
+                    "label": "provider_candidate",
                     "provider": "openai_compatible",
                     "model": "BAAI/bge-reranker-v2-m3",
                     "strategy": "provider",
@@ -1486,10 +1628,21 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
                     ],
                 },
                 "summary": {
+                    "overlap_count": 1,
+                    "top1_same": True,
+                    "configured_only_chunk_ids": [],
+                    "heuristic_only_chunk_ids": [],
+                },
+                "provider_candidate_summary": {
                     "overlap_count": 0,
                     "top1_same": False,
                     "configured_only_chunk_ids": ["chunk-b"],
                     "heuristic_only_chunk_ids": ["chunk-a"],
+                },
+                "recommendation": {
+                    "decision": "eligible",
+                    "should_switch_default_strategy": True,
+                    "message": "provider 候选已可用且与 heuristic 存在可观察差异，可以把 default_strategy 切到 provider 做真实流量验证。",
                 },
             }
 
@@ -1505,10 +1658,15 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
     assert response.status_code == 200
     payload = response.json()
     assert payload["route_status"]["provider"] == "openai_compatible"
+    assert payload["route_status"]["default_strategy"] == "provider"
     assert payload["route_status"]["effective_strategy"] == "heuristic"
     assert payload["route_status"]["fallback_enabled"] is True
     assert payload["route_status"]["lock_active"] is True
     assert payload["configured"]["provider"] == "openai_compatible"
-    assert payload["configured"]["strategy"] == "provider"
+    assert payload["configured"]["strategy"] == "heuristic"
+    assert payload["provider_candidate"]["provider"] == "openai_compatible"
+    assert payload["provider_candidate"]["strategy"] == "provider"
     assert payload["heuristic"]["provider"] == "heuristic"
-    assert payload["summary"]["configured_only_chunk_ids"] == ["chunk-b"]
+    assert payload["summary"]["configured_only_chunk_ids"] == []
+    assert payload["provider_candidate_summary"]["configured_only_chunk_ids"] == ["chunk-b"]
+    assert payload["recommendation"]["decision"] == "eligible"

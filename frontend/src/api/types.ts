@@ -75,6 +75,7 @@ export interface HealthResponse {
     provider: string;  // Reranker 提供方。
     base_url: string;  // Reranker 服务地址；启发式模式下可为空。
     model: string;  // Reranker 模型名称。
+    default_strategy: string;  // 当前默认路由策略。
     timeout_seconds: number;  // Reranker 超时预算。
     failure_cooldown_seconds: number;  // 最近一次故障后的 provider 锁定窗口。
     effective_provider: string;  // 当前实际生效的 rerank provider。
@@ -381,9 +382,11 @@ export interface ModelRoutingConfig {
 }
 
 export type RerankerRoutingProvider = 'heuristic' | 'openai_compatible';
+export type RerankerDefaultStrategy = 'heuristic' | 'provider';
 
 export interface RerankerRoutingConfig {
   provider: RerankerRoutingProvider;
+  default_strategy: RerankerDefaultStrategy;
   model: string;
   timeout_seconds: number;
   failure_cooldown_seconds: number;
@@ -907,9 +910,16 @@ export interface RerankComparisonSummary {
   heuristic_only_chunk_ids: string[];  // 仅 heuristic 命中的 chunk。
 }
 
+export interface RerankPromotionRecommendation {
+  decision: string;  // 当前切换建议类型。
+  should_switch_default_strategy: boolean;  // 当前是否建议把 default_strategy 切到 provider。
+  message: string;  // 面向页面展示的建议说明。
+}
+
 export interface RetrievalRerankRouteStatus {
   provider: string;  // 当前配置的 provider。
   model: string;  // 当前配置的模型。
+  default_strategy: string;  // 当前默认路由策略。
   failure_cooldown_seconds: number;  // 最近失败后的 provider 锁定窗口。
   effective_provider: string;  // 当前实际生效的 provider。
   effective_model: string;  // 当前实际生效的模型或 heuristic。
@@ -929,8 +939,11 @@ export interface RetrievalRerankCompareResponse {
   rerank_top_n: number;  // 实际参与 rerank 后返回的数量。
   route_status: RetrievalRerankRouteStatus;  // 当前默认 rerank 路由的实时状态。
   configured: RerankComparisonResult;  // 当前默认路由的实际结果。
+  provider_candidate: RerankComparisonResult | null;  // 明确验证模型 rerank provider 的候选结果。
   heuristic: RerankComparisonResult;  // heuristic 基线结果。
   summary: RerankComparisonSummary;  // 两条结果的差异摘要。
+  provider_candidate_summary: RerankComparisonSummary | null;  // provider 候选与 heuristic 的差异摘要。
+  recommendation: RerankPromotionRecommendation;  // 当前是否适合把默认策略切到 provider。
 }
 
 // ========== 问答相关 ==========

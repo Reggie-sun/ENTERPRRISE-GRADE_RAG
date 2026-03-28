@@ -21,6 +21,7 @@ def test_health_returns_metadata_store_status() -> None:
     assert isinstance(payload["reranker"]["provider"], str)
     assert isinstance(payload["reranker"]["model"], str)
     assert isinstance(payload["reranker"]["base_url"], str)
+    assert isinstance(payload["reranker"]["default_strategy"], str)
     assert isinstance(payload["reranker"]["timeout_seconds"], (int, float))
     assert isinstance(payload["reranker"]["effective_provider"], str)
     assert isinstance(payload["reranker"]["effective_model"], str)

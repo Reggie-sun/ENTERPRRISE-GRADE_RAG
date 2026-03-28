@@ -121,6 +121,7 @@ def _persist_openai_reranker_route(system_config_service: SystemConfigService) -
             ),
             reranker_routing=RerankerRoutingConfig(
                 provider="openai_compatible",
+                default_strategy="provider",
                 model="BAAI/bge-reranker-v2-m3-prod",
                 timeout_seconds=9.5,
             ),
@@ -224,6 +225,7 @@ def test_reranker_client_runtime_status_checks_openai_health_endpoint(
     status = client.get_runtime_status()
 
     assert status["provider"] == "openai_compatible"
+    assert status["default_strategy"] == "provider"
     assert status["base_url"] == "http://127.0.0.1:8003/v1"
     assert status["effective_provider"] == "openai_compatible"
     assert status["effective_model"] == "BAAI/bge-reranker-v2-m3-prod"
@@ -280,6 +282,7 @@ def test_reranker_client_short_circuits_after_recent_health_probe_failure(
     assert health_calls == 1
     assert rerank_calls == 0
     assert status["ready"] is False
+    assert status["default_strategy"] == "provider"
     assert status["effective_provider"] == "heuristic"
     assert status["effective_model"] == "heuristic"
     assert status["effective_strategy"] == "heuristic"
@@ -319,6 +322,59 @@ def test_reranker_heuristic_gently_prefers_higher_quality_ocr_candidates(tmp_pat
     reranked = client.rerank(query="servo reset", candidates=candidates, top_n=2)
 
     assert [item.chunk_id for item in reranked] == ["chunk_high", "chunk_low"]
+
+
+def test_reranker_client_pins_default_route_to_heuristic_by_policy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _build_settings(
+        tmp_path,
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    current = system_config_service.get_config(auth_context=_build_auth_context())
+    system_config_service.update_config(
+        SystemConfigUpdateRequest(
+            query_profiles=current.query_profiles,
+            model_routing=current.model_routing,
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                default_strategy="heuristic",
+                model="BAAI/bge-reranker-v2-m3-prod",
+                timeout_seconds=9.5,
+                failure_cooldown_seconds=15.0,
+            ),
+            degrade_controls=current.degrade_controls,
+            retry_controls=current.retry_controls,
+            concurrency_controls=current.concurrency_controls,
+        ),
+        auth_context=_build_auth_context(),
+    )
+    client = RerankerClient(settings, system_config_service=system_config_service)
+
+    class FakeHealthResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+    def fail_post(url: str, **kwargs):
+        raise AssertionError("provider rerank should not be called when default_strategy is heuristic")
+
+    monkeypatch.setattr("backend.app.rag.rerankers.client.httpx.get", lambda url, **kwargs: FakeHealthResponse())
+    monkeypatch.setattr("backend.app.rag.rerankers.client.httpx.post", fail_post)
+
+    reranked = client.rerank(query="servo reset", candidates=_build_candidates(), top_n=2)
+    status = client.get_runtime_status()
+
+    assert [item.chunk_id for item in reranked] == ["chunk_2", "chunk_1"]
+    assert status["provider"] == "openai_compatible"
+    assert status["default_strategy"] == "heuristic"
+    assert status["ready"] is True
+    assert status["effective_provider"] == "heuristic"
+    assert status["effective_model"] == "heuristic"
+    assert status["effective_strategy"] == "heuristic"
+    assert "pinned to heuristic by policy" in str(status["detail"])
 
 
 def test_query_profile_service_falls_back_to_heuristic_when_openai_reranker_is_unavailable(

@@ -43,6 +43,7 @@ class HealthService:
                 "provider": reranker_status["provider"],
                 "base_url": reranker_status["base_url"],
                 "model": reranker_status["model"],
+                "default_strategy": reranker_status["default_strategy"],
                 "timeout_seconds": reranker_status["timeout_seconds"],
                 "failure_cooldown_seconds": reranker_status["failure_cooldown_seconds"],
                 "effective_provider": reranker_status["effective_provider"],

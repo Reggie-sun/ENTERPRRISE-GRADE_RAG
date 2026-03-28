@@ -485,6 +485,7 @@ export function OpsPage() {
                 </StatusPill>
               </div>
               <p className="m-0 mt-2">configured: {summary?.health.reranker.provider || '-'} / {summary?.health.reranker.model || '-'}</p>
+              <p className="m-0 mt-1">default: {summary?.health.reranker.default_strategy || '-'}</p>
               <p className="m-0 mt-1">effective: {summary?.health.reranker.effective_provider || '-'} / {summary?.health.reranker.effective_strategy || '-'}</p>
               <p className="m-0 mt-1">effective model: {summary?.health.reranker.effective_model || '-'}</p>
               <p className="m-0 mt-1 break-all">{summary?.health.reranker.base_url || '-'}</p>

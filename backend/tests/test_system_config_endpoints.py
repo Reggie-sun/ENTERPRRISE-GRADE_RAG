@@ -60,6 +60,7 @@ def test_get_system_config_endpoint_returns_defaults_for_sys_admin(tmp_path: Pat
     assert payload["query_profiles"]["accurate"]["lexical_top_k"] == 32
     assert payload["model_routing"]["fast_model"] == "qwen2.5:7b"
     assert payload["reranker_routing"]["provider"] == "heuristic"
+    assert payload["reranker_routing"]["default_strategy"] == "heuristic"
     assert payload["reranker_routing"]["model"] == "BAAI/bge-reranker-v2-m3"
     assert payload["reranker_routing"]["timeout_seconds"] == 12.0
     assert payload["reranker_routing"]["failure_cooldown_seconds"] == 15.0
@@ -115,6 +116,7 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
                 },
                 "reranker_routing": {
                     "provider": "openai_compatible",
+                    "default_strategy": "provider",
                     "model": "Qwen/Reranker-Prod",
                     "timeout_seconds": 9.5,
                     "failure_cooldown_seconds": 21.0,
@@ -151,6 +153,7 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
     assert follow_up.json()["query_profiles"]["accurate"]["rerank_top_n"] == 6
     assert follow_up.json()["model_routing"]["accurate_model"] == "Qwen/Accurate-14B"
     assert follow_up.json()["reranker_routing"]["provider"] == "openai_compatible"
+    assert follow_up.json()["reranker_routing"]["default_strategy"] == "provider"
     assert follow_up.json()["reranker_routing"]["model"] == "Qwen/Reranker-Prod"
     assert follow_up.json()["reranker_routing"]["failure_cooldown_seconds"] == 21.0
     assert follow_up.json()["degrade_controls"]["retrieval_fallback_enabled"] is False
@@ -192,6 +195,7 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
                 },
                 "reranker_routing": {
                     "provider": "heuristic",
+                    "default_strategy": "heuristic",
                     "model": "BAAI/bge-reranker-v2-m3",
                     "timeout_seconds": 12.0,
                     "failure_cooldown_seconds": 15.0,
@@ -221,3 +225,67 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
 
     assert response.status_code == 422
     assert response.json()["detail"] == "fast.rerank_top_n cannot be greater than fast.top_k_default."
+
+
+def test_update_system_config_endpoint_rejects_provider_default_strategy_when_provider_is_heuristic(tmp_path: Path) -> None:
+    client = _build_client(tmp_path)
+
+    try:
+        headers = _login_headers(client, username="sys.admin", password="sys-admin-pass")
+        response = client.put(
+            "/api/v1/system-config",
+            headers=headers,
+            json={
+                "query_profiles": {
+                    "fast": {
+                        "top_k_default": 5,
+                        "candidate_multiplier": 2,
+                        "lexical_top_k": 10,
+                        "rerank_top_n": 3,
+                        "timeout_budget_seconds": 12.0,
+                    },
+                    "accurate": {
+                        "top_k_default": 8,
+                        "candidate_multiplier": 4,
+                        "lexical_top_k": 32,
+                        "rerank_top_n": 5,
+                        "timeout_budget_seconds": 24.0,
+                    },
+                },
+                "model_routing": {
+                    "fast_model": "Qwen/Fast-7B",
+                    "accurate_model": "Qwen/Accurate-14B",
+                    "sop_generation_model": "Qwen/SOP-14B",
+                },
+                "reranker_routing": {
+                    "provider": "heuristic",
+                    "default_strategy": "provider",
+                    "model": "BAAI/bge-reranker-v2-m3",
+                    "timeout_seconds": 12.0,
+                    "failure_cooldown_seconds": 15.0,
+                },
+                "degrade_controls": {
+                    "rerank_fallback_enabled": True,
+                    "accurate_to_fast_fallback_enabled": True,
+                    "retrieval_fallback_enabled": True,
+                },
+                "retry_controls": {
+                    "llm_retry_enabled": True,
+                    "llm_retry_max_attempts": 2,
+                    "llm_retry_backoff_ms": 400,
+                },
+                "concurrency_controls": {
+                    "fast_max_inflight": 24,
+                    "accurate_max_inflight": 6,
+                    "sop_generation_max_inflight": 3,
+                    "per_user_online_max_inflight": 3,
+                    "acquire_timeout_ms": 800,
+                    "busy_retry_after_seconds": 5,
+                },
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "reranker_routing.default_strategy must be heuristic when provider is heuristic."

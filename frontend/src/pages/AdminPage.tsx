@@ -62,6 +62,7 @@ function cloneModelRouting(modelRouting: ModelRoutingConfig): ModelRoutingConfig
 function buildEmptyRerankerRouting(): RerankerRoutingConfig {
   return {
     provider: 'heuristic',
+    default_strategy: 'heuristic',
     model: 'BAAI/bge-reranker-v2-m3',
     timeout_seconds: 12,
     failure_cooldown_seconds: 15,
@@ -539,11 +540,29 @@ export function AdminPage() {
                 <select
                   value={rerankerRouting.provider}
                   disabled={status === 'loading' || saveStatus === 'loading'}
-                  onChange={(event) => updateRerankerRoutingField('provider', event.target.value)}
+                  onChange={(event) => {
+                    const nextProvider = event.target.value as RerankerRoutingConfig['provider'];
+                    updateRerankerRoutingField('provider', nextProvider);
+                    if (nextProvider === 'heuristic') {
+                      updateRerankerRoutingField('default_strategy', 'heuristic');
+                    }
+                  }}
                   className="h-12 rounded-2xl border border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.92)] px-4 text-sm text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
                 >
                   <option value="heuristic">heuristic</option>
                   <option value="openai_compatible">openai_compatible</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-sm font-semibold text-ink">
+                <span>default_strategy</span>
+                <select
+                  value={rerankerRouting.default_strategy}
+                  disabled={status === 'loading' || saveStatus === 'loading'}
+                  onChange={(event) => updateRerankerRoutingField('default_strategy', event.target.value)}
+                  className="h-12 rounded-2xl border border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.92)] px-4 text-sm text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                >
+                  <option value="heuristic">heuristic</option>
+                  <option value="provider" disabled={rerankerRouting.provider === 'heuristic'}>provider</option>
                 </select>
               </label>
               <Input
@@ -579,6 +598,7 @@ export function AdminPage() {
                 <StatusPill tone={rerankerRuntimeTone}>{rerankerRuntimeLabel}</StatusPill>
               </div>
               <p className="m-0 mt-3">configured: {health?.reranker.provider || rerankerRouting.provider} / {health?.reranker.model || rerankerRouting.model}</p>
+              <p className="m-0 mt-1">default: {health?.reranker.default_strategy || rerankerRouting.default_strategy}</p>
               <p className="m-0 mt-1">effective: {health?.reranker.effective_provider || '-'} / {health?.reranker.effective_strategy || '-'}</p>
               <p className="m-0 mt-1">effective model: {health?.reranker.effective_model || '-'}</p>
               <p className="m-0 mt-1">fallback: {health?.reranker.fallback_enabled ? 'on' : 'off'}</p>

@@ -125,6 +125,7 @@ class SystemConfigService:
             ),
             reranker_routing=RerankerRoutingConfig(
                 provider=self._default_reranker_provider(),
+                default_strategy=self._default_reranker_strategy(),
                 model=self._default_reranker_model_name(),
                 timeout_seconds=self.settings.reranker_timeout_seconds,
                 failure_cooldown_seconds=self.settings.reranker_failure_cooldown_seconds,
@@ -193,6 +194,11 @@ class SystemConfigService:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="reranker_routing.model cannot be empty.",
             )
+        if reranker_routing.provider == "heuristic" and reranker_routing.default_strategy != "heuristic":
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="reranker_routing.default_strategy must be heuristic when provider is heuristic.",
+            )
 
     @staticmethod
     def _validate_retry_controls(retry_controls: RetryControlsConfig) -> None:
@@ -249,6 +255,12 @@ class SystemConfigService:
 
     def _default_reranker_model_name(self) -> str:
         return self.settings.reranker_model.strip() or "default-reranker-model"
+
+    def _default_reranker_strategy(self) -> str:
+        strategy = self.settings.reranker_default_strategy.lower().strip()
+        if strategy == "provider" and self._default_reranker_provider() != "heuristic":
+            return "provider"
+        return "heuristic"
 
 
 @lru_cache

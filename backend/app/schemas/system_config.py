@@ -24,10 +24,12 @@ class ModelRoutingConfig(BaseModel):
 
 
 RerankerRoutingProvider = Literal["heuristic", "openai_compatible"]
+RerankerDefaultStrategy = Literal["heuristic", "provider"]
 
 
 class RerankerRoutingConfig(BaseModel):
     provider: RerankerRoutingProvider = "heuristic"
+    default_strategy: RerankerDefaultStrategy = "heuristic"
     model: str = Field(min_length=1)
     timeout_seconds: float = Field(gt=0, le=60)
     failure_cooldown_seconds: float = Field(default=15.0, gt=0, le=300)

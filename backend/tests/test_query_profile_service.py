@@ -109,6 +109,7 @@ def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailabl
             model_routing=current_config.model_routing,
             reranker_routing=RerankerRoutingConfig(
                 provider="openai_compatible",
+                default_strategy="provider",
                 model="BAAI/bge-reranker-v2-m3-prod",
                 timeout_seconds=9.5,
             ),
@@ -148,6 +149,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
             model_routing=current_config.model_routing,
             reranker_routing=RerankerRoutingConfig(
                 provider="openai_compatible",
+                default_strategy="provider",
                 model="BAAI/bge-reranker-v2-m3-prod",
                 timeout_seconds=9.5,
             ),
@@ -176,7 +178,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
             reranker_client=reranker_client,
         )
     except RuntimeError as exc:
-        assert "OpenAI-compatible server failed" in str(exc)
+        assert "Reranker health probe failed" in str(exc)
     else:
         raise AssertionError("Expected rerank provider failure when rerank fallback is disabled.")
 

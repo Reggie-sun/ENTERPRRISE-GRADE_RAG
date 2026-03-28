@@ -23,6 +23,7 @@ class HealthReranker(BaseModel):
     provider: str
     base_url: str
     model: str
+    default_strategy: str
     timeout_seconds: float
     failure_cooldown_seconds: float
     effective_provider: str

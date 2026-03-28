@@ -74,6 +74,7 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
     assert payload.query_profiles.accurate.lexical_top_k == 32
     assert payload.model_routing.fast_model == "qwen2.5:7b"
     assert payload.reranker_routing.provider == "heuristic"
+    assert payload.reranker_routing.default_strategy == "heuristic"
     assert payload.reranker_routing.model == "BAAI/bge-reranker-v2-m3"
     assert payload.reranker_routing.timeout_seconds == 12.0
     assert payload.reranker_routing.failure_cooldown_seconds == 15.0
@@ -117,6 +118,7 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
             ),
             reranker_routing=RerankerRoutingConfig(
                 provider="openai_compatible",
+                default_strategy="provider",
                 model="Qwen/Reranker-Prod",
                 timeout_seconds=9.5,
                 failure_cooldown_seconds=22.0,
@@ -152,6 +154,7 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert reloaded.query_profiles.fast.top_k_default == 6
     assert reloaded.model_routing.fast_model == "Qwen/Fast-7B"
     assert reloaded.reranker_routing.provider == "openai_compatible"
+    assert reloaded.reranker_routing.default_strategy == "provider"
     assert reloaded.reranker_routing.model == "Qwen/Reranker-Prod"
     assert reloaded.reranker_routing.timeout_seconds == 9.5
     assert reloaded.reranker_routing.failure_cooldown_seconds == 22.0
@@ -211,6 +214,7 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
                 ),
                 reranker_routing=RerankerRoutingConfig(
                     provider="heuristic",
+                    default_strategy="heuristic",
                     model="BAAI/bge-reranker-v2-m3",
                     timeout_seconds=12.0,
                     failure_cooldown_seconds=15.0,
@@ -255,6 +259,7 @@ def test_system_config_service_validates_lexical_top_k_relationships(tmp_path: P
                 ),
                 reranker_routing=RerankerRoutingConfig(
                     provider="heuristic",
+                    default_strategy="heuristic",
                     model="BAAI/bge-reranker-v2-m3",
                     timeout_seconds=12.0,
                 ),
@@ -345,3 +350,29 @@ def test_system_config_service_validates_per_user_concurrency_relationships(tmp_
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "per_user_online_max_inflight cannot be greater than fast_max_inflight."
+
+
+def test_system_config_service_rejects_provider_default_strategy_when_provider_is_heuristic(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.update_config(
+            SystemConfigUpdateRequest(
+                query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
+                model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                reranker_routing=RerankerRoutingConfig(
+                    provider="heuristic",
+                    default_strategy="provider",
+                    model="BAAI/bge-reranker-v2-m3",
+                    timeout_seconds=12.0,
+                    failure_cooldown_seconds=15.0,
+                ),
+                degrade_controls=DegradeControlsConfig(),
+                retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(),
+            ),
+            auth_context=_build_auth_context(),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "reranker_routing.default_strategy must be heuristic when provider is heuristic."

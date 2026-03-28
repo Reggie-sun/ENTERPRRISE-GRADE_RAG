@@ -299,6 +299,9 @@ export function RetrievalPanel({
                 configured: {comparisonData.route_status.provider} / {comparisonData.route_status.model}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
+                default: {comparisonData.route_status.default_strategy}
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
                 effective: {comparisonData.route_status.effective_provider} / {comparisonData.route_status.effective_strategy}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
@@ -361,6 +364,21 @@ export function RetrievalPanel({
               </ResultCard>
             </div>
 
+            <div className="rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.8)] p-4">
+              <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+                <strong className="text-ink">默认策略切换建议</strong>
+                <StatusPill tone={comparisonData.recommendation.should_switch_default_strategy ? 'ok' : 'warn'}>
+                  {comparisonData.recommendation.decision}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-2 text-sm text-ink-soft leading-relaxed">
+                {comparisonData.recommendation.message}
+              </p>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                action: {comparisonData.recommendation.should_switch_default_strategy ? '建议切到 provider 默认' : '建议继续保持 heuristic 默认'}
+              </p>
+            </div>
+
             {comparisonData.configured.error_message ? (
               <div className="p-4 rounded-xl border border-dashed border-[rgba(182,70,47,0.2)] bg-[rgba(255,248,245,0.85)]">
                 <p className="m-0 text-sm font-semibold text-ink">当前默认路由错误</p>
@@ -421,6 +439,52 @@ export function RetrievalPanel({
                 ))}
               </div>
             </div>
+
+            {comparisonData.provider_candidate ? (
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="m-0 text-base font-semibold text-ink">Provider 候选结果</h4>
+                  <StatusPill tone={comparisonData.provider_candidate.strategy === 'provider' ? 'ok' : 'warn'}>
+                    {comparisonData.provider_candidate.provider} / {comparisonData.provider_candidate.strategy}
+                  </StatusPill>
+                </div>
+                <p className="m-0 text-sm text-ink-soft">
+                  这组结果会显式尝试模型级 rerank provider，即使当前默认策略仍固定在 heuristic，也能直接用它判断是否值得切换默认路由。
+                </p>
+                {comparisonData.provider_candidate_summary ? (
+                  <p className="m-0 text-sm text-ink-soft">
+                    overlap {comparisonData.provider_candidate_summary.overlap_count} / top1 {comparisonData.provider_candidate_summary.top1_same ? 'same' : 'changed'}
+                  </p>
+                ) : null}
+                {comparisonData.provider_candidate.error_message ? (
+                  <div className="p-4 rounded-xl border border-dashed border-[rgba(182,70,47,0.2)] bg-[rgba(255,248,245,0.85)]">
+                    <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm text-ink">
+                      {comparisonData.provider_candidate.error_message}
+                    </pre>
+                  </div>
+                ) : comparisonData.provider_candidate.results.length === 0 ? (
+                  <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
+                    provider 候选没有返回结果。
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {comparisonData.provider_candidate.results.map((item, index) => (
+                      <ResultCard
+                        key={`provider-candidate-${item.chunk_id}`}
+                        title={item.document_name}
+                        index={index}
+                        meta={[
+                          { label: '分数', value: item.score.toFixed(4) },
+                          { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
+                        ]}
+                      >
+                        {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                      </ResultCard>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
           </>
         ) : (
           <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">

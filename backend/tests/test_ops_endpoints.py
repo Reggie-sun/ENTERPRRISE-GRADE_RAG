@@ -402,6 +402,7 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
     assert isinstance(payload["health"]["reranker"]["effective_provider"], str)
     assert isinstance(payload["health"]["reranker"]["effective_model"], str)
     assert isinstance(payload["health"]["reranker"]["effective_strategy"], str)
+    assert isinstance(payload["health"]["reranker"]["default_strategy"], str)
     assert isinstance(payload["health"]["reranker"]["fallback_enabled"], bool)
     assert isinstance(payload["health"]["reranker"]["failure_cooldown_seconds"], (int, float))
     assert isinstance(payload["health"]["reranker"]["lock_active"], bool)

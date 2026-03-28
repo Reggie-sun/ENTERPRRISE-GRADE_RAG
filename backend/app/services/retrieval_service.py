@@ -16,6 +16,7 @@ from ..schemas.retrieval import (  # 导入检索请求、响应和结果模型�
     RetrievalRequest,
     RetrievalResponse,
     RetrievedChunk,
+    RerankPromotionRecommendation,
     RerankComparisonResult,
     RerankComparisonSummary,
 )
@@ -142,6 +143,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         safe_top_n = min(profile.rerank_top_n, len(response.results))  # 没有足够候选时自动收敛实际返回数量。
         route = self.system_config_service.get_reranker_routing()
         configured_error_message: str | None = None
+        provider_candidate_results: list[RetrievedChunk] | None = None
+        provider_candidate_error_message: str | None = None
 
         if safe_top_n <= 0:
             empty_summary = RerankComparisonSummary(
@@ -171,6 +174,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 ),
                 route_status=self._build_route_status(),
                 summary=empty_summary,
+                provider_candidate=None,
+                provider_candidate_summary=None,
+                recommendation=RerankPromotionRecommendation(
+                    decision="hold",
+                    should_switch_default_strategy=False,
+                    message="当前没有可参与 rerank 验证的候选结果，保持 heuristic 默认。",
+                ),
             )
 
         heuristic_results = self.reranker_client.rerank_heuristic(
@@ -178,6 +188,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             candidates=response.results,
             top_n=safe_top_n,
         )
+        route_status = self._build_route_status()
 
         try:
             configured_results = self.reranker_client.rerank(
@@ -185,19 +196,53 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 candidates=response.results,
                 top_n=safe_top_n,
             )
-            configured_strategy = "provider" if route.provider != "heuristic" else "heuristic"
         except RuntimeError as exc:
             configured_error_message = str(exc)
             if not self.system_config_service.get_degrade_controls().rerank_fallback_enabled:
                 configured_results = []
-                configured_strategy = "failed"
             else:
                 configured_results = heuristic_results
-                configured_strategy = "heuristic"
+            route_status = self._build_route_status()
+        else:
+            route_status = self._build_route_status()
+        configured_strategy = route_status.effective_strategy
+        provider_candidate: RerankComparisonResult | None = None
+        provider_candidate_summary: RerankComparisonSummary | None = None
+
+        if route.provider.lower().strip() != "heuristic":
+            try:
+                provider_candidate_results = self.reranker_client.rerank_provider_candidate(
+                    query=request.query,
+                    candidates=response.results,
+                    top_n=safe_top_n,
+                )
+            except RuntimeError as exc:
+                provider_candidate_error_message = str(exc)
+                provider_candidate_results = []
+            provider_candidate = RerankComparisonResult(
+                label="provider_candidate",
+                provider=route.provider,
+                model=route.model,
+                strategy="provider" if provider_candidate_error_message is None else "failed",
+                error_message=provider_candidate_error_message,
+                results=provider_candidate_results,
+            )
+            if provider_candidate_error_message is None:
+                provider_candidate_summary = self._build_rerank_comparison_summary(
+                    configured_results=provider_candidate_results,
+                    heuristic_results=heuristic_results,
+                )
 
         summary = self._build_rerank_comparison_summary(
             configured_results=configured_results,
             heuristic_results=heuristic_results,
+        )
+        recommendation = self._build_rerank_promotion_recommendation(
+            route_status=route_status,
+            provider=route.provider,
+            provider_candidate=provider_candidate,
+            provider_candidate_summary=provider_candidate_summary,
+            rerank_top_n=safe_top_n,
         )
         return RetrievalRerankCompareResponse(
             query=request.query,
@@ -219,8 +264,11 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 strategy="heuristic",
                 results=heuristic_results,
             ),
-            route_status=self._build_route_status(),
+            route_status=route_status,
             summary=summary,
+            provider_candidate=provider_candidate,
+            provider_candidate_summary=provider_candidate_summary,
+            recommendation=recommendation,
         )
 
     def _build_route_status(self) -> RetrievalRerankRouteStatus:
@@ -228,6 +276,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         return RetrievalRerankRouteStatus(
             provider=str(status["provider"]),
             model=str(status["model"]),
+            default_strategy=str(status["default_strategy"]),
             failure_cooldown_seconds=float(status["failure_cooldown_seconds"]),
             effective_provider=str(status["effective_provider"]),
             effective_model=str(status["effective_model"]),
@@ -370,6 +419,54 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             top1_same=bool(configured_ids and heuristic_ids and configured_ids[0] == heuristic_ids[0]),
             configured_only_chunk_ids=[chunk_id for chunk_id in configured_ids if chunk_id not in heuristic_id_set],
             heuristic_only_chunk_ids=[chunk_id for chunk_id in heuristic_ids if chunk_id not in configured_id_set],
+        )
+
+    @staticmethod
+    def _build_rerank_promotion_recommendation(
+        *,
+        route_status: RetrievalRerankRouteStatus,
+        provider: str,
+        provider_candidate: RerankComparisonResult | None,
+        provider_candidate_summary: RerankComparisonSummary | None,
+        rerank_top_n: int,
+    ) -> RerankPromotionRecommendation:
+        normalized_provider = provider.lower().strip()
+        if normalized_provider == "heuristic":
+            return RerankPromotionRecommendation(
+                decision="not_applicable",
+                should_switch_default_strategy=False,
+                message="当前未配置模型级 rerank provider，继续保持 heuristic 默认。",
+            )
+        if route_status.default_strategy == "provider":
+            if route_status.effective_strategy == "provider":
+                return RerankPromotionRecommendation(
+                    decision="provider_active",
+                    should_switch_default_strategy=False,
+                    message="provider 已作为默认主路径运行，无需再切换 default_strategy。",
+                )
+            return RerankPromotionRecommendation(
+                decision="rollback_active",
+                should_switch_default_strategy=False,
+                message="provider 当前不可稳定使用，系统已保持 heuristic 回退，先排查远端 rerank 服务。",
+            )
+        if provider_candidate is None or provider_candidate.strategy != "provider" or provider_candidate.error_message:
+            detail = provider_candidate.error_message if provider_candidate and provider_candidate.error_message else route_status.detail or "provider 候选当前不可用。"
+            return RerankPromotionRecommendation(
+                decision="hold",
+                should_switch_default_strategy=False,
+                message=f"继续保持 heuristic 默认。{detail}",
+            )
+        if provider_candidate_summary is not None and rerank_top_n > 0:
+            if provider_candidate_summary.overlap_count >= rerank_top_n and provider_candidate_summary.top1_same:
+                return RerankPromotionRecommendation(
+                    decision="hold",
+                    should_switch_default_strategy=False,
+                    message="provider 候选已可用，但当前样本与 heuristic 结果一致，暂不建议切换默认。",
+                )
+        return RerankPromotionRecommendation(
+            decision="eligible",
+            should_switch_default_strategy=True,
+            message="provider 候选已可用且与 heuristic 存在可观察差异，可以把 default_strategy 切到 provider 做真实流量验证。",
         )
 
 
