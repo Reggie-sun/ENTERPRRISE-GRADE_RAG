@@ -54,7 +54,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
             self.query_profile_service = query_profile_service
             self.system_config_service = query_profile_service.system_config_service
         self.retrieval_service = RetrievalService(self.settings)  # 创建检索服务实例，问答前先做召回。
-        self.reranker_client = RerankerClient(self.settings)  # 创建 rerank 客户端，做二次排序。
+        self.reranker_client = RerankerClient(
+            self.settings,
+            system_config_service=self.system_config_service,
+        )  # 创建 rerank 客户端，做二次排序。
         self.generation_client = LLMGenerationClient(
             self.settings,
             system_config_service=self.system_config_service,
@@ -724,6 +727,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     snippet=result.text,  # 把检索文本作为引用片段内容。
                     score=result.score,  # 复制相似度分数。
                     source_path=result.source_path,  # 复制原始文件路径。
+                    retrieval_strategy=result.retrieval_strategy,  # 透传召回策略，方便引用和快照解释。
+                    vector_score=result.vector_score,  # 透传原始向量分数。
+                    lexical_score=result.lexical_score,  # 透传词项分数。
+                    fused_score=result.fused_score,  # 透传最终融合分数。
                 )
                 for result in reranked_results  # 遍历 rerank 后的结果。
             ],

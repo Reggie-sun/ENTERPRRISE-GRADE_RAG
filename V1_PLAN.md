@@ -48,12 +48,12 @@
 以下内容在这一轮计划中视为固定底座，不主动推翻：
 
 - 当前在线检索底座继续沿用：
-  `query -> embedding -> Qdrant vector search -> results`
+  `query -> embedding -> Qdrant vector recall + lexical recall -> weighted RRF fusion -> results`
 - 当前 Embedding / Rerank / LLM 接入方式继续沿用
 - 当前异步入库主链路继续沿用：
   `上传 -> document/job -> worker -> 向量入库 -> 检索 / 问答`
 - 当前本地开发与服务器协同的运行基线继续沿用
-- 当前不把关键词检索 / BM25 / RRF 混合检索视为已完成能力
+- 当前已具备轻量关键词 / BM25 / RRF 混合检索，不再把这块当成空白能力
 
 这意味着：
 
@@ -69,9 +69,9 @@
   `vLLM(OpenAI-compatible)` 
 - 同时预留统一的外部 LLM API provider 边界，便于后续接公司外部模型服务、云 API 或高峰期兜底
 - 业务层不直接依赖某一家 provider 的特有字段，问答、SOP、日志、配置统一只依赖内部 LLM provider 抽象
-- 当前 retrieval 主召回是纯向量召回，不要在计划里把它误写成“已经有关键词检索”
-- 当前代码里只有轻量 token overlap `heuristic rerank`，它属于重排信号，不等同于第一阶段关键词召回
-- 关键词 / BM25 / hybrid retrieval 属于后续在线检索质量增强，不属于当前已冻结底座
+- 当前 retrieval 主链路已经是轻量 hybrid retrieval，不要再把它误写成“纯向量召回”
+- 当前代码里已有 lexical retriever + BM25-like 关键词召回 + RRF 融合；`heuristic rerank` 仍只是后置重排信号
+- 后续在线检索质量增强的重点不再是“补第一版 hybrid retrieval”，而是验证、治理、配置收口与更复杂策略是否必要
 - 当前代码已经有 `rerank` 插槽，但 provider 仍是 `heuristic`
 - 模型级 `rerank` 不属于异步入库改造，而属于在线检索质量增强
 - 更合适的接入时机是：
@@ -94,11 +94,12 @@
 - citations 返回
 - 前端基础上传 / 检索 / 问答联调
 - 在线主检索当前是：
-  `query -> embedding -> Qdrant vector search -> results`
+  `query -> embedding -> Qdrant vector recall + lexical recall -> weighted RRF fusion -> results`
 - 问答和 SOP 上层链路当前再接：
   `retrieval -> heuristic rerank -> LLM`
-- 当前还没有正式的关键词检索 / BM25 / RRF hybrid retrieval
-- 当前 `heuristic rerank` 里的 token overlap 只是重排信号，不是第一阶段关键词召回
+- 当前已经具备轻量 lexical retriever、BM25-like 关键词召回、`vector_only` fallback，以及 `retrieval_strategy / vector_score / lexical_score / fused_score`
+- 当前 hybrid fusion 已支持规则式 dynamic branch weighting，默认关闭，保留 fixed fallback
+- 当前 `heuristic rerank` 里的 token overlap 仍只是重排信号，不是第一阶段关键词召回
 - 但当前主链路还不支持扫描件 / 图片 OCR，也还没有正式的模型级 `rerank` 服务
 
 所以接下来的计划，不应该从“零开始搭系统”写，而应该从“基于已跑通链路逐步扩功能”写。
@@ -683,574 +684,177 @@
 
 目标：
 
-- 在 SOP 直生前补齐扫描件 / 图片资料可入库能力，并提升在线召回与证据排序质量
+- 在 SOP 直生前补齐文档理解缺口，并把 OCR / hybrid retrieval / rerank 收口成可复用底座
 
-必须完成：
+当前代码现实补充（`2026-03-28`）：
 
-- 扫描 PDF / 图片文件 OCR 入库
-- 原生解析优先、文本不足时 OCR fallback
-- 把已预留的 `ocr_processing` ingest 阶段真正接上主链路，并补页级失败语义
-- 在线轻量混合检索接入：
-  `vector recall + keyword/BM25 recall + fusion`
-- 在线模型级 `rerank` 接入
-- `fast / accurate` 两档的 `candidate_top_k / lexical_top_k / rerank_top_n / timeout` 参数冻结
+- 轻量 hybrid retrieval 主干已经落地：
+  `lexical retriever + BM25-like recall + weighted RRF fusion + vector_only fallback`
+- OCR 主干已经落地：
+  图片文件 OCR、扫描 PDF / 图片型 PDF OCR fallback、OCR artifact 落盘、OCR metadata 进入 chunk / retrieval / citation / snapshot
+- `2026-03-28` 新增：
+  `DOCX` 内嵌图片 OCR 已进入异步入库主链路，支持“正文 + 嵌图 OCR”混合入库
+- 模型级 `rerank` 代码路径已具备 openai-compatible provider + `heuristic` fallback
 
-明确不做：
+已完成：
 
-- 完整版面分析
-- 复杂表格结构化抽取
-- 引用高亮 bbox 坐标
-- 独立 OCR 集群调度
-- 历史文档全量重跑
-- 为了关键词召回单独引入 `Elasticsearch / OpenSearch` 集群
+- 图片文件 OCR 入库
+- 扫描 PDF / 图片型 PDF OCR fallback
+- `DOCX` 内嵌图片 OCR
+- `ocr_processing / partial_failed` ingest 状态真正接入主链路
+- OCR artifact 落盘
+- OCR metadata 进入 chunk / retrieval / citation / snapshot
+- hybrid retrieval 主干
+- `lexical_top_k` 配置化
+- OCR quality-aware heuristic rerank
+
+剩余缺口：
+
+- 普通 PDF 中“局部图片”精细 OCR，而不是仅整页 fallback
+- OCR 质量阈值与低质量 chunk 的治理策略
+- OCR 结果在前端的解释性增强
+- 模型级 `rerank` 进入生产默认路径前的收益验证、路由收口与配置回归
 
 低耦合要求：
 
-- OCR 只进入异步入库链路：
+- OCR 继续只进入异步入库链路：
   `上传 -> document/job -> parse/native_extract -> ocr -> chunk -> embedding -> index`
-- 混合检索只进入在线检索链路：
-  `query -> embedding/vector recall + keyword recall -> fusion -> rerank -> LLM / chat / SOP generation`
-- 模型级 `rerank` 只进入在线检索链路：
-  `Qdrant top_k -> rerank -> LLM / chat / SOP generation`
-- OCR 不反向阻塞已有原生 PDF / DOCX / TXT 文档主链路
-- 关键词索引优先复用当前 chunk 文本和元数据做轻量副本，不把关键词索引当新的主数据真源
-- 模型级 `rerank` 保留 `heuristic` 作为降级路径，不把线上可用性绑死到单一服务
-- 关键词召回分支不可用时必须能自动退回纯向量召回
-- 需要 OCR 的历史文档按需重入库，不把一次性全量补跑作为上线前置
+- hybrid retrieval 与模型级 `rerank` 继续只进入在线检索链路
+- 不为 OCR 文档单独维护第二套 chunk 索引
+- `heuristic` 继续保留为统一降级路径
 
-验收标准：
+下一步：
 
-- 能上传一份扫描 PDF 或图片并完成异步入库
-- 能从 OCR 文档里检索到有效 chunk，并用于问答引用
-- 对明显依赖专有名词、设备名、料号、工序名的查询，混合检索结果明显优于纯向量召回基线
-- `document_id` 过滤在向量召回和关键词召回两条分支上都语义一致
-- `accurate` 档能稳定走模型级 `rerank`，不可用时自动降级到 `heuristic`
-- OCR 页级失败时任务可落到 `partial_failed` 并继续完成可用结果，不要求整份文档直接失败
-
-具体拆分：
-
-后端：
-
-- 在文档解析链路增加最小文件判别：
-  区分原生可抽取文本文档和需要 OCR 的扫描页 / 图片
-- 引入主 OCR provider：
-  先以 `PaddleOCR` 为主，不把 `Tesseract` 当线上主方案
-- 新增 OCR 中间产物与文本归一逻辑：
-  至少输出页级文本、基础置信度和可回溯路径
-- 把已预留的 ingest 状态真正落到执行链路：
-  `queued / parsing / ocr_processing / chunking / embedding / indexing / completed / partial_failed / failed / dead_letter`
-- 在现有检索链路上新增轻量 lexical retriever 抽象，优先实现 BM25 或同级别关键词召回，不额外引入重量级搜索集群
-- 在 `RetrievalService` 增加 hybrid fusion：
-  统一收口向量候选、关键词候选和最终融合结果
-- 在现有 `RerankerClient` 抽象上新增 provider 实现，保留 `heuristic` 兜底
-- 给 query profile 冻结两套在线参数：
-  `fast` 偏速度，`accurate` 偏质量
-- 问答、检索、SOP 生成统一复用同一套 hybrid retrieval + rerank 输出，不各自实现一份召回 / 排序逻辑
-
-前端：
-
-- 上传 / 入库状态里展示 `ocr_processing`
-- 对 OCR 中、OCR 页级失败、`partial_failed` 给出明确提示
-- 问答页和 SOP 页明确标注 `fast / accurate` 的质量差异
-- 不要求前端额外区分 OCR 文档和原生文本文档的操作入口，保持统一上传入口
-
-数据与接口：
-
-- 文档 / chunk 元数据至少预留：
-  `ocr_used / page_no / parser_name / quality_score`
-- OCR 中间产物和最终 parsed text 分开存放，避免后续重跑 OCR 时互相覆盖
-- `fast / accurate` 先共享同一套 chunk 数据，不为 OCR 文档单独维护第二套索引
-- 为关键词召回预留轻量索引副本或缓存层，但不把它设计成新的主数据真源
-- trace / snapshot / debug 输出里预留：
-  `retrieval_strategy / vector_score / lexical_score / fused_score`
-- 模型级 `rerank` 不进入异步入库链路，不要求重跑历史 embedding
-
-测试与验收：
-
-- 覆盖原生 PDF 不走 OCR
-- 覆盖扫描 PDF / 图片走 OCR 成功
-- 覆盖 OCR 页级失败后任务进入 `partial_failed`
-- 覆盖明显关键词查询在 hybrid 下比 vector-only 更稳
-- 覆盖关键词召回分支失败后自动退回纯向量召回
-- 覆盖模型级 `rerank` 成功、超时、远端不可用后降级到 `heuristic`
-- 覆盖问答与 SOP 生成看到同一批 rerank 后证据
-
-建议按 issue 拆分：
-
-1. OCR 文件判别与 ingest 状态扩展
-
-- 补最小文件类型判断
-- 把已预留的 `ocr_processing / partial_failed` 状态口径真正落到入库执行
-- 明确 job 进度和错误语义
-
-2. OCR 处理链路
-
-- 接入 `PaddleOCR`
-- 实现扫描 PDF / 图片页文本抽取
-- 保存页级 OCR 结果和归一化文本
-
-3. 轻量混合检索接入
-
-- 增加 lexical retriever 抽象
-- 接入 BM25 或等价关键词召回
-- 在 `RetrievalService` 实现 hybrid fusion 和 vector-only fallback
-
-4. 模型级 `rerank` 接入
-
-- 扩展当前 `RerankerClient` provider
-- 接入独立 reranker 服务或 openai-compatible rerank 接口
-- 保留 `heuristic` 作为降级路径
-
-5. 在线参数档位冻结
-
-- 固化 `fast / accurate` 两档参数
-- 固化 `candidate_top_k / lexical_top_k / rerank_top_n / timeout_budget` 口径
-- 明确 `accurate -> fast`、`model rerank -> heuristic` 的降级路径
-
-6. 前端状态与模式提示
-
-- 上传状态展示 OCR 阶段
-- 问答 / SOP 页面补质量档位说明
-- 对 `partial_failed` 给出可理解提示
-
-7. 回归测试与小样本验收
-
-- 覆盖 OCR 与 rerank 成功路径
-- 覆盖 OCR / rerank 降级路径
-- 覆盖 hybrid retrieval 成功与退回 vector-only 路径
-- 至少准备一组扫描件 / 图片样例做人工验证
-
-建议执行顺序：
-
-1. 先做 `OCR 文件判别与 ingest 状态扩展`
-2. 再做 `OCR 处理链路`
-3. 再做 `轻量混合检索接入`
-4. 再做 `模型级 rerank 接入`
-5. 然后做 `在线参数档位冻结`
-6. 再做 `前端状态与模式提示`
-7. 最后做 `回归测试与小样本验收`
+1. 做模型级 `rerank` 生产化验证与默认路由收口
+2. 再做 OCR 质量阈值、低质量 chunk 治理与前端解释性
+3. 最后再考虑普通 PDF 的局部图片精细 OCR
 
 ### 6.5 `v0.5.0` SOP 文档直生与轻交付
 
 目标：
 
-- 在 SOP 查看下载稳定后，把 SOP 主线收敛成“员工上传文档后直接生成并下载草稿”
+- 把 SOP 主线收敛成“员工上传或选中文档后，直接生成并下载草稿”，并把系统内复杂编辑降为增强项
 
-必须完成：
+当前代码现实补充（`2026-03-28`）：
 
+- 员工端 `/portal/sop` 主路径已经可用：
+  上传文档 -> 生成 SOP -> 预览 -> 下载
+- SOP 草稿已支持 `Markdown / DOCX / PDF` 导出，且未保存草稿也能直接导出
+- 来源引用、request trace、request snapshot / replay 已经串到 SOP 生成链路
+- `fast / accurate` 两档已接通，SOP 生成默认走 `accurate`
+- 工作台 SOP 页仍存在，但已经不再是员工主入口
+
+已完成：
+
+- 员工端 `/portal/sop` 上传文档 -> 生成 SOP -> 下载
 - 按当前文档直接生成 SOP
 - 按场景生成 SOP
 - 自定义主题生成 SOP
-- 问答双档：
-  `fast / accurate`
-- 轻记忆与多轮上下文
-- 轻量预览
-- 下载 Markdown 草稿
-- 下载 `docx / pdf`
-- 生成来源追溯
+- Markdown 草稿下载
+- `DOCX / PDF` 草稿导出
+- 来源引用与追溯
+- SOP 生成 snapshot / replay
+- `fast / accurate` 基础双档接通
+- 工作台从主入口降级为内部调试/高级入口
 
-明确不做：
+剩余缺口：
 
-- 复杂审批流
-- 跨部门协作编辑
-- 强依赖系统内在线编辑
-- 强依赖系统内保存版本
-- 高级模板引擎
+- 轻记忆 / 多轮上下文还未真正进入 chat / SOP 主链路
+- 模型级 `rerank` 还没有收口成生产默认路径
+- SOP 模板和结构稳定性还需要进一步收口
+- OCR 文档理解还有边角能力待补：
+  普通 PDF 局部图片精细 OCR、OCR 质量阈值治理、前端解释性增强
 
 低耦合要求：
 
-- SOP 生成服务复用现有检索能力
-- 复用上一版 OCR 解析结果和模型级 `rerank` 输出，不在这版再单独造第二套文档理解链路
-- 生成结果单独存为 SOP 对象，不直接混写原始文档对象
-- `fast / accurate` 两档先共享同一套 chunk 数据，不在这版先做双索引或双 chunk 规则
-- 员工端主流程不强依赖后台工作台；如果保留内部工作台，只作为调试和补录入口，不作为产品主路径
+- SOP 生成继续复用现有检索、OCR、rerank、query profile 能力
+- 不为 SOP 单独维护第二套文档理解链路
+- 生成结果继续优先视为可直接下载的交付产物
+- 系统内版本保存、复杂在线编辑继续作为增强能力，不反向绑回员工主流程
 
-验收标准：
+下一步：
 
-- 员工能在前台页面上传或选中当前文档，并直接生成一份 SOP 草稿
-- SOP 草稿可在页面内预览，并直接下载到本地继续修改
-- 能看到来源文档和引用信息
-- 问答和 SOP 生成都能区分 `fast / accurate` 两档，且降级路径明确
-- 整个流程不要求先进入后台工作台，也不要求人为审核后才能下载
+1. 先做模型级 `rerank` 的生产化验证与默认路由收口
+2. 再做轻记忆 / 多轮上下文
+3. 最后收口 SOP 模板、结构稳定性和来源展示细节
 
-具体拆分：
-
-后端：
-
-- 复用上一版模型级 `rerank` 输出，不在这版重复建设排序链路
-- 复用上一版 OCR 入库结果；如果来源文档是扫描件，SOP 生成直接使用已入库 OCR 文本，不在生成请求里同步跑 OCR
-- 给问答链路补两套在线参数档位：
-  `fast / accurate`
-- SOP 生成默认走 `accurate` 档，普通问答默认走 `fast` 档
-- 新增按当前文档直接生成 SOP 接口，并把它作为主入口
-- 新增按场景生成 SOP 接口
-- 新增自定义主题生成 SOP 接口
-- 生成逻辑复用现有检索与问答能力，不另起一套知识抽取引擎
-- 生成结果默认以“可下载草稿”返回，不把保存到系统版本库作为主链路硬要求
-- 系统内保存和版本记录保留为可选增强能力，不阻塞员工端主链路
-- 给 SOP 记录补来源文档引用字段
-- 给员工问答补轻量会话记忆：
-  按“用户 + 会话”保存最近多轮上下文
-- 轻记忆默认先保留最近 `6~8` 轮用户/助手消息，优先做最近窗口记忆，不先做长期向量记忆
-- SOP 生成默认不继承整段历史对话，只继承当前文档、当前请求和必要的短指令上下文，避免把聊天噪音带进草稿
-
-前端：
-
-- 在员工端增加 SOP 生成入口
-- 支持两种生成方式：
-  当前文档直生为主，场景生成 / 自定义主题生成为辅
-- 页面主流程固定成：
-  上传文档 -> 生成 SOP -> 预览 -> 下载到本地修改
-- 页面内只保留轻量预览和必要字段调整，不把复杂在线编辑作为主能力
-- 工作台若保留 SOP 页，仅作为内部调试或高级操作入口
-- 员工问答页补最小多轮上下文体验：
-  同一会话内能连续追问，不要求每次重新贴完整背景
-
-数据与接口：
-
-- 生成接口返回结果必须能独立完成下载，不依赖先保存到系统
-- 草稿结果优先视为一次性可交付产物，系统内归档和版本化为后续增强能力
-- 来源引用单独存储，避免以后审计和追溯难补
-- 先冻结一套全局 chunk 配置，不为 `fast / accurate` 维护两套 chunk 规则
-- `fast / accurate` 先主要通过 `top_k / rerank_top_n / timeout / model routing` 区分
-- 轻记忆和长期知识检索明确分层：
-  轻记忆只解决最近多轮对话连续性，不和知识库 chunk、SOP 版本、日志对象混存
-- 当前代码还不具备正式的 Query Rewrite 服务；它应作为后续独立增强能力加入，而不是先塞进现有问答主流程
-- LLM provider 层在这一版就要为两类后端预留统一接口：
-  `vLLM(OpenAI-compatible)` 和 `external_llm_api`
-
-测试与验收：
-
-- 覆盖按当前文档直接生成成功
-- 覆盖下载 Markdown / docx / pdf 成功
-- 覆盖生成失败和下载失败
-- 覆盖 `fast -> accurate` 两档的不同参数路径
-- 覆盖 `accurate` 超时后降级到 `fast`、`rerank` 不可用后降级到 `heuristic`
-- 覆盖员工多轮追问场景下的最近上下文保留与超窗裁剪
-- 人工验证：
-  上传一份文档 -> 生成一份 SOP 草稿 -> 预览 -> 下载到本地 -> 查看来源信息
-
-建议按 issue 拆分：
-
-1. SOP 生成接口骨架
-
-- 增加按当前文档直接生成接口
-- 增加按场景生成接口
-- 增加自定义主题生成接口
-- 明确输入参数、返回结构和错误语义
-
-2. 复用现有检索链路
-
-- SOP 生成统一复用现有检索和问答能力
-- 不额外维护另一套知识抽取服务
-- 统一复用模型级 `rerank` 输出，保证问答和 SOP 生成看到的是同一批高质量证据
-- 生成时保留来源文档引用
-
-3. 员工轻记忆与多轮上下文
-
-- 新增轻量会话记忆模型
-- 先按“用户 + 会话 + 最近 `6~8` 轮”保留上下文
-- 先不做长期记忆召回，不把记忆写进知识库
-- 明确多轮记忆的裁剪、过期和清理策略
-
-4. 员工端 SOP 生成页
-
-- 前端在员工端增加 SOP 生成页
-- 默认主流程是“上传或选中文档 -> 生成 -> 下载”
-- `topic/scenario` 保留为次入口，不喧宾夺主
-- 页面不要求先切换到工作台才能使用
-
-5. 轻量预览与下载
-
-- 支持 Markdown 草稿下载
-- 支持 `docx / pdf` 下载
-- 页面内提供轻量预览和少量字段调整
-- 不把复杂在线编辑器作为这版阻塞项
-
-6. 来源追溯展示
-
-- 在 SOP 详情中展示来源文档信息
-- 在生成结果中能看到来源引用
-- 确保后续审计和复核可用
-
-7. 回归测试
-
-- 覆盖模型级 `rerank` 成功、降级到 `heuristic`、远端不可用三条路径
-- 覆盖按当前文档直接生成
-- 覆盖按场景生成
-- 覆盖自定义主题生成
-- 覆盖 `fast / accurate` 两档参数口径
-- 覆盖员工轻记忆窗口与多轮追问
-- 覆盖 Markdown / docx / pdf 下载
-- 覆盖来源信息读取
-
-建议执行顺序：
-
-1. 先做 `SOP 生成接口骨架`
-2. 再做 `复用现有检索链路`
-3. 然后做 `员工轻记忆与多轮上下文`
-4. 再做 `员工端 SOP 生成页`
-5. 再做 `轻量预览与下载`
-6. 最后做 `来源追溯展示`、`回归测试`
-
-### 6.6 `v0.6.0` 日志、配置与企业微信接入
+### 6.6 `v0.6.0` 运行治理、配置收口与企业微信接入
 
 目标：
 
-- 把系统补到可追溯、可配置、可扩入口的状态
+- 把系统补到可追溯、可配置、可复现、可控，并为企业微信和数据库真源迁移留出稳定接口
 
-必须完成：
+#### 6.6A 已落地（`2026-03-28` 当前代码现实）
 
-- 问答日志
-- 文档操作日志
-- SOP 生成日志
-- 指标监控（metrics）
-- 分布式追踪（trace）
-- 日志筛选查询
-- 模型配置
-- 检索参数配置
-- SOP 模板配置
-- 运行控制面
-- 请求快照与重放
-- 数据库主数据真源收口
-- 在线并发控制（目标 30 并发接入）
-- 超时、降级、忙时提示
-- 企业微信机器人消息接入与回复
-- 企业微信通讯录同步能力
+已完成：
 
-明确不做：
+- 事件日志底座
+- 日志查询接口与日志页
+- 系统配置接口与配置页
+- 运行态页 `/workspace/ops`
+- request trace
+- request snapshot / replay
+- 通道并发闸门
+- 单用户并发保护
+- 忙时返回与 `Retry-After`
+- `fast / accurate / sop_generation` 运行配置收口
 
-- 企业微信侧边栏 / 工作台深度集成
-- 高级监控平台重构
+代码现实锚点：
+
+- `backend/app/services/event_log_service.py`
+- `backend/app/api/v1/endpoints/logs.py`
+- `backend/app/services/system_config_service.py`
+- `backend/app/api/v1/endpoints/system_config.py`
+- `backend/app/services/ops_service.py`
+- `backend/app/api/v1/endpoints/ops.py`
+- `backend/app/services/request_trace_service.py`
+- `backend/app/services/request_snapshot_service.py`
+- `backend/app/services/runtime_gate_service.py`
+- `frontend/src/pages/LogsPage.tsx`
+- `frontend/src/pages/AdminPage.tsx`
+- `frontend/src/pages/OpsPage.tsx`
+
+#### 6.6B 剩余缺口
+
+仍需完成：
+
+- Prometheus / OpenTelemetry 级 metrics/exporter
+- 数据库真源：
+  日志、配置、会话、轻记忆、外部身份映射
+- 企业微信消息接入与通讯录同步
+- Query Rewrite
+- 轻记忆 / 多轮上下文
+- tokenizer-aware 上下文预算与证据裁剪
+- 更正式的 busy/degrade UX 细化
 
 低耦合要求：
 
-- 企业微信只调用已有问答接口
-- 日志先做查询与追溯，不先做复杂 BI 化运营分析
-- 并发控制和降级控制尽量放在统一网关 / 服务层，不散在问答、SOP、前端里各写一份
-- metrics、trace、日志三者共享统一的 `request_id / trace_id`，但存储和展示分层，不把所有调试信息硬塞进业务日志正文
-- 运行控制面通过统一配置 / 控制服务收口，不允许页面直接改 service 硬编码，也不要求每次调参数都改 `.env`
-- 请求快照与重放独立于普通日志对象，避免把重放负担直接压到在线查询日志表
-- 企业微信通讯录同步不能直接把外部字段散写到业务表里，必须通过独立映射层收口
-- 数据库演进以“增量加表、增量加列”为主，不推翻当前 `rag_*` 主表，也不去改 legacy 业务表
-
-验收标准：
-
-- 关键操作可追溯
-- 企业微信可完成基础问答闭环
-- 企业微信通讯录如果已开权限，能完成部门和人员增量同步；如果权限未开，则系统仍能退回手工/CSV 导入
-- 配置调整不需要改代码重发版
-- 在 `30` 并发接入目标下，系统可以降级但不能整体失效
-
-具体拆分：
-
-后端：
-
-- 统一定义三类日志：
-  问答日志、文档操作日志、SOP 生成日志
-- 新增统一 metrics 出口：
-  至少包含 `QPS / p50 / p95 / p99 / error_rate / timeout_rate / queue_backlog / gpu / cpu / memory`
-- 新增统一 trace/span 埋点：
-  `query -> rewrite -> retrieval -> rerank -> llm -> answer`
-- 新增日志查询接口和筛选参数
-- 新增系统配置读写接口：
-  模型参数、检索参数、SOP 模板参数、企业微信参数、轻记忆参数、Query Rewrite 参数、tokenizer 上下文预算参数
-- 新增运行控制接口：
-  支持 `debug 开关 / top_k / rerank 开关 / 模型路由 / 降级策略开关 / 限流参数 / 重试策略 / worker 并发参数`
-- worker 副本数调整保留在部署层和 runbook，不要求应用内直接改 Docker 副本，但应用层要预留并发与队列参数控制位
-- 新增在线并发控制：
-  区分 `fast` 问答、`accurate` 问答 / SOP 生成、异步入库三条通道
-- 新增统一降级逻辑：
-  `accurate -> fast`、`model rerank -> heuristic`、`LLM -> retrieval fallback`
-- 新增统一 LLM provider 路由层：
-  主路径 `vLLM(OpenAI-compatible)`，扩展路径 `external_llm_api`
-- 外部 LLM API provider 先作为可配置能力加入，不默认启用，但必须能被统一日志、统一配置和统一降级逻辑感知
-- 新增 Query Rewrite 服务层和 tokenizer-aware 上下文打包服务，避免后面把 rewrite、记忆、证据裁剪分别散写在问答和 SOP 逻辑里
-- 明确数据库最终职责分工：
-  `PostgreSQL` 负责身份主数据、SOP 主数据、版本、日志、轻记忆、配置、外部身份映射；
-  `Qdrant` 继续负责向量检索；
-  `Redis` 继续负责异步队列和短期并发控制
-- 身份体系从 bootstrap 文件逐步收口到数据库 repository：
-  不再长期依赖静态 JSON 作为唯一真源
-- 新增请求快照与重放服务：
-  保存原始输入、命中的上下文、关键运行参数、prompt/version/provider 信息，并支持按快照重放
-- 新增企业微信通讯录同步服务：
-  独立负责拉取部门、人员、停用状态和外部 ID 映射，不把同步逻辑塞进登录或问答链路
-- 新增企业微信消息接收和回复接口
-- 企业微信只复用现有问答链路，不单独维护另一套知识处理流程
-
-前端：
-
-- 增加日志查询页
-- 增加日志筛选条件：
-  日期、用户、操作类型
-- 增加系统配置页
-- 企业微信这版不要求前端新增复杂页面，只保留配置和状态展示
-
-数据与接口：
-
-- 日志先按“可查询、可追溯”设计，不先追求复杂报表
-- 系统配置按模块分组，避免全量大 JSON 配置一把梭
-- 企业微信消息体和内部问答请求体做一层转换，不直接耦死
-- 指标目标先聚焦“什么时候开始变坏”：
-  至少能看出吞吐下降、尾延迟升高、错误/超时抬升、队列堆积和资源耗尽拐点
-- trace 至少要记录：
-  每一步耗时、输入输出大小、命中 chunk 数、是否命中缓存、是否发生降级
-- 日志里补齐性能与降级字段：
-  `mode / top_k / rerank_top_n / duration_ms / queue_wait_ms / downgraded_from / timeout_flag / rewrite_enabled / memory_turns / provider_route`
-- 请求快照至少要记录：
-  用户输入、会话摘要、rewrite 结果、最终检索 query、命中的 chunk/citation、prompt 模板版本、模型版本、embedding/rerank provider、主要参数快照
-- 请求重放能力要支持两种模式：
-  `原样重放（使用原始快照）` 和 `对比重放（使用当前配置重新执行）`
-- 并发目标定义为“30 个在线请求可接入”，不等同于“30 个高精度长回答同时满配执行”
-- tokenizer 预算、轻记忆窗口、Rewrite 开关都必须做成独立配置项，不允许散落在页面默认值和 service 硬编码里各维护一份
-- 数据库 schema 变更原则：
-  只做增量演进，不做破坏性大改；优先新增表、可空列和映射表，避免直接打断当前 `document/job/chunk` 主链路
-- 企业微信人员名单“能不能直接接进来”的结论是：
-  能，但前提是企业微信开放了通讯录相关 API 权限、提供可用的 `CorpID / Secret / Agent` 或等价授权，并允许系统读取部门与成员列表
-- 如果企业微信没有开通讯录权限、没有对应密钥，或只允许消息机器人不允许读通讯录：
-  那就不能自动同步全员名单，只能退回手工导入或 CSV 导入
-- 企业微信同步后的系统真源策略建议是：
-  企业微信作为外部来源，系统数据库保留自己的内部主键、状态字段和映射表，不直接把企业微信字段当唯一真源
+- metrics、trace、日志继续共享统一的 `request_id / trace_id`，但存储和展示分层
+- 企业微信继续只复用已有问答链路，不另起第二套知识处理流程
+- 数据库演进继续以“增量加表、增量加列”为主，不推翻当前 `rag_*` 主表
+- 运行控制继续通过统一配置/控制服务收口，不允许页面直接修改 service 硬编码
 
 建议新增的数据库对象：
 
-- `rag_departments`：
-  系统内部部门主数据
-- `rag_users`：
-  系统内部用户主数据
-- `rag_user_department_bindings`：
-  用户与部门绑定关系，兼容后续轮岗、兼职或多部门可见范围
-- `rag_user_role_bindings`：
-  用户角色绑定关系
-- `rag_external_identities`：
-  外部身份映射表，用于存企业微信 `user_id / department_id` 与系统内部 ID 的映射
-- `rag_chat_sessions`：
-  轻记忆会话对象
-- `rag_chat_messages`：
-  轻记忆消息对象，只存最近窗口，不等于长期知识库
-- `rag_system_configs`：
-  模型、Rewrite、tokenizer、并发等运行配置
-- `rag_event_logs`：
-  问答、文档、SOP、同步任务的统一事件日志
-- `rag_request_traces`：
-  请求级 trace 摘要与关键阶段信息
-- `rag_request_snapshots`：
-  可重放的请求快照对象
-- `rag_request_snapshot_contexts`：
-  请求命中的证据、上下文和版本信息
+- `rag_departments`
+- `rag_users`
+- `rag_user_department_bindings`
+- `rag_user_role_bindings`
+- `rag_external_identities`
+- `rag_chat_sessions`
+- `rag_chat_messages`
+- `rag_system_configs`
+- `rag_event_logs`
+- `rag_request_traces`
+- `rag_request_snapshots`
+- `rag_request_snapshot_contexts`
 
-表结构改动策略建议：
+下一步：
 
-- 当前已有 `rag_source_documents / rag_document_versions / rag_ingest_jobs / rag_knowledge_chunks / rag_data_assets` 不做推倒重来
-- 新身份、日志、配置、轻记忆、外部同步一律走新增表
-- 如果已有表缺少少量字段，优先走新增可空列或 `metadata` 兼容过渡，不直接做破坏性重命名
-- `sop` 当前若还在文件系统 repository，先保留 repository 抽象；后续进数据库时只替换 repository 实现，不改上层 service 合同
-
-测试与验收：
-
-- 覆盖日志写入和日志查询
-- 覆盖关键配置修改后的生效路径
-- 覆盖 metrics 与 trace 字段完整性
-- 覆盖运行控制开关对真实链路的生效路径
-- 覆盖请求快照保存与原样重放、对比重放
-- 覆盖企业微信消息接收、问答调用、消息回传
-- 人工验证：
-  一次问答、一次文档操作、一次 SOP 生成都能在日志中查到
-
-建议按 issue 拆分：
-
-1. 日志模型与事件点
-
-- 定义三类日志结构：
-  问答日志、文档操作日志、SOP 生成日志
-- 把关键事件点埋到现有服务层
-- 先保证能写，再考虑更复杂统计
-
-2. 日志查询接口
-
-- 新增日志查询接口
-- 支持日期、用户、操作类型筛选
-- 支持分页
-
-3. 日志查询页
-
-- 前端增加日志查询页
-- 支持筛选和列表展示
-- 支持查看单条日志详情
-
-4. 指标与 trace 收口
-
-- 新增指标采集与统一导出
-- 新增 query/rewrite/retrieval/rerank/llm/answer 全链路 trace
-- 至少能按 `request_id / trace_id` 关联日志、trace、下载请求
-
-5. 系统配置接口
-
-- 新增模型参数配置
-- 新增检索参数配置
-- 新增 SOP 模板配置
-- 新增企业微信配置
-- 新增轻记忆配置、Query Rewrite 配置、tokenizer 上下文预算配置
-- 新增 LLM provider 路由配置：
-  `vLLM / external_llm_api`
-
-6. 运行控制面
-
-- 增加 debug、top_k、rerank、模型路由、降级、限流、重试、worker 并发的控制入口
-- 明确哪些参数可在线生效，哪些参数需要重启或部署层调整
-- 不把 Docker 副本数调整伪装成普通业务配置
-
-7. 系统配置页
-
-- 前端增加配置页
-- 按模块分组展示配置
-- 修改后给出保存结果和生效提示
-
-8. 请求快照与重放
-
-- 保存请求输入、上下文、命中证据、模型与参数版本
-- 支持原样重放和对比重放
-- 让“刚刚有 bug，现在没了”至少能通过快照与版本信息复现
-
-9. 企业微信接入
-
-- 新增企业微信消息接收接口
-- 新增内部问答请求转换逻辑
-- 新增回复接口或回复封装
-- 明确只复用已有问答链路
-
-10. 企业微信通讯录同步
-
-- 新增企业微信部门同步接口或同步任务
-- 新增企业微信人员同步接口或同步任务
-- 支持新增、更新、停用三类变更
-- 系统内保留映射表，不把企业微信字段直接硬写成业务主键
-- 未开通讯录权限时，明确给出“不可自动同步”的错误语义，并回退到手工导入流程
-
-11. 回归测试
-
-- 覆盖日志写入、日志查询
-- 覆盖配置读写与配置生效
-- 覆盖 metrics / trace / snapshot / replay 基本链路
-- 覆盖外部 LLM API provider 的接线与未启用场景
-- 覆盖轻记忆、Query Rewrite、tokenizer 预算在高并发下的裁剪与降级路径
-- 覆盖企业微信部门/人员同步、停用同步、权限未开场景
-- 覆盖并发限流、超时、降级、忙时提示
-- 覆盖企业微信消息接收、问答调用、消息回传
-
-建议执行顺序：
-
-1. 先做 `日志模型与事件点`
-2. 再做 `日志查询接口`
-3. 再做 `指标与 trace 收口`
-4. 再做 `系统配置接口`
-5. 再做 `运行控制面`
-6. 然后做 `日志查询页` 和 `系统配置页`
-7. 再做 `请求快照与重放`
-8. 再做 `企业微信接入`
-9. 再做 `企业微信通讯录同步`
-10. 最后做 `回归测试`
+1. 先把轻记忆 / 多轮上下文补进主链路
+2. 再做 Query Rewrite 与 tokenizer-aware 上下文预算
+3. 然后做企业微信消息接入与通讯录同步
+4. 最后把日志、配置、会话和外部身份映射逐步迁到数据库真源
 
 ---
 
@@ -1771,6 +1375,7 @@ trace 建议最少覆盖这条链路：
 也就是说：
 
 - `OCR + 轻量 hybrid retrieval + 模型级 rerank` 属于 `v0.4.5`
+- 当前代码里 `轻量 hybrid retrieval` 已先行落地，后续以验证、治理和配置收口为主
 - `双档质量` 属于 `v0.5.0`
 - `轻记忆` 属于 `v0.5.0`
 - `Query Rewrite / tokenizer 预算 / 外部 API provider / 并发与降级收口` 属于 `v0.6.0`
@@ -2096,8 +1701,9 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 - 一份更新后的 [RAG架构.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RAG架构.md)
 - 一份更新后的 [V1_PLAN.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/V1_PLAN.md)
+- 一份同步当前代码现实的 [V1_RELEASE.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/V1_RELEASE.md)
 - 一份运行侧最小验证清单 [OPS_SMOKE_TEST.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/OPS_SMOKE_TEST.md)
-- 一个 `v0.1.2` 最小验收清单
+- 一份 `DOCX` 嵌图 OCR 的最小回归清单
 - 一个后续版本的接口和数据模型待办表
 
 一句话总结：
@@ -2112,11 +1718,11 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 原因：
 
-- 当前代码已经有 `RerankerClient` 抽象，但 provider 还只有 `heuristic`
+- 当前代码已经有 `RerankerClient` 抽象，并已支持 `heuristic + openai-compatible provider`
 - 当前代码已经有 `QueryProfileService`
   其中已冻结 `top_k / candidate_top_k / rerank_top_n / timeout / fallback_mode`
 - `ChatService` 和 `SopGenerationService` 已经统一走同一套 rerank 调用与降级逻辑
-- `rerank` 不进入异步入库链路，不依赖 OCR 完成后才能先做 provider 接入
+- `rerank` 不进入异步入库链路，不依赖 OCR 完成后才能先做收益验证和默认路由收口
 
 代码现实锚点：
 
@@ -2129,15 +1735,21 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 目标：
 
-- 在不改动异步入库主链路的前提下，把当前 `heuristic rerank` 扩展为“模型级 provider + 启发式兜底”的正式在线重排能力
+- 在不改动异步入库主链路的前提下，把当前“模型级 provider + 启发式兜底”的代码路径收口成可默认启用、可观测、可回滚的正式在线重排能力
 
-必须完成：
+当前代码已完成：
 
-- 在现有 `RerankerClient` 上新增可配置 provider
+- 在现有 `RerankerClient` 上接入可配置 provider
 - 保留 `heuristic` 作为统一降级路径
 - 统一 `fast / accurate` 两档的 `candidate_top_k / rerank_top_n / timeout_budget`
 - 问答与 SOP 生成复用同一套 rerank 输出
 - trace / snapshot / event log 中保留 `rerank_strategy` 和降级信息
+
+剩余缺口：
+
+- provider 收益验证和默认路由收口
+- 系统配置页和运行态对 rerank provider 的可见性进一步增强
+- `openai-compatible` provider 在真实生产服务上的 timeout / 429 / 回退回归
 
 明确不做：
 
@@ -2165,29 +1777,29 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 建议按 issue 拆分：
 
-1. Reranker provider 接入
-
-- 扩展 `RerankerClient`
-- 接入独立 reranker 服务或 openai-compatible rerank 接口
-- 统一异常语义和超时处理
-
-2. 参数与配置收口
+1. 参数与配置收口
 
 - 收口 `candidate_top_k / rerank_top_n / timeout_budget`
 - 校验 `fast / accurate` 两档参数边界
 - 保持 `accurate -> fast` 的降级路径不变
 
-3. 问答链路验证
+2. 问答链路验证
 
 - 验证 `ChatService` 走 provider 成功路径
 - 验证 provider 不可用后走 `heuristic`
 - 验证 trace / snapshot / event log 字段一致
 
-4. SOP 链路验证
+3. SOP 链路验证
 
 - 验证 `SopGenerationService` 复用同一套 rerank 输出
 - 验证和问答链路的降级语义一致
 - 验证 `accurate` 档默认行为符合预期
+
+4. 默认路由与回滚策略
+
+- 明确什么时候从 `heuristic` 切到 provider 默认
+- 明确收益不达标时如何回滚到 `heuristic`
+- 保证配置页、日志、运行态同步反映当前默认路径
 
 5. 回归测试
 
@@ -2199,25 +1811,25 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 建议执行顺序：
 
-1. 先做 `Reranker provider 接入`
-2. 再做 `参数与配置收口`
-3. 然后做 `问答链路验证`
-4. 再做 `SOP 链路验证`
+1. 先做 `参数与配置收口`
+2. 再做 `问答链路验证`
+3. 然后做 `SOP 链路验证`
+4. 再做 `默认路由与回滚策略`
 5. 最后做 `回归测试`
 
 ---
 
-## 15. 并行切片：Hybrid Retrieval
+## 15. 并行切片：Hybrid Retrieval（主干已完成，后续以验证与治理为主）
 
-如果试点已经暴露出“能大致召回语义相近内容，但专有名词、料号、工序名、设备名不稳”的问题，当前代码现实适合把 `hybrid retrieval` 单独拆成一个并行切片推进。
+当前代码现实里，`hybrid retrieval` 已经不是待启动切片，而是已落地的能力，需要决定是否继续扩，以及后续收口放在哪一层。
 
 原因：
 
-- 当前在线主检索是纯向量召回：
-  `query -> embedding -> Qdrant vector search`
-- 当前代码还没有正式的关键词检索 / BM25 / RRF 融合能力
-- 当前 `heuristic rerank` 里的 token overlap 只能重排已有候选，不能替代第一阶段关键词召回
-- `document_id` 过滤、问答、SOP 生成已经复用统一检索入口，适合在入口层统一扩展，不必分别侵入多个业务服务
+- 当前在线主检索已经是：
+  `query -> embedding -> Qdrant vector recall + lexical recall -> weighted RRF fusion`
+- 当前代码已经具备轻量 lexical retriever、BM25-like 关键词召回、`vector_only` fallback
+- 当前 `heuristic rerank` 里的 token overlap 仍只能重排已有候选，不能替代第一阶段关键词召回
+- `document_id` 过滤、问答、SOP 生成已经复用统一检索入口，继续做验证与治理也适合在入口层统一收口，不必分别侵入多个业务服务
 
 代码现实锚点：
 
@@ -2231,17 +1843,19 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 目标：
 
-- 在不替换当前 Qdrant 主链路的前提下，把在线检索从“纯向量召回”扩展为“向量召回 + 关键词/BM25 召回 + 融合排序”的可降级能力
+- 在不替换当前 Qdrant 主链路的前提下，把已落地的 hybrid retrieval 从“功能可用”推进到“可观测、可配置、可验证”的可降级能力
 
 必须完成：
 
-- 新增统一的在线检索策略：
+- 保持统一的在线检索策略：
   `vector_only | hybrid`
-- 新增 lexical retriever 抽象，优先落地轻量 BM25 或同级别关键词召回
-- 统一收口向量候选、关键词候选和融合后的结果，不让 chat / SOP 各自做一套
+- 保持 lexical retriever、hybrid fusion、`vector_only` fallback 都只收口在统一检索入口层
 - `document_id` 过滤在两条召回分支上都语义一致
-- 关键词召回分支不可用时自动退回 `vector_only`
-- trace / snapshot / debug 信息里保留 `retrieval_strategy`
+- 规则式 dynamic weighting 默认关闭，不破坏现有 fixed fallback 行为
+- 日志里能看到：
+  `query_type / vector_weight / lexical_weight`
+- trace / snapshot / debug 信息后续补齐：
+  `retrieval_strategy / vector_score / lexical_score / fused_score / query_type / vector_weight / lexical_weight`
 
 明确不做：
 
@@ -2250,6 +1864,8 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 - 不为了 V1 单独引入 `Elasticsearch / OpenSearch` 集群
 - 不把关键词索引当系统主数据真源
 - 不在前端暴露一堆实验性检索策略按钮
+- 不急着把规则分类换成模型分类
+- 不在这一阶段继续扩更复杂检索集群形态
 
 低耦合要求：
 
@@ -2258,6 +1874,7 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 - 关键词索引优先复用当前 chunk 文本和元数据构建轻量副本
 - 问答和 SOP 生成只消费统一检索结果，不自行再补一层关键词匹配
 - 配置入口统一复用当前 `Settings + SystemConfigService + QueryProfileService`
+- dynamic weighting 只放在 fusion 层，不污染 lexical retriever，也不把 branch 融合职责丢给 rerank
 
 验收标准：
 
@@ -2265,26 +1882,25 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 - `document_id` 限定下，hybrid 不会串文档
 - 关键词分支不可用时，系统自动退回 vector-only，不影响主流程可用性
 - 问答与 SOP 生成拿到同一批 fusion 后证据
+- dynamic weighting 关闭时不破坏当前排序基线
+- dynamic weighting 开启后，`exact / semantic / mixed` 能切换分支权重，且日志可解释
 
-建议按 issue 拆分：
+建议按剩余 issue 拆分：
 
-1. Lexical retriever 抽象
+1. Trace / snapshot / debug 字段补齐
 
-- 增加统一接口
-- 选择轻量 BM25 或等价实现
-- 明确索引构建、更新和异常语义
+- 把 `query_type / vector_weight / lexical_weight` 收进 trace/snapshot/debug
+- 保持和现有 `retrieval_strategy / vector_score / lexical_score / fused_score` 口径一致
 
-2. Hybrid fusion 接入
+2. Dynamic weighting 配置收口
 
-- 在 `RetrievalService` 合并向量候选与关键词候选
-- 明确融合策略，优先用稳定、可解释的方案如 `RRF`
-- 保留 `vector_only` fallback
+- 把当前 `Settings` 上的动态权重参数按需要接入系统配置真源
+- 明确默认关闭、灰度开启、回退 fixed fallback 的口径
 
-3. 配置与档位收口
+3. 真实 query 样本校准
 
-- 增加 `retrieval_strategy`
-- 收口 `candidate_top_k / lexical_top_k / rerank_top_n / timeout_budget`
-- 保持 `accurate -> fast` 的降级路径不变
+- 用真实业务 query 样本校准 `exact / semantic / mixed` 规则阈值和权重
+- 重点看专有名词类 query 的收益，以及 mixed query 的误判率
 
 4. 问答与 SOP 链路验证
 
@@ -2294,15 +1910,55 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 5. 回归测试
 
-- 覆盖 vector-only
-- 覆盖 hybrid
+- 覆盖 fixed fallback
+- 覆盖 dynamic weighting 的 `exact / semantic / mixed`
 - 覆盖 lexical 分支失败后退回 vector-only
 - 覆盖专有名词类查询的改进样例
 
 建议执行顺序：
 
-1. 先做 `Lexical retriever 抽象`
-2. 再做 `Hybrid fusion 接入`
+1. 先做 `真实 query 样本校准`
+2. 再做 `Trace / snapshot / debug 字段补齐`
 3. 然后做 `配置与档位收口`
 4. 再做 `问答与 SOP 链路验证`
 5. 最后做 `回归测试`
+
+验证后如何扩展：
+
+1. 如果验证结果明确为“专有名词类 query 收益稳定，误判率可接受”
+
+- 先把 dynamic weighting 从 `Settings` 收口到系统配置真源
+- 保持默认关闭，只允许灰度开启
+- 先按租户 / 部门 /环境做小范围放量，不直接全量打开
+
+2. 如果验证结果是“exact query 收益明显，但 mixed query 误判偏多”
+
+- 优先继续调规则阈值、词项特征和权重
+- 仍保持规则分类，不急着上模型分类
+- 先把 query 样本和 trace 证据收够，再决定是否进入下一阶段
+
+3. 如果验证结果是“规则分类已经到瓶颈，但 hybrid 主干本身有效”
+
+- 放到 `v0.6.0` 之后再评估更高成本扩展：
+  `模型分类`、`query rewrite`、更细粒度 query intent、字段级 lexical boosting
+- 这类扩展仍应复用当前 fusion 层插槽，不推翻 lexical retriever / RetrievalService 主结构
+
+4. 如果验证结果是“dynamic weighting 收益不稳定，甚至破坏基线”
+
+- 直接回退 fixed fallback
+- 保留 hybrid retrieval 主干，不把失败结论扩大成“关键词召回无价值”
+- 优先保留 lexical retriever + RRF 主干，只关闭动态权重
+
+5. 在 `v0.6.0` 前不建议提前做的扩展
+
+- 不把规则分类直接替换成模型分类
+- 不做多阶段 query rewrite 编排
+- 不做多索引、多 chunk 策略并行维护
+- 不引入更复杂检索集群形态
+
+也就是说，hybrid retrieval 这条线在当前阶段的正确节奏是：
+
+- 先验证
+- 再收口可观测性和配置
+- 再决定是否灰度放量
+- 最后才评估更高成本扩展

@@ -3,12 +3,14 @@
     "fast": {
       "top_k_default": 5,
       "candidate_multiplier": 2,
+      "lexical_top_k": 10,
       "rerank_top_n": 3,
       "timeout_budget_seconds": 12.0
     },
     "accurate": {
       "top_k_default": 8,
       "candidate_multiplier": 4,
+      "lexical_top_k": 32,
       "rerank_top_n": 5,
       "timeout_budget_seconds": 24.0
     }
@@ -17,6 +19,11 @@
     "fast_model": "Qwen2.5-14B-Instruct",
     "accurate_model": "Qwen2.5-14B-Instruct",
     "sop_generation_model": "Qwen2.5-14B-Instruct"
+  },
+  "reranker_routing": {
+    "provider": "openai_compatible",
+    "model": "BAAI/bge-reranker-v2-m3",
+    "timeout_seconds": 12.0
   },
   "degrade_controls": {
     "rerank_fallback_enabled": true,
@@ -36,6 +43,6 @@
     "acquire_timeout_ms": 800,
     "busy_retry_after_seconds": 5
   },
-  "updated_at": "2026-03-27T07:50:45.831711Z",
+  "updated_at": "2026-03-28T06:03:03.093418Z",
   "updated_by": "user_sys_admin_demo"
 }

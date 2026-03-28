@@ -11,6 +11,7 @@ class QueryProfile(BaseModel):
     mode: QueryMode
     top_k: int = Field(ge=1, le=20)
     candidate_top_k: int = Field(ge=1, le=200)
+    lexical_top_k: int = Field(default=20, ge=1, le=200)
     rerank_top_n: int = Field(ge=1, le=20)
     timeout_budget_seconds: float = Field(gt=0)
     fallback_mode: QueryMode | None = None

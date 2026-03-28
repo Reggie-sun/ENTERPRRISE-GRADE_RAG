@@ -34,6 +34,23 @@ function renderNullable(value: string | number | null | undefined): string {
   return String(value);
 }
 
+function formatAgeSeconds(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return '-';
+  }
+  if (value < 60) {
+    return `${value}s`;
+  }
+  const minutes = Math.floor(value / 60);
+  const seconds = value % 60;
+  if (minutes < 60) {
+    return `${minutes}m ${seconds}s`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const remainMinutes = minutes % 60;
+  return `${hours}h ${remainMinutes}m`;
+}
+
 function renderEventSubtitle(record: EventLogRecord): string {
   const parts = [
     record.actor.username || '-',
@@ -133,6 +150,17 @@ export function OpsPage() {
     : 'error';
   const overallTone = status === 'error' ? 'error' : status === 'loading' ? 'warn' : 'ok';
   const categoryCards = useMemo(() => summary?.categories || [], [summary]);
+  const stuckIngestJobs = summary?.stuck_ingest_jobs || [];
+  const rerankerTone = summary?.health.reranker.ready
+    ? 'ok'
+    : summary?.health.reranker.effective_strategy === 'heuristic' && summary?.health.reranker.fallback_enabled
+      ? 'warn'
+      : 'error';
+  const rerankerLabel = summary?.health.reranker.ready
+    ? 'provider ready'
+    : summary?.health.reranker.effective_strategy === 'heuristic' && summary?.health.reranker.fallback_enabled
+      ? 'fallback active'
+      : 'route unavailable';
 
   const triggerReplay = async (snapshotId: string, replayMode: RequestSnapshotReplayMode) => {
     setReplayStatusBySnapshotId((current) => ({ ...current, [snapshotId]: 'loading' }));
@@ -215,7 +243,7 @@ export function OpsPage() {
             </div>
           )}
 
-          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
             <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
               <div className="flex items-center justify-between gap-3">
                 <strong className="text-ink">总体健康</strong>
@@ -278,11 +306,85 @@ export function OpsPage() {
                 p50 {renderNullable(summary?.recent_window.duration_p50_ms)} / p99 {renderNullable(summary?.recent_window.duration_p99_ms)}
               </p>
             </div>
+
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">卡住入库</strong>
+                <AlertTriangle className="h-4 w-4 text-accent-deep" />
+              </div>
+              <div className="mt-3">
+                <StatusPill tone={stuckIngestJobs.length > 0 ? 'error' : 'ok'}>
+                  {stuckIngestJobs.length > 0 ? '需排查' : '未发现'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-3 text-sm text-ink-soft">
+                {stuckIngestJobs.length} 条 latest_job 疑似悬空或卡死
+              </p>
+            </div>
           </div>
 
           {summary?.queue.error && (
             <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-3 text-sm text-ink-soft">
               队列探测说明：{summary.queue.error}
+            </div>
+          )}
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-12 gap-5">
+        <Card className="col-span-12">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">卡住入库任务</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                这里专门看文档 `latest_job` 是否还停留在进行中。如果已经有解析/切块产物却仍显示 queued / processing，就优先按孤儿任务排查。
+              </p>
+            </div>
+            <StatusPill tone={stuckIngestJobs.length > 0 ? 'error' : 'ok'}>
+              {stuckIngestJobs.length > 0 ? `${stuckIngestJobs.length} 条待处理` : '当前无异常'}
+            </StatusPill>
+          </div>
+
+          {!stuckIngestJobs.length && (
+            <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-5 text-sm text-ink-soft">
+              当前没有发现悬空 queued job 或超过 stale 阈值仍未刷新的 latest_job。
+            </div>
+          )}
+
+          {!!stuckIngestJobs.length && (
+            <div className="mt-4 grid gap-3">
+              {stuckIngestJobs.map((item) => {
+                const issueTone = item.reason === 'artifacts_ready_but_inflight' ? 'error' : 'warn';
+                const issueLabel = item.reason === 'artifacts_ready_but_inflight' ? '已有产物仍在进行中' : '超过 stale 阈值未刷新';
+                const issueHint = item.reason === 'artifacts_ready_but_inflight'
+                  ? '已能看到解析或切块产物，说明这条 latest_job 很可能只是元数据没被修正。'
+                  : '这条任务长时间没有刷新 updated_at，优先检查 broker、worker 和任务投递链路。';
+                return (
+                  <div key={item.job_id} className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-accent-deep" />
+                          <strong className="truncate text-ink">{item.file_name}</strong>
+                          <StatusPill tone={issueTone}>{issueLabel}</StatusPill>
+                        </div>
+                        <p className="m-0 mt-2 text-sm text-ink-soft">
+                          doc_id {item.doc_id} / job_id {item.job_id}
+                        </p>
+                        <p className="m-0 mt-1 text-sm text-ink-soft">
+                          {item.job_status} / {item.stage} / {item.progress}% / doc {item.document_status}
+                        </p>
+                        <p className="m-0 mt-1 text-sm leading-relaxed text-ink-soft">{issueHint}</p>
+                      </div>
+                      <div className="text-right text-sm text-ink-soft">
+                        <p className="m-0">最后刷新：{formatLocalTime(item.updated_at)}</p>
+                        <p className="m-0 mt-1">滞留时长：{formatAgeSeconds(item.stale_seconds)}</p>
+                        <p className="m-0 mt-1">产物信号：{item.has_materialized_artifacts ? 'parsed/chunk 已存在' : '未发现现成产物'}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </Card>
@@ -377,6 +479,24 @@ export function OpsPage() {
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
               <div className="flex items-center justify-between gap-3">
+                <strong className="block text-ink">Reranker</strong>
+                <StatusPill tone={rerankerTone}>
+                  {rerankerLabel}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-2">configured: {summary?.health.reranker.provider || '-'} / {summary?.health.reranker.model || '-'}</p>
+              <p className="m-0 mt-1">effective: {summary?.health.reranker.effective_provider || '-'} / {summary?.health.reranker.effective_strategy || '-'}</p>
+              <p className="m-0 mt-1">effective model: {summary?.health.reranker.effective_model || '-'}</p>
+              <p className="m-0 mt-1 break-all">{summary?.health.reranker.base_url || '-'}</p>
+              <p className="m-0 mt-1">timeout: {summary?.health.reranker.timeout_seconds ?? '-'} s</p>
+              <p className="m-0 mt-1">cooldown: {summary?.health.reranker.failure_cooldown_seconds ?? '-'} s</p>
+              <p className="m-0 mt-1">fallback: {summary?.health.reranker.fallback_enabled ? 'on' : 'off'}</p>
+              <p className="m-0 mt-1">lock: {summary?.health.reranker.lock_active ? 'active' : 'off'}{summary?.health.reranker.lock_source ? ` / ${summary.health.reranker.lock_source}` : ''}</p>
+              <p className="m-0 mt-1">cooldown remaining: {formatAgeSeconds(summary?.health.reranker.cooldown_remaining_seconds)}</p>
+              <p className="m-0 mt-1 leading-relaxed">{summary?.health.reranker.detail || '-'}</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
                 <strong className="block text-ink">OCR</strong>
                 <StatusPill tone={summary?.health.ocr.ready ? 'ok' : summary?.health.ocr.enabled ? 'error' : 'default'}>
                   {summary?.health.ocr.ready ? 'ready' : summary?.health.ocr.enabled ? 'not ready' : 'disabled'}
@@ -393,6 +513,8 @@ export function OpsPage() {
               <p className="m-0 mt-2">fast: {summary?.config.model_routing.fast_model || '-'}</p>
               <p className="m-0 mt-1">accurate: {summary?.config.model_routing.accurate_model || '-'}</p>
               <p className="m-0 mt-1">sop: {summary?.config.model_routing.sop_generation_model || '-'}</p>
+              <p className="m-0 mt-1">rerank provider: {summary?.config.reranker_routing.provider || '-'}</p>
+              <p className="m-0 mt-1">rerank model: {summary?.config.reranker_routing.model || '-'}</p>
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
               <strong className="block text-ink">降级与重试</strong>

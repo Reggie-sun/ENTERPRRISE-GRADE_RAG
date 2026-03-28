@@ -1,0 +1,36 @@
+{
+  "document_id": "doc_20260328035732_8204f76f",
+  "file_name": "ocr_mcp_ui_validation.png",
+  "source_path": "/app/data/uploads/doc_20260328035732_8204f76f__ocr_mcp_ui_validation.png",
+  "parser_name": "image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 4,
+  "page_count": 1,
+  "normalized_text": "OCRMCPUI\n20260328-115724\n00aC1C2C3\nSTEP5CHECKPRESSURE86420",
+  "segments": [
+    {
+      "text": "OCRMCPUI",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.9900965094566345
+    },
+    {
+      "text": "20260328-115724",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9994755983352661
+    },
+    {
+      "text": "00aC1C2C3",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.7715513110160828
+    },
+    {
+      "text": "STEP5CHECKPRESSURE86420",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9995161890983582
+    }
+  ]
+}

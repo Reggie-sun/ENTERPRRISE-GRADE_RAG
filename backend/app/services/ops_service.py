@@ -18,6 +18,7 @@ from ..schemas.ops import (
     OpsRuntimeGateSummary,
     OpsSummaryResponse,
 )
+from .document_service import DocumentService
 from .event_log_service import EventLogService
 from .health_service import HealthService
 from .request_snapshot_service import RequestSnapshotService
@@ -37,6 +38,7 @@ class OpsService:
         request_snapshot_service: RequestSnapshotService | None = None,
         system_config_service: SystemConfigService | None = None,
         runtime_gate_service: RuntimeGateService | None = None,
+        document_service: DocumentService | None = None,
         queue_probe: Callable[[], OpsQueueSummary] | None = None,
         recent_window_size: int = 200,
     ) -> None:
@@ -46,6 +48,7 @@ class OpsService:
         self.request_trace_service = request_trace_service or RequestTraceService(self.settings)
         self.request_snapshot_service = request_snapshot_service or RequestSnapshotService(self.settings)
         self.system_config_service = system_config_service or SystemConfigService(self.settings)
+        self.document_service = document_service or DocumentService(self.settings, event_log_service=self.event_log_service)
         self.runtime_gate_service = runtime_gate_service or (
             RuntimeGateService(self.settings, system_config_service=self.system_config_service)
             if settings is not None
@@ -66,6 +69,7 @@ class OpsService:
             queue=self.queue_probe(),
             runtime_gate=self._build_runtime_gate_summary(),
             recent_window=self._build_recent_window(records),
+            stuck_ingest_jobs=self.document_service.list_stuck_ingest_jobs(auth_context=auth_context, limit=5),
             categories=self._build_category_summaries(records),
             recent_failures=[record for record in records if record.outcome == "failed"][:5],
             recent_degraded=[record for record in records if record.downgraded_from][:5],

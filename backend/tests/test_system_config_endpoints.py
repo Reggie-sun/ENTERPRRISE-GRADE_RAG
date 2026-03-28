@@ -55,8 +55,14 @@ def test_get_system_config_endpoint_returns_defaults_for_sys_admin(tmp_path: Pat
     assert response.status_code == 200
     payload = response.json()
     assert payload["query_profiles"]["fast"]["top_k_default"] == 5
+    assert payload["query_profiles"]["fast"]["lexical_top_k"] == 10
     assert payload["query_profiles"]["accurate"]["top_k_default"] == 8
+    assert payload["query_profiles"]["accurate"]["lexical_top_k"] == 32
     assert payload["model_routing"]["fast_model"] == "qwen2.5:7b"
+    assert payload["reranker_routing"]["provider"] == "heuristic"
+    assert payload["reranker_routing"]["model"] == "BAAI/bge-reranker-v2-m3"
+    assert payload["reranker_routing"]["timeout_seconds"] == 12.0
+    assert payload["reranker_routing"]["failure_cooldown_seconds"] == 15.0
     assert payload["degrade_controls"]["rerank_fallback_enabled"] is True
     assert payload["retry_controls"]["llm_retry_max_attempts"] == 2
     assert payload["concurrency_controls"]["fast_max_inflight"] == 24
@@ -90,12 +96,14 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
                     "fast": {
                         "top_k_default": 6,
                         "candidate_multiplier": 3,
+                        "lexical_top_k": 12,
                         "rerank_top_n": 4,
                         "timeout_budget_seconds": 10.0,
                     },
                     "accurate": {
                         "top_k_default": 10,
                         "candidate_multiplier": 5,
+                        "lexical_top_k": 24,
                         "rerank_top_n": 6,
                         "timeout_budget_seconds": 20.0,
                     },
@@ -104,6 +112,12 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
                     "fast_model": "Qwen/Fast-7B",
                     "accurate_model": "Qwen/Accurate-14B",
                     "sop_generation_model": "Qwen/SOP-14B",
+                },
+                "reranker_routing": {
+                    "provider": "openai_compatible",
+                    "model": "Qwen/Reranker-Prod",
+                    "timeout_seconds": 9.5,
+                    "failure_cooldown_seconds": 21.0,
                 },
                 "degrade_controls": {
                     "rerank_fallback_enabled": False,
@@ -133,8 +147,12 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
     assert response.json()["updated_by"] == "user_sys_admin"
     assert follow_up.status_code == 200
     assert follow_up.json()["query_profiles"]["fast"]["top_k_default"] == 6
+    assert follow_up.json()["query_profiles"]["fast"]["lexical_top_k"] == 12
     assert follow_up.json()["query_profiles"]["accurate"]["rerank_top_n"] == 6
     assert follow_up.json()["model_routing"]["accurate_model"] == "Qwen/Accurate-14B"
+    assert follow_up.json()["reranker_routing"]["provider"] == "openai_compatible"
+    assert follow_up.json()["reranker_routing"]["model"] == "Qwen/Reranker-Prod"
+    assert follow_up.json()["reranker_routing"]["failure_cooldown_seconds"] == 21.0
     assert follow_up.json()["degrade_controls"]["retrieval_fallback_enabled"] is False
     assert follow_up.json()["retry_controls"]["llm_retry_max_attempts"] == 3
     assert follow_up.json()["concurrency_controls"]["fast_max_inflight"] == 30
@@ -155,12 +173,14 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
                     "fast": {
                         "top_k_default": 5,
                         "candidate_multiplier": 2,
+                        "lexical_top_k": 5,
                         "rerank_top_n": 6,
                         "timeout_budget_seconds": 12.0,
                     },
                     "accurate": {
                         "top_k_default": 8,
                         "candidate_multiplier": 4,
+                        "lexical_top_k": 8,
                         "rerank_top_n": 5,
                         "timeout_budget_seconds": 24.0,
                     },
@@ -169,6 +189,12 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
                     "fast_model": "Qwen/Fast-7B",
                     "accurate_model": "Qwen/Accurate-14B",
                     "sop_generation_model": "Qwen/SOP-14B",
+                },
+                "reranker_routing": {
+                    "provider": "heuristic",
+                    "model": "BAAI/bge-reranker-v2-m3",
+                    "timeout_seconds": 12.0,
+                    "failure_cooldown_seconds": 15.0,
                 },
                 "degrade_controls": {
                     "rerank_fallback_enabled": True,

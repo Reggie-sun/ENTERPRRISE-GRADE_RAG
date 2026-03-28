@@ -14,6 +14,7 @@ from ..schemas.system_config import (
     ModelRoutingConfig,
     QueryModeConfig,
     QueryProfilesConfig,
+    RerankerRoutingConfig,
     RetryControlsConfig,
     SystemConfigResponse,
     SystemConfigUpdateRequest,
@@ -46,11 +47,13 @@ class SystemConfigService:
         self._ensure_sys_admin(auth_context)
         self._validate_query_profiles(payload.query_profiles)
         self._validate_model_routing(payload.model_routing)
+        self._validate_reranker_routing(payload.reranker_routing)
         self._validate_retry_controls(payload.retry_controls)
         self._validate_concurrency_controls(payload.concurrency_controls)
         record = SystemConfigResponse(
             query_profiles=payload.query_profiles,
             model_routing=payload.model_routing,
+            reranker_routing=payload.reranker_routing,
             degrade_controls=payload.degrade_controls,
             retry_controls=payload.retry_controls,
             concurrency_controls=payload.concurrency_controls,
@@ -68,6 +71,9 @@ class SystemConfigService:
 
     def get_model_routing(self) -> ModelRoutingConfig:
         return self._load_config().model_routing
+
+    def get_reranker_routing(self) -> RerankerRoutingConfig:
+        return self._load_config().reranker_routing
 
     def get_degrade_controls(self) -> DegradeControlsConfig:
         return self._load_config().degrade_controls
@@ -100,12 +106,14 @@ class SystemConfigService:
                 fast=QueryModeConfig(
                     top_k_default=self.settings.query_fast_top_k_default,
                     candidate_multiplier=self.settings.query_fast_candidate_multiplier,
+                    lexical_top_k=self.settings.query_fast_lexical_top_k_default,
                     rerank_top_n=self.settings.query_fast_rerank_top_n,
                     timeout_budget_seconds=self.settings.query_fast_timeout_budget_seconds,
                 ),
                 accurate=QueryModeConfig(
                     top_k_default=self.settings.query_accurate_top_k_default,
                     candidate_multiplier=self.settings.query_accurate_candidate_multiplier,
+                    lexical_top_k=self.settings.query_accurate_lexical_top_k_default,
                     rerank_top_n=self.settings.query_accurate_rerank_top_n,
                     timeout_budget_seconds=self.settings.query_accurate_timeout_budget_seconds,
                 ),
@@ -114,6 +122,12 @@ class SystemConfigService:
                 fast_model=self._default_llm_model_name(),
                 accurate_model=self._default_llm_model_name(),
                 sop_generation_model=self._default_llm_model_name(),
+            ),
+            reranker_routing=RerankerRoutingConfig(
+                provider=self._default_reranker_provider(),
+                model=self._default_reranker_model_name(),
+                timeout_seconds=self.settings.reranker_timeout_seconds,
+                failure_cooldown_seconds=self.settings.reranker_failure_cooldown_seconds,
             ),
             degrade_controls=DegradeControlsConfig(),
             retry_controls=RetryControlsConfig(),
@@ -138,6 +152,11 @@ class SystemConfigService:
     @staticmethod
     def _validate_query_profiles(query_profiles: QueryProfilesConfig) -> None:
         for mode, config in (("fast", query_profiles.fast), ("accurate", query_profiles.accurate)):
+            if config.lexical_top_k < config.top_k_default:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=f"{mode}.lexical_top_k cannot be smaller than {mode}.top_k_default.",
+                )
             if config.rerank_top_n > config.top_k_default:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -166,6 +185,14 @@ class SystemConfigService:
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail=f"{field_name} cannot be empty.",
                 )
+
+    @staticmethod
+    def _validate_reranker_routing(reranker_routing: RerankerRoutingConfig) -> None:
+        if not reranker_routing.model.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="reranker_routing.model cannot be empty.",
+            )
 
     @staticmethod
     def _validate_retry_controls(retry_controls: RetryControlsConfig) -> None:
@@ -211,6 +238,17 @@ class SystemConfigService:
     def _default_llm_model_name(self) -> str:
         primary_model = (self.settings.llm_model or self.settings.ollama_model).strip()
         return primary_model or "default-llm-model"
+
+    def _default_reranker_provider(self) -> str:
+        provider = self.settings.reranker_provider.lower().strip()
+        if provider in {"heuristic", "mock"}:
+            return "heuristic"
+        if provider in {"openai", "openai-compatible", "openai_compatible"}:
+            return "openai_compatible"
+        return "heuristic"
+
+    def _default_reranker_model_name(self) -> str:
+        return self.settings.reranker_model.strip() or "default-reranker-model"
 
 
 @lru_cache

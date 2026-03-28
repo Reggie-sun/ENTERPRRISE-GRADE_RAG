@@ -129,6 +129,22 @@ def _build_auth_context(identity_service: IdentityService, *, username: str, pas
     return auth_service.build_auth_context(token)
 
 
+def _parse_sse_events(events: list[str]) -> list[tuple[str, dict[str, object]]]:
+    parsed: list[tuple[str, dict[str, object]]] = []
+    for frame in events:
+        lines = [line.strip() for line in frame.splitlines() if line.strip()]
+        event_name = ""
+        payload_lines: list[str] = []
+        for line in lines:
+            if line.startswith("event:"):
+                event_name = line.split(":", 1)[1].strip()
+            elif line.startswith("data:"):
+                payload_lines.append(line.split(":", 1)[1].strip())
+        if event_name and payload_lines:
+            parsed.append((event_name, json.loads("\n".join(payload_lines))))
+    return parsed
+
+
 class _FakeRetrievalService:
     def __init__(self, results: list[RetrievedChunk]) -> None:
         self.results = results
@@ -166,6 +182,23 @@ class _FakeGenerationClient:
         if self.retryable_error:
             raise LLMGenerationRetryableError("temporary llm issue")
         return self.answer
+
+    def generate_stream(
+        self,
+        *,
+        question: str,
+        contexts: list[str],
+        timeout_seconds: float | None = None,
+        model_name: str | None = None,
+    ):
+        answer = self.generate(
+            question=question,
+            contexts=contexts,
+            timeout_seconds=timeout_seconds,
+            model_name=model_name,
+        )
+        for index in range(0, len(answer), 4):
+            yield answer[index : index + 4]
 
 
 class _FakeRuntimeGateLease:
@@ -380,6 +413,7 @@ def test_sop_generation_service_respects_retrieval_fallback_toggle(tmp_path: Pat
         SystemConfigUpdateRequest(
             query_profiles=current_config.query_profiles,
             model_routing=current_config.model_routing,
+            reranker_routing=current_config.reranker_routing,
             degrade_controls=current_config.degrade_controls.model_copy(
                 update={"retrieval_fallback_enabled": False}
             ),
@@ -465,6 +499,54 @@ def test_sop_generation_service_generates_document_draft_for_selected_doc(tmp_pa
     assert "来源文档：数字化巡检手册.pdf" in generation_client.last_question
 
 
+def test_sop_generation_service_streams_document_draft_sse(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.admin",
+        password="digitalization-admin-pass",
+    )
+    generation_client = _FakeGenerationClient(answer="这是流式生成的 SOP 草稿。")
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService(
+            [
+                RetrievedChunk(
+                    chunk_id="chunk_1",
+                    document_id="doc_digitalization",
+                    document_name="数字化巡检手册",
+                    text="先检查任务调度服务、数据库连接和告警队列。",
+                    score=0.94,
+                    source_path="/tmp/digitalization.txt",
+                ),
+            ]
+        ),
+        document_service=_FakeDocumentService(
+            {"doc_digitalization": "dept_digitalization"},
+            {"doc_digitalization": "数字化巡检手册.pdf"},
+        ),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=generation_client,
+    )
+
+    frames = list(
+        service.stream_generate_from_document_sse(
+            SopGenerateByDocumentRequest(document_id="doc_digitalization", top_k=4),
+            auth_context=auth_context,
+        )
+    )
+    events = _parse_sse_events(frames)
+
+    assert events[0][0] == "meta"
+    assert events[0][1]["request_mode"] == "document"
+    assert events[0][1]["department_id"] == "dept_digitalization"
+    assert any(event_name == "content_delta" for event_name, _ in events)
+    assert events[-1][0] == "done"
+    assert events[-1][1]["content"] == "这是流式生成的 SOP 草稿。"
+    assert events[-1][1]["snapshot_id"]
+
+
 def test_sop_generation_service_uses_configured_sop_model_route(tmp_path: Path) -> None:
     identity_service = _build_identity_service(tmp_path)
     auth_context = _build_auth_context(
@@ -486,6 +568,7 @@ def test_sop_generation_service_uses_configured_sop_model_route(tmp_path: Path) 
             model_routing=current_config.model_routing.model_copy(
                 update={"sop_generation_model": "Qwen/SOP-14B"}
             ),
+            reranker_routing=current_config.reranker_routing,
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
@@ -728,4 +811,4 @@ def test_sop_generation_service_returns_429_when_runtime_gate_is_busy(tmp_path: 
     assert exc_info.value.status_code == 429
     assert exc_info.value.detail == "System is busy. SOP generation capacity is saturated. Retry later."
     assert exc_info.value.headers == {"Retry-After": "5"}
-    assert fake_gate.calls == [("sop_generation", 800)]
+    assert fake_gate.calls == [("sop_generation", 800, "user_digitalization_employee")]

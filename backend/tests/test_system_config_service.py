@@ -13,6 +13,7 @@ from backend.app.schemas.system_config import (
     ModelRoutingConfig,
     QueryModeConfig,
     QueryProfilesConfig,
+    RerankerRoutingConfig,
     RetryControlsConfig,
     SystemConfigUpdateRequest,
 )
@@ -66,10 +67,16 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
 
     assert payload.query_profiles.fast.top_k_default == 5
     assert payload.query_profiles.fast.candidate_multiplier == 2
+    assert payload.query_profiles.fast.lexical_top_k == 10
     assert payload.query_profiles.fast.rerank_top_n == 3
     assert payload.query_profiles.fast.timeout_budget_seconds == 12.0
     assert payload.query_profiles.accurate.top_k_default == 8
+    assert payload.query_profiles.accurate.lexical_top_k == 32
     assert payload.model_routing.fast_model == "qwen2.5:7b"
+    assert payload.reranker_routing.provider == "heuristic"
+    assert payload.reranker_routing.model == "BAAI/bge-reranker-v2-m3"
+    assert payload.reranker_routing.timeout_seconds == 12.0
+    assert payload.reranker_routing.failure_cooldown_seconds == 15.0
     assert payload.degrade_controls.rerank_fallback_enabled is True
     assert payload.retry_controls.llm_retry_max_attempts == 2
     assert payload.concurrency_controls.fast_max_inflight == 24
@@ -91,12 +98,14 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
                 fast=QueryModeConfig(
                     top_k_default=6,
                     candidate_multiplier=3,
+                    lexical_top_k=12,
                     rerank_top_n=4,
                     timeout_budget_seconds=10.0,
                 ),
                 accurate=QueryModeConfig(
                     top_k_default=10,
                     candidate_multiplier=5,
+                    lexical_top_k=24,
                     rerank_top_n=6,
                     timeout_budget_seconds=20.0,
                 ),
@@ -105,6 +114,12 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
                 fast_model="Qwen/Fast-7B",
                 accurate_model="Qwen/Accurate-14B",
                 sop_generation_model="Qwen/SOP-14B",
+            ),
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                model="Qwen/Reranker-Prod",
+                timeout_seconds=9.5,
+                failure_cooldown_seconds=22.0,
             ),
             degrade_controls=DegradeControlsConfig(
                 rerank_fallback_enabled=False,
@@ -136,6 +151,10 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert updated.updated_by == "user_sys_admin"
     assert reloaded.query_profiles.fast.top_k_default == 6
     assert reloaded.model_routing.fast_model == "Qwen/Fast-7B"
+    assert reloaded.reranker_routing.provider == "openai_compatible"
+    assert reloaded.reranker_routing.model == "Qwen/Reranker-Prod"
+    assert reloaded.reranker_routing.timeout_seconds == 9.5
+    assert reloaded.reranker_routing.failure_cooldown_seconds == 22.0
     assert reloaded.degrade_controls.retrieval_fallback_enabled is False
     assert reloaded.retry_controls.llm_retry_max_attempts == 3
     assert reloaded.concurrency_controls.fast_max_inflight == 30
@@ -143,10 +162,12 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert reloaded.concurrency_controls.acquire_timeout_ms == 1200
     assert fast_profile.top_k == 6
     assert fast_profile.candidate_top_k == 18
+    assert fast_profile.lexical_top_k == 12
     assert fast_profile.rerank_top_n == 4
     assert fast_profile.timeout_budget_seconds == 10.0
     assert accurate_profile.top_k == 10
     assert accurate_profile.candidate_top_k == 50
+    assert accurate_profile.lexical_top_k == 24
     assert accurate_profile.rerank_top_n == 6
     assert accurate_profile.timeout_budget_seconds == 20.0
 
@@ -171,12 +192,14 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
                     fast=QueryModeConfig(
                         top_k_default=5,
                         candidate_multiplier=2,
+                        lexical_top_k=5,
                         rerank_top_n=6,
                         timeout_budget_seconds=12.0,
                     ),
                     accurate=QueryModeConfig(
                         top_k_default=8,
                         candidate_multiplier=4,
+                        lexical_top_k=8,
                         rerank_top_n=5,
                         timeout_budget_seconds=24.0,
                     ),
@@ -185,6 +208,12 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
                     fast_model="Qwen/Fast-7B",
                     accurate_model="Qwen/Accurate-14B",
                     sop_generation_model="Qwen/SOP-14B",
+                ),
+                reranker_routing=RerankerRoutingConfig(
+                    provider="heuristic",
+                    model="BAAI/bge-reranker-v2-m3",
+                    timeout_seconds=12.0,
+                    failure_cooldown_seconds=15.0,
                 ),
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
@@ -195,6 +224,49 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "fast.rerank_top_n cannot be greater than fast.top_k_default."
+
+
+def test_system_config_service_validates_lexical_top_k_relationships(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.update_config(
+            SystemConfigUpdateRequest(
+                query_profiles=QueryProfilesConfig(
+                    fast=QueryModeConfig(
+                        top_k_default=5,
+                        candidate_multiplier=2,
+                        lexical_top_k=4,
+                        rerank_top_n=3,
+                        timeout_budget_seconds=12.0,
+                    ),
+                    accurate=QueryModeConfig(
+                        top_k_default=8,
+                        candidate_multiplier=4,
+                        lexical_top_k=8,
+                        rerank_top_n=5,
+                        timeout_budget_seconds=24.0,
+                    ),
+                ),
+                model_routing=ModelRoutingConfig(
+                    fast_model="Qwen/Fast-7B",
+                    accurate_model="Qwen/Accurate-14B",
+                    sop_generation_model="Qwen/SOP-14B",
+                ),
+                reranker_routing=RerankerRoutingConfig(
+                    provider="heuristic",
+                    model="BAAI/bge-reranker-v2-m3",
+                    timeout_seconds=12.0,
+                ),
+                degrade_controls=DegradeControlsConfig(),
+                retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(),
+            ),
+            auth_context=_build_auth_context(),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "fast.lexical_top_k cannot be smaller than fast.top_k_default."
 
 
 def test_system_config_service_rejects_empty_model_route(tmp_path: Path) -> None:
@@ -209,6 +281,7 @@ def test_system_config_service_rejects_empty_model_route(tmp_path: Path) -> None
                     accurate_model="Qwen/Accurate-14B",
                     sop_generation_model="Qwen/SOP-14B",
                 ),
+                reranker_routing=service.get_config(auth_context=_build_auth_context()).reranker_routing,
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(),
@@ -228,6 +301,7 @@ def test_system_config_service_validates_concurrency_relationships(tmp_path: Pat
             SystemConfigUpdateRequest(
                 query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
                 model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                reranker_routing=service.get_config(auth_context=_build_auth_context()).reranker_routing,
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(
@@ -254,6 +328,7 @@ def test_system_config_service_validates_per_user_concurrency_relationships(tmp_
             SystemConfigUpdateRequest(
                 query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
                 model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                reranker_routing=service.get_config(auth_context=_build_auth_context()).reranker_routing,
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(

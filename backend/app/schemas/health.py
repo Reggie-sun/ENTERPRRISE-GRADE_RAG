@@ -19,6 +19,23 @@ class HealthEmbedding(BaseModel):
     model: str
 
 
+class HealthReranker(BaseModel):
+    provider: str
+    base_url: str
+    model: str
+    timeout_seconds: float
+    failure_cooldown_seconds: float
+    effective_provider: str
+    effective_model: str
+    effective_strategy: str
+    fallback_enabled: bool
+    lock_active: bool
+    lock_source: str | None = None
+    cooldown_remaining_seconds: float
+    ready: bool
+    detail: str | None = None
+
+
 class HealthQueue(BaseModel):
     provider: str
     broker_url: str
@@ -49,6 +66,7 @@ class HealthResponse(BaseModel):
     vector_store: HealthVectorStore
     llm: HealthLLM
     embedding: HealthEmbedding
+    reranker: HealthReranker
     queue: HealthQueue
     metadata_store: HealthMetadataStore
     ocr: HealthOCR

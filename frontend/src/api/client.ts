@@ -40,6 +40,7 @@ import type {
   DocumentPreviewResponse,
   DocumentRebuildResponse,
   IngestJobStatusResponse,
+  RetrievalRerankCompareResponse,
   RetrievalRequest,
   RetrievalResponse,
   ChatRequest,
@@ -49,6 +50,7 @@ import type {
 // API 基础路径，与 Vite 代理配置对应。
 const API_PREFIX = '/api/v1';
 const REQUEST_TIMEOUT_MS = 20_000;  // 前端请求超时时间，避免页面无限等待。
+const STREAM_IDLE_TIMEOUT_MS = 120_000;  // 流式接口允许更长空闲时间，避免首包或慢模型被固定 20s 误杀。
 
 type ApiErrorKind = 'http' | 'network' | 'timeout' | 'parse';
 type UnauthorizedListener = (detail: string) => void;
@@ -67,6 +69,25 @@ export interface ChatStreamHandlers {
   onMeta?: (meta: ChatStreamMeta) => void;
   onDelta?: (delta: string) => void;
   onDone?: (response: ChatResponse) => void;
+}
+
+export interface SopGenerationStreamMeta {
+  request_mode: SopGenerationDraftResponse['request_mode'];
+  generation_mode: SopGenerationDraftResponse['generation_mode'];
+  title: SopGenerationDraftResponse['title'];
+  department_id: SopGenerationDraftResponse['department_id'];
+  department_name: SopGenerationDraftResponse['department_name'];
+  process_name: SopGenerationDraftResponse['process_name'];
+  scenario_name: SopGenerationDraftResponse['scenario_name'];
+  topic: SopGenerationDraftResponse['topic'];
+  model: SopGenerationDraftResponse['model'];
+  citations: SopGenerationDraftResponse['citations'];
+}
+
+export interface SopGenerationStreamHandlers {
+  onMeta?: (meta: SopGenerationStreamMeta) => void;
+  onDelta?: (delta: string) => void;
+  onDone?: (response: SopGenerationDraftResponse) => void;
 }
 
 function extractFilenameFromDisposition(disposition: string | null, fallback: string): string {
@@ -97,6 +118,27 @@ function toText(value: unknown): string {
   } catch {
     return String(value);
   }
+}
+
+function createAbortTimeout(controller: AbortController, timeoutMs: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const touch = () => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => controller.abort(), timeoutMs);
+  };
+
+  const clear = () => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  touch();
+  return { touch, clear };
 }
 
 function extractDetail(payload: unknown): string {
@@ -447,6 +489,199 @@ export async function generateSopByTopic(
   });
 }
 
+async function generateSopStream(
+  path: string,
+  payload: SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest,
+  handlers: SopGenerationStreamHandlers = {},
+): Promise<SopGenerationDraftResponse> {
+  const controller = new AbortController();
+  const timeout = createAbortTimeout(controller, STREAM_IDLE_TIMEOUT_MS);
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_PREFIX}${path}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError('timeout', `Request timeout: ${path}`);
+    }
+    throw new ApiError('network', `Network error: ${path}`);
+  }
+
+  if (!response.ok) {
+    let errorPayload: unknown = null;
+    try {
+      const contentType = response.headers.get('content-type') || '';
+      errorPayload = contentType.includes('application/json') ? await response.json() : await response.text();
+    } catch {
+      throw new ApiError('parse', `Failed to parse stream error payload: ${path}`);
+    } finally {
+      timeout.clear();
+    }
+    if (response.status === 401 && accessToken) {
+      unauthorizedListener?.(extractDetail(errorPayload));
+    }
+    throw new ApiError('http', extractDetail(errorPayload), response.status, errorPayload);
+  }
+
+  if (!response.body) {
+    timeout.clear();
+    throw new ApiError('parse', `Stream body is empty: ${path}`);
+  }
+
+  const decoder = new TextDecoder();
+  const reader = response.body.getReader();
+  let buffer = '';
+  let finalResponse: SopGenerationDraftResponse | null = null;
+  let partialContent = '';
+  let latestMeta: SopGenerationStreamMeta | null = null;
+
+  const handleFrame = (frame: string) => {
+    const lines = frame
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    if (lines.length === 0) {
+      return;
+    }
+
+    let eventName = '';
+    const dataLines: string[] = [];
+    for (const line of lines) {
+      if (line.startsWith('event:')) {
+        eventName = line.slice('event:'.length).trim();
+      } else if (line.startsWith('data:')) {
+        dataLines.push(line.slice('data:'.length).trim());
+      }
+    }
+
+    if (!eventName || dataLines.length === 0) {
+      return;
+    }
+
+    let framePayload: unknown;
+    try {
+      framePayload = JSON.parse(dataLines.join('\n'));
+    } catch {
+      return;
+    }
+
+    if (eventName === 'meta') {
+      latestMeta = framePayload as SopGenerationStreamMeta;
+      handlers.onMeta?.(latestMeta);
+      return;
+    }
+    if (eventName === 'content_delta') {
+      const delta = (framePayload as { delta?: unknown }).delta;
+      if (typeof delta === 'string' && delta) {
+        partialContent += delta;
+        handlers.onDelta?.(delta);
+      }
+      return;
+    }
+    if (eventName === 'done') {
+      finalResponse = framePayload as SopGenerationDraftResponse;
+      handlers.onDone?.(finalResponse);
+      return;
+    }
+    if (eventName === 'error') {
+      const detail = (framePayload as { message?: unknown }).message;
+      throw new ApiError('http', typeof detail === 'string' ? detail : 'Unknown stream error');
+    }
+  };
+
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      timeout.touch();
+      buffer += decoder.decode(value, { stream: true });
+      const frames = buffer.split('\n\n');
+      buffer = frames.pop() ?? '';
+      for (const frame of frames) {
+        handleFrame(frame);
+      }
+    }
+    buffer += decoder.decode();
+    if (buffer.trim()) {
+      handleFrame(buffer);
+    }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    if ((error instanceof Error && error.name === 'AbortError') || controller.signal.aborted) {
+      throw new ApiError('timeout', `Request timeout: ${path}`);
+    }
+    if (message.includes('BodyStreamBuffer was aborted')) {
+      throw new ApiError('network', `Stream was aborted before the server finished sending data: ${path}`);
+    }
+    throw new ApiError('network', `Stream read failed: ${message}`);
+  } finally {
+    timeout.clear();
+    try {
+      reader.releaseLock();
+    } catch {
+      // ignore
+    }
+  }
+
+  if (finalResponse) {
+    return finalResponse;
+  }
+  const fallbackMeta = latestMeta as SopGenerationStreamMeta | null;
+  if (fallbackMeta) {
+    return {
+      snapshot_id: null,
+      request_mode: fallbackMeta.request_mode,
+      generation_mode: fallbackMeta.generation_mode,
+      title: fallbackMeta.title,
+      department_id: fallbackMeta.department_id,
+      department_name: fallbackMeta.department_name,
+      process_name: fallbackMeta.process_name,
+      scenario_name: fallbackMeta.scenario_name,
+      topic: fallbackMeta.topic,
+      content: partialContent,
+      model: fallbackMeta.model,
+      citations: fallbackMeta.citations,
+    };
+  }
+  throw new ApiError('parse', `No valid stream events were received: ${path}`);
+}
+
+export async function generateSopByDocumentStream(
+  payload: SopGenerateByDocumentRequest,
+  handlers: SopGenerationStreamHandlers = {},
+): Promise<SopGenerationDraftResponse> {
+  return generateSopStream('/sops/generate/document/stream', payload, handlers);
+}
+
+export async function generateSopByScenarioStream(
+  payload: SopGenerateByScenarioRequest,
+  handlers: SopGenerationStreamHandlers = {},
+): Promise<SopGenerationDraftResponse> {
+  return generateSopStream('/sops/generate/scenario/stream', payload, handlers);
+}
+
+export async function generateSopByTopicStream(
+  payload: SopGenerateByTopicRequest,
+  handlers: SopGenerationStreamHandlers = {},
+): Promise<SopGenerationDraftResponse> {
+  return generateSopStream('/sops/generate/topic/stream', payload, handlers);
+}
+
 /** 保存 SOP 当前版本 */
 export async function saveSop(payload: SopSaveRequest): Promise<SopSaveResponse> {
   return request<SopSaveResponse>('/sops/save', {
@@ -602,6 +837,14 @@ export async function searchDocuments(req: RetrievalRequest): Promise<RetrievalR
   });
 }
 
+/** 对比当前默认 rerank 路由与 heuristic 基线 */
+export async function compareRetrievalRerank(req: RetrievalRequest): Promise<RetrievalRerankCompareResponse> {
+  return request<RetrievalRerankCompareResponse>('/retrieval/rerank-compare', {
+    method: 'POST',
+    body: JSON.stringify(req),
+  });
+}
+
 // ========== 问答 API ==========
 
 /** 发起问答请求 */
@@ -615,7 +858,7 @@ export async function askQuestion(req: ChatRequest): Promise<ChatResponse> {
 /** 发起流式问答请求（SSE） */
 export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHandlers = {}): Promise<ChatResponse> {
   const controller = new AbortController();  // 复用统一超时逻辑，避免流式请求悬挂。
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = createAbortTimeout(controller, STREAM_IDLE_TIMEOUT_MS);
   const headers = new Headers({ 'Content-Type': 'application/json' });
 
   if (accessToken && !headers.has('Authorization')) {
@@ -645,7 +888,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
     } catch {
       throw new ApiError('parse', 'Failed to parse stream error payload: /chat/ask/stream');
     } finally {
-      clearTimeout(timeout);
+      timeout.clear();
     }
     if (response.status === 401 && accessToken) {
       unauthorizedListener?.(extractDetail(payload));
@@ -654,7 +897,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
   }
 
   if (!response.body) {
-    clearTimeout(timeout);
+    timeout.clear();
     throw new ApiError('parse', 'Stream body is empty: /chat/ask/stream');
   }
 
@@ -725,6 +968,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
       if (done) {
         break;
       }
+      timeout.touch();
       buffer += decoder.decode(value, { stream: true });
       const frames = buffer.split('\n\n');  // SSE 事件之间以空行分隔。
       buffer = frames.pop() ?? '';  // 留下最后一个不完整帧，等待下一次拼接。
@@ -749,7 +993,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
     }
     throw new ApiError('network', `Stream read failed: ${message}`);
   } finally {
-    clearTimeout(timeout);
+    timeout.clear();
     try {
       reader.releaseLock();
     } catch {

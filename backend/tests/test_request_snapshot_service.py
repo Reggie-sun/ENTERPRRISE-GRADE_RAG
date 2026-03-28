@@ -123,6 +123,10 @@ def test_record_chat_snapshot_persists_context_and_versions(tmp_path: Path) -> N
                 snippet="发现设备异常后先执行停机检查。",
                 score=0.95,
                 source_path="asset://doc_001",
+                retrieval_strategy="hybrid",
+                vector_score=0.88,
+                lexical_score=2.1,
+                fused_score=0.95,
             )
         ],
         response_mode="rag",
@@ -134,6 +138,11 @@ def test_record_chat_snapshot_persists_context_and_versions(tmp_path: Path) -> N
     persisted = service.get_snapshot(record.snapshot_id, auth_context=auth_context)
     assert persisted.trace_id == "trc_test_001"
     assert persisted.contexts[0].chunk_id == "chunk_001"
+    assert persisted.contexts[0].retrieval_strategy == "hybrid"
+    assert persisted.contexts[0].vector_score == 0.88
+    assert persisted.contexts[0].lexical_score == 2.1
+    assert persisted.contexts[0].fused_score == 0.95
+    assert persisted.citations[0].retrieval_strategy == "hybrid"
     assert persisted.component_versions.prompt_version == "chat-rag-v1"
     assert persisted.model_route.model == "Qwen/Test-14B"
     assert persisted.result.answer_preview == "先停机，再检查报警信息。"

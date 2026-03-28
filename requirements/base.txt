@@ -27,6 +27,7 @@ celery
 qdrant-client==1.15.1
 httpx==0.28.1
 rank-bm25
+jieba  # 中文分词主方案，hybrid lexical retrieval 会在 BM25 前优先使用。
 
 # Document parsing / 文档解析
 pypdf==5.9.0

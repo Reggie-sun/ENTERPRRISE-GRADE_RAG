@@ -1,0 +1,36 @@
+{
+  "document_id": "doc_20260328035056_fd1b630f",
+  "file_name": "ocr_mobile_fresh_validation_v3.png",
+  "source_path": "/app/data/uploads/doc_20260328035056_fd1b630f__ocr_mobile_fresh_validation_v3.png",
+  "parser_name": "image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 4,
+  "page_count": 1,
+  "normalized_text": "OCR构建最终验证V3\n批次20260328-115600\n设备巡检步骤 B1 B2 B3\nSTEP4CHECKTEMPERATURE97531",
+  "segments": [
+    {
+      "text": "OCR构建最终验证V3",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.9994432330131531
+    },
+    {
+      "text": "批次20260328-115600",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9997984766960144
+    },
+    {
+      "text": "设备巡检步骤 B1 B2 B3",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9391982555389404
+    },
+    {
+      "text": "STEP4CHECKTEMPERATURE97531",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9984740018844604
+    }
+  ]
+}

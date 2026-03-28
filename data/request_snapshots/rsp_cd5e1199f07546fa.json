@@ -1,0 +1,151 @@
+{
+  "snapshot_id": "rsp_cd5e1199f07546fa",
+  "trace_id": "trc_d807cf287ddd4622",
+  "request_id": "req_9432facf2bd846b9",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T06:07:12.815919Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "详细解释一下悖论放松法",
+    "top_k": null,
+    "mode": "fast",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "详细解释一下悖论放松法",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-193",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？\n悖论是指 一种看起来自相矛盾 ， 但实际仍然是对的 命题。 悖论的例子\n在哲学著作中往往能够找到。 例如戒酒 的前提是， 你必须承认你在酒精面\n前的无能为力 ， 然后才能 对自己的酒瘾加以控制 。＜ ＜ 奇迹课程）〉 中提到\n“\n有\n舍才有 得\n“\n， 意思是如果你要有所得 ， 必先 舍弃自己现有的一切。 著名禅\n师铃木 曾经写道，\n“\n如果你想 一 匹马要靠近 你， 那就给它 一个大牧场 。”\n悖论放松法中的哱论是 ：要 接受 紧张才能放松。 雅各布森 的理解 很正\n确 ， 放松就是要放弃努力。 放弃努力意 味着不\n“\n做\n“\n任何事情。 一般\n“\n做\n“\n事情都会牵涉到一定的肌肉紧张。 “做事情\n”\n包括我们生活中从骑自行车到\n切胡萝 卜的 一 切行动。 “做事情\n”\n也可能会跟生存有关 ， 比如绷紧肌 肉准 备\n承受 击打 ， 全身肌肉收紧准备逃 跑或者进攻。\n“\n做事情\n”\n跟肌肉紧张紧密联\n系 ， 甚至在你躺下的时候也是 如此。 这个时候你\n“\n做的事情\n”\n可以被叫做\n“微努力\n”\n。从 这些微努力中放松下来就是悖论放松法的核心。 在下一章我\n们会对此做详细的介绍。\n悖论放松法的主要观点是 ：接 受紧张才能放松\n\n13 4 盆腔之痛\n如果我们告诉你要放松 ， 你的头脑可能会把该指 令解释为被要求\n“\n做\n“\n某事或做一 些努力， 而事实上放松意 味着要停止努力。 放松是指无为。 这\n种不做任何事情的\n“\n无为\n“\n是多 么 奇特的想法啊。\n悖论放松法就是练习\n“\n无为\n＂\n盆腔底放松是一种存在状态。 它不包含任何行动或意 志。",
+      "score": 0.03278688524590164,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.73403996,
+      "lexical_score": 22.0801114557161,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325071124_ddfe2855-chunk-2",
+      "document_id": "doc_20260325071124_ddfe2855",
+      "document_name": "zoom14.txt",
+      "snippet": "did you, what did you get from these plots? Can you explain them to me a little bit, or you can type it if you want to?\n你觉得这个怎么样，做了这个，你做了什么，你从这些情节中得到了什么？你能给我解释一下吗，或者如果你想的话可以打出来？\nOkay.\n好的。\nAll right.\n好吧。\nFunctional gene sets.\n功能基因集。\nExhaustion looks good digit proliferation check the genes exist in the data\n疲劳看起来不错，数字增殖检查一下数据中是否存在基因\nCalculate to the function status score.\n计算函数状态分数。\nUm.\n嗯。\nYeah.\n是的。\nOkay, so if activation score is high in the early stage and exhaustion score rises in the later stage, this indicates a c four t cells gradually enter functional exhaustion after activation.\n好的，所以如果激活分数在早期很高，而在后期疲劳分数上升，这表明激活后细胞逐渐进入功能性疲劳。\nWith the proliferation score increases in the middle range, it indicates that there is a cell proliferation stage in the middle.\n增殖分数在中间区域增加，表明中间有一个细胞增殖阶段。\nYeah,",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325071124_ddfe2855__zoom14.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 19.57465546114457,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-243",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "在那里 ， 但是把注意 力从它上面导到你身体其它部位放松的感觉上\n来。 把注意 力在残余紧 张的感觉和身体其它部位放松的感觉上来 回调 换。\n在悖论放松法中你想做的是让注意 力放 在（停止 ） 在身体休息的感觉上。\n这里我们给 一点提示。 当你 迷失了 ， 或者注意 力不再集中在休息的感\n觉上时 ， 你需要重新 回去 感觉之前注意 到的紧张 ， 然后 让注意 力停留在那\n里。 当你 找到 并感觉到了紧张时 ， 你可以再 把注意 力转回 到感觉自己的\n放松， 同时也要允许紧张存在的状态中去。 然后 再将注意力集 中在放松\n的身体 感觉上。 很关键的\n一\n点是， 不管你感觉到 了哪\n一\n种程度 的放松，\n你都要接受 它。 如果你 和紧张同在 的能力很 强， 那很好 ； 如果你和紧张\n同在的 能力很 差， 那也没 关系。 接受你集 中注意力 时所能达到 的任何\n程度的放 松， 不要 试图 去改变它 ； 就像你不 试图去改 变你最先注意的紧\n张\n一\n样。 不能去挣扎着试图 达到更进一步或更多 的放松。 理解 这一点你才\n理解 了悖论放松法的要义。\n总的来说 ， 在练 习过 程中， 一旦你对紧张以及和紧张 一起放松的感觉\n熟悉起来， 你就可以把注意 力从紧张的感觉转到与残余紧张 一起放松的感\n觉上来。 也就是说 ， 你在你的意 识当中把残余 紧张的感觉当作前景， 而把\n与紧张一起放松的感觉当 作背 景。 把注意 力在两者之间切换可以帮助你达\n到更 深程度的 放松。\n这个做起来要比说起来容易很 多。它只是需要反复的练习而 巳 ，就像\n我们在下 一章节会提到的那样。 一旦你知道放松包括了控制 自己 的注意 力，\n让它停在让身体休息的感觉上面 ， 深度放松就会越来越容易做到。\n注意 力训练 和盆腔深入放松 的关系\n关于注意 力训练和 放松我们有很多话要说。 下面是关于这个话题的一\n些要点",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.71001685,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-193",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？\n悖论是指 一种看起来自相矛盾 ， 但实际仍然是对的 命题。 悖论的例子\n在哲学著作中往往能够找到。 例如戒酒 的前提是， 你必须承认你在酒精面\n前的无能为力 ， 然后才能 对自己的酒瘾加以控制 。＜ ＜ 奇迹课程）〉 中提到\n“\n有\n舍才有 得\n“\n， 意思是如果你要有所得 ， 必先 舍弃自己现有的一切。 著名禅\n师铃木 曾经写道，\n“\n如果你想 一 匹马要靠近 你， 那就给它 一个大牧场 。”\n悖论放松法中的哱论是 ：要 接受 紧张才能放松。 雅各布森 的理解 很正\n确 ， 放松就是要放弃努力。 放弃努力意 味着不\n“\n做\n“\n任何事情。 一般\n“\n做\n“\n事情都会牵涉到一定的肌肉紧张。 “做事情\n”\n包括我们生活中从骑自行车到\n切胡萝 卜的 一 切行动。 “做事情\n”\n也可能会跟生存有关 ， 比如绷紧肌 肉准 备\n承受 击打 ， 全身肌肉收紧准备逃 跑或者进攻。\n“\n做事情\n”\n跟肌肉紧张紧密联\n系 ， 甚至在你躺下的时候也是 如此。 这个时候你\n“\n做的事情\n”\n可以被叫做\n“微努力\n”\n。从 这些微努力中放松下来就是悖论放松法的核心。 在下一章我\n们会对此做详细的介绍。\n悖论放松法的主要观点是 ：接 受紧张才能放松\n\n13 4 盆腔之痛\n如果我们告诉你要放松 ， 你的头脑可能会把该指 令解释为被要求\n“\n做\n“\n某事或做一 些努力， 而事实上放松意 味着要停止努力。 放松是指无为。 这\n种不做任何事情的\n“\n无为\n“\n是多 么 奇特的想法啊。\n悖论放松法就是练习\n“\n无为\n＂\n盆腔底放松是一种存在状态。 它不包含任何行动或意 志。",
+      "score": 0.03278688524590164,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.73403996,
+      "lexical_score": 22.0801114557161,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "chunk_id": "doc_20260325071124_ddfe2855-chunk-2",
+      "document_id": "doc_20260325071124_ddfe2855",
+      "document_name": "zoom14.txt",
+      "snippet": "did you, what did you get from these plots? Can you explain them to me a little bit, or you can type it if you want to?\n你觉得这个怎么样，做了这个，你做了什么，你从这些情节中得到了什么？你能给我解释一下吗，或者如果你想的话可以打出来？\nOkay.\n好的。\nAll right.\n好吧。\nFunctional gene sets.\n功能基因集。\nExhaustion looks good digit proliferation check the genes exist in the data\n疲劳看起来不错，数字增殖检查一下数据中是否存在基因\nCalculate to the function status score.\n计算函数状态分数。\nUm.\n嗯。\nYeah.\n是的。\nOkay, so if activation score is high in the early stage and exhaustion score rises in the later stage, this indicates a c four t cells gradually enter functional exhaustion after activation.\n好的，所以如果激活分数在早期很高，而在后期疲劳分数上升，这表明激活后细胞逐渐进入功能性疲劳。\nWith the proliferation score increases in the middle range, it indicates that there is a cell proliferation stage in the middle.\n增殖分数在中间区域增加，表明中间有一个细胞增殖阶段。\nYeah,",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325071124_ddfe2855__zoom14.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 19.57465546114457,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-243",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "在那里 ， 但是把注意 力从它上面导到你身体其它部位放松的感觉上\n来。 把注意 力在残余紧 张的感觉和身体其它部位放松的感觉上来 回调 换。\n在悖论放松法中你想做的是让注意 力放 在（停止 ） 在身体休息的感觉上。\n这里我们给 一点提示。 当你 迷失了 ， 或者注意 力不再集中在休息的感\n觉上时 ， 你需要重新 回去 感觉之前注意 到的紧张 ， 然后 让注意 力停留在那\n里。 当你 找到 并感觉到了紧张时 ， 你可以再 把注意 力转回 到感觉自己的\n放松， 同时也要允许紧张存在的状态中去。 然后 再将注意力集 中在放松\n的身体 感觉上。 很关键的\n一\n点是， 不管你感觉到 了哪\n一\n种程度 的放松，\n你都要接受 它。 如果你 和紧张同在 的能力很 强， 那很好 ； 如果你和紧张\n同在的 能力很 差， 那也没 关系。 接受你集 中注意力 时所能达到 的任何\n程度的放 松， 不要 试图 去改变它 ； 就像你不 试图去改 变你最先注意的紧\n张\n一\n样。 不能去挣扎着试图 达到更进一步或更多 的放松。 理解 这一点你才\n理解 了悖论放松法的要义。\n总的来说 ， 在练 习过 程中， 一旦你对紧张以及和紧张 一起放松的感觉\n熟悉起来， 你就可以把注意 力从紧张的感觉转到与残余紧张 一起放松的感\n觉上来。 也就是说 ， 你在你的意 识当中把残余 紧张的感觉当作前景， 而把\n与紧张一起放松的感觉当 作背 景。 把注意 力在两者之间切换可以帮助你达\n到更 深程度的 放松。\n这个做起来要比说起来容易很 多。它只是需要反复的练习而 巳 ，就像\n我们在下 一章节会提到的那样。 一旦你知道放松包括了控制 自己 的注意 力，\n让它停在让身体休息的感觉上面 ， 深度放松就会越来越容易做到。\n注意 力训练 和盆腔深入放松 的关系\n关于注意 力训练和 放松我们有很多话要说。 下面是关于这个话题的一\n些要点",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.71001685,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "悖论放松法的核心在于接受紧张才能实现真正的放松。这种方法基于一个看似矛盾的观点：放松并非通过主动努力获得，而是通过放弃努力、采取一种“无为”的态度来实现。具体来说，放松意味着停止所有形式的努力，包括那些看似微小的努力，比如躺着时的轻微肌肉紧张。\n\n在实践中，悖论放松法要求个体将注意力放在身体的紧张感觉上，然后尝试接受这种紧张的存在，而不是试图消除它。通过这种方式，个体学会与紧张共存，并在此过程中体验到放松的状态。这一过程的关键在于，无论感受到的放松程度如何，都应全然接受，而不试图强迫达到更深的放松层次。\n\n此外，悖论放松法强调注意力的转移技巧，即在紧张的感觉和身体其他部分的放松感觉之间来...",
+    "answer_chars": 383,
+    "citation_count": 3,
+    "rerank_strategy": "heuristic",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

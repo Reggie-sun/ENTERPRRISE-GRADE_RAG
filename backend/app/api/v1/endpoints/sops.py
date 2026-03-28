@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 
 from ._response_headers import build_content_disposition
 from ....schemas.auth import AuthContext
@@ -67,6 +68,23 @@ def generate_sop_by_document(
 
 
 @router.post(
+    "/generate/document/stream",
+    summary="Stream SOP draft by source document",
+    description="Streams an SOP draft directly from a selected document via SSE while reusing retrieval, rerank and LLM generation within that document scope.",
+)
+def generate_sop_by_document_stream(
+    payload: SopGenerateByDocumentRequest,
+    auth_context: AuthContext = Depends(get_current_auth_context),
+    sop_generation_service: SopGenerationService = Depends(get_sop_generation_service),
+) -> StreamingResponse:
+    return StreamingResponse(
+        sop_generation_service.stream_generate_from_document_sse(payload, auth_context=auth_context),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.post(
     "/generate/scenario",
     response_model=SopGenerationDraftResponse,
     summary="Generate SOP draft by scenario",
@@ -81,6 +99,23 @@ def generate_sop_by_scenario(
 
 
 @router.post(
+    "/generate/scenario/stream",
+    summary="Stream SOP draft by scenario",
+    description="Streams an SOP draft for a scenario via SSE while reusing retrieval, rerank and LLM generation over accessible evidence.",
+)
+def generate_sop_by_scenario_stream(
+    payload: SopGenerateByScenarioRequest,
+    auth_context: AuthContext = Depends(get_current_auth_context),
+    sop_generation_service: SopGenerationService = Depends(get_sop_generation_service),
+) -> StreamingResponse:
+    return StreamingResponse(
+        sop_generation_service.stream_generate_from_scenario_sse(payload, auth_context=auth_context),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.post(
     "/generate/topic",
     response_model=SopGenerationDraftResponse,
     summary="Generate SOP draft by topic",
@@ -92,6 +127,23 @@ def generate_sop_by_topic(
     sop_generation_service: SopGenerationService = Depends(get_sop_generation_service),
 ) -> SopGenerationDraftResponse:
     return sop_generation_service.generate_from_topic(payload, auth_context=auth_context)
+
+
+@router.post(
+    "/generate/topic/stream",
+    summary="Stream SOP draft by topic",
+    description="Streams an SOP draft for a custom topic via SSE while reusing retrieval, rerank and LLM generation over accessible evidence.",
+)
+def generate_sop_by_topic_stream(
+    payload: SopGenerateByTopicRequest,
+    auth_context: AuthContext = Depends(get_current_auth_context),
+    sop_generation_service: SopGenerationService = Depends(get_sop_generation_service),
+) -> StreamingResponse:
+    return StreamingResponse(
+        sop_generation_service.stream_generate_from_topic_sse(payload, auth_context=auth_context),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post(

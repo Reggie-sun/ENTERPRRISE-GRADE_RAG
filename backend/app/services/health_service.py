@@ -1,16 +1,25 @@
 from functools import lru_cache
 
 from ..core.config import Settings, get_llm_base_url, get_llm_model, get_postgres_metadata_dsn, get_settings
+from ..rag.rerankers.client import RerankerClient
 from ..rag.ocr.client import OCRClient
 from ..schemas.health import HealthResponse
+from .system_config_service import SystemConfigService
 
 
 class HealthService:
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        *,
+        system_config_service: SystemConfigService | None = None,
+    ) -> None:
         self.settings = settings or get_settings()
+        self.system_config_service = system_config_service or SystemConfigService(self.settings)
 
     def get_snapshot(self) -> HealthResponse:
         settings = self.settings
+        reranker_status = RerankerClient(settings, system_config_service=self.system_config_service).get_runtime_status()
         return HealthResponse(
             status="ok",
             app_name=settings.app_name,
@@ -29,6 +38,22 @@ class HealthService:
                 "provider": settings.embedding_provider,
                 "base_url": settings.embedding_base_url or settings.ollama_base_url,
                 "model": settings.embedding_model,
+            },
+            reranker={
+                "provider": reranker_status["provider"],
+                "base_url": reranker_status["base_url"],
+                "model": reranker_status["model"],
+                "timeout_seconds": reranker_status["timeout_seconds"],
+                "failure_cooldown_seconds": reranker_status["failure_cooldown_seconds"],
+                "effective_provider": reranker_status["effective_provider"],
+                "effective_model": reranker_status["effective_model"],
+                "effective_strategy": reranker_status["effective_strategy"],
+                "fallback_enabled": reranker_status["fallback_enabled"],
+                "lock_active": reranker_status["lock_active"],
+                "lock_source": reranker_status["lock_source"],
+                "cooldown_remaining_seconds": reranker_status["cooldown_remaining_seconds"],
+                "ready": reranker_status["ready"],
+                "detail": reranker_status["detail"],
             },
             queue={
                 "provider": "celery",

@@ -1,0 +1,36 @@
+{
+  "document_id": "doc_20260328022431_8bf3fa29",
+  "file_name": "ocr_real_final.png",
+  "source_path": "/app/data/uploads/doc_20260328022431_8bf3fa29__ocr_real_final.png",
+  "parser_name": "image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 4,
+  "page_count": 1,
+  "normalized_text": "OCR最终验证\n时间戳20260328-102416\n质检巡检标准步骤\nSTEP2CHECKSENSOR24680",
+  "segments": [
+    {
+      "text": "OCR最终验证",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.9986984133720398
+    },
+    {
+      "text": "时间戳20260328-102416",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9934642314910889
+    },
+    {
+      "text": "质检巡检标准步骤",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9985032081604004
+    },
+    {
+      "text": "STEP2CHECKSENSOR24680",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9854522943496704
+    }
+  ]
+}

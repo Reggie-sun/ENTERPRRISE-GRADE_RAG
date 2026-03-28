@@ -1,0 +1,201 @@
+{
+  "snapshot_id": "rsp_9497a30886c04356",
+  "trace_id": "trc_28b7215cdd4b4ddd",
+  "request_id": "req_058d480f33e34e79",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T01:57:37.409763Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "当前知识库里哪些 SOP 最适合作为统一标准入口？",
+    "top_k": null,
+    "mode": "accurate",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "当前知识库里哪些 SOP 最适合作为统一标准入口？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n- 敏感数据不越权访问\n- 所有关键操作可追踪\n- 关键链路可监控、可告警、可回溯\n\n这意味着系统从一开始就不是“实验型 AI 工具”，而是按企业级应用方式建设。\n\n---\n\n## 9. 分阶段建设路线\n\n为了控制风险、加快落地，建议按阶段推进。\n\n### 第一阶段：智能助手基础版\n\n重点建设：\n\n- DFMS 内嵌入口\n- 基础知识问答\n- 文档知识库\n- 基础权限控制\n\n目标：\n\n- 先把“从文档到回答”的闭环做通\n\n### 第二阶段：运维辅助版\n\n重点建设：\n\n- 报警联动\n- 维修建议\n- 企业微信消息推送\n- 工单辅助\n\n目标：\n\n- 先在高价值场景里体现效率收益\n\n### 第三阶段：数据分析版\n\n重点建设：\n\n- 自然语言查数\n- 图表与统计分析\n- 多轮分析交互\n\n目标：\n\n- 让管理层和业务人员真正用起来\n\n### 第四阶段：产品化与复制推广\n\n重点建设：\n\n- 标准交付方案\n- 私有化 / 混合云交付模板\n- 运维体系\n- 商业化包装\n\n目标：\n\n- 形成可复制的行业解决方案\n\n---\n\n## 10. 项目价值总结\n\n从管理视角看，这个项目的核心价值可以概括为四点：\n\n### 10.1 对业务\n\n- 提高现场使用效率\n- 缩短故障处理时间\n- 提高数据使用效率\n\n### 10.2 对管理\n\n- 沉淀知识资产\n- 减少对个人经验的依赖\n-",
+      "score": -4.37109375,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5012682,
+      "lexical_score": 34.45198842147103,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -4.82421875,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.45262918,
+      "lexical_score": 39.2700287819295,
+      "fused_score": 0.02832415420928403
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-2",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，还是从管理后台进入，最终都走同一套智能能力和统一权限控制。\n\n### 3.1 总体架构图\n\n```text\n┌──────────────────────────────────────────────────────────┐\n│                        使用入口层                         │\n│ DFMS 页面 / 企业微信 / 管理后台 / 外部业务系统            │\n└───────────────────────┬──────────────────────────────────┘\n                        │\n                        ▼\n┌──────────────────────────────────────────────────────────┐\n│                      智能交互层                           │\n│ 智能助手入口 / 告警消息 / 工单协同 / 数据分析入口         │\n└───────────────────────┬──────────────────────────────────┘\n                        │\n                        ▼\n┌──────────────────────────────────────────────────────────┐\n│",
+      "score": -5.91015625,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.45834544,
+      "lexical_score": 32.26653827688731,
+      "fused_score": 0.02844551282051282
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "# DFMS嵌入式智能助手架构方案（领导汇报版）\n\n## 1. 项目定位\n\n本项目的目标，是把 AI 能力嵌入伟立现有 DFMS 系统，形成一个可落地、可复制、可销售的智能化产品模块。\n\n它不是一个独立的聊天工具，而是 DFMS 的智能升级层，重点解决三类问题：\n\n- 系统复杂，员工学习和使用成本高\n- 技术资料分散，故障处理效率低\n- 生产数据难以被业务人员直接使用\n\n最终希望形成一个面向制造现场的统一智能入口，帮助企业实现：\n\n- 更快培训\n- 更快运维\n- 更高数据利用率\n- 更强产品竞争力\n\n---\n\n## 2. 建设目标\n\n### 2.1 业务目标\n\n- 构建 DFMS 智能助手产品模块\n- 提升设备报警处理和维修响应效率\n- 让业务人员可以直接使用自然语言查询生产数据\n- 支持私有化部署和混合云部署两种销售模式\n\n### 2.2 产品目标\n\n- 对内：作为 DFMS 智能化能力底座\n- 对外：作为可商业化的增值模块\n- 对项目：作为双方合作的首个标杆落地案例\n\n### 2.3 RAG 最终呈现形态\n\nRAG 在项目最终落地时，不会以“一个底层技术系统”的形式被直接看到。\n它最终会以几种非常明确的产品形态出现在用户和管理人员面前。\n\n#### 1. DFMS 页面内嵌智能助手\n\n这是最核心的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 页面中提供固定助手入口\n- 可以做成侧边栏、悬浮按钮或底部面板\n- 用户在设备监控、报警、工单、报表页面中都可直接打开\n\n用户最终看到的是：\n\n- 页面说明\n- 操作指导\n- 业务解释\n- 问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”",
+      "score": -6.16015625,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4522914,
+      "lexical_score": 26.62438643324146,
+      "fused_score": 0.026830135039090264
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326050925_a297509d-chunk-0",
+      "document_id": "doc_20260326050925_a297509d",
+      "document_name": "Learning Report for Week 5.pdf",
+      "snippet": "Select a large category of cell population (such as CD4 T or Monocytes) for individual analysis.\n# 例子：选择 CD4 T 细胞\nsubset = adata[adata.obs['celltype.l1'] == 'CD4 T', :].copy()\n# 标准分析流程\nsc.pp.pca(subset)\nsc.pp.neighbors(subset, n_pcs=30)\nsc.tl.umap(subset)\nsc.tl.leiden(subset, resolution=0.5)\nsc.pl.umap(subset, color=['leiden', 'celltype.l2', 'celltype.l3'])\nIdentify marker genes of different subgroups.\nsc.tl.rank_genes_groups(subset, groupby='leiden', method='wilcoxon')\nsc.pl.rank_genes_groups(subset, n_genes=20, sharey=False)\n# Dotplot 可视化\nsc.pl.dotplot(subset, var_names=['CCR7', 'FOXP3'], groupby='leiden',use_raw=False)\n\nCalculate dpt\nimport numpy as np\nimport scanpy as sc\n# 选择一个 cluster 作为 root，比如 cluster 0\nsubset.uns['iroot'] = np.flatnonzero(subset.obs['leiden'] == '0')[0]\n# 重新计算",
+      "score": -7.3828125,
+      "source_path": "/app/data/uploads/doc_20260326050925_a297509d__Learning_Report_for_Week_5.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4569192,
+      "lexical_score": 11.33093269515788,
+      "fused_score": 0.026547116736990152
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n- 敏感数据不越权访问\n- 所有关键操作可追踪\n- 关键链路可监控、可告警、可回溯\n\n这意味着系统从一开始就不是“实验型 AI 工具”，而是按企业级应用方式建设。\n\n---\n\n## 9. 分阶段建设路线\n\n为了控制风险、加快落地，建议按阶段推进。\n\n### 第一阶段：智能助手基础版\n\n重点建设：\n\n- DFMS 内嵌入口\n- 基础知识问答\n- 文档知识库\n- 基础权限控制\n\n目标：\n\n- 先把“从文档到回答”的闭环做通\n\n### 第二阶段：运维辅助版\n\n重点建设：\n\n- 报警联动\n- 维修建议\n- 企业微信消息推送\n- 工单辅助\n\n目标：\n\n- 先在高价值场景里体现效率收益\n\n### 第三阶段：数据分析版\n\n重点建设：\n\n- 自然语言查数\n- 图表与统计分析\n- 多轮分析交互\n\n目标：\n\n- 让管理层和业务人员真正用起来\n\n### 第四阶段：产品化与复制推广\n\n重点建设：\n\n- 标准交付方案\n- 私有化 / 混合云交付模板\n- 运维体系\n- 商业化包装\n\n目标：\n\n- 形成可复制的行业解决方案\n\n---\n\n## 10. 项目价值总结\n\n从管理视角看，这个项目的核心价值可以概括为四点：\n\n### 10.1 对业务\n\n- 提高现场使用效率\n- 缩短故障处理时间\n- 提高数据使用效率\n\n### 10.2 对管理\n\n- 沉淀知识资产\n- 减少对个人经验的依赖\n-",
+      "score": -4.37109375,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5012682,
+      "lexical_score": 34.45198842147103,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -4.82421875,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.45262918,
+      "lexical_score": 39.2700287819295,
+      "fused_score": 0.02832415420928403
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-2",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，还是从管理后台进入，最终都走同一套智能能力和统一权限控制。\n\n### 3.1 总体架构图\n\n```text\n┌──────────────────────────────────────────────────────────┐\n│                        使用入口层                         │\n│ DFMS 页面 / 企业微信 / 管理后台 / 外部业务系统            │\n└───────────────────────┬──────────────────────────────────┘\n                        │\n                        ▼\n┌──────────────────────────────────────────────────────────┐\n│                      智能交互层                           │\n│ 智能助手入口 / 告警消息 / 工单协同 / 数据分析入口         │\n└───────────────────────┬──────────────────────────────────┘\n                        │\n                        ▼\n┌──────────────────────────────────────────────────────────┐\n│",
+      "score": -5.91015625,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.45834544,
+      "lexical_score": 32.26653827688731,
+      "fused_score": 0.02844551282051282
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "# DFMS嵌入式智能助手架构方案（领导汇报版）\n\n## 1. 项目定位\n\n本项目的目标，是把 AI 能力嵌入伟立现有 DFMS 系统，形成一个可落地、可复制、可销售的智能化产品模块。\n\n它不是一个独立的聊天工具，而是 DFMS 的智能升级层，重点解决三类问题：\n\n- 系统复杂，员工学习和使用成本高\n- 技术资料分散，故障处理效率低\n- 生产数据难以被业务人员直接使用\n\n最终希望形成一个面向制造现场的统一智能入口，帮助企业实现：\n\n- 更快培训\n- 更快运维\n- 更高数据利用率\n- 更强产品竞争力\n\n---\n\n## 2. 建设目标\n\n### 2.1 业务目标\n\n- 构建 DFMS 智能助手产品模块\n- 提升设备报警处理和维修响应效率\n- 让业务人员可以直接使用自然语言查询生产数据\n- 支持私有化部署和混合云部署两种销售模式\n\n### 2.2 产品目标\n\n- 对内：作为 DFMS 智能化能力底座\n- 对外：作为可商业化的增值模块\n- 对项目：作为双方合作的首个标杆落地案例\n\n### 2.3 RAG 最终呈现形态\n\nRAG 在项目最终落地时，不会以“一个底层技术系统”的形式被直接看到。\n它最终会以几种非常明确的产品形态出现在用户和管理人员面前。\n\n#### 1. DFMS 页面内嵌智能助手\n\n这是最核心的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 页面中提供固定助手入口\n- 可以做成侧边栏、悬浮按钮或底部面板\n- 用户在设备监控、报警、工单、报表页面中都可直接打开\n\n用户最终看到的是：\n\n- 页面说明\n- 操作指导\n- 业务解释\n- 问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”",
+      "score": -6.16015625,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4522914,
+      "lexical_score": 26.62438643324146,
+      "fused_score": 0.026830135039090264
+    },
+    {
+      "chunk_id": "doc_20260326050925_a297509d-chunk-0",
+      "document_id": "doc_20260326050925_a297509d",
+      "document_name": "Learning Report for Week 5.pdf",
+      "snippet": "Select a large category of cell population (such as CD4 T or Monocytes) for individual analysis.\n# 例子：选择 CD4 T 细胞\nsubset = adata[adata.obs['celltype.l1'] == 'CD4 T', :].copy()\n# 标准分析流程\nsc.pp.pca(subset)\nsc.pp.neighbors(subset, n_pcs=30)\nsc.tl.umap(subset)\nsc.tl.leiden(subset, resolution=0.5)\nsc.pl.umap(subset, color=['leiden', 'celltype.l2', 'celltype.l3'])\nIdentify marker genes of different subgroups.\nsc.tl.rank_genes_groups(subset, groupby='leiden', method='wilcoxon')\nsc.pl.rank_genes_groups(subset, n_genes=20, sharey=False)\n# Dotplot 可视化\nsc.pl.dotplot(subset, var_names=['CCR7', 'FOXP3'], groupby='leiden',use_raw=False)\n\nCalculate dpt\nimport numpy as np\nimport scanpy as sc\n# 选择一个 cluster 作为 root，比如 cluster 0\nsubset.uns['iroot'] = np.flatnonzero(subset.obs['leiden'] == '0')[0]\n# 重新计算",
+      "score": -7.3828125,
+      "source_path": "/app/data/uploads/doc_20260326050925_a297509d__Learning_Report_for_Week_5.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4569192,
+      "lexical_score": 11.33093269515788,
+      "fused_score": 0.026547116736990152
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "无法找到足够的证据来确定当前知识库里哪些SOP最适合作为统一标准入口。提供的上下文没有提及具体的SOP清单或评估标准。",
+    "answer_chars": 59,
+    "citation_count": 5,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_accurate",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

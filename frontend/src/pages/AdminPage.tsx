@@ -7,11 +7,14 @@ import {
   type DegradeControlsConfig,
   formatApiError,
   getAuthBootstrap,
+  getHealth,
   getSystemConfig,
+  type HealthResponse,
   type ModelRoutingConfig,
   updateSystemConfig,
   type QueryModeConfig,
   type QueryProfilesConfig,
+  type RerankerRoutingConfig,
   type RetryControlsConfig,
   type UserRecord,
 } from '@/api';
@@ -23,12 +26,14 @@ function buildEmptyProfiles(): QueryProfilesConfig {
     fast: {
       top_k_default: 5,
       candidate_multiplier: 2,
+      lexical_top_k: 10,
       rerank_top_n: 3,
       timeout_budget_seconds: 12,
     },
     accurate: {
       top_k_default: 8,
       candidate_multiplier: 4,
+      lexical_top_k: 32,
       rerank_top_n: 5,
       timeout_budget_seconds: 24,
     },
@@ -52,6 +57,19 @@ function buildEmptyModelRouting(): ModelRoutingConfig {
 
 function cloneModelRouting(modelRouting: ModelRoutingConfig): ModelRoutingConfig {
   return { ...modelRouting };
+}
+
+function buildEmptyRerankerRouting(): RerankerRoutingConfig {
+  return {
+    provider: 'heuristic',
+    model: 'BAAI/bge-reranker-v2-m3',
+    timeout_seconds: 12,
+    failure_cooldown_seconds: 15,
+  };
+}
+
+function cloneRerankerRouting(rerankerRouting: RerankerRoutingConfig): RerankerRoutingConfig {
+  return { ...rerankerRouting };
 }
 
 function buildEmptyDegradeControls(): DegradeControlsConfig {
@@ -181,6 +199,15 @@ function ModeConfigCard({ description, modeKey, value, disabled, onChange }: Mod
           onChange={(event) => onChange('candidate_multiplier', normalizeNumber(event.target.value, value.candidate_multiplier))}
         />
         <Input
+          label="lexical_top_k"
+          type="number"
+          min={1}
+          max={200}
+          value={String(value.lexical_top_k)}
+          disabled={disabled}
+          onChange={(event) => onChange('lexical_top_k', normalizeNumber(event.target.value, value.lexical_top_k))}
+        />
+        <Input
           label="rerank_top_n"
           type="number"
           min={1}
@@ -217,6 +244,8 @@ export function AdminPage() {
   const [savedProfiles, setSavedProfiles] = useState<QueryProfilesConfig>(buildEmptyProfiles());
   const [modelRouting, setModelRouting] = useState<ModelRoutingConfig>(buildEmptyModelRouting());
   const [savedModelRouting, setSavedModelRouting] = useState<ModelRoutingConfig>(buildEmptyModelRouting());
+  const [rerankerRouting, setRerankerRouting] = useState<RerankerRoutingConfig>(buildEmptyRerankerRouting());
+  const [savedRerankerRouting, setSavedRerankerRouting] = useState<RerankerRoutingConfig>(buildEmptyRerankerRouting());
   const [degradeControls, setDegradeControls] = useState<DegradeControlsConfig>(buildEmptyDegradeControls());
   const [savedDegradeControls, setSavedDegradeControls] = useState<DegradeControlsConfig>(buildEmptyDegradeControls());
   const [retryControls, setRetryControls] = useState<RetryControlsConfig>(buildEmptyRetryControls());
@@ -224,6 +253,7 @@ export function AdminPage() {
   const [concurrencyControls, setConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
   const [savedConcurrencyControls, setSavedConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
   const [users, setUsers] = useState<UserRecord[]>([]);
+  const [health, setHealth] = useState<HealthResponse | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
@@ -231,14 +261,17 @@ export function AdminPage() {
       setStatus('loading');
       setError('');
       try {
-        const [configPayload, bootstrapPayload] = await Promise.all([
+        const [configPayload, bootstrapPayload, healthPayload] = await Promise.all([
           getSystemConfig(),
           getAuthBootstrap(),
+          getHealth(),
         ]);
         setProfiles(cloneProfiles(configPayload.query_profiles));
         setSavedProfiles(cloneProfiles(configPayload.query_profiles));
         setModelRouting(cloneModelRouting(configPayload.model_routing));
         setSavedModelRouting(cloneModelRouting(configPayload.model_routing));
+        setRerankerRouting(cloneRerankerRouting(configPayload.reranker_routing));
+        setSavedRerankerRouting(cloneRerankerRouting(configPayload.reranker_routing));
         setDegradeControls(cloneDegradeControls(configPayload.degrade_controls));
         setSavedDegradeControls(cloneDegradeControls(configPayload.degrade_controls));
         setRetryControls(cloneRetryControls(configPayload.retry_controls));
@@ -248,8 +281,10 @@ export function AdminPage() {
         setUpdatedAt(configPayload.updated_at);
         setUpdatedBy(configPayload.updated_by);
         setUsers(bootstrapPayload.users);
+        setHealth(healthPayload as HealthResponse);
         setStatus('success');
       } catch (err) {
+        setHealth(null);
         setStatus('error');
         setError(formatApiError(err, '系统配置加载'));
       }
@@ -262,11 +297,12 @@ export function AdminPage() {
     () => (
       JSON.stringify(profiles) !== JSON.stringify(savedProfiles)
       || JSON.stringify(modelRouting) !== JSON.stringify(savedModelRouting)
+      || JSON.stringify(rerankerRouting) !== JSON.stringify(savedRerankerRouting)
       || JSON.stringify(degradeControls) !== JSON.stringify(savedDegradeControls)
       || JSON.stringify(retryControls) !== JSON.stringify(savedRetryControls)
       || JSON.stringify(concurrencyControls) !== JSON.stringify(savedConcurrencyControls)
     ),
-    [profiles, savedProfiles, modelRouting, savedModelRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls, concurrencyControls, savedConcurrencyControls],
+    [profiles, savedProfiles, modelRouting, savedModelRouting, rerankerRouting, savedRerankerRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls, concurrencyControls, savedConcurrencyControls],
   );
 
   const updatedByLabel = useMemo(() => {
@@ -288,6 +324,13 @@ export function AdminPage() {
 
   const updateModelRoutingField = (field: keyof ModelRoutingConfig, value: string) => {
     setModelRouting((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const updateRerankerRoutingField = (field: keyof RerankerRoutingConfig, value: number | string) => {
+    setRerankerRouting((current) => ({
       ...current,
       [field]: value,
     }));
@@ -321,14 +364,18 @@ export function AdminPage() {
       const payload = await updateSystemConfig({
         query_profiles: profiles,
         model_routing: modelRouting,
+        reranker_routing: rerankerRouting,
         degrade_controls: degradeControls,
         retry_controls: retryControls,
         concurrency_controls: concurrencyControls,
       });
+      const latestHealth = await getHealth();
       setProfiles(cloneProfiles(payload.query_profiles));
       setSavedProfiles(cloneProfiles(payload.query_profiles));
       setModelRouting(cloneModelRouting(payload.model_routing));
       setSavedModelRouting(cloneModelRouting(payload.model_routing));
+      setRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
+      setSavedRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
       setDegradeControls(cloneDegradeControls(payload.degrade_controls));
       setSavedDegradeControls(cloneDegradeControls(payload.degrade_controls));
       setRetryControls(cloneRetryControls(payload.retry_controls));
@@ -337,12 +384,29 @@ export function AdminPage() {
       setSavedConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
       setUpdatedAt(payload.updated_at);
       setUpdatedBy(payload.updated_by);
+      setHealth(latestHealth);
       setSaveStatus('success');
     } catch (err) {
       setSaveStatus('error');
       setSaveError(formatApiError(err, '系统配置保存'));
     }
   };
+
+  const rerankerRuntimeTone: 'ok' | 'warn' | 'error' | 'default' = health?.reranker.ready
+    ? 'ok'
+    : health?.reranker.effective_strategy === 'heuristic' && health?.reranker.fallback_enabled
+      ? 'warn'
+      : health?.reranker
+        ? 'error'
+        : 'default';
+
+  const rerankerRuntimeLabel = health?.reranker.ready
+    ? 'provider ready'
+    : health?.reranker?.effective_strategy === 'heuristic' && health?.reranker.fallback_enabled
+      ? 'fallback active'
+      : health?.reranker
+        ? 'route unavailable'
+        : '未加载';
 
   return (
     <div className="grid gap-5">
@@ -355,7 +419,7 @@ export function AdminPage() {
             管理后台先承接系统运行配置，把模型路由、降级和重试收口到一处。
           </h2>
           <p className="m-0 mt-3 max-w-[64ch] text-base leading-relaxed text-ink-soft">
-            这页现在能直接控制查询档位、模型路由、降级开关和 LLM 重试策略，不需要改代码重发版。
+            这页现在能直接控制查询档位、关键词召回上限、模型路由、rerank 默认路由、降级开关和 LLM 重试策略，不需要改代码重发版。
           </p>
         </HeroCard>
 
@@ -432,7 +496,7 @@ export function AdminPage() {
           />
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <div className="mt-5 grid gap-5 xl:grid-cols-3">
           <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
             <div>
               <h3 className="m-0 text-xl font-semibold text-ink">模型路由</h3>
@@ -459,6 +523,71 @@ export function AdminPage() {
                 disabled={status === 'loading' || saveStatus === 'loading'}
                 onChange={(event) => updateModelRoutingField('sop_generation_model', event.target.value)}
               />
+            </div>
+          </Card>
+
+          <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">Rerank 路由</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                控制当前默认使用 heuristic 还是 openai-compatible reranker，并直接看到当前实际生效路由有没有锁回 heuristic。
+              </p>
+            </div>
+            <div className="mt-4 grid gap-3">
+              <label className="grid gap-2 text-sm font-semibold text-ink">
+                <span>provider</span>
+                <select
+                  value={rerankerRouting.provider}
+                  disabled={status === 'loading' || saveStatus === 'loading'}
+                  onChange={(event) => updateRerankerRoutingField('provider', event.target.value)}
+                  className="h-12 rounded-2xl border border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.92)] px-4 text-sm text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                >
+                  <option value="heuristic">heuristic</option>
+                  <option value="openai_compatible">openai_compatible</option>
+                </select>
+              </label>
+              <Input
+                label="reranker_model"
+                value={rerankerRouting.model}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateRerankerRoutingField('model', event.target.value)}
+              />
+              <Input
+                label="reranker_timeout_seconds"
+                type="number"
+                min={1}
+                max={60}
+                step="0.5"
+                value={String(rerankerRouting.timeout_seconds)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateRerankerRoutingField('timeout_seconds', normalizeNumber(event.target.value, rerankerRouting.timeout_seconds))}
+              />
+              <Input
+                label="failure_cooldown_seconds"
+                type="number"
+                min={1}
+                max={300}
+                step="1"
+                value={String(rerankerRouting.failure_cooldown_seconds)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updateRerankerRoutingField('failure_cooldown_seconds', normalizeNumber(event.target.value, rerankerRouting.failure_cooldown_seconds))}
+              />
+            </div>
+            <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">当前实际路由</strong>
+                <StatusPill tone={rerankerRuntimeTone}>{rerankerRuntimeLabel}</StatusPill>
+              </div>
+              <p className="m-0 mt-3">configured: {health?.reranker.provider || rerankerRouting.provider} / {health?.reranker.model || rerankerRouting.model}</p>
+              <p className="m-0 mt-1">effective: {health?.reranker.effective_provider || '-'} / {health?.reranker.effective_strategy || '-'}</p>
+              <p className="m-0 mt-1">effective model: {health?.reranker.effective_model || '-'}</p>
+              <p className="m-0 mt-1">fallback: {health?.reranker.fallback_enabled ? 'on' : 'off'}</p>
+              <p className="m-0 mt-1">timeout: {health?.reranker.timeout_seconds ?? rerankerRouting.timeout_seconds} s</p>
+              <p className="m-0 mt-1">cooldown: {health?.reranker.failure_cooldown_seconds ?? rerankerRouting.failure_cooldown_seconds} s</p>
+              <p className="m-0 mt-1">lock: {health?.reranker.lock_active ? 'active' : 'off'}{health?.reranker.lock_source ? ` / ${health.reranker.lock_source}` : ''}</p>
+              <p className="m-0 mt-1">cooldown remaining: {health ? `${health.reranker.cooldown_remaining_seconds.toFixed(1)} s` : '-'}</p>
+              <p className="m-0 mt-1 break-all">{health?.reranker.base_url || '-'}</p>
+              <p className="m-0 mt-2 leading-relaxed">{health?.reranker.detail || '刷新后可看到当前 rerank 探针状态。'}</p>
             </div>
           </Card>
 
@@ -609,7 +738,7 @@ export function AdminPage() {
           <div className="grid gap-2 text-sm text-ink-soft">
             <div className="inline-flex items-center gap-2 text-ink">
               <SlidersHorizontal className="h-4 w-4" />
-              当前已开放查询档位、模型路由、降级和重试
+              当前已开放查询档位、关键词召回上限、模型路由、降级和重试
             </div>
             <div className="inline-flex items-center gap-2">
               <Wrench className="h-4 w-4" />

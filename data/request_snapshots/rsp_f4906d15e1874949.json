@@ -1,0 +1,163 @@
+{
+  "snapshot_id": "rsp_f4906d15e1874949",
+  "trace_id": "trc_sop_9598fa57ee3241f4",
+  "request_id": "req_sop_1d1f6e0de8434d22",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T01:58:09.928350Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260326071937_37f67e8c",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_general_manager_office",
+    "document_id": "doc_20260326071937_37f67e8c",
+    "title_hint": "发黄部长：刀具系统软件要求 SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260326071937_37f67e8c 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢",
+      "score": 1.0,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-1",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "4.10 刀具管理系统技术要求逐条响应说明",
+      "score": 0.99,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-2",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：",
+      "score": 0.98,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢",
+      "score": 1.0,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-1",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "4.10 刀具管理系统技术要求逐条响应说明",
+      "score": 0.99,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "chunk_id": "doc_20260326071937_37f67e8c-preview-2",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：",
+      "score": 0.98,
+      "source_path": "document-preview://doc_20260326071937_37f67e8c",
+      "retrieval_strategy": "document_preview",
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "# 发黄部长：刀具系统软件要求 SOP 草稿\n## 部门：总经办\n## 来源文档：发黄部长：刀具系统软件要求.docx\n## 工序：未指定工序\n## 场景：未指定场景\n\n## 目的\n确保刀具管理系统符合招标文件的技术要求，并通过图文说明和参数截图进行详细解释。\n\n## 适用范围\n适用于所有需要核对并修改刀具管理系统相关技术要求的人员。\n\n## 前置检查\n- 确认已获取招标文件。\n- 确认已有刀具管理系统相关软件资料。\n- 确认已准备好用于制作图文说明和参数截图的工具。\n\n## 操作步骤\n1. 根据招标文件的要求，逐条核对刀具管理系统的技术要求。\n2. 结合现有文档内容，对每一条技术要求进...",
+    "answer_chars": 626,
+    "citation_count": 3,
+    "rerank_strategy": "document_preview",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "发黄部长：刀具系统软件要求 SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 3,
+    "document_id": "doc_20260326071937_37f67e8c",
+    "department_id": "dept_general_manager_office",
+    "department_name": "总经办",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "发黄部长：刀具系统软件要求",
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

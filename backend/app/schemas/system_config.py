@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -6,6 +7,7 @@ from pydantic import BaseModel, Field
 class QueryModeConfig(BaseModel):
     top_k_default: int = Field(ge=1, le=20)
     candidate_multiplier: int = Field(ge=1, le=20)
+    lexical_top_k: int = Field(ge=1, le=200)
     rerank_top_n: int = Field(ge=1, le=20)
     timeout_budget_seconds: float = Field(gt=0)
 
@@ -19,6 +21,16 @@ class ModelRoutingConfig(BaseModel):
     fast_model: str = Field(min_length=1)
     accurate_model: str = Field(min_length=1)
     sop_generation_model: str = Field(min_length=1)
+
+
+RerankerRoutingProvider = Literal["heuristic", "openai_compatible"]
+
+
+class RerankerRoutingConfig(BaseModel):
+    provider: RerankerRoutingProvider = "heuristic"
+    model: str = Field(min_length=1)
+    timeout_seconds: float = Field(gt=0, le=60)
+    failure_cooldown_seconds: float = Field(default=15.0, gt=0, le=300)
 
 
 class DegradeControlsConfig(BaseModel):
@@ -45,6 +57,7 @@ class ConcurrencyControlsConfig(BaseModel):
 class SystemConfigUpdateRequest(BaseModel):
     query_profiles: QueryProfilesConfig
     model_routing: ModelRoutingConfig
+    reranker_routing: RerankerRoutingConfig
     degrade_controls: DegradeControlsConfig
     retry_controls: RetryControlsConfig
     concurrency_controls: ConcurrencyControlsConfig
@@ -53,6 +66,7 @@ class SystemConfigUpdateRequest(BaseModel):
 class SystemConfigResponse(BaseModel):
     query_profiles: QueryProfilesConfig
     model_routing: ModelRoutingConfig
+    reranker_routing: RerankerRoutingConfig
     degrade_controls: DegradeControlsConfig
     retry_controls: RetryControlsConfig
     concurrency_controls: ConcurrencyControlsConfig

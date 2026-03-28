@@ -5,7 +5,7 @@ from backend.app.rag.rerankers.client import RerankerClient
 from backend.app.schemas.chat import ChatRequest
 from backend.app.schemas.query_profile import QueryProfile
 from backend.app.schemas.retrieval import RetrievalResponse, RetrievedChunk
-from backend.app.schemas.system_config import SystemConfigUpdateRequest
+from backend.app.schemas.system_config import RerankerRoutingConfig, SystemConfigUpdateRequest
 from backend.app.services.chat_service import ChatService
 from backend.app.services.query_profile_service import QueryProfileService
 from backend.app.services.system_config_service import SystemConfigService
@@ -62,6 +62,7 @@ def test_query_profile_service_resolves_fast_and_accurate_defaults() -> None:
     assert fast_profile.mode == "fast"
     assert fast_profile.top_k == 5
     assert fast_profile.candidate_top_k == 10
+    assert fast_profile.lexical_top_k == 10
     assert fast_profile.rerank_top_n == 3
     assert fast_profile.timeout_budget_seconds == 12.0
     assert fast_profile.fallback_mode is None
@@ -69,6 +70,7 @@ def test_query_profile_service_resolves_fast_and_accurate_defaults() -> None:
     assert accurate_profile.mode == "accurate"
     assert accurate_profile.top_k == 8
     assert accurate_profile.candidate_top_k == 32
+    assert accurate_profile.lexical_top_k == 32
     assert accurate_profile.rerank_top_n == 5
     assert accurate_profile.timeout_budget_seconds == 24.0
     assert accurate_profile.fallback_mode == "fast"
@@ -85,16 +87,39 @@ def test_query_profile_service_builds_fast_fallback_from_accurate_profile() -> N
         mode="fast",
         top_k=6,
         candidate_top_k=12,
+        lexical_top_k=10,
         rerank_top_n=3,
         timeout_budget_seconds=12.0,
         fallback_mode=None,
     )
 
 
-def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailable() -> None:
-    settings = Settings(_env_file=None, reranker_provider="mock-provider")
-    service = QueryProfileService(settings)
-    reranker_client = RerankerClient(settings)
+def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailable(tmp_path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    current_config = system_config_service.get_config(auth_context=_build_sys_admin_context())
+    system_config_service.update_config(
+        payload=SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing,
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                model="BAAI/bge-reranker-v2-m3-prod",
+                timeout_seconds=9.5,
+            ),
+            degrade_controls=current_config.degrade_controls,
+            retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
+        ),
+        auth_context=_build_sys_admin_context(),
+    )
+    service = QueryProfileService(settings, system_config_service=system_config_service)
+    reranker_client = RerankerClient(settings, system_config_service=system_config_service)
     profile = service.resolve(purpose="chat", requested_mode="accurate", requested_top_k=4)
 
     reranked, strategy = service.rerank_with_fallback(
@@ -112,7 +137,8 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
     settings = Settings(
         _env_file=None,
         system_config_path=tmp_path / "data" / "system_config.json",
-        reranker_provider="mock-provider",
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
     )
     system_config_service = SystemConfigService(settings)
     current_config = system_config_service.get_config(auth_context=_build_sys_admin_context())
@@ -120,6 +146,11 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
         payload=SystemConfigUpdateRequest(
             query_profiles=current_config.query_profiles,
             model_routing=current_config.model_routing,
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                model="BAAI/bge-reranker-v2-m3-prod",
+                timeout_seconds=9.5,
+            ),
             degrade_controls=current_config.degrade_controls.model_copy(
                 update={
                     "rerank_fallback_enabled": False,
@@ -132,7 +163,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
         auth_context=_build_sys_admin_context(),
     )
     service = QueryProfileService(settings, system_config_service=system_config_service)
-    reranker_client = RerankerClient(settings)
+    reranker_client = RerankerClient(settings, system_config_service=system_config_service)
     accurate_profile = service.resolve(purpose="chat", requested_mode="accurate", requested_top_k=4)
 
     assert service.build_fallback_profile(accurate_profile) is None
@@ -145,7 +176,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
             reranker_client=reranker_client,
         )
     except RuntimeError as exc:
-        assert "Unsupported reranker provider" in str(exc)
+        assert "OpenAI-compatible server failed" in str(exc)
     else:
         raise AssertionError("Expected rerank provider failure when rerank fallback is disabled.")
 

@@ -35,6 +35,23 @@ class _FakeGenerationClient:
             raise LLMGenerationRetryableError("temporary llm issue")
         return self.answer
 
+    def generate_stream(
+        self,
+        *,
+        question: str,
+        contexts: list[str],
+        timeout_seconds: float | None = None,
+        model_name: str | None = None,
+    ):
+        answer = self.generate(
+            question=question,
+            contexts=contexts,
+            timeout_seconds=timeout_seconds,
+            model_name=model_name,
+        )
+        for index in range(0, len(answer), 4):
+            yield answer[index : index + 4]
+
 
 def _build_client(tmp_path: Path) -> TestClient:
     settings = Settings(
@@ -168,6 +185,32 @@ def test_generate_sop_by_document_endpoint_returns_draft_for_department_admin(tm
     assert payload["snapshot_id"]
     assert payload["topic"] == "doc_digitalization"
     assert [item["document_id"] for item in payload["citations"]] == ["doc_digitalization"]
+
+
+def test_generate_sop_by_document_stream_endpoint_returns_sse_frames(tmp_path: Path) -> None:
+    client = _build_client(tmp_path)
+    try:
+        headers = _login_headers(
+            client,
+            username="digitalization.admin",
+            password="digitalization-admin-pass",
+        )
+        with client.stream(
+            "POST",
+            "/api/v1/sops/generate/document/stream",
+            json={"document_id": "doc_digitalization", "top_k": 4},
+            headers=headers,
+        ) as response:
+            payload = "".join(response.iter_text())
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert "event: meta" in payload
+    assert "event: content_delta" in payload
+    assert "event: done" in payload
+    assert '"request_mode": "document"' in payload
+    assert '"content": "这是生成后的 SOP 草稿。"' in payload
 
 
 def test_generate_sop_by_document_endpoint_uses_document_preview_fallback_when_retrieval_empty(tmp_path: Path) -> None:

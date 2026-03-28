@@ -1,3 +1,5 @@
+import json
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
@@ -67,7 +69,10 @@ class SopGenerationService:
         self.identity_service = identity_service or get_identity_service()
         self.retrieval_service = retrieval_service or get_retrieval_service()
         self.document_service = document_service or get_document_service()
-        self.reranker_client = reranker_client or RerankerClient(self.settings)
+        self.reranker_client = reranker_client or RerankerClient(
+            self.settings,
+            system_config_service=self.system_config_service,
+        )
         self.generation_client = generation_client or LLMGenerationClient(
             self.settings,
             system_config_service=self.system_config_service,
@@ -210,6 +215,151 @@ class SopGenerationService:
             scenario_name=normalized_scenario_name,
         )
         return self._generate_draft(
+            request_mode="document",
+            request_payload=request,
+            title=title,
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=document_label,
+            search_query=search_query,
+            generation_instruction=instruction,
+            requested_mode=request.mode,
+            requested_top_k=request.top_k,
+            document_id=document_detail.doc_id,
+            auth_context=auth_context,
+        )
+
+    def stream_generate_from_scenario_sse(
+        self,
+        request: SopGenerateByScenarioRequest,
+        *,
+        auth_context: AuthContext,
+    ) -> Iterator[str]:
+        department = self._resolve_generation_department(auth_context, request.department_id)
+        normalized_process_name = _normalize_optional_str(request.process_name)
+        normalized_scenario_name = request.scenario_name.strip()
+        title = _normalize_optional_str(request.title_hint) or self._build_title(
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+        )
+        search_query = self._build_search_query(
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=None,
+        )
+        instruction = self._build_generation_instruction(
+            title=title,
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=None,
+        )
+        yield from self._stream_draft_sse(
+            request_mode="scenario",
+            request_payload=request,
+            title=title,
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=None,
+            search_query=search_query,
+            generation_instruction=instruction,
+            requested_mode=request.mode,
+            requested_top_k=request.top_k,
+            document_id=request.document_id,
+            auth_context=auth_context,
+        )
+
+    def stream_generate_from_topic_sse(
+        self,
+        request: SopGenerateByTopicRequest,
+        *,
+        auth_context: AuthContext,
+    ) -> Iterator[str]:
+        department = self._resolve_generation_department(auth_context, request.department_id)
+        normalized_process_name = _normalize_optional_str(request.process_name)
+        normalized_scenario_name = _normalize_optional_str(request.scenario_name)
+        normalized_topic = request.topic.strip()
+        title = _normalize_optional_str(request.title_hint) or self._build_title(
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=normalized_topic,
+        )
+        search_query = self._build_search_query(
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=normalized_topic,
+        )
+        instruction = self._build_generation_instruction(
+            title=title,
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=normalized_topic,
+        )
+        yield from self._stream_draft_sse(
+            request_mode="topic",
+            request_payload=request,
+            title=title,
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=normalized_topic,
+            search_query=search_query,
+            generation_instruction=instruction,
+            requested_mode=request.mode,
+            requested_top_k=request.top_k,
+            document_id=request.document_id,
+            auth_context=auth_context,
+        )
+
+    def stream_generate_from_document_sse(
+        self,
+        request: SopGenerateByDocumentRequest,
+        *,
+        auth_context: AuthContext,
+    ) -> Iterator[str]:
+        document_detail = self.document_service.get_document(request.document_id, auth_context=auth_context)
+        document_department_id = _normalize_optional_str(document_detail.department_id)
+        requested_department_id = _normalize_optional_str(request.department_id)
+        if requested_department_id and document_department_id and requested_department_id != document_department_id:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="department_id does not match the selected document department.",
+            )
+
+        department = self._resolve_generation_department(
+            auth_context,
+            document_department_id or requested_department_id or auth_context.department.department_id,
+        )
+        normalized_process_name = _normalize_optional_str(request.process_name)
+        normalized_scenario_name = _normalize_optional_str(request.scenario_name)
+        document_label = self._build_document_label(document_detail.file_name)
+        title = _normalize_optional_str(request.title_hint) or self._build_title(
+            department=department,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+            topic=document_label,
+        )
+        search_query = self._build_document_search_query(
+            department=department,
+            document_name=document_detail.file_name,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+        )
+        instruction = self._build_document_generation_instruction(
+            title=title,
+            department=department,
+            document_name=document_detail.file_name,
+            process_name=normalized_process_name,
+            scenario_name=normalized_scenario_name,
+        )
+        yield from self._stream_draft_sse(
             request_mode="document",
             request_payload=request,
             title=title,
@@ -463,6 +613,294 @@ class SopGenerationService:
             if runtime_lease is not None:
                 runtime_lease.release()
 
+    def _stream_draft_sse(
+        self,
+        *,
+        request_mode: SopGenerationRequestMode,
+        request_payload: SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest,
+        title: str,
+        department: DepartmentRecord,
+        process_name: str | None,
+        scenario_name: str | None,
+        topic: str | None,
+        search_query: str,
+        generation_instruction: str,
+        requested_mode: QueryMode | None,
+        requested_top_k: int | None,
+        document_id: str | None,
+        auth_context: AuthContext,
+    ) -> Iterator[str]:
+        started_at = perf_counter()
+        profile = self.query_profile_service.resolve(
+            purpose="sop_generation",
+            requested_mode=requested_mode,
+            requested_top_k=requested_top_k,
+        )
+        rerank_strategy = "skipped"
+        runtime_details: dict[str, object] = {}
+        runtime_lease: RuntimeGateLease | None = None
+        citations: list[SopGenerationCitation] = []
+        response_model = self._response_model_name(profile=profile)
+        downgraded_from: str | None = None
+
+        try:
+            runtime_lease, runtime_details = self._acquire_generation_runtime_slot(
+                profile,
+                auth_context=auth_context,
+            )
+            citations = self._build_citations(
+                search_query=search_query,
+                target_department_id=department.department_id,
+                profile=profile,
+                document_id=document_id,
+                auth_context=auth_context,
+            )
+            if citations:
+                rerank_strategy = "provider_or_fallback"
+            if not citations and request_mode == "document" and document_id is not None:
+                citations = self._build_document_preview_citations(
+                    document_id=document_id,
+                    auth_context=auth_context,
+                )
+                if citations:
+                    rerank_strategy = "document_preview"
+            if not citations:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="No relevant evidence was retrieved for SOP generation.",
+                )
+
+            contexts = [item.snippet for item in citations]
+            response_model = self._response_model_name(profile=profile)
+            generation_mode = "rag"
+            yield self._to_sse(
+                "meta",
+                self._build_stream_meta_payload(
+                    request_mode=request_mode,
+                    generation_mode=generation_mode,
+                    title=title,
+                    department=department,
+                    process_name=process_name,
+                    scenario_name=scenario_name,
+                    topic=topic,
+                    model=response_model,
+                    citations=citations,
+                ),
+            )
+
+            answer_parts: list[str] = []
+            try:
+                for delta in self.generation_client.generate_stream(
+                    question=generation_instruction,
+                    contexts=contexts,
+                    timeout_seconds=profile.timeout_budget_seconds,
+                    model_name=response_model,
+                ):
+                    if not delta:
+                        continue
+                    answer_parts.append(delta)
+                    yield self._to_sse("content_delta", {"delta": delta})
+                content = self._strip_markdown_code_fence("".join(answer_parts))
+                if not content:
+                    content = "No SOP draft content was generated."
+            except LLMGenerationRetryableError:
+                degraded_citations = self._build_degraded_citations(
+                    search_query=search_query,
+                    target_department_id=department.department_id,
+                    profile=profile,
+                    document_id=document_id,
+                    auth_context=auth_context,
+                )
+                if degraded_citations:
+                    citations = degraded_citations
+                    rerank_strategy = "fallback_profile"
+                    downgraded_from = profile.mode
+                if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
+                    raise
+                generation_mode = "retrieval_fallback"
+                yield self._to_sse(
+                    "meta",
+                    self._build_stream_meta_payload(
+                        request_mode=request_mode,
+                        generation_mode=generation_mode,
+                        title=title,
+                        department=department,
+                        process_name=process_name,
+                        scenario_name=scenario_name,
+                        topic=topic,
+                        model=response_model,
+                        citations=citations,
+                    ),
+                )
+                content = self._build_retrieval_fallback_draft(
+                    title=title,
+                    department=department,
+                    process_name=process_name,
+                    scenario_name=scenario_name,
+                    topic=topic,
+                    citations=citations,
+                )
+                for delta in self._chunk_text(content):
+                    yield self._to_sse("content_delta", {"delta": delta})
+
+            response = SopGenerationDraftResponse(
+                request_mode=request_mode,
+                generation_mode=generation_mode,
+                title=title,
+                department_id=department.department_id,
+                department_name=department.department_name,
+                process_name=process_name,
+                scenario_name=scenario_name,
+                topic=topic,
+                content=content,
+                model=response_model,
+                citations=citations,
+            )
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="success",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode=response.generation_mode,
+                citation_count=len(response.citations),
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                downgraded_from=downgraded_from,
+                extra_details={"streaming": True, **runtime_details},
+            )
+            snapshot_record = self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="success",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=citations,
+                response=response,
+                rerank_strategy=rerank_strategy,
+                model=response_model,
+                content=response.content,
+                downgraded_from=downgraded_from,
+                details={
+                    "title": title,
+                    "generation_mode": response.generation_mode,
+                    "citation_count": len(response.citations),
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    "streaming": True,
+                    **runtime_details,
+                },
+            )
+            response.snapshot_id = snapshot_record.snapshot_id
+            yield self._to_sse("done", response.model_dump())
+        except RuntimeGateBusyError as exc:
+            runtime_details = {
+                **runtime_details,
+                "runtime_channel": exc.channel,
+                "busy_rejected": True,
+                "busy_rejected_reason": exc.reason,
+                "retry_after_seconds": exc.retry_after_seconds,
+            }
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="failed",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode="failed",
+                citation_count=0,
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                error_message=exc.detail,
+                extra_details={"streaming": True, **runtime_details},
+            )
+            self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="failed",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=[],
+                response=None,
+                rerank_strategy=rerank_strategy,
+                model=response_model,
+                content=None,
+                error_message=exc.detail,
+                details={
+                    "title": title,
+                    "generation_mode": "failed",
+                    "citation_count": 0,
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    "streaming": True,
+                    **runtime_details,
+                },
+            )
+            yield self._to_sse(
+                "error",
+                {
+                    "message": exc.detail,
+                    "busy": True,
+                    "retry_after_seconds": exc.retry_after_seconds,
+                },
+            )
+        except Exception as exc:
+            error_message = exc.detail if isinstance(exc, HTTPException) else str(exc)
+            self._record_generation_event(
+                request_mode=request_mode,
+                outcome="failed",
+                auth_context=auth_context,
+                profile=profile,
+                document_id=document_id,
+                title=title,
+                generation_mode="failed",
+                citation_count=0,
+                rerank_strategy=rerank_strategy,
+                duration_ms=self._elapsed_ms(started_at),
+                error_message=str(error_message),
+                extra_details={"streaming": True, **runtime_details},
+            )
+            self.request_snapshot_service.record_sop_snapshot(
+                request_mode=request_mode,
+                outcome="failed",
+                request=request_payload,
+                profile=profile,
+                auth_context=auth_context,
+                citations=[],
+                response=None,
+                rerank_strategy=rerank_strategy,
+                model=response_model,
+                content=None,
+                error_message=str(error_message),
+                details={
+                    "title": title,
+                    "generation_mode": "failed",
+                    "citation_count": 0,
+                    "document_id": document_id,
+                    "department_id": department.department_id,
+                    "department_name": department.department_name,
+                    "process_name": process_name,
+                    "scenario_name": scenario_name,
+                    "topic": topic,
+                    "streaming": True,
+                    **runtime_details,
+                },
+            )
+            yield self._to_sse("error", {"message": str(error_message)})
+        finally:
+            if runtime_lease is not None:
+                runtime_lease.release()
+
     def _build_citations(
         self,
         *,
@@ -505,6 +943,10 @@ class SopGenerationService:
                 snippet=item.text,
                 score=item.score,
                 source_path=item.source_path,
+                retrieval_strategy=item.retrieval_strategy,
+                vector_score=item.vector_score,
+                lexical_score=item.lexical_score,
+                fused_score=item.fused_score,
             )
             for item in reranked_results
         ]
@@ -596,6 +1038,7 @@ class SopGenerationService:
                     snippet=trimmed_snippet,
                     score=1.0 - (index * 0.01),
                     source_path=preview.preview_file_url or f"document-preview://{document_id}",
+                    retrieval_strategy="document_preview",
                 )
             )
         return citations
@@ -796,6 +1239,42 @@ class SopGenerationService:
         trailing_lines = lines[closing_index + 1:]
         merged_lines = inner_lines + trailing_lines
         return "\n".join(merged_lines).strip()
+
+    @staticmethod
+    def _to_sse(event: str, payload: dict[str, object]) -> str:
+        return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+    @staticmethod
+    def _chunk_text(text: str, chunk_size: int = 48) -> Iterator[str]:
+        safe_size = max(1, chunk_size)
+        for start in range(0, len(text), safe_size):
+            yield text[start : start + safe_size]
+
+    @staticmethod
+    def _build_stream_meta_payload(
+        *,
+        request_mode: SopGenerationRequestMode,
+        generation_mode: str,
+        title: str,
+        department: DepartmentRecord,
+        process_name: str | None,
+        scenario_name: str | None,
+        topic: str | None,
+        model: str,
+        citations: list[SopGenerationCitation],
+    ) -> dict[str, object]:
+        return {
+            "request_mode": request_mode,
+            "generation_mode": generation_mode,
+            "title": title,
+            "department_id": department.department_id,
+            "department_name": department.department_name,
+            "process_name": process_name,
+            "scenario_name": scenario_name,
+            "topic": topic,
+            "model": model,
+            "citations": [citation.model_dump() for citation in citations],
+        }
 
     def _response_model_name(self, *, profile: QueryProfile | None = None) -> str:
         if self.settings.llm_provider.lower().strip() == "mock":

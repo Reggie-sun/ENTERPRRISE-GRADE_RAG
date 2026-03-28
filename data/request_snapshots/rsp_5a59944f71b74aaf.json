@@ -1,0 +1,151 @@
+{
+  "snapshot_id": "rsp_5a59944f71b74aaf",
+  "trace_id": "trc_ce39a15b444947c0",
+  "request_id": "req_a448889c5eeb4f9b",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T03:58:22.476809Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_digitalization_real_08",
+    "username": "digitalization.real.08",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "图片ocr_mcp_ui_validation.png里的批次和步骤码是什么？",
+    "top_k": null,
+    "mode": "fast",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "图片ocr_mcp_ui_validation.png里的批次和步骤码是什么？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+      "document_id": "doc_20260328035056_fd1b630f",
+      "document_name": "ocr_mobile_fresh_validation_v3.png",
+      "snippet": "OCR构建最终验证V3\n批次20260328-115600\n设备巡检步骤 B1 B2 B3\nSTEP4CHECKTEMPERATURE97531",
+      "score": -0.19189453125,
+      "source_path": "/app/data/uploads/doc_20260328035056_fd1b630f__ocr_mobile_fresh_validation_v3.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.62207663,
+      "lexical_score": 20.350415011983955,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+      "document_id": "doc_20260328022431_8bf3fa29",
+      "document_name": "ocr_real_final.png",
+      "snippet": "OCR最终验证\n时间戳20260328-102416\n质检巡检标准步骤\nSTEP2CHECKSENSOR24680",
+      "score": -0.476318359375,
+      "source_path": "/app/data/uploads/doc_20260328022431_8bf3fa29__ocr_real_final.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.6158854,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+      "document_id": "doc_20260328034931_6d36c484",
+      "document_name": "ocr_mobile_fresh_validation.png",
+      "snippet": "OCR构建收口验证\n批次20260328-115200\n设备巡检步骤A1A2 A3\nSTEP3CHECKPRESSURE13579",
+      "score": -0.60546875,
+      "source_path": "/app/data/uploads/doc_20260328034931_6d36c484__ocr_mobile_fresh_validation.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.6137193,
+      "lexical_score": 20.424799692436597,
+      "fused_score": 0.032266458495966696
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+      "document_id": "doc_20260328035056_fd1b630f",
+      "document_name": "ocr_mobile_fresh_validation_v3.png",
+      "snippet": "OCR构建最终验证V3\n批次20260328-115600\n设备巡检步骤 B1 B2 B3\nSTEP4CHECKTEMPERATURE97531",
+      "score": -0.19189453125,
+      "source_path": "/app/data/uploads/doc_20260328035056_fd1b630f__ocr_mobile_fresh_validation_v3.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.62207663,
+      "lexical_score": 20.350415011983955,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+      "document_id": "doc_20260328022431_8bf3fa29",
+      "document_name": "ocr_real_final.png",
+      "snippet": "OCR最终验证\n时间戳20260328-102416\n质检巡检标准步骤\nSTEP2CHECKSENSOR24680",
+      "score": -0.476318359375,
+      "source_path": "/app/data/uploads/doc_20260328022431_8bf3fa29__ocr_real_final.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.6158854,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+      "document_id": "doc_20260328034931_6d36c484",
+      "document_name": "ocr_mobile_fresh_validation.png",
+      "snippet": "OCR构建收口验证\n批次20260328-115200\n设备巡检步骤A1A2 A3\nSTEP3CHECKPRESSURE13579",
+      "score": -0.60546875,
+      "source_path": "/app/data/uploads/doc_20260328034931_6d36c484__ocr_mobile_fresh_validation.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.6137193,
+      "lexical_score": 20.424799692436597,
+      "fused_score": 0.032266458495966696
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "根据提供的上下文，无法直接找到图片\"ocr_mcp_ui_validation.png\"的具体信息。但是，可以推测与该问题相关的可能是Context 1中的信息，因为它提到了批次号\"20260328-115600\"和一些步骤码\"B1 B2 B3\"以及一个检查温度的步骤\"STEP4CHECKTEMPERATURE97531\"。\n\n然而，由于问题特别指定了图片名称，并且没有直接提供该图片的内容或详细描述，我不能确定地指出图片\"ocr_mcp_ui_validation.png\"里的批次和步骤码。因此，基于严格的信息匹配，答案是：无法从给定的上下文中找到图片\"ocr_mcp_ui_valida...",
+    "answer_chars": 317,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_digitalization_real_08"
+  }
+}

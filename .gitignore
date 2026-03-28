@@ -30,3 +30,6 @@ data/jobs/*
 
 storage/qdrant/*
 !storage/qdrant/.gitkeep
+
+# Local MCP / code graph artifacts
+index.json

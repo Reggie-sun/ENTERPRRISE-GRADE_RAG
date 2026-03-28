@@ -1,0 +1,114 @@
+{
+  "snapshot_id": "rsp_f38d13a90d2a4ee9",
+  "trace_id": "trc_sop_f6fe0998001c4b0e",
+  "request_id": "req_sop_5fb83d4d980746b1",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T05:45:03.778078Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_digitalization_real_08",
+    "username": "digitalization.real.08",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260328054426_71b5367e",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_digitalization",
+    "document_id": "doc_20260328054426_71b5367e",
+    "title_hint": "docx_embedded_ocr_ui SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260328054426_71b5367e 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260328054426_71b5367e-chunk-0",
+      "document_id": "doc_20260328054426_71b5367e",
+      "document_name": "docx_embedded_real_ocr_big_runtime_unique.docx",
+      "snippet": "DOCX runtime unique paragraph 202603281345\n\nSENSOR\nＥ204\nCHECK STEP\nA1\nA2\nA3",
+      "score": -1.166015625,
+      "source_path": "/app/data/uploads/doc_20260328054426_71b5367e__docx_embedded_real_ocr_big_runtime_unique.docx",
+      "retrieval_strategy": "qdrant",
+      "vector_score": 0.5686519,
+      "lexical_score": null,
+      "fused_score": 0.5686519
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260328054426_71b5367e-chunk-0",
+      "document_id": "doc_20260328054426_71b5367e",
+      "document_name": "docx_embedded_real_ocr_big_runtime_unique.docx",
+      "snippet": "DOCX runtime unique paragraph 202603281345\n\nSENSOR\nＥ204\nCHECK STEP\nA1\nA2\nA3",
+      "score": -1.166015625,
+      "source_path": "/app/data/uploads/doc_20260328054426_71b5367e__docx_embedded_real_ocr_big_runtime_unique.docx",
+      "retrieval_strategy": "qdrant",
+      "vector_score": 0.5686519,
+      "lexical_score": null,
+      "fused_score": 0.5686519
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "# docx_embedded_ocr_ui SOP 草稿\n\n## 部门\n数字化部\n\n## 来源文档\ndocx_embedded_real_ocr_big_runtime_unique.docx\n\n## 目的\n本SOP旨在规范特定传感器（E204）的检查流程。\n\n## 适用范围\n适用于所有涉及传感器E204的检查工作。\n\n## 前置检查\n- 确认传感器E204已正确安装并连接至系统。\n- 检查是否有足够的权限进行传感器E204的检查。\n\n## 操作步骤\n1. 执行检查步骤A1。\n2. 执行检查步骤A2。\n3. 执行检查步骤A3。\n\n## 异常处理\n- 若在执行任一检查步骤时发现异常，应立...",
+    "answer_chars": 504,
+    "citation_count": 1,
+    "rerank_strategy": "provider_or_fallback",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "docx_embedded_ocr_ui SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 1,
+    "document_id": "doc_20260328054426_71b5367e",
+    "department_id": "dept_digitalization",
+    "department_name": "数字化部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "docx_embedded_real_ocr_big_runtime_unique",
+    "streaming": true,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_digitalization_real_08"
+  }
+}

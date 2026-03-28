@@ -15,6 +15,7 @@ from backend.app.services.document_service import DocumentService, get_document_
 from backend.app.services.runtime_gate_service import RuntimeGateBusyError, RuntimeGateService
 from backend.app.services.retrieval_service import RetrievalService, get_retrieval_service  # 导入检索服务和依赖入口。
 from backend.app.services.system_config_service import SystemConfigService
+from backend.tests.test_document_ingestion import MINIMAL_PNG_BYTES, build_minimal_docx_bytes
 
 
 def parse_sse_events(raw_stream: str) -> list[tuple[str, dict[str, object]]]:  # 解析 text/event-stream 文本为结构化事件列表。
@@ -253,6 +254,40 @@ def test_retrieval_search_returns_ocr_metadata_for_image_documents(tmp_path: Pat
     assert first.parser_name == "image_ocr_mock"
     assert first.page_no == 1
     assert first.ocr_confidence is None
+    assert first.quality_score is None
+
+
+def test_retrieval_search_returns_ocr_metadata_for_docx_embedded_images(tmp_path: Path) -> None:  # DOCX 内嵌图片 OCR 入库后，检索结果也应能返回 OCR 元数据。
+    settings = build_test_settings(tmp_path).model_copy(update={"ocr_provider": "mock"})
+    ensure_data_directories(settings)
+    document_service = DocumentService(settings)
+    retrieval_service = RetrievalService(settings, document_service=document_service)
+
+    source_path = settings.upload_dir / "embedded_guide.docx"
+    source_path.write_bytes(
+        build_minimal_docx_bytes(
+            "正文：数字化系统巡检记录。",
+            embedded_images=[("embedded_ocr.png", MINIMAL_PNG_BYTES)],
+        )
+    )
+    Path(f"{source_path}.ocr.txt").write_text("截图步骤：检查传感器报警 E204。", encoding="utf-8")
+
+    document_service.ingestion_service.ingest_document(
+        document_id="doc_docx_embedded_ocr",
+        filename="embedded_guide.docx",
+        source_path=source_path,
+    )
+
+    response = retrieval_service.search(
+        RetrievalRequest(query="E204 怎么处理", top_k=3),
+        auth_context=None,
+    )
+
+    assert response.results
+    assert any(item.ocr_used is True for item in response.results)
+    ocr_item = next(item for item in response.results if item.ocr_used is True)
+    assert ocr_item.parser_name == "docx_embedded_image_ocr_mock"
+    assert "E204" in ocr_item.text
 
 
 def test_chat_ask_endpoint_uses_openai_reranker_for_citation_order(tmp_path: Path, monkeypatch) -> None:
@@ -917,7 +952,12 @@ def test_retrieval_service_enforces_document_id_filter_even_when_store_returns_m
 
 
 def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: Path) -> None:
-    settings = build_test_settings(tmp_path)
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 2,
+            "query_fast_lexical_top_k_default": 3,
+        }
+    )
     ensure_data_directories(settings)
     retrieval_service = RetrievalService(settings)
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
@@ -947,8 +987,11 @@ def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: 
             ),
         ]
     )
-    retrieval_service.lexical_retriever = SimpleNamespace(
-        search=lambda query, *, limit, document_id=None: [
+    lexical_limits: list[int] = []
+
+    def fake_lexical_search(query, *, limit, document_id=None):
+        lexical_limits.append(limit)
+        return [
             SimpleNamespace(
                 point_id="point-a",
                 score=2.4,
@@ -961,12 +1004,150 @@ def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: 
                 },
             )
         ]
-    )
 
-    response = retrieval_service.search(request=RetrievalRequest(query="ZX14", top_k=2))
+    retrieval_service.lexical_retriever = SimpleNamespace(search=fake_lexical_search)
+
+    response = retrieval_service.search(request=RetrievalRequest(query="ZX14"))
 
     assert response.mode == "hybrid"
+    assert lexical_limits == [3]
     assert [item.chunk_id for item in response.results] == ["chunk-a", "chunk-b"]
+    assert response.results[0].retrieval_strategy == "hybrid"
+    assert response.results[0].vector_score == 0.84
+    assert response.results[0].lexical_score == 2.4
+    assert response.results[0].fused_score == response.results[0].score
+
+
+@pytest.mark.parametrize(
+    ("query", "expected_top_chunk"),
+    [
+        ("PLC_A01错误", "chunk-lexical"),
+        ("为什么设备夜班频繁停机", "chunk-vector"),
+        ("SOP-1024夜班停机原因", "chunk-shared"),
+    ],
+)
+def test_retrieval_service_applies_dynamic_hybrid_weights_by_query_type(
+    tmp_path: Path,
+    query: str,
+    expected_top_chunk: str,
+) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_dynamic_weighting_enabled": True,
+            "retrieval_hybrid_rrf_k": 1,
+            "query_fast_top_k_default": 3,
+            "query_fast_lexical_top_k_default": 3,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-vector",
+                score=0.98,
+                payload={
+                    "chunk_id": "chunk-vector",
+                    "document_id": "doc_vector",
+                    "document_name": "doc_vector.txt",
+                    "text": "night shift troubleshooting summary",
+                    "source_path": "/tmp/doc_vector.txt",
+                },
+            ),
+            SimpleNamespace(
+                id="point-shared",
+                score=0.91,
+                payload={
+                    "chunk_id": "chunk-shared",
+                    "document_id": "doc_shared",
+                    "document_name": "doc_shared.txt",
+                    "text": "SOP-1024 night shift downtime analysis",
+                    "source_path": "/tmp/doc_shared.txt",
+                },
+            ),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-lexical",
+                score=4.2,
+                payload={
+                    "chunk_id": "chunk-lexical",
+                    "document_id": "doc_lexical",
+                    "document_name": "doc_lexical.txt",
+                    "text": "PLC_A01 fault code recovery steps",
+                    "source_path": "/tmp/doc_lexical.txt",
+                },
+            ),
+            SimpleNamespace(
+                point_id="point-shared",
+                score=3.4,
+                payload={
+                    "chunk_id": "chunk-shared",
+                    "document_id": "doc_shared",
+                    "document_name": "doc_shared.txt",
+                    "text": "SOP-1024 night shift downtime analysis",
+                    "source_path": "/tmp/doc_shared.txt",
+                },
+            ),
+        ]
+    )
+
+    response = retrieval_service.search(request=RetrievalRequest(query=query))
+
+    assert response.mode == "hybrid"
+    assert response.results[0].chunk_id == expected_top_chunk
+
+
+def test_retrieval_service_logs_dynamic_weight_decision(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_dynamic_weighting_enabled": True,
+            "retrieval_hybrid_rrf_k": 1,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-vector",
+                score=0.98,
+                payload={
+                    "chunk_id": "chunk-vector",
+                    "document_id": "doc_vector",
+                    "document_name": "doc_vector.txt",
+                    "text": "night shift troubleshooting summary",
+                    "source_path": "/tmp/doc_vector.txt",
+                },
+            )
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-lexical",
+                score=4.2,
+                payload={
+                    "chunk_id": "chunk-lexical",
+                    "document_id": "doc_lexical",
+                    "document_name": "doc_lexical.txt",
+                    "text": "PLC_A01 fault code recovery steps",
+                    "source_path": "/tmp/doc_lexical.txt",
+                },
+            )
+        ]
+    )
+
+    with caplog.at_level("INFO", logger="backend.app.services.retrieval_service"):
+        retrieval_service.search(request=RetrievalRequest(query="PLC_A01错误"))
+
+    assert "query_type=exact" in caplog.text
+    assert "vector_weight=0.300" in caplog.text
+    assert "lexical_weight=0.700" in caplog.text
 
 
 def test_retrieval_service_falls_back_to_qdrant_when_lexical_retriever_errors(tmp_path: Path) -> None:
@@ -1055,3 +1236,279 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
 
     assert [item.document_id for item in response.results] == ["doc_a"]
     assert retrieval_service.document_service.calls == [["doc_a", "doc_b"]]
+
+
+def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    system_config_service = SystemConfigService(settings)
+    system_config_service.repository.write(
+        {
+            "reranker_routing": {
+                "provider": "openai_compatible",
+                "model": "BAAI/bge-reranker-v2-m3",
+                "timeout_seconds": 9.0,
+            }
+        }
+    )
+    retrieval_service = RetrievalService(settings)
+    base_results = [
+        RetrievedChunk(
+            chunk_id="chunk-a",
+            document_id="doc_a",
+            document_name="doc_a.txt",
+            text="servo reset requires checking alarm signal first",
+            score=0.91,
+            source_path="/tmp/doc_a.txt",
+            retrieval_strategy="hybrid",
+        ),
+        RetrievedChunk(
+            chunk_id="chunk-b",
+            document_id="doc_b",
+            document_name="doc_b.txt",
+            text="servo reset should release e-stop before reboot",
+            score=0.87,
+            source_path="/tmp/doc_b.txt",
+            retrieval_strategy="hybrid",
+        ),
+    ]
+    retrieval_service.search = lambda request, auth_context=None: RetrievalResponse(  # type: ignore[method-assign]
+        query=request.query,
+        top_k=request.top_k or 2,
+        mode="hybrid",
+        results=base_results,
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "rerank",
+        lambda **kwargs: [base_results[1].model_copy(update={"score": 0.99}), base_results[0].model_copy(update={"score": 0.88})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "rerank_heuristic",
+        lambda **kwargs: [base_results[0].model_copy(update={"score": 0.95}), base_results[1].model_copy(update={"score": 0.84})],
+    )
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "get_runtime_status",
+        lambda force_refresh=False: {
+            "provider": "openai_compatible",
+            "model": "BAAI/bge-reranker-v2-m3",
+            "failure_cooldown_seconds": 15.0,
+            "effective_provider": "openai_compatible",
+            "effective_model": "BAAI/bge-reranker-v2-m3",
+            "effective_strategy": "provider",
+            "fallback_enabled": True,
+            "lock_active": False,
+            "lock_source": None,
+            "cooldown_remaining_seconds": 0.0,
+            "ready": True,
+            "detail": "OpenAI-compatible reranker health probe succeeded.",
+        },
+    )
+
+    response = retrieval_service.compare_rerank(RetrievalRequest(query="servo reset", top_k=2))
+
+    assert response.mode == "hybrid"
+    assert response.candidate_count == 2
+    assert response.configured.provider == "openai_compatible"
+    assert response.configured.model == "BAAI/bge-reranker-v2-m3"
+    assert response.configured.strategy == "provider"
+    assert [item.chunk_id for item in response.configured.results] == ["chunk-b", "chunk-a"]
+    assert [item.chunk_id for item in response.heuristic.results] == ["chunk-a", "chunk-b"]
+    assert response.route_status.effective_provider == "openai_compatible"
+    assert response.route_status.effective_strategy == "provider"
+    assert response.route_status.lock_active is False
+    assert response.route_status.ready is True
+    assert response.summary.top1_same is False
+    assert response.summary.overlap_count == 2
+
+
+def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    system_config_service = SystemConfigService(settings)
+    system_config_service.repository.write(
+        {
+            "reranker_routing": {
+                "provider": "openai_compatible",
+                "model": "BAAI/bge-reranker-v2-m3",
+                "timeout_seconds": 9.0,
+            },
+            "degrade_controls": {
+                "rerank_fallback_enabled": True,
+                "accurate_to_fast_fallback_enabled": True,
+                "retrieval_fallback_enabled": True,
+            },
+        }
+    )
+    retrieval_service = RetrievalService(settings)
+    base_results = [
+        RetrievedChunk(
+            chunk_id="chunk-a",
+            document_id="doc_a",
+            document_name="doc_a.txt",
+            text="servo reset requires checking alarm signal first",
+            score=0.91,
+            source_path="/tmp/doc_a.txt",
+            retrieval_strategy="hybrid",
+        ),
+        RetrievedChunk(
+            chunk_id="chunk-b",
+            document_id="doc_b",
+            document_name="doc_b.txt",
+            text="servo reset should release e-stop before reboot",
+            score=0.87,
+            source_path="/tmp/doc_b.txt",
+            retrieval_strategy="hybrid",
+        ),
+    ]
+    heuristic_results = [base_results[0].model_copy(update={"score": 0.95}), base_results[1].model_copy(update={"score": 0.84})]
+    retrieval_service.search = lambda request, auth_context=None: RetrievalResponse(  # type: ignore[method-assign]
+        query=request.query,
+        top_k=request.top_k or 2,
+        mode="hybrid",
+        results=base_results,
+    )
+
+    def fail_provider(**kwargs):
+        raise RuntimeError("reranker upstream unavailable")
+
+    monkeypatch.setattr(retrieval_service.reranker_client, "rerank", fail_provider)
+    monkeypatch.setattr(retrieval_service.reranker_client, "rerank_heuristic", lambda **kwargs: heuristic_results)
+    monkeypatch.setattr(
+        retrieval_service.reranker_client,
+        "get_runtime_status",
+        lambda force_refresh=False: {
+            "provider": "openai_compatible",
+            "model": "BAAI/bge-reranker-v2-m3",
+            "failure_cooldown_seconds": 15.0,
+            "effective_provider": "heuristic",
+            "effective_model": "heuristic",
+            "effective_strategy": "heuristic",
+            "fallback_enabled": True,
+            "lock_active": True,
+            "lock_source": "request",
+            "cooldown_remaining_seconds": 12.4,
+            "ready": False,
+            "detail": "reranker upstream unavailable",
+        },
+    )
+
+    response = retrieval_service.compare_rerank(RetrievalRequest(query="servo reset", top_k=2))
+
+    assert response.configured.strategy == "heuristic"
+    assert response.configured.error_message == "reranker upstream unavailable"
+    assert [item.chunk_id for item in response.configured.results] == ["chunk-a", "chunk-b"]
+    assert [item.chunk_id for item in response.heuristic.results] == ["chunk-a", "chunk-b"]
+    assert response.route_status.effective_provider == "heuristic"
+    assert response.route_status.effective_strategy == "heuristic"
+    assert response.route_status.lock_active is True
+    assert response.route_status.lock_source == "request"
+    assert response.route_status.ready is False
+    assert response.summary.top1_same is True
+
+
+def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: Path) -> None:
+    client = TestClient(app)
+
+    class FakeRetrievalService:
+        def compare_rerank(self, request, *, auth_context=None):
+            return {
+                "query": request.query,
+                "mode": "hybrid",
+                "candidate_count": 2,
+                "rerank_top_n": 2,
+                "route_status": {
+                    "provider": "openai_compatible",
+                    "model": "BAAI/bge-reranker-v2-m3",
+                    "failure_cooldown_seconds": 15.0,
+                    "effective_provider": "heuristic",
+                    "effective_model": "heuristic",
+                    "effective_strategy": "heuristic",
+                    "fallback_enabled": True,
+                    "lock_active": True,
+                    "lock_source": "probe",
+                    "cooldown_remaining_seconds": 13.8,
+                    "ready": False,
+                    "detail": "Reranker health probe failed with HTTP error: 502 Bad Gateway",
+                },
+                "configured": {
+                    "label": "configured",
+                    "provider": "openai_compatible",
+                    "model": "BAAI/bge-reranker-v2-m3",
+                    "strategy": "provider",
+                    "error_message": None,
+                    "results": [
+                        {
+                            "chunk_id": "chunk-b",
+                            "document_id": "doc_b",
+                            "document_name": "doc_b.txt",
+                            "text": "servo reset should release e-stop before reboot",
+                            "score": 0.99,
+                            "source_path": "/tmp/doc_b.txt",
+                            "retrieval_strategy": "hybrid",
+                            "vector_score": 0.87,
+                            "lexical_score": 1.5,
+                            "fused_score": 0.91,
+                            "ocr_used": False,
+                            "parser_name": None,
+                            "page_no": None,
+                            "ocr_confidence": None,
+                            "quality_score": None,
+                        }
+                    ],
+                },
+                "heuristic": {
+                    "label": "heuristic",
+                    "provider": "heuristic",
+                    "model": None,
+                    "strategy": "heuristic",
+                    "error_message": None,
+                    "results": [
+                        {
+                            "chunk_id": "chunk-a",
+                            "document_id": "doc_a",
+                            "document_name": "doc_a.txt",
+                            "text": "servo reset requires checking alarm signal first",
+                            "score": 0.95,
+                            "source_path": "/tmp/doc_a.txt",
+                            "retrieval_strategy": "hybrid",
+                            "vector_score": 0.91,
+                            "lexical_score": 1.1,
+                            "fused_score": 0.92,
+                            "ocr_used": False,
+                            "parser_name": None,
+                            "page_no": None,
+                            "ocr_confidence": None,
+                            "quality_score": None,
+                        }
+                    ],
+                },
+                "summary": {
+                    "overlap_count": 0,
+                    "top1_same": False,
+                    "configured_only_chunk_ids": ["chunk-b"],
+                    "heuristic_only_chunk_ids": ["chunk-a"],
+                },
+            }
+
+    app.dependency_overrides[get_retrieval_service] = lambda: FakeRetrievalService()
+    try:
+        response = client.post(
+            "/api/v1/retrieval/rerank-compare",
+            json={"query": "servo reset", "top_k": 2},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["route_status"]["provider"] == "openai_compatible"
+    assert payload["route_status"]["effective_strategy"] == "heuristic"
+    assert payload["route_status"]["fallback_enabled"] is True
+    assert payload["route_status"]["lock_active"] is True
+    assert payload["configured"]["provider"] == "openai_compatible"
+    assert payload["configured"]["strategy"] == "provider"
+    assert payload["heuristic"]["provider"] == "heuristic"
+    assert payload["summary"]["configured_only_chunk_ids"] == ["chunk-b"]

@@ -25,6 +25,7 @@ def test_llm_generation_client_retries_when_enabled(tmp_path: Path, monkeypatch:
         SystemConfigUpdateRequest(
             query_profiles=current_config.query_profiles,
             model_routing=current_config.model_routing,
+            reranker_routing=current_config.reranker_routing,
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls.model_copy(
                 update={
@@ -62,6 +63,7 @@ def test_llm_generation_client_skips_retry_when_disabled(tmp_path: Path, monkeyp
         SystemConfigUpdateRequest(
             query_profiles=current_config.query_profiles,
             model_routing=current_config.model_routing,
+            reranker_routing=current_config.reranker_routing,
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls.model_copy(
                 update={

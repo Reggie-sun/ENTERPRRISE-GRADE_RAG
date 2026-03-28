@@ -59,6 +59,7 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
                     "parser_name": chunk.parser_name,  # 保存解析器名称，方便排查 chunk 来源。
                     "page_no": chunk.page_no,  # OCR 可可靠定位时保存页码。
                     "ocr_confidence": chunk.ocr_confidence,  # 保存 OCR 置信度摘要，供后续质量分析。
+                    "quality_score": chunk.quality_score,  # 保存统一质量分，为后续排序增强预留。
                 },
             )
             for chunk, embedding in zip(chunks, embeddings, strict=True)  # 严格按一一对应关系配对 chunk 和向量。

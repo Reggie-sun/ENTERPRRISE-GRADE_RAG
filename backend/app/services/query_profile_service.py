@@ -30,12 +30,14 @@ class QueryProfileService:
         rerank_top_n = min(top_k, self._mode_default_rerank_top_n(resolved_mode))
         candidate_multiplier = self._mode_candidate_multiplier(resolved_mode)
         candidate_top_k = min(max(top_k * candidate_multiplier, top_k), 200)
+        lexical_top_k = min(max(self._mode_default_lexical_top_k(resolved_mode), top_k), 200)
         fallback_mode: QueryMode | None = "fast" if resolved_mode == "accurate" else None
         return QueryProfile(
             purpose=purpose,
             mode=resolved_mode,
             top_k=top_k,
             candidate_top_k=candidate_top_k,
+            lexical_top_k=lexical_top_k,
             rerank_top_n=max(1, rerank_top_n),
             timeout_budget_seconds=self._mode_timeout_budget_seconds(resolved_mode),
             fallback_mode=fallback_mode,
@@ -81,6 +83,9 @@ class QueryProfileService:
 
     def _mode_default_rerank_top_n(self, mode: QueryMode) -> int:
         return self.system_config_service.get_query_mode_settings(mode).rerank_top_n
+
+    def _mode_default_lexical_top_k(self, mode: QueryMode) -> int:
+        return self.system_config_service.get_query_mode_settings(mode).lexical_top_k
 
     def _mode_candidate_multiplier(self, mode: QueryMode) -> int:
         return self.system_config_service.get_query_mode_settings(mode).candidate_multiplier

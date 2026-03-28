@@ -13,6 +13,7 @@ class TextChunk:  # 表示切分后的一个文本片段。
     parser_name: str | None = None  # 生成当前 chunk 的解析器名称，便于后续追踪来源。
     page_no: int | None = None  # OCR 可可靠定位时返回页码；普通文本和无法映射时为空。
     ocr_confidence: float | None = None  # OCR 置信度摘要，供后续排序和质量评估复用。
+    quality_score: float | None = None  # 通用质量分，当前优先复用 OCR 置信度，为后续排序增强预留统一字段。
 
 
 class TextChunker:  # 按字符长度切分文本的简单 chunker。

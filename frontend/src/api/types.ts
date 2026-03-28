@@ -71,6 +71,22 @@ export interface HealthResponse {
     base_url: string;  // Embedding 服务地址。
     model: string;  // Embedding 模型名称。
   };
+  reranker: {
+    provider: string;  // Reranker 提供方。
+    base_url: string;  // Reranker 服务地址；启发式模式下可为空。
+    model: string;  // Reranker 模型名称。
+    timeout_seconds: number;  // Reranker 超时预算。
+    failure_cooldown_seconds: number;  // 最近一次故障后的 provider 锁定窗口。
+    effective_provider: string;  // 当前实际生效的 rerank provider。
+    effective_model: string;  // 当前实际生效的 rerank 模型或 heuristic。
+    effective_strategy: string;  // 当前实际生效策略，例如 provider / heuristic / failed。
+    fallback_enabled: boolean;  // 当前是否允许 provider 失败时回退到 heuristic。
+    lock_active: boolean;  // 当前是否处于 provider 锁定窗口。
+    lock_source: string | null;  // 锁定来自 probe 还是 request。
+    cooldown_remaining_seconds: number;  // 当前锁定窗口剩余秒数。
+    ready: boolean;  // 当前 reranker 路由是否已具备运行条件。
+    detail: string | null;  // Reranker 运行状态说明。
+  };
   queue: {
     provider: string;  // 队列提供方。
     broker_url: string;  // broker 地址。
@@ -266,6 +282,10 @@ export interface RequestSnapshotContext {
   snippet: string;
   score: number;
   source_path: string;
+  retrieval_strategy: string | null;
+  vector_score: number | null;
+  lexical_score: number | null;
+  fused_score: number | null;
 }
 
 export interface RequestSnapshotModelRoute {
@@ -311,6 +331,7 @@ export interface RequestSnapshotRecord {
     mode: QueryMode;
     top_k: number;
     candidate_top_k: number;
+    lexical_top_k: number;
     rerank_top_n: number;
     timeout_budget_seconds: number;
     fallback_mode: QueryMode | null;
@@ -343,6 +364,7 @@ export interface RequestSnapshotReplayResponse {
 export interface QueryModeConfig {
   top_k_default: number;
   candidate_multiplier: number;
+  lexical_top_k: number;
   rerank_top_n: number;
   timeout_budget_seconds: number;
 }
@@ -356,6 +378,15 @@ export interface ModelRoutingConfig {
   fast_model: string;
   accurate_model: string;
   sop_generation_model: string;
+}
+
+export type RerankerRoutingProvider = 'heuristic' | 'openai_compatible';
+
+export interface RerankerRoutingConfig {
+  provider: RerankerRoutingProvider;
+  model: string;
+  timeout_seconds: number;
+  failure_cooldown_seconds: number;
 }
 
 export interface DegradeControlsConfig {
@@ -382,6 +413,7 @@ export interface ConcurrencyControlsConfig {
 export interface SystemConfigResponse {
   query_profiles: QueryProfilesConfig;
   model_routing: ModelRoutingConfig;
+  reranker_routing: RerankerRoutingConfig;
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
   concurrency_controls: ConcurrencyControlsConfig;
@@ -392,6 +424,7 @@ export interface SystemConfigResponse {
 export interface SystemConfigUpdateRequest {
   query_profiles: QueryProfilesConfig;
   model_routing: ModelRoutingConfig;
+  reranker_routing: RerankerRoutingConfig;
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
   concurrency_controls: ConcurrencyControlsConfig;
@@ -443,12 +476,29 @@ export interface OpsRuntimeGateSummary {
   channels: OpsRuntimeChannelSummary[];
 }
 
+export type OpsStuckIngestJobReason = 'artifacts_ready_but_inflight' | 'stale_inflight';
+
+export interface OpsStuckIngestJobSummary {
+  doc_id: string;
+  job_id: string;
+  file_name: string;
+  document_status: DocumentLifecycleStatus;
+  job_status: IngestJobStatus;
+  stage: string;
+  progress: number;
+  updated_at: string;
+  stale_seconds: number;
+  has_materialized_artifacts: boolean;
+  reason: OpsStuckIngestJobReason;
+}
+
 export interface OpsSummaryResponse {
   checked_at: string;
   health: HealthResponse;
   queue: OpsQueueSummary;
   runtime_gate: OpsRuntimeGateSummary;
   recent_window: OpsRecentWindowSummary;
+  stuck_ingest_jobs: OpsStuckIngestJobSummary[];
   categories: OpsCategorySummary[];
   recent_failures: EventLogRecord[];
   recent_degraded: EventLogRecord[];
@@ -468,6 +518,10 @@ export interface SopGenerationCitation {
   snippet: string;
   score: number;
   source_path: string;
+  retrieval_strategy: string | null;
+  vector_score: number | null;
+  lexical_score: number | null;
+  fused_score: number | null;
 }
 
 export interface SopGenerateByScenarioRequest {
@@ -664,7 +718,7 @@ export interface SopVersionDetailResponse {
 export interface DocumentCreateResponse {
   doc_id: string;  // 新创建文档的唯一标识。
   job_id: string;  // 本次入库任务的唯一标识。
-  status: 'queued';  // 当前创建结果固定为 queued。
+  status: 'queued' | 'completed';  // 新文档会排队入库；已完成的重复文档可直接复用完成结果。
 }
 
 /** POST /documents/batch 单文件结果 */
@@ -818,6 +872,15 @@ export interface RetrievedChunk {
   text: string;  // chunk 文本内容。
   score: number;  // chunk 匹配分数。
   source_path: string;  // 原始文档路径。
+  retrieval_strategy: string | null;  // 当前结果的召回策略。
+  vector_score: number | null;  // 原始向量召回分数。
+  lexical_score: number | null;  // 原始词项召回分数。
+  fused_score: number | null;  // 当前最终融合分数。
+  ocr_used: boolean;  // 当前结果是否来自 OCR 解析链路。
+  parser_name: string | null;  // 当前结果解析器名称。
+  page_no: number | null;  // OCR 页码。
+  ocr_confidence: number | null;  // OCR 置信度摘要。
+  quality_score: number | null;  // OCR/解析质量分。
 }
 
 /** 检索响应 */
@@ -826,6 +889,48 @@ export interface RetrievalResponse {
   top_k: number;  // 本次请求的 top_k 值。
   mode: string;  // 当前检索模式。
   results: RetrievedChunk[];  // 返回的检索结果列表。
+}
+
+export interface RerankComparisonResult {
+  label: string;  // 当前结果标签，例如 configured / heuristic。
+  provider: string;  // 当前路由 provider。
+  model: string | null;  // 当前路由模型名。
+  strategy: string;  // 当前真正生效的策略，例如 provider / heuristic / failed。
+  error_message: string | null;  // provider 失败时保留的错误说明。
+  results: RetrievedChunk[];  // 当前路由的排序结果。
+}
+
+export interface RerankComparisonSummary {
+  overlap_count: number;  // 两套结果的重叠 chunk 数量。
+  top1_same: boolean;  // 第一条结果是否一致。
+  configured_only_chunk_ids: string[];  // 仅当前默认路由命中的 chunk。
+  heuristic_only_chunk_ids: string[];  // 仅 heuristic 命中的 chunk。
+}
+
+export interface RetrievalRerankRouteStatus {
+  provider: string;  // 当前配置的 provider。
+  model: string;  // 当前配置的模型。
+  failure_cooldown_seconds: number;  // 最近失败后的 provider 锁定窗口。
+  effective_provider: string;  // 当前实际生效的 provider。
+  effective_model: string;  // 当前实际生效的模型或 heuristic。
+  effective_strategy: string;  // 当前实际生效策略，例如 provider / heuristic / failed。
+  fallback_enabled: boolean;  // 当前是否允许 provider 失败时回退到 heuristic。
+  lock_active: boolean;  // 当前 provider 是否还在锁定窗口。
+  lock_source: string | null;  // 锁定来自 probe 还是真实请求。
+  cooldown_remaining_seconds: number;  // 当前锁定窗口剩余秒数。
+  ready: boolean;  // 当前 provider 路由是否 ready。
+  detail: string | null;  // 当前路由状态说明。
+}
+
+export interface RetrievalRerankCompareResponse {
+  query: string;  // 原始查询文本。
+  mode: string;  // 当前检索模式。
+  candidate_count: number;  // 进入 rerank 对比的候选数。
+  rerank_top_n: number;  // 实际参与 rerank 后返回的数量。
+  route_status: RetrievalRerankRouteStatus;  // 当前默认 rerank 路由的实时状态。
+  configured: RerankComparisonResult;  // 当前默认路由的实际结果。
+  heuristic: RerankComparisonResult;  // heuristic 基线结果。
+  summary: RerankComparisonSummary;  // 两条结果的差异摘要。
 }
 
 // ========== 问答相关 ==========
@@ -846,6 +951,10 @@ export interface Citation {
   snippet: string;  // 当前引用片段的文本内容。
   score: number;  // 当前片段的匹配分数。
   source_path: string;  // 当前片段原始文件的路径。
+  retrieval_strategy: string | null;  // 当前引用的召回策略。
+  vector_score: number | null;  // 原始向量召回分数。
+  lexical_score: number | null;  // 原始词项召回分数。
+  fused_score: number | null;  // 当前引用最终融合分数。
 }
 
 /** 问答响应 */

@@ -34,6 +34,7 @@ from ..schemas.sop_generation import (
     SopGenerationDraftResponse,
     SopGenerationRequestMode,
 )
+from .system_config_service import SystemConfigService
 
 if TYPE_CHECKING:
     from .chat_service import ChatService
@@ -46,9 +47,11 @@ class RequestSnapshotService:
         settings: Settings | None = None,
         *,
         repository: RequestSnapshotRepository | None = None,
+        system_config_service: SystemConfigService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.repository = repository or FilesystemRequestSnapshotRepository(self.settings.request_snapshot_dir)
+        self.system_config_service = system_config_service or SystemConfigService(self.settings)
 
     def record_chat_snapshot(
         self,
@@ -74,6 +77,7 @@ class RequestSnapshotService:
         prompt_version: str = "chat-rag-v1",
     ) -> RequestSnapshotRecord:
         safe_answer = (answer_text or "").strip()
+        reranker_route = self.system_config_service.get_reranker_routing()
         record = RequestSnapshotRecord(
             snapshot_id=self._new_snapshot_id(),
             trace_id=trace_id,
@@ -105,8 +109,8 @@ class RequestSnapshotService:
                 prompt_version=prompt_version,
                 embedding_provider=self.settings.embedding_provider,
                 embedding_model=self.settings.embedding_model,
-                reranker_provider=self.settings.reranker_provider,
-                reranker_model=self.settings.reranker_model,
+                reranker_provider=reranker_route.provider,
+                reranker_model=reranker_route.model,
             ),
             result=RequestSnapshotResult(
                 response_mode=response_mode,
@@ -148,6 +152,7 @@ class RequestSnapshotService:
         prompt_version: str = "sop-generation-v1",
     ) -> RequestSnapshotRecord:
         safe_content = (content or "").strip()
+        reranker_route = self.system_config_service.get_reranker_routing()
         trace_id = self._new_trace_id(prefix="sop")
         request_id = self._new_request_id(prefix="sop")
         record = RequestSnapshotRecord(
@@ -181,8 +186,8 @@ class RequestSnapshotService:
                 prompt_version=prompt_version,
                 embedding_provider=self.settings.embedding_provider,
                 embedding_model=self.settings.embedding_model,
-                reranker_provider=self.settings.reranker_provider,
-                reranker_model=self.settings.reranker_model,
+                reranker_provider=reranker_route.provider,
+                reranker_model=reranker_route.model,
             ),
             result=RequestSnapshotResult(
                 response_mode=response.generation_mode if response is not None else "failed",
@@ -325,6 +330,10 @@ class RequestSnapshotService:
                 snippet=citation.snippet,
                 score=citation.score,
                 source_path=citation.source_path,
+                retrieval_strategy=citation.retrieval_strategy,
+                vector_score=citation.vector_score,
+                lexical_score=citation.lexical_score,
+                fused_score=citation.fused_score,
             )
             for index, citation in enumerate(citations, start=1)
         ]
@@ -340,6 +349,10 @@ class RequestSnapshotService:
                 snippet=citation.snippet,
                 score=citation.score,
                 source_path=citation.source_path,
+                retrieval_strategy=citation.retrieval_strategy,
+                vector_score=citation.vector_score,
+                lexical_score=citation.lexical_score,
+                fused_score=citation.fused_score,
             )
             for index, citation in enumerate(citations, start=1)
         ]
@@ -354,6 +367,10 @@ class RequestSnapshotService:
                 snippet=citation.snippet,
                 score=citation.score,
                 source_path=citation.source_path,
+                retrieval_strategy=citation.retrieval_strategy,
+                vector_score=citation.vector_score,
+                lexical_score=citation.lexical_score,
+                fused_score=citation.fused_score,
             )
             for citation in citations
         ]

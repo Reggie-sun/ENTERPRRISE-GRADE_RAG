@@ -1,16 +1,29 @@
 from dataclasses import dataclass
+import logging
 
 from fastapi import HTTPException, status  # 导入 HTTPException，用于越权检索时显式拒绝。
 
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
 from ..rag.embeddings.client import EmbeddingClient  # 导入 embedding 客户端，用于把查询文本向量化。
+from ..rag.rerankers.client import RerankerClient
 from ..rag.retrievers import LexicalMatch, QdrantLexicalRetriever
 from ..rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 向量存储，用于执行向量检索。
 from ..schemas.auth import AuthContext  # 导入统一鉴权上下文，供检索结果过滤复用。
-from ..schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求、响应和结果模型。
+from ..schemas.query_profile import QueryProfile
+from ..schemas.retrieval import (  # 导入检索请求、响应和结果模型。
+    RetrievalRerankCompareResponse,
+    RetrievalRerankRouteStatus,
+    RetrievalRequest,
+    RetrievalResponse,
+    RetrievedChunk,
+    RerankComparisonResult,
+    RerankComparisonSummary,
+)
 from .document_service import DocumentService  # 导入文档服务，复用统一的文档读权限判断。
 from .query_profile_service import QueryProfileService
+from .retrieval_query_router import HybridBranchWeights, RetrievalQueryRouter
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class _RetrievalCandidate:
@@ -28,6 +41,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         document_service: DocumentService | None = None,
         query_profile_service: QueryProfileService | None = None,
         lexical_retriever: QdrantLexicalRetriever | None = None,
+        query_router: RetrievalQueryRouter | None = None,
     ) -> None:  # 初始化检索服务。
         self.settings = settings or get_settings()  # 优先使用传入配置，否则读取全局配置。
         self.embedding_client = EmbeddingClient(self.settings)  # 创建 embedding 客户端，把查询问题转换成向量。
@@ -35,6 +49,9 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.lexical_retriever = lexical_retriever  # 轻量关键词召回默认按需绑定当前 vector store，测试里可单独注入。
         self.document_service = document_service or DocumentService(self.settings)  # 复用同一份 settings 创建文档服务，避免自定义配置时又回退到全局 .env。
         self.query_profile_service = query_profile_service or QueryProfileService(self.settings)  # 统一解析 fast/accurate 档位，避免参数散落在检索服务里。
+        self.system_config_service = self.query_profile_service.system_config_service  # 复用统一系统配置服务，保证检索和 rerank 读取的是同一份配置。
+        self.reranker_client = RerankerClient(self.settings, system_config_service=self.system_config_service)  # 为 rerank 对比验证复用统一客户端。
+        self.query_router = query_router or RetrievalQueryRouter(self.settings)  # 查询分类与 hybrid 动态权重策略统一收口到独立模块。
 
     def search(self, request: RetrievalRequest, *, auth_context: AuthContext | None = None) -> RetrievalResponse:  # 执行检索并返回结果。
         profile = self.query_profile_service.resolve(
@@ -61,6 +78,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         candidates, retrieval_mode = self._collect_candidates(
             query=request.query,
             vector_points=scored_points,
+            profile=profile,
             limit=search_limit,
             document_id=normalized_document_id,
         )
@@ -86,10 +104,15 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 text=str(payload.get("text") or ""),  # 返回检索命中的 chunk 文本。
                 score=float(candidate.score),  # 返回最终排序得分；hybrid 模式下这里是融合分数。
                 source_path=str(payload.get("source_path") or ""),  # 返回原始文档路径，缺失时返回空字符串。
+                retrieval_strategy=retrieval_mode,  # 返回召回策略，便于 trace/snapshot/调试解释为什么命中。
+                vector_score=candidate.vector_score,  # 返回原始向量分数。
+                lexical_score=candidate.lexical_score,  # 返回词项分数；纯向量召回时为空。
+                fused_score=float(candidate.score),  # 返回最终融合分数，单路召回时与 score 相同。
                 ocr_used=bool(payload.get("ocr_used") or False),  # 返回 OCR 标记，便于前端和生成链路判断文本来源。
                 parser_name=str(payload.get("parser_name")) if payload.get("parser_name") else None,  # 返回解析器名称。
                 page_no=int(payload["page_no"]) if payload.get("page_no") is not None else None,  # 返回 OCR 页码。
                 ocr_confidence=float(payload["ocr_confidence"]) if payload.get("ocr_confidence") is not None else None,  # 返回 OCR 置信度摘要。
+                quality_score=float(payload["quality_score"]) if payload.get("quality_score") is not None else None,  # 返回统一质量分。
             )
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
                 continue
@@ -104,11 +127,125 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             results=results,  # 返回构造好的结果列表。
         )
 
+    def compare_rerank(
+        self,
+        request: RetrievalRequest,
+        *,
+        auth_context: AuthContext | None = None,
+    ) -> RetrievalRerankCompareResponse:  # 在同一批检索候选上对比当前默认 rerank 路由与 heuristic 基线。
+        response = self.search(request, auth_context=auth_context)  # 先复用现有检索链路，确保权限过滤和 hybrid 逻辑完全一致。
+        profile = self.query_profile_service.resolve(
+            purpose="retrieval",
+            requested_mode=request.mode,
+            requested_top_k=request.top_k,
+        )
+        safe_top_n = min(profile.rerank_top_n, len(response.results))  # 没有足够候选时自动收敛实际返回数量。
+        route = self.system_config_service.get_reranker_routing()
+        configured_error_message: str | None = None
+
+        if safe_top_n <= 0:
+            empty_summary = RerankComparisonSummary(
+                overlap_count=0,
+                top1_same=False,
+                configured_only_chunk_ids=[],
+                heuristic_only_chunk_ids=[],
+            )
+            return RetrievalRerankCompareResponse(
+                query=request.query,
+                mode=response.mode,
+                candidate_count=len(response.results),
+                rerank_top_n=0,
+                configured=RerankComparisonResult(
+                    label="configured",
+                    provider=route.provider,
+                    model=route.model,
+                    strategy="skipped",
+                    results=[],
+                ),
+                heuristic=RerankComparisonResult(
+                    label="heuristic",
+                    provider="heuristic",
+                    model=None,
+                    strategy="skipped",
+                    results=[],
+                ),
+                route_status=self._build_route_status(),
+                summary=empty_summary,
+            )
+
+        heuristic_results = self.reranker_client.rerank_heuristic(
+            query=request.query,
+            candidates=response.results,
+            top_n=safe_top_n,
+        )
+
+        try:
+            configured_results = self.reranker_client.rerank(
+                query=request.query,
+                candidates=response.results,
+                top_n=safe_top_n,
+            )
+            configured_strategy = "provider" if route.provider != "heuristic" else "heuristic"
+        except RuntimeError as exc:
+            configured_error_message = str(exc)
+            if not self.system_config_service.get_degrade_controls().rerank_fallback_enabled:
+                configured_results = []
+                configured_strategy = "failed"
+            else:
+                configured_results = heuristic_results
+                configured_strategy = "heuristic"
+
+        summary = self._build_rerank_comparison_summary(
+            configured_results=configured_results,
+            heuristic_results=heuristic_results,
+        )
+        return RetrievalRerankCompareResponse(
+            query=request.query,
+            mode=response.mode,
+            candidate_count=len(response.results),
+            rerank_top_n=safe_top_n,
+            configured=RerankComparisonResult(
+                label="configured",
+                provider=route.provider,
+                model=route.model,
+                strategy=configured_strategy,
+                error_message=configured_error_message,
+                results=configured_results,
+            ),
+            heuristic=RerankComparisonResult(
+                label="heuristic",
+                provider="heuristic",
+                model=None,
+                strategy="heuristic",
+                results=heuristic_results,
+            ),
+            route_status=self._build_route_status(),
+            summary=summary,
+        )
+
+    def _build_route_status(self) -> RetrievalRerankRouteStatus:
+        status = self.reranker_client.get_runtime_status()
+        return RetrievalRerankRouteStatus(
+            provider=str(status["provider"]),
+            model=str(status["model"]),
+            failure_cooldown_seconds=float(status["failure_cooldown_seconds"]),
+            effective_provider=str(status["effective_provider"]),
+            effective_model=str(status["effective_model"]),
+            effective_strategy=str(status["effective_strategy"]),
+            fallback_enabled=bool(status["fallback_enabled"]),
+            lock_active=bool(status["lock_active"]),
+            lock_source=str(status["lock_source"]) if status["lock_source"] is not None else None,
+            cooldown_remaining_seconds=float(status["cooldown_remaining_seconds"]),
+            ready=bool(status["ready"]),
+            detail=str(status["detail"]) if status["detail"] is not None else None,
+        )
+
     def _collect_candidates(
         self,
         *,
         query: str,
         vector_points: list[object],
+        profile: QueryProfile,
         limit: int,
         document_id: str | None,
     ) -> tuple[list[_RetrievalCandidate], str]:
@@ -116,19 +253,34 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if self._normalized_retrieval_strategy() != "hybrid":
             return vector_candidates, "qdrant"
 
-        lexical_retriever = self.lexical_retriever or QdrantLexicalRetriever(self.vector_store)
+        branch_weights = self.query_router.resolve_branch_weights(query)
+        logger.info(
+            "hybrid retrieval query_type=%s dynamic=%s vector_weight=%.3f lexical_weight=%.3f exact_signals=%d semantic_signals=%d",
+            branch_weights.query_type,
+            branch_weights.dynamic_enabled,
+            branch_weights.vector_weight,
+            branch_weights.lexical_weight,
+            branch_weights.exact_signals,
+            branch_weights.semantic_signals,
+        )
+        lexical_retriever = self.lexical_retriever or QdrantLexicalRetriever(
+            self.vector_store,
+            chinese_tokenizer_mode=self.settings.retrieval_lexical_chinese_tokenizer,
+            supplemental_bigram_weight=self.settings.retrieval_lexical_supplemental_bigram_weight,
+        )
         try:
             lexical_matches = lexical_retriever.search(
                 query,
-                limit=limit,
+                limit=min(profile.lexical_top_k, limit),
                 document_id=document_id,
             )
         except RuntimeError:
+            logger.warning("hybrid retrieval fallback_to=qdrant reason=lexical_error")
             return vector_candidates, "qdrant"
 
         if not lexical_matches:
             return vector_candidates, "qdrant"
-        return self._fuse_candidates(vector_candidates, lexical_matches, limit=limit), "hybrid"
+        return self._fuse_candidates(vector_candidates, lexical_matches, limit=limit, branch_weights=branch_weights), "hybrid"
 
     def _fuse_candidates(
         self,
@@ -136,9 +288,11 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         lexical_matches: list[LexicalMatch],
         *,
         limit: int,
+        branch_weights: HybridBranchWeights | None = None,
     ) -> list[_RetrievalCandidate]:
         fused_candidates: dict[str, _RetrievalCandidate] = {}
         rrf_k = self.settings.retrieval_hybrid_rrf_k
+        weights = branch_weights or self.query_router.fixed_branch_weights()
 
         for rank, candidate in enumerate(vector_candidates, start=1):
             fused = fused_candidates.get(candidate.candidate_id)
@@ -151,7 +305,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 )
                 fused_candidates[candidate.candidate_id] = fused
             fused.vector_score = candidate.vector_score
-            fused.score += 1.0 / (rrf_k + rank)
+            if weights.vector_weight > 0:
+                fused.score += weights.vector_weight / (rrf_k + rank)
 
         for rank, lexical_match in enumerate(lexical_matches, start=1):
             candidate_id = str(lexical_match.payload.get("chunk_id") or lexical_match.point_id)
@@ -167,7 +322,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             else:
                 fused.payload = dict(lexical_match.payload or fused.payload)
                 fused.lexical_score = lexical_match.score
-            fused.score += 1.0 / (rrf_k + rank)
+            if weights.lexical_weight > 0:
+                fused.score += weights.lexical_weight / (rrf_k + rank)
 
         ranked_candidates = sorted(
             fused_candidates.values(),
@@ -198,6 +354,23 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if normalized == "hybrid":
             return "hybrid"
         return "qdrant"
+
+    @staticmethod
+    def _build_rerank_comparison_summary(
+        *,
+        configured_results: list[RetrievedChunk],
+        heuristic_results: list[RetrievedChunk],
+    ) -> RerankComparisonSummary:
+        configured_ids = [item.chunk_id for item in configured_results]
+        heuristic_ids = [item.chunk_id for item in heuristic_results]
+        configured_id_set = set(configured_ids)
+        heuristic_id_set = set(heuristic_ids)
+        return RerankComparisonSummary(
+            overlap_count=len(configured_id_set & heuristic_id_set),
+            top1_same=bool(configured_ids and heuristic_ids and configured_ids[0] == heuristic_ids[0]),
+            configured_only_chunk_ids=[chunk_id for chunk_id in configured_ids if chunk_id not in heuristic_id_set],
+            heuristic_only_chunk_ids=[chunk_id for chunk_id in heuristic_ids if chunk_id not in configured_id_set],
+        )
 
 
 def get_retrieval_service() -> RetrievalService:  # 提供 FastAPI 依赖注入入口。

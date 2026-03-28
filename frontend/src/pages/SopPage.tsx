@@ -2,12 +2,12 @@ import { Download, History, LibraryBig, RefreshCcw, Save, Sparkles } from 'lucid
 import { useEffect, useMemo, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { useUploadWorkspace } from '@/app/UploadWorkspaceContext';
-import { Button, Card, HeroCard, Input, StatusPill, Textarea } from '@/components';
+import { Button, Card, HeroCard, Input, StatusPill, StreamProgressSummary, Textarea, type StreamProgressMetrics } from '@/components';
 import { UploadPanel } from '@/panels';
 import {
   downloadSopDraftFile,
   formatApiError,
-  generateSopByDocument,
+  generateSopByDocumentStream,
   getAuthBootstrap,
   getSops,
   getSopVersionDetail,
@@ -18,6 +18,7 @@ import {
   type SopGenerationCitation,
   type SopGenerationDraftResponse,
   type SopGenerationRequestMode,
+  type SopGenerationStreamMeta,
   type SopStatus,
   type SopSummary,
   type SopVersionSummary,
@@ -54,6 +55,8 @@ interface DraftState {
   updatedAt: string;
   isCurrent: boolean;
 }
+
+type StreamProgressState = StreamProgressMetrics;
 
 const SELECT_CLASS_NAME = `
   w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)]
@@ -133,6 +136,22 @@ function toDraftFromGeneration(payload: SopGenerationDraftResponse): DraftState 
   };
 }
 
+function mergeDraftWithStreamMeta(current: DraftState, meta: SopGenerationStreamMeta): DraftState {
+  return {
+    ...current,
+    title: meta.title,
+    departmentId: meta.department_id,
+    departmentName: meta.department_name,
+    processName: meta.process_name || '',
+    scenarioName: meta.scenario_name || '',
+    topic: meta.topic || '',
+    requestMode: meta.request_mode,
+    generationMode: meta.generation_mode,
+    model: meta.model,
+    citations: meta.citations,
+  };
+}
+
 function createEmptyDraft(departmentId: string, departmentName: string): DraftState {
   return {
     sopId: '',
@@ -152,6 +171,42 @@ function createEmptyDraft(departmentId: string, departmentName: string): DraftSt
     tagsText: '',
     updatedAt: '',
     isCurrent: true,
+  };
+}
+
+function createEmptyStreamProgress(): StreamProgressState {
+  return {
+    startedAt: null,
+    firstDeltaAt: null,
+    lastDeltaAt: null,
+    completedAt: null,
+    deltaCount: 0,
+    charCount: 0,
+  };
+}
+
+function createStartedStreamProgress(): StreamProgressState {
+  return {
+    ...createEmptyStreamProgress(),
+    startedAt: Date.now(),
+  };
+}
+
+function recordStreamDelta(progress: StreamProgressState, delta: string): StreamProgressState {
+  const now = Date.now();
+  return {
+    ...progress,
+    firstDeltaAt: progress.firstDeltaAt ?? now,
+    lastDeltaAt: now,
+    deltaCount: progress.deltaCount + 1,
+    charCount: progress.charCount + delta.length,
+  };
+}
+
+function completeStreamProgress(progress: StreamProgressState): StreamProgressState {
+  return {
+    ...progress,
+    completedAt: progress.completedAt ?? progress.lastDeltaAt ?? Date.now(),
   };
 }
 
@@ -200,6 +255,7 @@ export function SopPage() {
   const [draft, setDraft] = useState<DraftState>(() => createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
   const [saveStatus, setSaveStatus] = useState<PanelStatus>('idle');
   const [saveMessage, setSaveMessage] = useState('');
+  const [streamProgress, setStreamProgress] = useState<StreamProgressState>(() => createEmptyStreamProgress());
 
   const departmentNameById = useMemo(() => {
     const mapping = new Map<string, string>();
@@ -385,17 +441,40 @@ export function SopPage() {
     setGenerateStatus('loading');
     setGenerateMessage('');
     setDownloadMessage('');
+    setStreamProgress(createStartedStreamProgress());
 
     try {
-      const payload = await generateSopByDocument({
-        document_id: currentDocId,
-        department_id: lockedDepartmentId || generateDepartmentId || undefined,
-        process_name: processName.trim() || undefined,
-        scenario_name: scenarioName.trim() || undefined,
-        title_hint: titleHint.trim() || undefined,
-        mode: queryMode,
-        top_k: normalizeTopK(topK),
-      });
+      setDraft(createEmptyDraft(
+        lockedDepartmentId || generateDepartmentId || fallbackDepartmentId,
+        departmentNameById.get(lockedDepartmentId || generateDepartmentId || fallbackDepartmentId) || fallbackDepartmentName,
+      ));
+      const payload = await generateSopByDocumentStream(
+        {
+          document_id: currentDocId,
+          department_id: lockedDepartmentId || generateDepartmentId || undefined,
+          process_name: processName.trim() || undefined,
+          scenario_name: scenarioName.trim() || undefined,
+          title_hint: titleHint.trim() || undefined,
+          mode: queryMode,
+          top_k: normalizeTopK(topK),
+        },
+        {
+          onMeta: (meta) => {
+            setDraft((prev) => mergeDraftWithStreamMeta(prev, meta));
+            setGenerateDepartmentId(meta.department_id);
+            setGenerateMessage(`已建立流式连接，模型：${meta.model}，等待首包...`);
+          },
+          onDelta: (delta) => {
+            setDraft((prev) => ({ ...prev, content: `${prev.content}${delta}` }));
+            setStreamProgress((prev) => recordStreamDelta(prev, delta));
+          },
+          onDone: (response) => {
+            setDraft(toDraftFromGeneration(response));
+            setGenerateDepartmentId(response.department_id);
+            setStreamProgress((prev) => completeStreamProgress(prev));
+          },
+        },
+      );
 
       setDraft(toDraftFromGeneration(payload));
       setGenerateDepartmentId(payload.department_id);
@@ -403,9 +482,11 @@ export function SopPage() {
       setGenerateMessage(`已基于当前文档生成草稿，模型：${payload.model}`);
       setSaveStatus('idle');
       setSaveMessage('');
+      setStreamProgress((prev) => completeStreamProgress(prev));
     } catch (error) {
       setGenerateStatus('error');
       setGenerateMessage(formatApiError(error, 'SOP 草稿生成'));
+      setStreamProgress((prev) => completeStreamProgress(prev));
     }
   };
 
@@ -502,10 +583,24 @@ export function SopPage() {
         className="col-span-12"
         allowMultiple={false}
         showIdentityFields={false}
-        onUploadStart={handleUploadStart}
+        onUploadStart={(fileName) => {
+          handleUploadStart(fileName);
+          setGenerateStatus('idle');
+          setGenerateMessage('');
+          setDownloadMessage('');
+          setSaveStatus('idle');
+          setSaveMessage('');
+          setDraft(createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
+          setStreamProgress(createEmptyStreamProgress());
+        }}
         onUploadCreated={handleUploadCreated}
         onJobStatusChange={handleJobStatusChange}
-        onUploadFailed={handleUploadFailed}
+        onUploadFailed={() => {
+          handleUploadFailed();
+          setGenerateStatus('error');
+          setGenerateMessage('来源文档上传或入库失败，请修复后重试。');
+          setStreamProgress(createEmptyStreamProgress());
+        }}
       />
 
       <section className="grid grid-cols-12 gap-5">
@@ -659,6 +754,7 @@ export function SopPage() {
             <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
               {generateMessage || generationHint}
             </p>
+            <StreamProgressSummary status={generateStatus} metrics={streamProgress} />
           </Card>
         </div>
 
@@ -704,6 +800,10 @@ export function SopPage() {
                 onChange={(event) => setDraft((prev) => ({ ...prev, content: event.target.value }))}
                 placeholder="生成后的 SOP 草稿会出现在这里。"
               />
+            </div>
+
+            <div className="mt-4">
+              <StreamProgressSummary status={generateStatus} metrics={streamProgress} compact />
             </div>
 
             <div className="mt-5 flex flex-wrap items-center gap-3">

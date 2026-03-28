@@ -4,7 +4,7 @@
 
 --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
-paddlepaddle==3.3.0
+paddlepaddle==3.2.0
 paddleocr
 PyMuPDF
 opencv-python-headless

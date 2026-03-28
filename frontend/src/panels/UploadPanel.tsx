@@ -152,6 +152,48 @@ export function UploadPanel({
     consecutivePollFailureCountRef.current = 0;
   };
 
+  const applyImmediateCompletion = async (result: DocumentCreateResponse, fileName: string, message: string) => {
+    setCreateResult(result);
+    primaryJobIdRef.current = result.job_id;
+    setBatchRows([
+      {
+        fileName,
+        submitStatus: 'queued',
+        docId: result.doc_id,
+        jobId: result.job_id,
+        ingestStatus: 'completed',
+        stage: 'completed',
+        progress: 100,
+        errorCode: null,
+        errorMessage: null,
+      },
+    ]);
+    setHint(message);
+    onUploadCreated?.(result.doc_id);
+
+    try {
+      const completedJob = await getIngestJobStatus(result.job_id);
+      setJobStatus(completedJob);
+      onJobStatusChange?.(completedJob);
+      setBatchRows((prev) => prev.map((row) => (
+        row.jobId === completedJob.job_id
+          ? {
+            ...row,
+            ingestStatus: completedJob.status,
+            stage: completedJob.stage,
+            progress: completedJob.progress,
+            errorCode: completedJob.error_code,
+            errorMessage: completedJob.error_message,
+          }
+          : row
+      )));
+    } catch {
+      // 已完成复用场景即使补拉状态失败，也不应把面板重新打成 error。
+    }
+
+    setStatus('success');
+  };
+
   // 组件卸载时清理定时器。
   useEffect(() => {
     return () => {
@@ -285,6 +327,10 @@ export function UploadPanel({
         }
 
         const result = await createDocument(formData);
+        if (result.status === 'completed') {
+          await applyImmediateCompletion(result, firstFile.name, '检测到重复文档且历史结果已完成，已直接复用，无需重新入库。');
+          return;
+        }
         setCreateResult(result);
         primaryJobIdRef.current = result.job_id;
         setBatchRows([

@@ -1,4 +1,5 @@
 import asyncio  # 导入 asyncio，便于在同步测试里调用异步读取函数。
+import base64  # 导入 base64，用于内嵌最小 PNG 测试图片。
 from datetime import datetime, timedelta, timezone  # 导入时间工具，便于构造历史元数据测试记录和过期任务场景。
 from io import BytesIO  # 导入 BytesIO，用于在测试里动态拼装最小 DOCX 文件。
 import json  # 导入 json，用来读取 chunk 结果文件里的 JSON 内容。
@@ -23,23 +24,63 @@ from backend.app.services.document_service import (  # 导入上传服务、依�
 )
 from backend.app.worker.celery_app import INGEST_TASK_NAME, get_celery_app  # 导入 Celery 任务入口，补非 eager worker 回归测试。
 
+MINIMAL_PNG_BYTES = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+2B0AAAAASUVORK5CYII="
+)  # 提供一个最小 PNG，给 DOCX 嵌图测试复用。
 
-def build_minimal_docx_bytes(*paragraphs: str) -> bytes:  # 构造一个最小可解析 DOCX，避免为测试引入额外第三方依赖。
+
+def build_minimal_docx_bytes(  # 构造一个最小可解析 DOCX，避免为测试引入额外第三方依赖。
+    *paragraphs: str,
+    embedded_images: list[tuple[str, bytes]] | None = None,
+) -> bytes:
     buffer = BytesIO()
     document_paragraphs = "".join(
         f"<w:p><w:r><w:t>{text}</w:t></w:r></w:p>"
         for text in paragraphs
     ) or "<w:p><w:r><w:t>empty</w:t></w:r></w:p>"
+    image_relationships = ""
+    image_blocks = ""
+    embedded_images = embedded_images or []
+    seen_extensions: set[str] = set()
+    content_type_defaults = ""
+    content_type_by_extension = {
+        "png": "image/png",
+        "jpg": "image/jpeg",
+        "jpeg": "image/jpeg",
+        "webp": "image/webp",
+        "bmp": "image/bmp",
+    }
+    for index, (image_name, _image_bytes) in enumerate(embedded_images, start=1):
+        relationship_id = f"rIdImage{index}"
+        image_relationships += (
+            f'<Relationship Id="{relationship_id}" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" '
+            f'Target="media/{image_name}"/>'
+        )
+        image_blocks += (
+            "<w:p><w:r><w:drawing>"
+            f'<a:blip r:embed="{relationship_id}"/>'
+            "</w:drawing></w:r></w:p>"
+        )
+        extension = Path(image_name).suffix.lower().lstrip(".")
+        if extension and extension not in seen_extensions and extension in content_type_by_extension:
+            seen_extensions.add(extension)
+            content_type_defaults += (
+                f'  <Default Extension="{extension}" ContentType="{content_type_by_extension[extension]}"/>\n'
+            )
     document_xml = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-        f"<w:body>{document_paragraphs}</w:body>"
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '
+        'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+        f"<w:body>{document_paragraphs}{image_blocks}</w:body>"
         "</w:document>"
     )
     content_types_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
+""" + content_type_defaults + """
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 </Types>
 """
@@ -48,11 +89,20 @@ def build_minimal_docx_bytes(*paragraphs: str) -> bytes:  # 构造一个最小�
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>
 """
+    document_rels_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+""" + image_relationships + """
+</Relationships>
+"""
 
     with ZipFile(buffer, "w", compression=ZIP_DEFLATED) as archive:
         archive.writestr("[Content_Types].xml", content_types_xml)
         archive.writestr("_rels/.rels", rels_xml)
         archive.writestr("word/document.xml", document_xml)
+        if embedded_images:
+            archive.writestr("word/_rels/document.xml.rels", document_rels_xml)
+            for image_name, image_bytes in embedded_images:
+                archive.writestr(f"word/media/{image_name}", image_bytes)
 
     return buffer.getvalue()
 
@@ -309,12 +359,14 @@ def test_run_ingest_job_supports_mock_ocr_for_image_documents(tmp_path: Path) ->
     assert chunk_payload[0]["parser_name"] == "image_ocr_mock"
     assert chunk_payload[0]["page_no"] == 1
     assert chunk_payload[0]["ocr_confidence"] is None
+    assert chunk_payload[0]["quality_score"] is None
     indexed_records = list(service.ingestion_service.vector_store.scroll_records(document_id="doc_mock_ocr_image"))
     assert indexed_records
     assert indexed_records[0].payload["ocr_used"] is True
     assert indexed_records[0].payload["parser_name"] == "image_ocr_mock"
     assert indexed_records[0].payload["page_no"] == 1
     assert indexed_records[0].payload["ocr_confidence"] is None
+    assert indexed_records[0].payload["quality_score"] is None
 
 
 def test_run_ingest_job_marks_partial_failed_when_pdf_ocr_fallback_is_unavailable(tmp_path: Path) -> None:  # PDF 原生文本太少且 OCR 不可用时，应保留可用结果并标记 partial_failed。
@@ -629,6 +681,104 @@ def test_create_document_requeues_failed_duplicate_with_new_job(tmp_path: Path) 
     assert refreshed_doc_record.status == "queued"
     assert refreshed_doc_record.file_name == "retry_named.txt"  # 重复上传会刷新文件名，避免沿用历史脏后缀。
     assert refreshed_doc_record.source_type == "txt"
+    assert refreshed_doc_record.uploaded_by == "bob"
+
+
+def test_create_document_reuses_completed_duplicate_without_requeue(tmp_path: Path) -> None:  # 已完成的重复文档应直接复用结果，不再重新排队卡住 SOP 主流程。
+    settings = build_test_settings(tmp_path, task_always_eager=False)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        first_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "alice"},
+            files={"file": ("origin.txt", b"same-hash-content", "text/plain")},
+        )
+        assert first_create.status_code == 201
+        first_payload = first_create.json()
+        doc_id = first_payload["doc_id"]
+        existing_job_id = first_payload["job_id"]
+
+        completed_job_record = service._load_job_record(existing_job_id)
+        service._update_job_record(
+            completed_job_record,
+            status="completed",
+            stage="completed",
+            progress=100,
+        )
+        completed_doc_record = service._load_document_record(doc_id)
+        completed_doc_record.status = "active"
+        service._save_document_record(completed_doc_record)
+
+        second_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "bob"},
+            files={"file": ("retry_named.txt", b"same-hash-content", "text/plain")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert second_create.status_code == 201
+    second_payload = second_create.json()
+    assert second_payload["status"] == "completed"
+    assert second_payload["doc_id"] == doc_id
+    assert second_payload["job_id"] == existing_job_id  # 已完成任务应原样复用，不再生成 follow-up job。
+    assert len(list(settings.job_dir.glob("*.json"))) == 1
+
+    refreshed_doc_record = service._load_document_record(doc_id)
+    assert refreshed_doc_record.latest_job_id == existing_job_id
+    assert refreshed_doc_record.file_name == "retry_named.txt"
+    assert refreshed_doc_record.uploaded_by == "bob"
+
+
+def test_create_document_repairs_stuck_duplicate_job_when_artifacts_exist(tmp_path: Path) -> None:  # 旧 duplicate follow-up job 卡在 queued，但解析/切块产物仍在时，应直接修正为 completed。
+    settings = build_test_settings(tmp_path, task_always_eager=False)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        first_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "alice"},
+            files={"file": ("origin.txt", b"same-hash-content", "text/plain")},
+        )
+        assert first_create.status_code == 201
+        first_payload = first_create.json()
+        doc_id = first_payload["doc_id"]
+        queued_job_id = first_payload["job_id"]
+
+        (settings.parsed_dir / f"{doc_id}.txt").write_text("already parsed", encoding="utf-8")
+        (settings.chunk_dir / f"{doc_id}.json").write_text('[{"chunk_id":"x","document_id":"x","text":"ready"}]', encoding="utf-8")
+
+        second_create = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "bob"},
+            files={"file": ("retry_named.txt", b"same-hash-content", "text/plain")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert second_create.status_code == 201
+    second_payload = second_create.json()
+    assert second_payload["status"] == "completed"
+    assert second_payload["doc_id"] == doc_id
+    assert second_payload["job_id"] == queued_job_id
+
+    repaired_job_record = service._load_job_record(queued_job_id)
+    assert repaired_job_record.status == "completed"
+    assert repaired_job_record.stage == "completed"
+    assert repaired_job_record.progress == 100
+
+    refreshed_doc_record = service._load_document_record(doc_id)
+    assert refreshed_doc_record.status == "active"
+    assert refreshed_doc_record.file_name == "retry_named.txt"
     assert refreshed_doc_record.uploaded_by == "bob"
 
 
@@ -1901,6 +2051,64 @@ def test_create_document_supports_docx_ingestion_and_text_preview(tmp_path: Path
     assert preview_payload["content_type"].startswith("text/plain")
     assert "数字化部系统巡检标准作业程序" in (preview_payload["text_content"] or "")
     assert "步骤二：核对数据库与消息队列连接。" in (preview_payload["text_content"] or "")
+
+
+def test_create_document_supports_docx_embedded_image_ocr_and_mixed_chunks(tmp_path: Path) -> None:  # DOCX 内嵌图片应补 OCR，并保留正文 chunk 与 OCR chunk 的来源差异。
+    settings = build_test_settings(tmp_path, ocr_provider="mock").model_copy(
+        update={"chunk_size_chars": 26, "chunk_overlap_chars": 0, "chunk_min_chars": 8}
+    )
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+    docx_bytes = build_minimal_docx_bytes(
+        "正文：先检查任务调度服务状态。",
+        "正文：再核对数据库与消息队列连接。",
+        embedded_images=[("embedded_ocr.png", MINIMAL_PNG_BYTES)],
+    )
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={
+                "file": (
+                    "digitalization_mixed.docx",
+                    docx_bytes,
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                )
+            },
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        document_payload = json.loads((settings.document_dir / f"{payload['doc_id']}.json").read_text(encoding="utf-8"))
+        Path(f"{document_payload['storage_path']}.ocr.txt").write_text(
+            "截图：检查温度传感器报警灯。\n截图：确认急停按钮释放。",
+            encoding="utf-8",
+        )
+        ingest_status = service.run_ingest_job(payload["job_id"])
+        preview_response = client.get(f"/api/v1/documents/{payload['doc_id']}/preview")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert ingest_status.status == "completed"
+    parsed_text = (settings.parsed_dir / f"{payload['doc_id']}.txt").read_text(encoding="utf-8")
+    assert "正文：先检查任务调度服务状态。" in parsed_text
+    assert "截图：检查温度传感器报警灯。" in parsed_text
+
+    artifact_payload = json.loads((settings.ocr_artifact_dir / f"{payload['doc_id']}.json").read_text(encoding="utf-8"))
+    assert "截图：确认急停按钮释放。" in artifact_payload["normalized_text"]
+
+    chunk_payload = json.loads((settings.chunk_dir / f"{payload['doc_id']}.json").read_text(encoding="utf-8"))
+    assert any(item["ocr_used"] is True for item in chunk_payload)
+    assert any(item["ocr_used"] is False for item in chunk_payload)
+    assert any(item["parser_name"] == "docx_xml" for item in chunk_payload)
+    assert any(item["parser_name"] == "docx_embedded_image_ocr_mock" for item in chunk_payload)
+
+    assert preview_response.status_code == 200
+    preview_payload = preview_response.json()
+    assert "截图：检查温度传感器报警灯。" in (preview_payload["text_content"] or "")
 
 
 def test_upload_rejects_unsupported_extension(tmp_path: Path) -> None:  # 测试系统会拒绝不支持的文件扩展名。

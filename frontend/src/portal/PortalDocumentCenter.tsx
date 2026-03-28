@@ -26,12 +26,27 @@ interface PortalDocumentCenterProps {
   recordSource: RecentDocumentSource;
 }
 
+const PREVIEWABLE_SUFFIXES = new Set(['.txt', '.md', '.markdown', '.docx', '.pdf']);
+
 function toLocalTime(isoText: string): string {
   const value = new Date(isoText);
   if (Number.isNaN(value.getTime())) {
     return isoText;
   }
   return value.toLocaleString('zh-CN', { hour12: false });
+}
+
+function getFileSuffix(filename: string): string {
+  const normalized = filename.trim().toLowerCase();
+  const dotIndex = normalized.lastIndexOf('.');
+  if (dotIndex < 0) {
+    return '';
+  }
+  return normalized.slice(dotIndex);
+}
+
+function supportsInlinePreview(filename: string): boolean {
+  return PREVIEWABLE_SUFFIXES.has(getFileSuffix(filename));
 }
 
 export function PortalDocumentCenter({
@@ -148,6 +163,14 @@ export function PortalDocumentCenter({
       return;
     }
 
+    const currentDoc = documents.find((item) => item.document_id === selectedDocId);
+    if (currentDoc && !supportsInlinePreview(currentDoc.filename)) {
+      setPreviewData(null);
+      setPreviewStatus('error');
+      setPreviewError('当前文件类型暂不支持在线预览，请直接下载原文。支持的类型：DOCX、Markdown、TXT、PDF。');
+      return;
+    }
+
     const loadPreview = async () => {
       setPreviewStatus('loading');
       setPreviewError('');
@@ -155,7 +178,6 @@ export function PortalDocumentCenter({
         const payload = await getDocumentPreview(selectedDocId);
         setPreviewData(payload);
         setPreviewStatus('success');
-        const currentDoc = documents.find((item) => item.document_id === selectedDocId);
         rememberDocument({
           docId: payload.doc_id,
           fileName: payload.file_name,
@@ -297,44 +319,51 @@ export function PortalDocumentCenter({
 
           <div className="mt-4 grid max-h-[720px] gap-3 overflow-auto pr-1">
             {filteredDocuments.map((item) => (
-              <article
-                key={item.document_id}
-                className={`
-                  rounded-[24px] border p-4 transition-all duration-200
-                  ${selectedDocId === item.document_id
-                    ? 'border-[rgba(182,70,47,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
-                    : 'border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
-                `}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="m-0 font-semibold text-ink break-all">{item.filename}</p>
-                    <p className="m-0 mt-2 text-sm text-ink-soft">
-                      {item.department_id || '未标注部门'} / {item.category_id || '未标注分类'}
-                    </p>
-                    <p className="m-0 mt-1 text-xs text-ink-soft">
-                      更新时间：{toLocalTime(item.updated_at)}
-                    </p>
-                  </div>
-                  <StatusPill tone="ok">可预览</StatusPill>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button type="button" onClick={() => handleOpenPreview(item.document_id)}>
-                    <span className="flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
-                      在线预览
-                    </span>
-                  </Button>
-                  <a
-                    href={getDocumentDownloadUrl(item.document_id)}
-                    className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5"
+              (() => {
+                const canPreview = supportsInlinePreview(item.filename);
+                return (
+                  <article
+                    key={item.document_id}
+                    className={`
+                      rounded-[24px] border p-4 transition-all duration-200
+                      ${selectedDocId === item.document_id
+                        ? 'border-[rgba(182,70,47,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
+                        : 'border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
+                    `}
                   >
-                    <Download className="h-4 w-4" />
-                    下载原文
-                  </a>
-                </div>
-              </article>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="m-0 font-semibold text-ink break-all">{item.filename}</p>
+                        <p className="m-0 mt-2 text-sm text-ink-soft">
+                          {item.department_id || '未标注部门'} / {item.category_id || '未标注分类'}
+                        </p>
+                        <p className="m-0 mt-1 text-xs text-ink-soft">
+                          更新时间：{toLocalTime(item.updated_at)}
+                        </p>
+                      </div>
+                      <StatusPill tone={canPreview ? 'ok' : 'warn'}>
+                        {canPreview ? '可预览' : '仅下载'}
+                      </StatusPill>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button type="button" onClick={() => handleOpenPreview(item.document_id)} disabled={!canPreview}>
+                        <span className="flex items-center gap-2">
+                          <Eye className="h-4 w-4" />
+                          {canPreview ? '在线预览' : '暂不支持预览'}
+                        </span>
+                      </Button>
+                      <a
+                        href={getDocumentDownloadUrl(item.document_id)}
+                        className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5"
+                      >
+                        <Download className="h-4 w-4" />
+                        下载原文
+                      </a>
+                    </div>
+                  </article>
+                );
+              })()
             ))}
 
             {!filteredDocuments.length && status === 'success' ? (

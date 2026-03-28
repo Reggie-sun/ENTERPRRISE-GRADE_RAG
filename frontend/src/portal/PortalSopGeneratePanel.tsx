@@ -1,12 +1,12 @@
 import { Download, LibraryBig, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { getDepartmentScopeSummary, useAuth } from '@/auth';
-import { Button, Card, Input, StatusPill, Textarea } from '@/components';
+import { Button, Card, Input, StatusPill, StreamProgressSummary, Textarea, type StreamProgressMetrics } from '@/components';
 import { UploadPanel } from '@/panels';
 import {
   downloadSopDraftFile,
   formatApiError,
-  generateSopByDocument,
+  generateSopByDocumentStream,
   getAuthBootstrap,
   type DepartmentRecord,
   type IngestJobStatusResponse,
@@ -14,6 +14,7 @@ import {
   type SopGenerationCitation,
   type SopGenerationDraftResponse,
   type SopGenerationRequestMode,
+  type SopGenerationStreamMeta,
 } from '@/api';
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -49,6 +50,8 @@ interface DraftState {
   model: string;
   citations: SopGenerationCitation[];
 }
+
+type StreamProgressState = StreamProgressMetrics;
 
 function getJobStatusTone(status?: string): StatusTone {
   if (!status) {
@@ -110,6 +113,22 @@ function toDraftFromGeneration(payload: SopGenerationDraftResponse): DraftState 
   };
 }
 
+function mergeDraftWithStreamMeta(current: DraftState, meta: SopGenerationStreamMeta): DraftState {
+  return {
+    ...current,
+    title: meta.title,
+    departmentId: meta.department_id,
+    departmentName: meta.department_name,
+    processName: meta.process_name || '',
+    scenarioName: meta.scenario_name || '',
+    topic: meta.topic || '',
+    requestMode: meta.request_mode,
+    generationMode: meta.generation_mode,
+    model: meta.model,
+    citations: meta.citations,
+  };
+}
+
 function createEmptyDraft(departmentId: string, departmentName: string): DraftState {
   return {
     title: '',
@@ -123,6 +142,42 @@ function createEmptyDraft(departmentId: string, departmentName: string): DraftSt
     generationMode: 'manual',
     model: 'manual',
     citations: [],
+  };
+}
+
+function createEmptyStreamProgress(): StreamProgressState {
+  return {
+    startedAt: null,
+    firstDeltaAt: null,
+    lastDeltaAt: null,
+    completedAt: null,
+    deltaCount: 0,
+    charCount: 0,
+  };
+}
+
+function createStartedStreamProgress(): StreamProgressState {
+  return {
+    ...createEmptyStreamProgress(),
+    startedAt: Date.now(),
+  };
+}
+
+function recordStreamDelta(progress: StreamProgressState, delta: string): StreamProgressState {
+  const now = Date.now();
+  return {
+    ...progress,
+    firstDeltaAt: progress.firstDeltaAt ?? now,
+    lastDeltaAt: now,
+    deltaCount: progress.deltaCount + 1,
+    charCount: progress.charCount + delta.length,
+  };
+}
+
+function completeStreamProgress(progress: StreamProgressState): StreamProgressState {
+  return {
+    ...progress,
+    completedAt: progress.completedAt ?? progress.lastDeltaAt ?? Date.now(),
   };
 }
 
@@ -151,6 +206,7 @@ export function PortalSopGeneratePanel() {
   const [downloadingFormat, setDownloadingFormat] = useState<'markdown' | 'docx' | 'pdf' | ''>('');
 
   const [draft, setDraft] = useState<DraftState>(() => createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
+  const [streamProgress, setStreamProgress] = useState<StreamProgressState>(() => createEmptyStreamProgress());
 
   useEffect(() => {
     const loadDepartments = async () => {
@@ -231,25 +287,51 @@ export function PortalSopGeneratePanel() {
     setGenerateStatus('loading');
     setGenerateMessage('');
     setDownloadMessage('');
+    setStreamProgress(createStartedStreamProgress());
 
     try {
-      const payload = await generateSopByDocument({
-        document_id: currentDocId,
-        department_id: lockedDepartmentId || generateDepartmentId || undefined,
-        process_name: processName.trim() || undefined,
-        scenario_name: scenarioName.trim() || undefined,
-        title_hint: titleHint.trim() || undefined,
-        mode: queryMode,
-        top_k: normalizeTopK(topK),
-      });
+      setDraft(createEmptyDraft(
+        lockedDepartmentId || generateDepartmentId || fallbackDepartmentId,
+        departments.find((item) => item.department_id === (lockedDepartmentId || generateDepartmentId || fallbackDepartmentId))?.department_name
+          || fallbackDepartmentName,
+      ));
+      const payload = await generateSopByDocumentStream(
+        {
+          document_id: currentDocId,
+          department_id: lockedDepartmentId || generateDepartmentId || undefined,
+          process_name: processName.trim() || undefined,
+          scenario_name: scenarioName.trim() || undefined,
+          title_hint: titleHint.trim() || undefined,
+          mode: queryMode,
+          top_k: normalizeTopK(topK),
+        },
+        {
+          onMeta: (meta) => {
+            setDraft((prev) => mergeDraftWithStreamMeta(prev, meta));
+            setGenerateDepartmentId(meta.department_id);
+            setGenerateMessage(`已建立流式连接，模型：${meta.model}，等待首包...`);
+          },
+          onDelta: (delta) => {
+            setDraft((prev) => ({ ...prev, content: `${prev.content}${delta}` }));
+            setStreamProgress((prev) => recordStreamDelta(prev, delta));
+          },
+          onDone: (response) => {
+            setDraft(toDraftFromGeneration(response));
+            setGenerateDepartmentId(response.department_id);
+            setStreamProgress((prev) => completeStreamProgress(prev));
+          },
+        },
+      );
 
       setDraft(toDraftFromGeneration(payload));
       setGenerateDepartmentId(payload.department_id);
       setGenerateStatus('success');
       setGenerateMessage(`已基于当前文档生成草稿，模型：${payload.model}`);
+      setStreamProgress((prev) => completeStreamProgress(prev));
     } catch (error) {
       setGenerateStatus('error');
       setGenerateMessage(formatApiError(error, 'SOP 草稿生成'));
+      setStreamProgress((prev) => completeStreamProgress(prev));
     }
   };
 
@@ -309,6 +391,7 @@ export function PortalSopGeneratePanel() {
           setGenerateMessage('');
           setDownloadMessage('');
           setDraft(createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
+          setStreamProgress(createEmptyStreamProgress());
         }}
         onUploadCreated={(docId) => {
           setCurrentDocId(docId);
@@ -322,6 +405,7 @@ export function PortalSopGeneratePanel() {
           setLatestJob(null);
           setGenerateStatus('error');
           setGenerateMessage('来源文档上传或入库失败，请修复后重试。');
+          setStreamProgress(createEmptyStreamProgress());
         }}
       />
 
@@ -469,6 +553,7 @@ export function PortalSopGeneratePanel() {
             <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
               {generateMessage || generationHint}
             </p>
+            <StreamProgressSummary status={generateStatus} metrics={streamProgress} />
           </Card>
         </div>
 
@@ -509,6 +594,10 @@ export function PortalSopGeneratePanel() {
                 onChange={(event) => setDraft((prev) => ({ ...prev, content: event.target.value }))}
                 placeholder="生成后的 SOP 草稿会出现在这里。"
               />
+            </div>
+
+            <div className="mt-4">
+              <StreamProgressSummary status={generateStatus} metrics={streamProgress} compact />
             </div>
 
             <div className="mt-5 flex flex-wrap items-center gap-3">

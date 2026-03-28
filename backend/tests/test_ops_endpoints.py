@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from backend.app.core.config import Settings, ensure_data_directories
 from backend.app.main import app
 from backend.app.schemas.event_log import EventLogActor, EventLogRecord
+from backend.app.schemas.document import DocumentRecord, IngestJobRecord
 from backend.app.schemas.ops import OpsQueueSummary
 from backend.app.schemas.request_snapshot import (
     RequestSnapshotComponentVersions,
@@ -254,6 +255,56 @@ def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestT
     return TestClient(app), event_log_service, request_trace_service, request_snapshot_service
 
 
+def _persist_document_with_job(
+    tmp_path: Path,
+    *,
+    doc_id: str,
+    job_id: str,
+    file_name: str,
+    department_id: str,
+    updated_at: str,
+    document_status: str = "queued",
+    job_status: str = "queued",
+    stage: str = "queued",
+    progress: int = 0,
+    with_artifacts: bool = False,
+) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    timestamp = datetime.fromisoformat(updated_at).astimezone(timezone.utc)
+    document = DocumentRecord(
+        doc_id=doc_id,
+        tenant_id="wl",
+        file_name=file_name,
+        file_hash=f"hash-{doc_id}",
+        source_type="docx",
+        department_id=department_id,
+        department_ids=[department_id],
+        visibility="department",
+        classification="internal",
+        status=document_status,  # type: ignore[arg-type]
+        latest_job_id=job_id,
+        storage_path=str(settings.upload_dir / f"{doc_id}__source.docx"),
+        created_at=timestamp,
+        updated_at=timestamp,
+    )
+    job = IngestJobRecord(
+        job_id=job_id,
+        doc_id=doc_id,
+        version=1,
+        file_name=file_name,
+        status=job_status,  # type: ignore[arg-type]
+        stage=stage,
+        progress=progress,
+        created_at=timestamp,
+        updated_at=timestamp,
+    )
+    (settings.document_dir / f"{doc_id}.json").write_text(document.model_dump_json(indent=2), encoding="utf-8")
+    (settings.job_dir / f"{job_id}.json").write_text(job.model_dump_json(indent=2), encoding="utf-8")
+    if with_artifacts:
+        (settings.parsed_dir / f"{doc_id}.txt").write_text("parsed text ready", encoding="utf-8")
+
+
 def _login_headers(client: TestClient, *, username: str, password: str) -> dict[str, str]:
     response = client.post("/api/v1/auth/login", json={"username": username, "password": password})
     assert response.status_code == 200
@@ -262,6 +313,19 @@ def _login_headers(client: TestClient, *, username: str, password: str) -> dict[
 
 def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> None:
     client, event_log_service, request_trace_service, request_snapshot_service = _build_client(tmp_path)
+    _persist_document_with_job(
+        tmp_path,
+        doc_id="doc_stuck_1",
+        job_id="job_stuck_1",
+        file_name="数字化交接班.docx",
+        department_id="dept_digitalization",
+        updated_at="2020-01-01T00:00:00+00:00",
+        document_status="queued",
+        job_status="queued",
+        stage="queued",
+        progress=0,
+        with_artifacts=True,
+    )
     _append_record(
         event_log_service,
         event_id="evt_chat_1",
@@ -335,7 +399,18 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
     assert payload["runtime_gate"]["active_users"] == 0
     assert payload["runtime_gate"]["max_user_inflight"] == 0
     assert payload["runtime_gate"]["channels"][0]["channel"] == "chat_fast"
+    assert isinstance(payload["health"]["reranker"]["effective_provider"], str)
+    assert isinstance(payload["health"]["reranker"]["effective_model"], str)
+    assert isinstance(payload["health"]["reranker"]["effective_strategy"], str)
+    assert isinstance(payload["health"]["reranker"]["fallback_enabled"], bool)
+    assert isinstance(payload["health"]["reranker"]["failure_cooldown_seconds"], (int, float))
+    assert isinstance(payload["health"]["reranker"]["lock_active"], bool)
+    assert payload["health"]["reranker"]["lock_source"] is None or isinstance(payload["health"]["reranker"]["lock_source"], str)
+    assert isinstance(payload["health"]["reranker"]["cooldown_remaining_seconds"], (int, float))
     assert payload["recent_window"]["sample_size"] == 2
+    assert payload["stuck_ingest_jobs"][0]["doc_id"] == "doc_stuck_1"
+    assert payload["stuck_ingest_jobs"][0]["reason"] == "artifacts_ready_but_inflight"
+    assert payload["stuck_ingest_jobs"][0]["has_materialized_artifacts"] is True
     assert payload["recent_window"]["failed_count"] == 1
     assert payload["recent_window"]["timeout_count"] == 1
     assert payload["recent_window"]["downgraded_count"] == 1
@@ -350,6 +425,32 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
 
 def test_ops_summary_scopes_logs_for_department_admin(tmp_path: Path) -> None:
     client, event_log_service, request_trace_service, request_snapshot_service = _build_client(tmp_path)
+    _persist_document_with_job(
+        tmp_path,
+        doc_id="doc_scope_visible",
+        job_id="job_scope_visible",
+        file_name="数字化异常处理.docx",
+        department_id="dept_digitalization",
+        updated_at="2020-01-01T00:00:00+00:00",
+        document_status="queued",
+        job_status="queued",
+        stage="queued",
+        progress=0,
+        with_artifacts=False,
+    )
+    _persist_document_with_job(
+        tmp_path,
+        doc_id="doc_scope_hidden",
+        job_id="job_scope_hidden",
+        file_name="装配异常处理.docx",
+        department_id="dept_assembly",
+        updated_at="2020-01-01T00:00:00+00:00",
+        document_status="queued",
+        job_status="queued",
+        stage="queued",
+        progress=0,
+        with_artifacts=True,
+    )
     _append_record(
         event_log_service,
         event_id="evt_digitalization_1",
@@ -441,6 +542,9 @@ def test_ops_summary_scopes_logs_for_department_admin(tmp_path: Path) -> None:
     assert payload["recent_window"]["sample_size"] == 1
     assert payload["categories"][1]["category"] == "document"
     assert payload["categories"][1]["total"] == 1
+    assert len(payload["stuck_ingest_jobs"]) == 1
+    assert payload["stuck_ingest_jobs"][0]["doc_id"] == "doc_scope_visible"
+    assert payload["stuck_ingest_jobs"][0]["reason"] == "stale_inflight"
     assert payload["recent_failures"] == []
     assert payload["recent_traces"][0]["trace_id"] == "trc_digitalization_1"
     assert payload["recent_snapshots"][0]["snapshot_id"] == "rsp_digitalization_1"

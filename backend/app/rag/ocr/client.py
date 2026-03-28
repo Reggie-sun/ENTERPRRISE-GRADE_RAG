@@ -1,15 +1,20 @@
 import importlib.util  # 导入 importlib，便于做 OCR 依赖可用性探测而不强制导入大包。
+import os  # 读取当前进程信息，并给 Paddle 运行时注入一次性环境变量。
 from dataclasses import dataclass, field  # 导入 dataclass，用于封装 OCR 结果。
 from pathlib import Path  # 导入 Path，方便处理 sidecar 和临时图片文件。
 from tempfile import TemporaryDirectory  # 导入临时目录，给 PDF 渲染页落地用。
 from typing import Any  # 导入 Any，兼容第三方 OCR 客户端的动态返回类型。
+from zipfile import ZipFile  # 导入 ZipFile，给 DOCX 嵌图 OCR 提供最小 zip 读取能力。
 
 from ...core.config import Settings, get_settings  # 导入统一配置对象，避免 OCR 自己再维护一套 env 解析。
-from ..parsers.document_parser import OCR_IMAGE_SUFFIXES  # 复用解析层定义的 OCR-only 图片后缀集合。
+from ..parsers.document_parser import DocumentParser, OCR_IMAGE_SUFFIXES  # 复用解析层定义的 OCR-only 图片后缀集合。
 
 
 class OCRUnavailableError(RuntimeError):  # OCR provider 未配置或依赖缺失时统一走这个异常类型。
     pass
+
+
+_PADDLE_OCR_SINGLETONS: dict[tuple[int, bool, str], Any] = {}  # PaddleX 运行时不支持同进程重复初始化，按进程+配置做单例缓存。
 
 
 @dataclass(slots=True)  # OCR 片段统一收口，便于后续保存 artifact 和做 OCR 质量分析。
@@ -31,7 +36,6 @@ class OCRExtractionResult:
 class OCRClient:  # 封装 OCR provider 的最小统一入口。
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or get_settings()
-        self._paddle_ocr: Any | None = None
 
     def is_enabled(self) -> bool:  # 判断当前是否显式启用了 OCR。
         return self.settings.ocr_provider.lower().strip() != "disabled"
@@ -63,6 +67,36 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
             return self._extract_with_mock(source_path=source_path, filename=filename, parser_name="pdf_ocr_mock")
         if provider == "paddleocr":
             return self._extract_pdf_text_with_paddle(source_path)
+        raise OCRUnavailableError(f"Unsupported OCR provider: {self.settings.ocr_provider}")
+
+    def extract_docx_embedded_image_text(
+        self,
+        *,
+        source_path: Path,
+        filename: str,
+        image_paths: list[str] | None = None,
+    ) -> OCRExtractionResult | None:  # 对 DOCX 内嵌图片执行 OCR，返回独立 artifact 文本。
+        resolved_image_paths = image_paths or DocumentParser.list_docx_embedded_image_paths(source_path)
+        if not resolved_image_paths:
+            return None
+
+        provider = self.settings.ocr_provider.lower().strip()
+        if provider == "disabled":
+            raise OCRUnavailableError("OCR provider is disabled for DOCX embedded images.")
+        if provider == "mock":
+            mock_result = self._extract_with_mock(
+                source_path=source_path,
+                filename=filename,
+                parser_name="docx_embedded_image_ocr_mock",
+            )
+            return OCRExtractionResult(
+                parser_name="docx_embedded_image_ocr_mock",
+                text=mock_result.text,
+                warning_message=mock_result.warning_message,
+                segments=self._reindex_segments(mock_result.segments, page_no=None),
+            )
+        if provider == "paddleocr":
+            return self._extract_docx_embedded_image_text_with_paddle(source_path, resolved_image_paths)
         raise OCRUnavailableError(f"Unsupported OCR provider: {self.settings.ocr_provider}")
 
     def get_runtime_status(self) -> dict[str, Any]:  # 返回当前 OCR provider 的最小运行状态，供 health/ops 页面直接展示。
@@ -112,7 +146,7 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
 
     def _extract_image_segments_with_paddle(self, source_path: Path, *, page_no: int | None) -> list[OCRTextSegment]:  # 让 PaddleOCR 直接识别图片，并保留页内片段明细。
         ocr = self._get_paddle_ocr()
-        results = ocr.ocr(str(source_path), cls=self.settings.ocr_paddle_use_angle_cls)
+        results = list(ocr.predict(str(source_path)))
         return self._flatten_paddle_results(results, page_no=page_no)
 
     def _extract_pdf_text_with_paddle(self, source_path: Path) -> OCRExtractionResult:  # 把 PDF 每页渲染成图片后交给 PaddleOCR。
@@ -153,16 +187,85 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
             segments=segments,
         )
 
+    def _extract_docx_embedded_image_text_with_paddle(
+        self,
+        source_path: Path,
+        image_paths: list[str],
+    ) -> OCRExtractionResult:  # 把 DOCX 内嵌图片逐张抽出并交给 PaddleOCR。
+        image_texts: list[str] = []
+        all_segments: list[OCRTextSegment] = []
+        failed_images: list[str] = []
+        next_line_no = 1
+        with ZipFile(source_path) as archive, TemporaryDirectory(prefix="ocr_docx_") as temp_dir:
+            for index, image_path in enumerate(image_paths, start=1):
+                temp_path = Path(temp_dir) / f"embedded_{index}{Path(image_path).suffix.lower() or '.img'}"
+                try:
+                    temp_path.write_bytes(archive.read(image_path))
+                    image_segments = self._extract_image_segments_with_paddle(temp_path, page_no=None)
+                except Exception:
+                    failed_images.append(Path(image_path).name)
+                    continue
+
+                reindexed_segments = self._reindex_segments(image_segments, start_line_no=next_line_no, page_no=None)
+                next_line_no += len(reindexed_segments)
+                image_text = self._segments_to_text(reindexed_segments).strip()
+                if image_text:
+                    image_texts.append(image_text)
+                    all_segments.extend(reindexed_segments)
+
+        if not image_texts:
+            raise OCRUnavailableError(f"OCR did not extract any text from DOCX embedded images in '{source_path.name}'.")
+
+        warning_message = None
+        if failed_images:
+            warning_message = (
+                "OCR failed on DOCX embedded images: " + ", ".join(failed_images) + ". Continued with remaining images."
+            )
+        return OCRExtractionResult(
+            parser_name="docx_embedded_image_ocr_paddle",
+            text="\n\n".join(image_texts),
+            warning_message=warning_message,
+            segments=all_segments,
+        )
+
     def _get_paddle_ocr(self) -> Any:  # 懒加载 PaddleOCR，避免默认开发环境启动即强依赖大包。
-        if self._paddle_ocr is not None:
-            return self._paddle_ocr
+        use_textline_orientation = (
+            self.settings.ocr_paddle_use_textline_orientation or self.settings.ocr_paddle_use_angle_cls
+        )
+        cache_key = (
+            os.getpid(),
+            self.settings.ocr_paddle_use_doc_orientation_classify,
+            self.settings.ocr_paddle_use_doc_unwarping,
+            use_textline_orientation,
+            self.settings.ocr_paddle_ocr_version,
+            self.settings.ocr_paddle_text_detection_model_name,
+            self.settings.ocr_paddle_text_recognition_model_name,
+            self.settings.ocr_language,
+        )
+        cached = _PADDLE_OCR_SINGLETONS.get(cache_key)
+        if cached is not None:
+            return cached
         try:
             from paddleocr import PaddleOCR  # type: ignore[import-not-found]
         except ImportError as exc:
-            raise OCRUnavailableError("PaddleOCR is not installed. Use requirements/ocr-*.txt to enable OCR.") from exc
+            raise OCRUnavailableError(
+                "PaddleOCR import failed. Install requirements/ocr-*.txt and required system libraries. "
+                f"Original import error: {exc}"
+            ) from exc
 
-        self._paddle_ocr = PaddleOCR(use_angle_cls=self.settings.ocr_paddle_use_angle_cls, lang=self.settings.ocr_language)
-        return self._paddle_ocr
+        # 关闭 PaddleX 启动时的模型源连通性探测，避免本地 worker 每次首轮 OCR 额外卡在网络检查。
+        os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
+        ocr = PaddleOCR(
+            lang=self.settings.ocr_language,
+            ocr_version=self.settings.ocr_paddle_ocr_version,
+            use_doc_orientation_classify=self.settings.ocr_paddle_use_doc_orientation_classify,
+            use_doc_unwarping=self.settings.ocr_paddle_use_doc_unwarping,
+            use_textline_orientation=use_textline_orientation,
+            text_detection_model_name=self.settings.ocr_paddle_text_detection_model_name,
+            text_recognition_model_name=self.settings.ocr_paddle_text_recognition_model_name,
+        )
+        _PADDLE_OCR_SINGLETONS[cache_key] = ocr
+        return ocr
 
     @staticmethod
     def _detect_paddle_dependencies() -> list[str]:  # 仅做依赖探测，不主动导入 PaddleOCR 或 PyMuPDF。
@@ -178,6 +281,32 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
         segments: list[OCRTextSegment] = []
         line_no = 0
         for block in results or []:
+            rec_texts = getattr(block, "rec_texts", None)
+            rec_scores = getattr(block, "rec_scores", None)
+            if isinstance(block, dict):
+                rec_texts = rec_texts or block.get("rec_texts")
+                rec_scores = rec_scores or block.get("rec_scores")
+            if rec_texts:
+                for index, text in enumerate(rec_texts, start=1):
+                    normalized_text = str(text).strip()
+                    if not normalized_text:
+                        continue
+                    confidence = None
+                    if rec_scores and index - 1 < len(rec_scores):
+                        try:
+                            confidence = float(rec_scores[index - 1])
+                        except (TypeError, ValueError):
+                            confidence = None
+                    line_no += 1
+                    segments.append(
+                        OCRTextSegment(
+                            text=normalized_text,
+                            page_no=page_no,
+                            line_no=line_no,
+                            confidence=confidence,
+                        )
+                    )
+                continue
             for line in block or []:
                 if not isinstance(line, (list, tuple)) or len(line) < 2:
                     continue
@@ -216,3 +345,24 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
         if not segments and text.strip():
             segments.append(OCRTextSegment(text=text.strip(), page_no=1, line_no=1, confidence=None))
         return segments
+
+    @staticmethod
+    def _reindex_segments(
+        segments: list[OCRTextSegment],
+        *,
+        start_line_no: int = 1,
+        page_no: int | None,
+    ) -> list[OCRTextSegment]:  # 让多图片 OCR 输出的行号连续，并允许 DOCX 场景去掉页码语义。
+        reindexed: list[OCRTextSegment] = []
+        next_line_no = start_line_no
+        for segment in segments:
+            reindexed.append(
+                OCRTextSegment(
+                    text=segment.text,
+                    page_no=page_no if page_no is not None else None,
+                    line_no=next_line_no,
+                    confidence=segment.confidence,
+                )
+            )
+            next_line_no += 1
+        return reindexed

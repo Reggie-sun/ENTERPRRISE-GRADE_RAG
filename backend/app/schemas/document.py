@@ -33,7 +33,7 @@ IngestErrorCode = Literal[
 class DocumentCreateResponse(BaseModel):  # 定义 POST /documents 的响应结构。
     doc_id: str  # 新创建文档的唯一标识。
     job_id: str  # 本次入库任务的唯一标识。
-    status: Literal["queued"] = "queued"  # 当前创建结果固定为 queued。
+    status: Literal["queued", "completed"] = "queued"  # 新文档默认 queued；已完成的重复文档可直接复用 completed。
 
 
 class DocumentBatchItemResponse(BaseModel):  # 定义批量上传场景里单个文件的创建结果。

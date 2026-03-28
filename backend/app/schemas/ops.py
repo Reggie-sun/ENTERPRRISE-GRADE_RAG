@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .document import DocumentLifecycleStatus, IngestJobStatus
 from .event_log import EventLogCategory, EventLogRecord
 from .health import HealthResponse
 from .request_snapshot import RequestSnapshotRecord
@@ -53,12 +55,30 @@ class OpsRuntimeGateSummary(BaseModel):
     channels: list[OpsRuntimeChannelSummary] = Field(default_factory=list)
 
 
+OpsStuckIngestJobReason = Literal["artifacts_ready_but_inflight", "stale_inflight"]
+
+
+class OpsStuckIngestJobSummary(BaseModel):
+    doc_id: str
+    job_id: str
+    file_name: str
+    document_status: DocumentLifecycleStatus
+    job_status: IngestJobStatus
+    stage: str
+    progress: int = Field(ge=0, le=100)
+    updated_at: datetime
+    stale_seconds: int = Field(default=0, ge=0)
+    has_materialized_artifacts: bool = False
+    reason: OpsStuckIngestJobReason
+
+
 class OpsSummaryResponse(BaseModel):
     checked_at: datetime
     health: HealthResponse
     queue: OpsQueueSummary
     runtime_gate: OpsRuntimeGateSummary
     recent_window: OpsRecentWindowSummary
+    stuck_ingest_jobs: list[OpsStuckIngestJobSummary] = Field(default_factory=list)
     categories: list[OpsCategorySummary] = Field(default_factory=list)
     recent_failures: list[EventLogRecord] = Field(default_factory=list)
     recent_degraded: list[EventLogRecord] = Field(default_factory=list)

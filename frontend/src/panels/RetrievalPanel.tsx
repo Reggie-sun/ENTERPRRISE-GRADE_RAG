@@ -7,8 +7,10 @@ import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';  // 引入图标。
 import { Card, Button, StatusPill, Textarea, Input, ResultCard } from '@/components';
 import {
+  compareRetrievalRerank,
   formatApiError,
   searchDocuments,
+  type RetrievalRerankCompareResponse,
   type RetrievalResponse,
   type RetrievedChunk,
   type IngestJobStatus,
@@ -65,13 +67,25 @@ export function RetrievalPanel({
   const [status, setStatus] = useState<PanelStatus>('idle');
   const [data, setData] = useState<RetrievalResponse | null>(null);
   const [error, setError] = useState<string>('');
+  const [comparisonStatus, setComparisonStatus] = useState<PanelStatus>('idle');
+  const [comparisonData, setComparisonData] = useState<RetrievalRerankCompareResponse | null>(null);
+  const [comparisonError, setComparisonError] = useState<string>('');
 
   // 每次新上传文档时，自动清空旧的检索结果。
   useEffect(() => {
     setData(null);
     setError('');
     setStatus('idle');
+    setComparisonData(null);
+    setComparisonError('');
+    setComparisonStatus('idle');
   }, [resetSignal]);
+
+  const buildRequest = () => ({
+    query: query.trim(),
+    top_k: topK,
+    document_id: normalizedDocId || undefined,
+  });
 
   // 执行检索。
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,16 +101,33 @@ export function RetrievalPanel({
     setError('');
 
     try {
-      const result = await searchDocuments({
-        query: query.trim(),
-        top_k: topK,
-        document_id: normalizedDocId || undefined,
-      });
+      const result = await searchDocuments(buildRequest());
       setData(result);
       setStatus('success');
     } catch (err) {
       setError(formatApiError(err, '文档检索'));
       setStatus('error');
+    }
+  };
+
+  const handleCompareRerank = async () => {
+    if (normalizedDocId && currentJobStatus !== 'completed') {
+      const jobText = JOB_STATE_TEXT[currentJobStatus || ''] || currentJobStatus || '-';
+      setComparisonStatus('error');
+      setComparisonData(null);
+      setComparisonError(`当前文档尚未完成入库（状态：${jobText}），暂不能执行 rerank 对比。请等待任务完成后重试。`);
+      return;
+    }
+    setComparisonStatus('loading');
+    setComparisonError('');
+
+    try {
+      const result = await compareRetrievalRerank(buildRequest());
+      setComparisonData(result);
+      setComparisonStatus('success');
+    } catch (err) {
+      setComparisonError(formatApiError(err, 'Rerank 对比验证'));
+      setComparisonStatus('error');
     }
   };
 
@@ -172,6 +203,16 @@ export function RetrievalPanel({
             </Button>
           </div>
         </div>
+        <div className="grid grid-cols-1">
+          <Button
+            type="button"
+            loading={comparisonStatus === 'loading'}
+            variant="ghost"
+            onClick={handleCompareRerank}
+          >
+            对比当前 rerank 与 heuristic 基线
+          </Button>
+        </div>
       </form>
 
       {/* 状态徽章 */}
@@ -203,6 +244,188 @@ export function RetrievalPanel({
               {item.text.length > 300 ? `${item.text.slice(0, 300)}...` : item.text}
             </ResultCard>
           ))
+        )}
+      </div>
+
+      <div className="mt-6 grid gap-3">
+        <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+          <div>
+            <h3 className="m-0 text-lg font-semibold text-ink">Rerank 对比验证</h3>
+            <p className="m-0 mt-1 text-sm text-ink-soft">
+              在同一批检索候选上直接比较“当前默认 rerank 路由”和 “heuristic 基线”，判断模型 rerank 是否值得成为默认路径。
+            </p>
+          </div>
+          <StatusPill tone={
+            comparisonStatus === 'success'
+              ? 'ok'
+              : comparisonStatus === 'loading'
+                ? 'warn'
+                : comparisonStatus === 'error'
+                  ? 'error'
+                  : 'default'
+          }>
+            {comparisonStatus === 'success'
+              ? `候选 ${comparisonData?.candidate_count ?? 0} / rerank ${comparisonData?.rerank_top_n ?? 0}`
+              : comparisonStatus === 'loading'
+                ? '正在对比'
+                : comparisonStatus === 'error'
+                  ? '对比失败'
+                  : '尚未执行'}
+          </StatusPill>
+        </div>
+
+        {comparisonError ? (
+          <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)]">
+            <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm text-ink">{comparisonError}</pre>
+          </div>
+        ) : null}
+
+        {comparisonData ? (
+          <>
+            <div className="rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.8)] p-4">
+              <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+                <strong className="text-ink">当前默认路由实时状态</strong>
+                <StatusPill tone={
+                  comparisonData.route_status.ready
+                    ? comparisonData.route_status.effective_strategy === 'provider'
+                      ? 'ok'
+                      : 'warn'
+                    : 'error'
+                }>
+                  {comparisonData.route_status.effective_provider} / {comparisonData.route_status.effective_strategy}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-3 text-sm text-ink-soft">
+                configured: {comparisonData.route_status.provider} / {comparisonData.route_status.model}
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
+                effective: {comparisonData.route_status.effective_provider} / {comparisonData.route_status.effective_strategy}
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
+                effective model: {comparisonData.route_status.effective_model}
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
+                cooldown: {comparisonData.route_status.failure_cooldown_seconds}s / remaining {comparisonData.route_status.cooldown_remaining_seconds.toFixed(1)}s
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
+                fallback: {comparisonData.route_status.fallback_enabled ? 'on' : 'off'}
+              </p>
+              <p className="m-0 mt-1 text-sm text-ink-soft">
+                lock: {comparisonData.route_status.lock_active ? 'active' : 'off'}{comparisonData.route_status.lock_source ? ` / ${comparisonData.route_status.lock_source}` : ''}
+              </p>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink">
+                {comparisonData.route_status.detail || '无额外状态说明。'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2">
+              <ResultCard
+                title="当前默认路由"
+                meta={[
+                  { label: 'provider', value: comparisonData.configured.provider },
+                  { label: 'strategy', value: comparisonData.configured.strategy },
+                ]}
+              >
+                {comparisonData.configured.model || '无模型'}
+              </ResultCard>
+              <ResultCard
+                title="heuristic 基线"
+                meta={[
+                  { label: 'provider', value: comparisonData.heuristic.provider },
+                  { label: 'strategy', value: comparisonData.heuristic.strategy },
+                ]}
+              >
+                token overlap + vector blended
+              </ResultCard>
+              <ResultCard
+                title="重叠结果"
+                meta={[
+                  { label: 'overlap', value: String(comparisonData.summary.overlap_count) },
+                  { label: 'top1', value: comparisonData.summary.top1_same ? 'same' : 'changed' },
+                ]}
+              >
+                {comparisonData.mode}
+              </ResultCard>
+              <ResultCard
+                title="差异摘要"
+                meta={[
+                  { label: 'configured only', value: String(comparisonData.summary.configured_only_chunk_ids.length) },
+                  { label: 'heuristic only', value: String(comparisonData.summary.heuristic_only_chunk_ids.length) },
+                ]}
+              >
+                {comparisonData.configured.provider === 'heuristic'
+                  ? '当前默认路由本身就是 heuristic。'
+                  : comparisonData.configured.strategy === 'provider'
+                    ? '当前默认路由已真实使用模型 rerank。'
+                    : '当前默认路由已降级到 heuristic。'}
+              </ResultCard>
+            </div>
+
+            {comparisonData.configured.error_message ? (
+              <div className="p-4 rounded-xl border border-dashed border-[rgba(182,70,47,0.2)] bg-[rgba(255,248,245,0.85)]">
+                <p className="m-0 text-sm font-semibold text-ink">当前默认路由错误</p>
+                <pre className="m-0 mt-2 whitespace-pre-wrap break-words font-mono text-sm text-ink">
+                  {comparisonData.configured.error_message}
+                </pre>
+              </div>
+            ) : null}
+
+            <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="m-0 text-base font-semibold text-ink">当前默认路由结果</h4>
+                  <StatusPill tone={comparisonData.configured.strategy === 'provider' ? 'ok' : 'warn'}>
+                    {comparisonData.configured.provider} / {comparisonData.configured.strategy}
+                  </StatusPill>
+                </div>
+                {comparisonData.configured.results.length === 0 ? (
+                  <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
+                    当前默认路由没有返回结果。
+                  </div>
+                ) : comparisonData.configured.results.map((item, index) => (
+                  <ResultCard
+                    key={`configured-${item.chunk_id}`}
+                    title={item.document_name}
+                    index={index}
+                    meta={[
+                      { label: '分数', value: item.score.toFixed(4) },
+                      { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
+                    ]}
+                  >
+                    {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                  </ResultCard>
+                ))}
+              </div>
+
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="m-0 text-base font-semibold text-ink">heuristic 基线结果</h4>
+                  <StatusPill tone="default">heuristic</StatusPill>
+                </div>
+                {comparisonData.heuristic.results.length === 0 ? (
+                  <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
+                    heuristic 基线没有返回结果。
+                  </div>
+                ) : comparisonData.heuristic.results.map((item, index) => (
+                  <ResultCard
+                    key={`heuristic-${item.chunk_id}`}
+                    title={item.document_name}
+                    index={index}
+                    meta={[
+                      { label: '分数', value: item.score.toFixed(4) },
+                      { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
+                    ]}
+                  >
+                    {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                  </ResultCard>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
+            先执行一次对比，再看当前默认 rerank 路由是否真的优于 heuristic。
+          </div>
         )}
       </div>
     </Card>

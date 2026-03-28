@@ -1,0 +1,48 @@
+{
+  "document_id": "doc_20260328054426_71b5367e",
+  "file_name": "docx_embedded_real_ocr_big_runtime_unique.docx",
+  "source_path": "/app/data/uploads/doc_20260328054426_71b5367e__docx_embedded_real_ocr_big_runtime_unique.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 6,
+  "page_count": 1,
+  "normalized_text": "SENSOR\nＥ204\nCHECK STEP\nA1\nA2\nA3",
+  "segments": [
+    {
+      "text": "SENSOR",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.9924855828285217
+    },
+    {
+      "text": "Ｅ204",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.8651577830314636
+    },
+    {
+      "text": "CHECK STEP",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9428443908691406
+    },
+    {
+      "text": "A1",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.8578960299491882
+    },
+    {
+      "text": "A2",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.9253594875335693
+    },
+    {
+      "text": "A3",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.965756893157959
+    }
+  ]
+}

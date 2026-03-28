@@ -1,0 +1,114 @@
+{
+  "snapshot_id": "rsp_bacdb75447b14292",
+  "trace_id": "trc_sop_bc0918df6dfd4ce4",
+  "request_id": "req_sop_4bbafa758fb941ac",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T02:47:42.789861Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260328022343_b95834e1",
+  "request": {
+    "top_k": 5,
+    "mode": "fast",
+    "department_id": "dept_digitalization",
+    "document_id": "doc_20260328022343_b95834e1",
+    "title_hint": "sop_stream_smoke SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260328022343_b95834e1 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+      "document_id": "doc_20260328022343_b95834e1",
+      "document_name": "sop_stream_smoke.md",
+      "snippet": "# 巡检手册\n\n巡检前先检查监控面板和服务状态。\n发现异常后记录时间、现象和影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": -4.1953125,
+      "source_path": "/app/data/uploads/doc_20260328022343_b95834e1__sop_stream_smoke.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5439675,
+      "lexical_score": 0.7767415956198083,
+      "fused_score": 0.03278688524590164
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+      "document_id": "doc_20260328022343_b95834e1",
+      "document_name": "sop_stream_smoke.md",
+      "snippet": "# 巡检手册\n\n巡检前先检查监控面板和服务状态。\n发现异常后记录时间、现象和影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": -4.1953125,
+      "source_path": "/app/data/uploads/doc_20260328022343_b95834e1__sop_stream_smoke.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5439675,
+      "lexical_score": 0.7767415956198083,
+      "fused_score": 0.03278688524590164
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-Instruct"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-Instruct",
+    "answer_preview": "# sop_stream_smoke SOP 草稿\n\n## 目的\n确保巡检过程中的监控面板和服务状态正常，及时发现并记录异常情况，保证系统的稳定运行。\n\n## 适用范围\n适用于数字化部所有涉及巡检工作的人员。\n\n## 前置检查\n- 检查监控面板的状态。\n- 确认服务是否处于正常运行状态。\n\n## 操作步骤\n1. 开始巡检前，按照前置检查的要求进行检查。\n2. 发现任何异常情况时，立即停止当前操作。\n3. 记录异常发生的时间、具体现象及可能的影响范围。\n4. 完成异常处理后，更新值班记录。\n5. 将异常处理结果及相关信息通知给相关同事。\n\n## 异常处理\n- 遇到异常情况，应详细记录并采取...",
+    "answer_chars": 492,
+    "citation_count": 1,
+    "rerank_strategy": "provider_or_fallback",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "sop_stream_smoke SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 1,
+    "document_id": "doc_20260328022343_b95834e1",
+    "department_id": "dept_digitalization",
+    "department_name": "数字化部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "sop_stream_smoke",
+    "streaming": true,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "fast",
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

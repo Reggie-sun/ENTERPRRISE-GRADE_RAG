@@ -149,7 +149,56 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
 
         if on_stage is not None:
             on_stage("parsing", 10)
-        parsed_document = self.parser.parse(source_path=source_path, document_id=document_id, filename=filename)
+        parsed_document = self.parser.parse(
+            source_path=source_path,
+            document_id=document_id,
+            filename=filename,
+            allow_empty=suffix == ".docx",
+        )
+        if suffix == ".docx":  # DOCX 允许正文为空，再补一轮嵌图 OCR。
+            docx_image_paths = self.parser.list_docx_embedded_image_paths(source_path)
+            if not docx_image_paths:
+                if parsed_document.text:
+                    return parsed_document, None, None
+                raise ValueError(f"No extractable text found in '{filename}'.")
+
+            if not self.ocr_client.is_enabled():
+                if parsed_document.text:
+                    return parsed_document, None, None
+                raise ValueError(f"No extractable text found in '{filename}'.")
+
+            if on_stage is not None:
+                on_stage("ocr_processing", 20)
+            try:
+                ocr_result = self.ocr_client.extract_docx_embedded_image_text(
+                    source_path=source_path,
+                    filename=filename,
+                    image_paths=docx_image_paths,
+                )
+            except RuntimeError as exc:
+                if parsed_document.text:
+                    return parsed_document, None, str(exc)
+                raise
+
+            if ocr_result is None:
+                if parsed_document.text:
+                    return parsed_document, None, None
+                raise ValueError(f"No extractable text found in '{filename}'.")
+
+            merged_text = self._merge_native_and_ocr_text(parsed_document.text, ocr_result.text)
+            normalized_text = self.parser.normalize_text(merged_text)
+            if not normalized_text:
+                raise ValueError(f"No extractable text found in '{filename}'.")
+            return (
+                ParsedDocument(
+                    document_id=document_id,
+                    filename=filename,
+                    parser_name=parsed_document.parser_name,
+                    text=normalized_text,
+                ),
+                ocr_result,
+                ocr_result.warning_message,
+            )
         if suffix != ".pdf" or not self.parser.should_attempt_pdf_ocr(
             parsed_document.text,
             min_chars=self.settings.ocr_pdf_native_text_min_chars,
@@ -224,13 +273,17 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
         single_page_hint = self._resolve_single_page_hint(ocr_result)
         segment_spans = self._build_ocr_segment_spans(parsed_text=parsed_text, ocr_result=ocr_result)
 
-        for chunk in chunks:
-            chunk.ocr_used = True
-            chunk.parser_name = ocr_result.parser_name
-            chunk.ocr_confidence = overall_confidence
-            if single_page_hint is not None:
-                chunk.page_no = single_page_hint
+        if not segment_spans:  # 无法映射回原文时，回退到文档级 OCR 标注，避免 OCR 证据完全丢失。
+            for chunk in chunks:
+                chunk.ocr_used = True
+                chunk.parser_name = ocr_result.parser_name
+                chunk.ocr_confidence = overall_confidence
+                chunk.quality_score = overall_confidence
+                if single_page_hint is not None:
+                    chunk.page_no = single_page_hint
+            return
 
+        for chunk in chunks:
             overlapping_spans = [
                 span
                 for span in segment_spans
@@ -238,6 +291,13 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
             ]
             if not overlapping_spans:
                 continue
+
+            chunk.ocr_used = True
+            chunk.parser_name = ocr_result.parser_name
+            chunk.ocr_confidence = overall_confidence
+            chunk.quality_score = overall_confidence
+            if single_page_hint is not None:
+                chunk.page_no = single_page_hint
 
             page_overlap: dict[int, int] = {}
             for span in overlapping_spans:
@@ -251,6 +311,7 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
             span_confidence = self._average_confidence(span.confidence for span in overlapping_spans)
             if span_confidence is not None:
                 chunk.ocr_confidence = span_confidence
+                chunk.quality_score = span_confidence
 
     def _build_ocr_segment_spans(
         self,
