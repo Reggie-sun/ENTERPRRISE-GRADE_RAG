@@ -18,14 +18,14 @@ export function RetrievalPage() {
     <div className="grid gap-5">
       <HeroCard>
         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-[rgba(182,70,47,0.09)] text-accent-deep text-sm font-bold uppercase tracking-wider">
-          Retrieval
+          知识检索
         </div>
         <h2 className="m-0 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          检索页只负责确认召回是否正确，并验证结果没有跨出当前权限范围。
+          检索页用于确认资料命中是否准确，并验证结果没有超出当前权限范围。
         </h2>
         <p className="m-0 mt-3 max-w-[62ch] leading-relaxed text-ink-soft">
           {experience.workspaceBoundary}
-          先看 top chunks 命中什么，再决定问题是 embedding、切块、元数据过滤还是向量索引。
+          先看命中的知识片段，再判断问题来自检索策略、资料切分方式还是资料标签设置。
         </p>
       </HeroCard>
 
@@ -46,11 +46,11 @@ export function RetrievalPage() {
           </div>
           <div className="mt-4 grid gap-3 text-sm text-ink-soft">
             <p className="m-0 leading-relaxed">
-              有当前 doc_id 时，这页会直接按当前文档过滤；没有当前文档时，检索会直接命中数据库里已经存在的 chunk，不需要重新上传。
+              有当前资料编号时，这页会直接按当前资料过滤；没有当前资料时，检索会直接命中系统里已有的知识片段，不需要重新上传。
             </p>
             <p className="m-0 leading-relaxed">{scopeSummary}</p>
             <p className="m-0 break-all">
-              当前文档：{currentDocumentName || '全库模式'}
+              当前资料：{currentDocumentName || '全库模式'}
             </p>
             <p className="m-0 break-all">
               当前任务状态：{latestJob?.status || '未绑定任务'}

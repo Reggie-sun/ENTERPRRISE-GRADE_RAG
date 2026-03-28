@@ -19,43 +19,43 @@ const baseNavItems = [
   {
     to: '/workspace',
     label: '总览',
-    description: '健康检查、角色边界与入口导航',
+    description: '查看当前账号范围、常用入口与处理进度',
     icon: LayoutDashboard,
   },
   {
     to: '/workspace/documents',
     label: '文档中心',
-    description: '上传、列表、预览、重建',
+    description: '维护企业资料、分类与版本',
     icon: Files,
   },
   {
     to: '/workspace/retrieval',
-    label: '检索验证',
-    description: '看召回结果与 chunk 命中',
+    label: '知识检索',
+    description: '查看资料命中效果与内容范围',
     icon: Search,
   },
   {
     to: '/workspace/chat',
-    label: '问答验证',
-    description: '流式回答与引用回显',
+    label: '智能问答',
+    description: '检查问答结果与引用内容',
     icon: MessageSquare,
   },
   {
     to: '/workspace/logs',
-    label: '日志查询',
-    description: '事件追溯、参数核对与排障入口',
+    label: '操作记录',
+    description: '查看关键操作记录与处理轨迹',
     icon: Activity,
   },
   {
     to: '/workspace/ops',
-    label: '运行态',
-    description: '健康、积压、失败和降级汇总',
+    label: '平台状态',
+    description: '查看服务状态、任务积压与异常提醒',
     icon: Gauge,
   },
   {
     to: '/workspace/sop',
     label: 'SOP 中心',
-    description: '生成、编辑、保存和版本管理',
+    description: '生成、编辑、发布标准作业流程',
     icon: BookOpenText,
   },
 ];
@@ -63,7 +63,7 @@ const baseNavItems = [
 const adminNavItem = {
   to: '/workspace/admin',
   label: '管理后台',
-  description: '身份、权限、配置总入口',
+  description: '统一管理账号、权限与平台配置',
   icon: Shield,
 };
 
@@ -86,7 +86,7 @@ export function AppShell() {
         <aside className="grid gap-4 min-w-0">
           <HeroCard className="sticky top-4 max-[1100px]:static">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-[rgba(182,70,47,0.09)] text-accent-deep text-sm font-bold uppercase tracking-wider">
-              Workspace
+              管理中心
             </div>
             <h1 className="m-0 text-3xl font-serif leading-tight text-ink">
               {experience.workspaceTitle}
@@ -157,14 +157,14 @@ export function AppShell() {
           <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="m-0 text-sm text-ink-soft">当前工作上下文</p>
+                <p className="m-0 text-sm text-ink-soft">当前处理内容</p>
                 <strong className="block mt-1 text-xl font-serif text-ink">
-                  {currentDocumentName || '未锁定文档'}
+                  {currentDocumentName || '未选择资料'}
                 </strong>
               </div>
               <div className="flex items-center gap-2 text-sm text-ink-soft">
                 <Building2 className="h-4 w-4" />
-                {profile?.department.department_name || '内部入口'}
+                {profile?.department.department_name || '管理视角'}
               </div>
             </div>
 
@@ -174,11 +174,11 @@ export function AppShell() {
 
             <div className="mt-4 grid gap-2 text-sm text-ink-soft">
               <p className="m-0 break-all">
-                {currentDocId ? `doc_id: ${currentDocId}` : 'doc_id: -'}
+                {currentDocId ? `资料编号：${currentDocId}` : '资料编号：-'}
               </p>
-              <p className="m-0 break-all">{`job_id: ${currentJobIdText}`}</p>
+              <p className="m-0 break-all">{`任务编号：${currentJobIdText}`}</p>
               <p className="m-0 leading-relaxed">
-                页面切换不会丢掉当前上传上下文；检索和问答页会直接复用这里的当前文档。
+                页面切换时会保留当前资料与任务进度，方便在不同功能页之间继续处理。
               </p>
             </div>
           </Card>

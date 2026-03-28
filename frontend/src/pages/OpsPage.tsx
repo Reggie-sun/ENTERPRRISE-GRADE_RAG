@@ -51,6 +51,24 @@ function formatAgeSeconds(value: number | null | undefined): string {
   return `${hours}h ${remainMinutes}m`;
 }
 
+function rerankDecisionTone(decision: string | null | undefined): 'ok' | 'warn' | 'error' | 'default' {
+  switch (decision) {
+    case 'promote_to_provider':
+    case 'keep_provider':
+      return 'ok';
+    case 'rollback_to_heuristic':
+      return 'error';
+    case 'run_canary':
+    case 'observe_canary':
+    case 'observe_provider':
+    case 'keep_heuristic':
+    case 'not_applicable':
+      return 'warn';
+    default:
+      return 'default';
+  }
+}
+
 function renderEventSubtitle(record: EventLogRecord): string {
   const parts = [
     record.actor.username || '-',
@@ -369,7 +387,7 @@ export function OpsPage() {
                           <StatusPill tone={issueTone}>{issueLabel}</StatusPill>
                         </div>
                         <p className="m-0 mt-2 text-sm text-ink-soft">
-                          doc_id {item.doc_id} / job_id {item.job_id}
+                          资料编号 {item.doc_id} / 任务编号 {item.job_id}
                         </p>
                         <p className="m-0 mt-1 text-sm text-ink-soft">
                           {item.job_status} / {item.stage} / {item.progress}% / doc {item.document_status}
@@ -379,7 +397,7 @@ export function OpsPage() {
                       <div className="text-right text-sm text-ink-soft">
                         <p className="m-0">最后刷新：{formatLocalTime(item.updated_at)}</p>
                         <p className="m-0 mt-1">滞留时长：{formatAgeSeconds(item.stale_seconds)}</p>
-                        <p className="m-0 mt-1">产物信号：{item.has_materialized_artifacts ? 'parsed/chunk 已存在' : '未发现现成产物'}</p>
+                        <p className="m-0 mt-1">产物信号：{item.has_materialized_artifacts ? '解析结果/知识片段已存在' : '未发现现成产物'}</p>
                       </div>
                     </div>
                   </div>
@@ -495,6 +513,36 @@ export function OpsPage() {
               <p className="m-0 mt-1">lock: {summary?.health.reranker.lock_active ? 'active' : 'off'}{summary?.health.reranker.lock_source ? ` / ${summary.health.reranker.lock_source}` : ''}</p>
               <p className="m-0 mt-1">cooldown remaining: {formatAgeSeconds(summary?.health.reranker.cooldown_remaining_seconds)}</p>
               <p className="m-0 mt-1 leading-relaxed">{summary?.health.reranker.detail || '-'}</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <strong className="block text-ink">Rerank 实际流量</strong>
+              <p className="m-0 mt-2">sample: {renderNullable(summary?.rerank_usage.sample_size)}</p>
+              <p className="m-0 mt-1">provider: {renderNullable(summary?.rerank_usage.provider_count)} / heuristic: {renderNullable(summary?.rerank_usage.heuristic_count)}</p>
+              <p className="m-0 mt-1">skipped: {renderNullable(summary?.rerank_usage.skipped_count)} / doc preview: {renderNullable(summary?.rerank_usage.document_preview_count)}</p>
+              <p className="m-0 mt-1">fallback profile: {renderNullable(summary?.rerank_usage.fallback_profile_count)} / unknown: {renderNullable(summary?.rerank_usage.unknown_count)}</p>
+              <p className="m-0 mt-1">other: {renderNullable(summary?.rerank_usage.other_count)}</p>
+              <p className="m-0 mt-1">last provider: {formatLocalTime(summary?.rerank_usage.last_provider_at || null)}</p>
+              <p className="m-0 mt-1">last heuristic: {formatLocalTime(summary?.rerank_usage.last_heuristic_at || null)}</p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="block text-ink">Rerank 默认策略结论</strong>
+                <StatusPill tone={rerankDecisionTone(summary?.rerank_decision.decision)}>
+                  {summary?.rerank_decision.decision || '-'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-2">
+                provider 样本: {renderNullable(summary?.rerank_decision.provider_sample_count)} / 阈值 {renderNullable(summary?.rerank_decision.min_provider_samples)}
+              </p>
+              <p className="m-0 mt-1">
+                heuristic 样本: {renderNullable(summary?.rerank_decision.heuristic_sample_count)}
+              </p>
+              <p className="m-0 mt-1">
+                promote: {summary?.rerank_decision.should_promote_to_provider ? 'yes' : 'no'} / rollback: {summary?.rerank_decision.should_rollback_to_heuristic ? 'yes' : 'no'}
+              </p>
+              <p className="m-0 mt-2 leading-relaxed text-ink">
+                {summary?.rerank_decision.message || '-'}
+              </p>
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
               <div className="flex items-center justify-between gap-3">

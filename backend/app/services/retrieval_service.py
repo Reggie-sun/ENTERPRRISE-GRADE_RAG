@@ -76,7 +76,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             limit=search_limit,
             document_id=normalized_document_id,
         )
-        candidates, retrieval_mode = self._collect_candidates(
+        candidates, retrieval_mode, branch_weights = self._collect_candidates(
             query=request.query,
             vector_points=scored_points,
             profile=profile,
@@ -98,17 +98,23 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 can_read = readability_cache.get(resolved_document_id, False)
                 if not can_read:
                     continue
+            raw_score = float(candidate.score)  # 保留内部原始排序分，hybrid 模式下这是加权 RRF 原始值。
+            output_score = self._response_score(
+                raw_score,
+                retrieval_mode=retrieval_mode,
+                branch_weights=branch_weights,
+            )  # 对外返回更可解释的相关度分数，避免直接暴露极低量级的 RRF 原始值。
             item = RetrievedChunk(  # 创建单条检索结果对象。
                 chunk_id=str(payload.get("chunk_id") or candidate.candidate_id),  # 优先返回业务 chunk_id，缺失时回退到融合候选 id。
                 document_id=resolved_document_id,  # 返回文档 ID，缺失时用 unknown 兜底。
                 document_name=str(payload.get("document_name") or "unknown"),  # 返回文档名，缺失时用 unknown 兜底。
                 text=str(payload.get("text") or ""),  # 返回检索命中的 chunk 文本。
-                score=float(candidate.score),  # 返回最终排序得分；hybrid 模式下这里是融合分数。
+                score=output_score,  # 返回对外相关度分数；hybrid 模式下归一化到更易解释的范围。
                 source_path=str(payload.get("source_path") or ""),  # 返回原始文档路径，缺失时返回空字符串。
                 retrieval_strategy=retrieval_mode,  # 返回召回策略，便于 trace/snapshot/调试解释为什么命中。
                 vector_score=candidate.vector_score,  # 返回原始向量分数。
                 lexical_score=candidate.lexical_score,  # 返回词项分数；纯向量召回时为空。
-                fused_score=float(candidate.score),  # 返回最终融合分数，单路召回时与 score 相同。
+                fused_score=raw_score,  # 返回最终融合原始分数，便于调试真实排序依据。
                 ocr_used=bool(payload.get("ocr_used") or False),  # 返回 OCR 标记，便于前端和生成链路判断文本来源。
                 parser_name=str(payload.get("parser_name")) if payload.get("parser_name") else None,  # 返回解析器名称。
                 page_no=int(payload["page_no"]) if payload.get("page_no") is not None else None,  # 返回 OCR 页码。
@@ -297,10 +303,10 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         profile: QueryProfile,
         limit: int,
         document_id: str | None,
-    ) -> tuple[list[_RetrievalCandidate], str]:
+    ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
         vector_candidates = [self._candidate_from_vector_point(point) for point in vector_points]
         if self._normalized_retrieval_strategy() != "hybrid":
-            return vector_candidates, "qdrant"
+            return vector_candidates, "qdrant", None
 
         branch_weights = self.query_router.resolve_branch_weights(query)
         logger.info(
@@ -325,11 +331,15 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             )
         except RuntimeError:
             logger.warning("hybrid retrieval fallback_to=qdrant reason=lexical_error")
-            return vector_candidates, "qdrant"
+            return vector_candidates, "qdrant", None
 
         if not lexical_matches:
-            return vector_candidates, "qdrant"
-        return self._fuse_candidates(vector_candidates, lexical_matches, limit=limit, branch_weights=branch_weights), "hybrid"
+            return vector_candidates, "qdrant", None
+        return (
+            self._fuse_candidates(vector_candidates, lexical_matches, limit=limit, branch_weights=branch_weights),
+            "hybrid",
+            branch_weights,
+        )
 
     def _fuse_candidates(
         self,
@@ -403,6 +413,27 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if normalized == "hybrid":
             return "hybrid"
         return "qdrant"
+
+    def _response_score(
+        self,
+        raw_score: float,
+        *,
+        retrieval_mode: str,
+        branch_weights: HybridBranchWeights | None,
+    ) -> float:
+        if retrieval_mode != "hybrid" or branch_weights is None:
+            return raw_score
+
+        total_weight = max(branch_weights.vector_weight, 0.0) + max(branch_weights.lexical_weight, 0.0)
+        if total_weight <= 0:
+            return raw_score
+
+        max_rrf_score = total_weight / (self.settings.retrieval_hybrid_rrf_k + 1)
+        if max_rrf_score <= 0:
+            return raw_score
+
+        normalized_score = raw_score / max_rrf_score
+        return min(max(normalized_score, 0.0), 1.0)
 
     @staticmethod
     def _build_rerank_comparison_summary(

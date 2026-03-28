@@ -160,7 +160,7 @@ def test_replay_snapshot_supports_original_and_current_modes(tmp_path: Path) -> 
         request_id="req_test_002",
         action="answer",
         outcome="success",
-        request=ChatRequest(question="数字化部如何上报异常？"),
+        request=ChatRequest(question="数字化部如何上报异常？", session_id="sess_chat_001"),
         profile=QueryProfile(
             purpose="chat",
             mode="accurate",
@@ -196,10 +196,58 @@ def test_replay_snapshot_supports_original_and_current_modes(tmp_path: Path) -> 
     assert isinstance(original, RequestSnapshotReplayResponse)
     assert original.replayed_request.mode == "accurate"
     assert original.replayed_request.top_k == 7
+    assert original.replayed_request.session_id is None
     assert current.replayed_request.mode is None
     assert current.replayed_request.top_k is None
+    assert current.replayed_request.session_id is None
     assert fake_chat_service.requests[0].mode == "accurate"
     assert fake_chat_service.requests[1].mode is None
+
+
+def test_replay_original_chat_snapshot_uses_rewritten_question_when_present(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = RequestSnapshotService(settings)
+    auth_context = _build_auth_context(tmp_path, username="sys.admin", password="sys-admin-pass")
+    fake_chat_service = _FakeChatService()
+
+    record = service.record_chat_snapshot(
+        trace_id="trc_test_003",
+        request_id="req_test_003",
+        action="answer",
+        outcome="success",
+        request=ChatRequest(question="更详细一点", session_id="sess_chat_002"),
+        profile=QueryProfile(
+            purpose="chat",
+            mode="accurate",
+            top_k=7,
+            candidate_top_k=14,
+            rerank_top_n=5,
+            timeout_budget_seconds=24.0,
+            fallback_mode="fast",
+        ),
+        auth_context=auth_context,
+        citations=[],
+        response_mode="rag",
+        rerank_strategy="heuristic",
+        model="Qwen/Test-14B",
+        answer_text="CPPS 指慢性盆腔疼痛综合征。",
+        rewrite_status="applied",
+        rewritten_question="请更详细地解释CPPS。",
+    )
+
+    original = service.replay_snapshot(
+        snapshot_id=record.snapshot_id,
+        replay_mode="original",
+        auth_context=auth_context,
+        chat_service=fake_chat_service,
+        sop_generation_service=_FakeSopGenerationService(),
+    )
+
+    assert isinstance(original, RequestSnapshotReplayResponse)
+    assert original.replayed_request.question == "请更详细地解释CPPS。"
+    assert original.replayed_request.session_id is None
+    assert fake_chat_service.requests[0].question == "请更详细地解释CPPS。"
 
 
 def test_replay_sop_snapshot_supports_original_and_current_modes(tmp_path: Path) -> None:

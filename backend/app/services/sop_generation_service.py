@@ -1,5 +1,6 @@
 import json
 from collections.abc import Iterator
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
@@ -39,6 +40,12 @@ def _normalize_optional_str(value: str | None) -> str | None:
         return None
     normalized = value.strip()
     return normalized or None
+
+
+@dataclass(frozen=True)
+class SopCitationBuildResult:
+    citations: list[SopGenerationCitation]
+    rerank_strategy: str
 
 
 class SopGenerationService:
@@ -407,15 +414,16 @@ class SopGenerationService:
                 profile,
                 auth_context=auth_context,
             )
-            citations = self._build_citations(
+            citation_result = self._build_citations(
                 search_query=search_query,
                 target_department_id=department.department_id,
                 profile=profile,
                 document_id=document_id,
                 auth_context=auth_context,
             )
+            citations = citation_result.citations
             if citations:
-                rerank_strategy = "provider_or_fallback"
+                rerank_strategy = citation_result.rerank_strategy
             if not citations and request_mode == "document" and document_id is not None:
                 citations = self._build_document_preview_citations(
                     document_id=document_id,
@@ -443,13 +451,14 @@ class SopGenerationService:
                 )
                 generation_mode = "rag"
             except LLMGenerationRetryableError:
-                degraded_citations = self._build_degraded_citations(
+                degraded_citation_result = self._build_degraded_citations(
                     search_query=search_query,
                     target_department_id=department.department_id,
                     profile=profile,
                     document_id=document_id,
                     auth_context=auth_context,
                 )
+                degraded_citations = degraded_citation_result.citations
                 if degraded_citations:
                     citations = degraded_citations
                     rerank_strategy = "fallback_profile"
@@ -648,15 +657,16 @@ class SopGenerationService:
                 profile,
                 auth_context=auth_context,
             )
-            citations = self._build_citations(
+            citation_result = self._build_citations(
                 search_query=search_query,
                 target_department_id=department.department_id,
                 profile=profile,
                 document_id=document_id,
                 auth_context=auth_context,
             )
+            citations = citation_result.citations
             if citations:
-                rerank_strategy = "provider_or_fallback"
+                rerank_strategy = citation_result.rerank_strategy
             if not citations and request_mode == "document" and document_id is not None:
                 citations = self._build_document_preview_citations(
                     document_id=document_id,
@@ -909,7 +919,7 @@ class SopGenerationService:
         profile: QueryProfile,
         document_id: str | None,
         auth_context: AuthContext,
-    ) -> list[SopGenerationCitation]:
+    ) -> SopCitationBuildResult:
         retrieval_result = self.retrieval_service.search(
             RetrievalRequest(
                 query=search_query,
@@ -926,30 +936,33 @@ class SopGenerationService:
             auth_context=auth_context,
         )
         if not filtered_results:
-            return []
+            return SopCitationBuildResult(citations=[], rerank_strategy="skipped")
 
-        reranked_results, _ = self.query_profile_service.rerank_with_fallback(
+        reranked_results, rerank_strategy = self.query_profile_service.rerank_with_fallback(
             query=search_query,
             candidates=filtered_results,
             profile=profile,
             reranker_client=self.reranker_client,
         )
 
-        return [
-            SopGenerationCitation(
-                chunk_id=item.chunk_id,
-                document_id=item.document_id,
-                document_name=item.document_name,
-                snippet=item.text,
-                score=item.score,
-                source_path=item.source_path,
-                retrieval_strategy=item.retrieval_strategy,
-                vector_score=item.vector_score,
-                lexical_score=item.lexical_score,
-                fused_score=item.fused_score,
-            )
-            for item in reranked_results
-        ]
+        return SopCitationBuildResult(
+            citations=[
+                SopGenerationCitation(
+                    chunk_id=item.chunk_id,
+                    document_id=item.document_id,
+                    document_name=item.document_name,
+                    snippet=item.text,
+                    score=item.score,
+                    source_path=item.source_path,
+                    retrieval_strategy=item.retrieval_strategy,
+                    vector_score=item.vector_score,
+                    lexical_score=item.lexical_score,
+                    fused_score=item.fused_score,
+                )
+                for item in reranked_results
+            ],
+            rerank_strategy=rerank_strategy,
+        )
 
     def _build_degraded_citations(
         self,
@@ -959,10 +972,10 @@ class SopGenerationService:
         profile: QueryProfile,
         document_id: str | None,
         auth_context: AuthContext,
-    ) -> list[SopGenerationCitation]:
+    ) -> SopCitationBuildResult:
         fallback_profile = self.query_profile_service.build_fallback_profile(profile)
         if fallback_profile is None:
-            return []
+            return SopCitationBuildResult(citations=[], rerank_strategy="skipped")
         return self._build_citations(
             search_query=search_query,
             target_department_id=target_department_id,
@@ -1302,12 +1315,17 @@ class SopGenerationService:
         error_message: str | None = None,
         extra_details: dict[str, object] | None = None,
     ) -> None:
+        rerank_log_fields = self._build_rerank_log_fields(rerank_strategy)
         payload: dict[str, object] = {
             "request_mode": request_mode,
             "title": title,
             "generation_mode": generation_mode,
             "citation_count": citation_count,
             "rerank_strategy": rerank_strategy,
+            "rerank_provider": rerank_log_fields["rerank_provider"],
+            "rerank_model": rerank_log_fields["rerank_model"],
+            "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+            "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
             "document_id": document_id,
         }
         if error_message:
@@ -1325,10 +1343,52 @@ class SopGenerationService:
             top_k=profile.top_k,
             candidate_top_k=profile.candidate_top_k,
             rerank_top_n=profile.rerank_top_n,
+            rerank_strategy=rerank_log_fields["rerank_strategy"],
+            rerank_provider=rerank_log_fields["rerank_provider"],
+            rerank_model=rerank_log_fields["rerank_model"],
             duration_ms=duration_ms,
             downgraded_from=downgraded_from,
             details=payload,
         )
+
+    def _build_rerank_log_fields(self, rerank_strategy: str) -> dict[str, str | None]:
+        normalized = rerank_strategy.strip().lower()
+        if not normalized or normalized == "skipped":
+            return {
+                "rerank_strategy": normalized or None,
+                "rerank_provider": None,
+                "rerank_model": None,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": None,
+            }
+        if normalized in {"document_preview", "fallback_profile"}:
+            return {
+                "rerank_strategy": normalized,
+                "rerank_provider": None,
+                "rerank_model": None,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": None,
+            }
+        if not hasattr(self.reranker_client, "get_runtime_status"):
+            fallback_provider = "heuristic" if normalized == "heuristic" else "provider"
+            fallback_model = "heuristic" if normalized == "heuristic" else None
+            return {
+                "rerank_strategy": normalized,
+                "rerank_provider": fallback_provider,
+                "rerank_model": fallback_model,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": normalized,
+            }
+        status = self.reranker_client.get_runtime_status()
+        rerank_provider = "heuristic" if normalized == "heuristic" else str(status["effective_provider"])
+        rerank_model = "heuristic" if normalized == "heuristic" else str(status["effective_model"])
+        return {
+            "rerank_strategy": normalized,
+            "rerank_provider": rerank_provider,
+            "rerank_model": rerank_model,
+            "rerank_default_strategy": str(status["default_strategy"]),
+            "rerank_effective_strategy": str(status["effective_strategy"]),
+        }
 
     @staticmethod
     def _elapsed_ms(started_at: float) -> int:

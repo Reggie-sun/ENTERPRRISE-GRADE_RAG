@@ -197,6 +197,9 @@ export interface EventLogRecord {
   top_k: number | null;
   candidate_top_k: number | null;
   rerank_top_n: number | null;
+  rerank_strategy: string | null;
+  rerank_provider: string | null;
+  rerank_model: string | null;
   duration_ms: number | null;
   timeout_flag: boolean;
   downgraded_from: string | null;
@@ -213,6 +216,8 @@ export interface EventLogListQuery {
   user_id?: string;
   department_id?: string;
   target_id?: string;
+  rerank_strategy?: string;
+  rerank_provider?: string;
   date_from?: string;
   date_to?: string;
 }
@@ -453,6 +458,29 @@ export interface OpsRecentWindowSummary {
   duration_p99_ms: number | null;
 }
 
+export interface OpsRerankUsageSummary {
+  sample_size: number;
+  provider_count: number;
+  heuristic_count: number;
+  skipped_count: number;
+  document_preview_count: number;
+  fallback_profile_count: number;
+  unknown_count: number;
+  other_count: number;
+  last_provider_at: string | null;
+  last_heuristic_at: string | null;
+}
+
+export interface OpsRerankDecisionSummary {
+  decision: string;
+  message: string;
+  min_provider_samples: number;
+  provider_sample_count: number;
+  heuristic_sample_count: number;
+  should_promote_to_provider: boolean;
+  should_rollback_to_heuristic: boolean;
+}
+
 export interface OpsCategorySummary {
   category: EventLogCategory;
   total: number;
@@ -501,6 +529,8 @@ export interface OpsSummaryResponse {
   queue: OpsQueueSummary;
   runtime_gate: OpsRuntimeGateSummary;
   recent_window: OpsRecentWindowSummary;
+  rerank_usage: OpsRerankUsageSummary;
+  rerank_decision: OpsRerankDecisionSummary;
   stuck_ingest_jobs: OpsStuckIngestJobSummary[];
   categories: OpsCategorySummary[];
   recent_failures: EventLogRecord[];
@@ -953,6 +983,7 @@ export interface ChatRequest {
   question: string;  // 用户输入的问题文本。
   top_k?: number;  // 检索阶段返回的候选片段数量。
   mode?: QueryMode;  // 可选查询档位。
+  session_id?: string;  // 轻记忆会话标识；同一用户同一会话会自动承接最近几轮上下文。
   document_id?: string;  // 可选文档过滤条件，只在指定文档范围内召回引用。
 }
 

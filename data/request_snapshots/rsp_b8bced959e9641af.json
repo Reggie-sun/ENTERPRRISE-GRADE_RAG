@@ -1,0 +1,152 @@
+{
+  "snapshot_id": "rsp_b8bced959e9641af",
+  "trace_id": "trc_8f35892d7f284a9d",
+  "request_id": "req_b677effa882a41f5",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T08:48:34.812387Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_digitalization_real_08",
+    "username": "digitalization.real.08",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "更详细一点",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_147be57989fd4e52b65ee0b440bdedfe",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下CPPS\nAssistant: CPPS即慢性盆腔疼痛综合征，指的是长期存在于盆腔区域的疼痛症状。这种疼痛可能并非由细菌感染引起，而是涉及多种因素，包括但不限于解剖结构的问题、神经系统异常等。书中提出的观点认为，慢性盆腔疼痛综合征和其他相关病症有着共同的病因，并且这些症状与头痛有相似之处，只是疼痛发生在盆腔区域。因此，治疗这类病症通常需要综合性的方法，包括医学治疗、心理学支持和物理治疗等。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "更详细一点",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-16",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "呼吸法， 这种\n呼吸法可以在悖论放松法开始时使用。 还有很重要的 一点是 ： 我们发布的\n这个平装版本 的价格明显降低。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士 ， 美国外科医师协会会员\n2003 年9月\nxix\n\n第三版前言\n我们的书继续受 到众多慢性盆腔疼痛患者的热情欢迎。 我们也不断收\n到来 自世界 各地的信件 ， 信中满是读者对本书给 他们带来的新 的希望 的感\n激之情。\n第三版是意义重要的一版， 因为我们把我们的理疗方案进行了详尽的\n文字描述和图 片演示。 我们也更新了文献综 述部 分， 补充了关于盆腔疼痛\n的最新研究情况。 我们还单独列出了 一个章节 ， 讨论我们认为造成 慢性盆\n腔疼痛以及其它疾病包括痔 疮、 肛裂 和便秘的共 同起因 ， 以及使用怀斯 －\n安德森 疗法来解决这些问题的可 能性。 最后， 这一版本 还对生物反馈疗法\n进行了更详尽的讨论 ， 也对悖论放松法的技巧进行了更详细的解释。\n出第二版的时候 ， 我们开始在加州 针对盆腔疼痛患者提供 六天 （ 一共\n三十小时） 的诊所强化治疗 ， 为他们进行悖论 放松法治疗和物理治疗。 这\n种治疗模式巳 经被证明是我们使用过的模式中最有效的一种。 我们还新开\n通了一个网站 ： www.pelvicpainhelp.com。网 站上 面有关于我们工作的各方\n面内容的丰富信息。 我们比以往任何时候都更 热衷于我们 的工作 ， 医学界\n对我们的关注度也 逐渐升温。\n我们最近提交了 一篇新的文章给 一家医学期刊。 这篇文章介绍了我们\n在一百位男性患者身上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ，",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 11.854349764325946,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54422086,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-17",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ， 美国外科医师协会会员\n2004 年2月\nxx\n\n第四 版前言\n我们很高兴能够出版 ＜＜盆腔之痛〉〉 第四版。 这个版本 非常重要。 第三\n版出版以来， 我们 巳经在美国泌尿 学协会以及国立 健康研究所盆腔疼痛会\n议上介绍了我们的研究结果。 我们也巳经在 ＜＜泌尿 学期刊〉〉 上发表了两篇\n文章介绍我们的方 法所取得的疗效。 另外， 我们巳经进行了大约三十次 六\n天的强化治疗， 我们在不断的成长 ， 也在不断的学习如何更有效的利用我\n们的治疗法来训练病人进行自我治疗。\n本版 最突出的特点是列出了 一个专门的章节来讨论女性盆腔疼痛的问\n题。 我们详细 讨论了间质 性膀胱炎， 以及焦虑和神 经系统兴奋与膀胱炎症\n之间可 能的联系。 本版 本 增加了至关重要的前肛提肌和腰方肌激痛点的插\n图数量 ； 同时还加入了我们认为与女性盆腔 疼痛相关的内外激痛 点最全面\n的带插图 的解释。 另外， 我们介绍了激痛点治疗时最佳的按压力度以及对\n盆腔高度敏感的病人的治疗方法。\n因为关于我们的研究领域以及我们的 疗法方面的讨论往往 又艰深又 专\n业， 所以我们在本 版中进一 步简化了我们的语言， 以方便非专 业人士更好\n的理解 。 考虑到这一点， 我们还在关于研究的 一章加进了最新的相关研究\n成果。 我们还扩充了对悖论放松 法的讨论， 探讨了是什么 细微的差别造成\n了它疗效的不同。 我们提出的观点 是：身体内部 肌肉 紧绷拧结 的状态， 是\n给许 多人带来疼痛以及其它扰乱他们正常生活的症 状的根本 原因。\n最后，",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 8.377254403365997,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-16",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "呼吸法， 这种\n呼吸法可以在悖论放松法开始时使用。 还有很重要的 一点是 ： 我们发布的\n这个平装版本 的价格明显降低。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士 ， 美国外科医师协会会员\n2003 年9月\nxix\n\n第三版前言\n我们的书继续受 到众多慢性盆腔疼痛患者的热情欢迎。 我们也不断收\n到来 自世界 各地的信件 ， 信中满是读者对本书给 他们带来的新 的希望 的感\n激之情。\n第三版是意义重要的一版， 因为我们把我们的理疗方案进行了详尽的\n文字描述和图 片演示。 我们也更新了文献综 述部 分， 补充了关于盆腔疼痛\n的最新研究情况。 我们还单独列出了 一个章节 ， 讨论我们认为造成 慢性盆\n腔疼痛以及其它疾病包括痔 疮、 肛裂 和便秘的共 同起因 ， 以及使用怀斯 －\n安德森 疗法来解决这些问题的可 能性。 最后， 这一版本 还对生物反馈疗法\n进行了更详尽的讨论 ， 也对悖论放松法的技巧进行了更详细的解释。\n出第二版的时候 ， 我们开始在加州 针对盆腔疼痛患者提供 六天 （ 一共\n三十小时） 的诊所强化治疗 ， 为他们进行悖论 放松法治疗和物理治疗。 这\n种治疗模式巳 经被证明是我们使用过的模式中最有效的一种。 我们还新开\n通了一个网站 ： www.pelvicpainhelp.com。网 站上 面有关于我们工作的各方\n面内容的丰富信息。 我们比以往任何时候都更 热衷于我们 的工作 ， 医学界\n对我们的关注度也 逐渐升温。\n我们最近提交了 一篇新的文章给 一家医学期刊。 这篇文章介绍了我们\n在一百位男性患者身上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ，",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 11.854349764325946,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54422086,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-17",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ， 美国外科医师协会会员\n2004 年2月\nxx\n\n第四 版前言\n我们很高兴能够出版 ＜＜盆腔之痛〉〉 第四版。 这个版本 非常重要。 第三\n版出版以来， 我们 巳经在美国泌尿 学协会以及国立 健康研究所盆腔疼痛会\n议上介绍了我们的研究结果。 我们也巳经在 ＜＜泌尿 学期刊〉〉 上发表了两篇\n文章介绍我们的方 法所取得的疗效。 另外， 我们巳经进行了大约三十次 六\n天的强化治疗， 我们在不断的成长 ， 也在不断的学习如何更有效的利用我\n们的治疗法来训练病人进行自我治疗。\n本版 最突出的特点是列出了 一个专门的章节来讨论女性盆腔疼痛的问\n题。 我们详细 讨论了间质 性膀胱炎， 以及焦虑和神 经系统兴奋与膀胱炎症\n之间可 能的联系。 本版 本 增加了至关重要的前肛提肌和腰方肌激痛点的插\n图数量 ； 同时还加入了我们认为与女性盆腔 疼痛相关的内外激痛 点最全面\n的带插图 的解释。 另外， 我们介绍了激痛点治疗时最佳的按压力度以及对\n盆腔高度敏感的病人的治疗方法。\n因为关于我们的研究领域以及我们的 疗法方面的讨论往往 又艰深又 专\n业， 所以我们在本 版中进一 步简化了我们的语言， 以方便非专 业人士更好\n的理解 。 考虑到这一点， 我们还在关于研究的 一章加进了最新的相关研究\n成果。 我们还扩充了对悖论放松 法的讨论， 探讨了是什么 细微的差别造成\n了它疗效的不同。 我们提出的观点 是：身体内部 肌肉 紧绷拧结 的状态， 是\n给许 多人带来疼痛以及其它扰乱他们正常生活的症 状的根本 原因。\n最后，",
+      "score": 0.016129032258064516,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 8.377254403365997,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "根据上下文，悖论放松法是一种用于治疗慢性盆腔疼痛的方法。在第三版前言中提到，这本书对悖论放松法的技巧进行了更详细的解释。如果您想了解更多细节，建议参考书籍中的具体章节，那里应该会有更详细的说明和指导。",
+    "answer_chars": 100,
+    "citation_count": 3,
+    "rerank_strategy": "heuristic",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_digitalization_real_08"
+  }
+}

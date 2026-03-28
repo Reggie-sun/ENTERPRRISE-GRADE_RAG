@@ -75,7 +75,7 @@ function AccessDeniedPage({ allowedRoles, embedded = false }: { allowedRoles: Us
       <div className="grid w-full max-w-[920px] gap-5">
         <HeroCard>
           <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-            Access Denied
+            访问受限
           </div>
           <div className="mt-5 inline-flex rounded-3xl bg-[rgba(182,70,47,0.1)] p-4 text-accent-deep">
             <ShieldAlert className="h-7 w-7" />
@@ -124,9 +124,9 @@ export function RequireAuth({ allowedRoles, embedded = false }: { allowedRoles?:
   if (status === 'loading') {
     return (
       <FullPageState
-        eyebrow="Session Restore"
+        eyebrow="正在连接平台"
         title="正在恢复登录态"
-        description="系统正在校验当前浏览器中的会话信息，确认身份后会自动进入对应页面。"
+        description="系统正在校验当前浏览器中的登录信息，确认身份后会自动进入对应页面。"
         embedded={embedded}
       />
     );

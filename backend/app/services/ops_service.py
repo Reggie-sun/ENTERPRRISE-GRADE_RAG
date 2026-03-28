@@ -12,8 +12,10 @@ from ..schemas.auth import AuthContext
 from ..schemas.event_log import EventLogCategory, EventLogRecord
 from ..schemas.ops import (
     OpsCategorySummary,
+    OpsRerankDecisionSummary,
     OpsQueueSummary,
     OpsRecentWindowSummary,
+    OpsRerankUsageSummary,
     OpsRuntimeChannelSummary,
     OpsRuntimeGateSummary,
     OpsSummaryResponse,
@@ -28,6 +30,8 @@ from .system_config_service import SystemConfigService
 
 
 class OpsService:
+    RERANK_PROMOTION_MIN_PROVIDER_SAMPLES = 5
+
     def __init__(
         self,
         settings: Settings | None = None,
@@ -63,12 +67,19 @@ class OpsService:
             records=self.event_log_service.list_recent(limit=self.recent_window_size),
             auth_context=auth_context,
         )
+        health = self.health_service.get_snapshot()
+        rerank_usage = self._build_rerank_usage(records)
         return OpsSummaryResponse(
             checked_at=datetime.now(UTC),
-            health=self.health_service.get_snapshot(),
+            health=health,
             queue=self.queue_probe(),
             runtime_gate=self._build_runtime_gate_summary(),
             recent_window=self._build_recent_window(records),
+            rerank_usage=rerank_usage,
+            rerank_decision=self._build_rerank_decision(
+                health_reranker=health.reranker,
+                usage=rerank_usage,
+            ),
             stuck_ingest_jobs=self.document_service.list_stuck_ingest_jobs(auth_context=auth_context, limit=5),
             categories=self._build_category_summaries(records),
             recent_failures=[record for record in records if record.outcome == "failed"][:5],
@@ -159,6 +170,141 @@ class OpsService:
             duration_p50_ms=OpsService._percentile(durations, 50),
             duration_p95_ms=OpsService._percentile(durations, 95),
             duration_p99_ms=OpsService._percentile(durations, 99),
+        )
+
+    @staticmethod
+    def _build_rerank_usage(records: list[EventLogRecord]) -> OpsRerankUsageSummary:
+        relevant_records = [record for record in records if record.category in {"chat", "sop_generation"}]
+        provider_count = 0
+        heuristic_count = 0
+        skipped_count = 0
+        document_preview_count = 0
+        fallback_profile_count = 0
+        unknown_count = 0
+        other_count = 0
+
+        for record in relevant_records:
+            strategy = (record.rerank_strategy or "").strip().lower()
+            if strategy == "provider":
+                provider_count += 1
+            elif strategy == "heuristic":
+                heuristic_count += 1
+            elif strategy == "skipped":
+                skipped_count += 1
+            elif strategy == "document_preview":
+                document_preview_count += 1
+            elif strategy == "fallback_profile":
+                fallback_profile_count += 1
+            elif not strategy:
+                unknown_count += 1
+            else:
+                other_count += 1
+
+        def _last_seen(target_strategy: str) -> datetime | None:
+            return next(
+                (
+                    record.occurred_at
+                    for record in relevant_records
+                    if (record.rerank_strategy or "").strip().lower() == target_strategy
+                ),
+                None,
+            )
+
+        return OpsRerankUsageSummary(
+            sample_size=len(relevant_records),
+            provider_count=provider_count,
+            heuristic_count=heuristic_count,
+            skipped_count=skipped_count,
+            document_preview_count=document_preview_count,
+            fallback_profile_count=fallback_profile_count,
+            unknown_count=unknown_count,
+            other_count=other_count,
+            last_provider_at=_last_seen("provider"),
+            last_heuristic_at=_last_seen("heuristic"),
+        )
+
+    @classmethod
+    def _build_rerank_decision(cls, *, health_reranker: object, usage: OpsRerankUsageSummary) -> OpsRerankDecisionSummary:
+        provider = str(getattr(health_reranker, "provider", "") or "").strip().lower()
+        default_strategy = str(getattr(health_reranker, "default_strategy", "") or "").strip().lower()
+        effective_strategy = str(getattr(health_reranker, "effective_strategy", "") or "").strip().lower()
+        ready = bool(getattr(health_reranker, "ready", False))
+        lock_active = bool(getattr(health_reranker, "lock_active", False))
+        lock_source = getattr(health_reranker, "lock_source", None)
+        detail = str(getattr(health_reranker, "detail", "") or "").strip()
+        min_provider_samples = cls.RERANK_PROMOTION_MIN_PROVIDER_SAMPLES
+
+        if provider == "heuristic":
+            return OpsRerankDecisionSummary(
+                decision="not_applicable",
+                message="当前未配置模型级 rerank provider，继续保持 heuristic 默认。",
+                min_provider_samples=min_provider_samples,
+                provider_sample_count=usage.provider_count,
+                heuristic_sample_count=usage.heuristic_count,
+            )
+
+        if default_strategy == "provider":
+            if lock_active or not ready or effective_strategy != "provider":
+                suffix = f" 当前锁定来源：{lock_source}。" if lock_active and lock_source else ""
+                return OpsRerankDecisionSummary(
+                    decision="rollback_to_heuristic",
+                    message=f"provider 已设为默认，但当前未稳定生效，建议先回滚到 heuristic。{detail}{suffix}".strip(),
+                    min_provider_samples=min_provider_samples,
+                    provider_sample_count=usage.provider_count,
+                    heuristic_sample_count=usage.heuristic_count,
+                    should_rollback_to_heuristic=True,
+                )
+            if usage.provider_count < min_provider_samples:
+                return OpsRerankDecisionSummary(
+                    decision="observe_provider",
+                    message=f"provider 已作为默认主路径运行，但最近窗口只有 {usage.provider_count} 条 provider 样本，先继续观察稳定性。",
+                    min_provider_samples=min_provider_samples,
+                    provider_sample_count=usage.provider_count,
+                    heuristic_sample_count=usage.heuristic_count,
+                )
+            return OpsRerankDecisionSummary(
+                decision="keep_provider",
+                message=f"provider 已稳定作为默认主路径运行，最近窗口已有 {usage.provider_count} 条 provider 样本，可继续保持。",
+                min_provider_samples=min_provider_samples,
+                provider_sample_count=usage.provider_count,
+                heuristic_sample_count=usage.heuristic_count,
+            )
+
+        if lock_active or not ready:
+            suffix = f" 当前锁定来源：{lock_source}。" if lock_active and lock_source else ""
+            return OpsRerankDecisionSummary(
+                decision="keep_heuristic",
+                message=f"provider 当前未 ready 或处于锁定窗口，继续保持 heuristic 默认。{detail}{suffix}".strip(),
+                min_provider_samples=min_provider_samples,
+                provider_sample_count=usage.provider_count,
+                heuristic_sample_count=usage.heuristic_count,
+            )
+
+        if usage.provider_count == 0:
+            return OpsRerankDecisionSummary(
+                decision="run_canary",
+                message="provider 当前可用，但最近窗口还没有真实 provider 流量样本，先做 canary 验证，再决定是否提升为默认。",
+                min_provider_samples=min_provider_samples,
+                provider_sample_count=usage.provider_count,
+                heuristic_sample_count=usage.heuristic_count,
+            )
+
+        if usage.provider_count < min_provider_samples:
+            return OpsRerankDecisionSummary(
+                decision="observe_canary",
+                message=f"provider 当前可用，最近窗口已有 {usage.provider_count} 条 provider 样本，但还没达到 {min_provider_samples} 条样本阈值，继续观察。",
+                min_provider_samples=min_provider_samples,
+                provider_sample_count=usage.provider_count,
+                heuristic_sample_count=usage.heuristic_count,
+            )
+
+        return OpsRerankDecisionSummary(
+            decision="promote_to_provider",
+            message=f"provider 当前可用且最近窗口已有 {usage.provider_count} 条 provider 样本，达到 {min_provider_samples} 条阈值，适合把 default_strategy 长期开到 provider。",
+            min_provider_samples=min_provider_samples,
+            provider_sample_count=usage.provider_count,
+            heuristic_sample_count=usage.heuristic_count,
+            should_promote_to_provider=True,
         )
 
     @staticmethod

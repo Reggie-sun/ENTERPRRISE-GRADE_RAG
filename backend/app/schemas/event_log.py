@@ -28,6 +28,9 @@ class EventLogRecord(BaseModel):
     top_k: int | None = Field(default=None, ge=1)
     candidate_top_k: int | None = Field(default=None, ge=1)
     rerank_top_n: int | None = Field(default=None, ge=1)
+    rerank_strategy: str | None = None
+    rerank_provider: str | None = None
+    rerank_model: str | None = None
     duration_ms: int | None = Field(default=None, ge=0)
     timeout_flag: bool = False
     downgraded_from: str | None = None
@@ -49,5 +52,7 @@ class EventLogQueryFilters(BaseModel):
     user_id: str | None = None
     department_id: str | None = None
     target_id: str | None = None
+    rerank_strategy: str | None = None
+    rerank_provider: str | None = None
     date_from: date | None = None
     date_to: date | None = None

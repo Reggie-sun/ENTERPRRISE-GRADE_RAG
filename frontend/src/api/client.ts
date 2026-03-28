@@ -50,6 +50,7 @@ import type {
 // API 基础路径，与 Vite 代理配置对应。
 const API_PREFIX = '/api/v1';
 const REQUEST_TIMEOUT_MS = 20_000;  // 前端请求超时时间，避免页面无限等待。
+const OPS_SUMMARY_TIMEOUT_MS = 60_000;  // 运行态汇总会聚合健康检查、日志和快照，允许更长超时预算。
 const STREAM_IDLE_TIMEOUT_MS = 120_000;  // 流式接口允许更长空闲时间，避免首包或慢模型被固定 20s 误杀。
 
 type ApiErrorKind = 'http' | 'network' | 'timeout' | 'parse';
@@ -159,6 +160,7 @@ export class ApiError extends Error {
     public detail: string,  // 错误详情。
     public status?: number,  // HTTP 状态码（仅 HTTP 错误可用）。
     public payload?: unknown,  // 原始错误响应体，供页面层做定制解析。
+    public timeoutMs?: number,  // 仅 timeout 时记录实际超时预算，便于页面提示准确展示。
   ) {
     const suffix = status ? ` ${status}` : '';
     super(`API Error${suffix}: ${detail}`);
@@ -182,7 +184,8 @@ export function onApiUnauthorized(listener: UnauthorizedListener | null) {
 export function formatApiError(error: unknown, context: string): string {
   if (error instanceof ApiError) {
     if (error.kind === 'timeout') {
-      return `${context}超时（${Math.floor(REQUEST_TIMEOUT_MS / 1000)}s），请检查后端服务或网络后重试。`;
+      const timeoutSeconds = Math.max(1, Math.floor((error.timeoutMs ?? REQUEST_TIMEOUT_MS) / 1000));
+      return `${context}超时（${timeoutSeconds}s），请检查后端服务或网络后重试。`;
     }
     if (error.kind === 'network') {
       return `${context}失败：无法连接后端接口，请确认 FastAPI 是否已启动且前端代理配置正确。`;
@@ -213,11 +216,15 @@ export function formatApiError(error: unknown, context: string): string {
  * @returns 解析后的 JSON 响应
  */
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  return requestWithTimeout<T>(path, REQUEST_TIMEOUT_MS, options);
+}
+
+async function requestWithTimeout<T>(path: string, timeoutMs: number, options: RequestInit = {}): Promise<T> {
   const url = `${API_PREFIX}${path}`;
   const headers = new Headers(options.headers);  // 统一标准化请求头，兼容对象/数组/Headers 三种输入。
   const isFormDataBody = options.body instanceof FormData;  // FormData 由浏览器自动注入 multipart boundary。
   const controller = new AbortController();  // 为请求加可控超时。
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`);
@@ -237,7 +244,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new ApiError('timeout', `Request timeout: ${path}`);
+      throw new ApiError('timeout', `Request timeout: ${path}`, undefined, undefined, timeoutMs);
     }
     throw new ApiError('network', `Network error: ${path}`);
   } finally {
@@ -388,6 +395,12 @@ export async function getEventLogs(query: EventLogListQuery = {}): Promise<Event
   if (query.target_id) {
     params.set('target_id', query.target_id);
   }
+  if (query.rerank_strategy) {
+    params.set('rerank_strategy', query.rerank_strategy);
+  }
+  if (query.rerank_provider) {
+    params.set('rerank_provider', query.rerank_provider);
+  }
   if (query.date_from) {
     params.set('date_from', query.date_from);
   }
@@ -418,7 +431,7 @@ export async function updateSystemConfig(payload: SystemConfigUpdateRequest): Pr
 
 /** 读取运行态汇总 */
 export async function getOpsSummary(): Promise<OpsSummaryResponse> {
-  return request<OpsSummaryResponse>('/ops/summary');
+  return requestWithTimeout<OpsSummaryResponse>('/ops/summary', OPS_SUMMARY_TIMEOUT_MS);
 }
 
 export async function replayRequestSnapshot(

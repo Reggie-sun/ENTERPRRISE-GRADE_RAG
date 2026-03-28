@@ -1,0 +1,200 @@
+{
+  "snapshot_id": "rsp_766404efd73e421a",
+  "trace_id": "trc_c227c582fa154216",
+  "request_id": "req_c0e7a430abfc4e23",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T09:04:31.140099Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "更详细一点",
+    "top_k": null,
+    "mode": "accurate",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: CPPS（Chronic Pelvic Pain Syndrome），即慢性盆腔疼痛综合征，是一种影响男性和女性的疾病，主要表现为盆腔区域的长期不适或疼痛。这种疼痛可能涉及多个部位，如直肠、生殖器或腹部，并且可能在坐下、性行为时或之后加剧。此外，患者也可能经历尿频、尿急等症状。由于其复杂性和多变性，CPPS的确切成因至今仍有许多未解之谜，尽管一些研究表明它可能与盆腔内的肌肉、神经和其他结构的功能障碍有关。",
+  "rewrite": {
+    "status": "applied",
+    "original_question": "更详细一点",
+    "rewritten_question": "基于上一轮问题“更详细一点”，请更详细地说明。",
+    "details": {}
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢\n\n4.10 刀具管理系统技术要求逐条响应说明\n\n我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：\n\n4.10.1 基础要求\n\n（1）显示语言：系统默认为中文显示。\n\n我方响应：完全满足。我方刀具管理系统默认显示语言为中文，界面简洁直观、通俗易懂，适配国内操作人员使用习惯，同时支持多语言切换（可选英文），可根据现场需求灵活调整，确保操作便捷性。【附图1：系统中文界面示意图，标注中文菜单、中文操作提示等核心区域】\n\n（2）系统权限：使用用户密码方式登录，设置登录权限和查询权限。\n\n我方响应：完全满足。系统采用用户密码加密登录模式，支持精细化权限管控，可根据岗位需求（管理员、工艺员、配刀员、库管员等）分别设置登录权限、操作权限及查询权限，权限分配灵活可配置，可限制不同用户对数据的查看、编辑、导出等操作，保障系统数据安全，防止误操作和数据泄露。【附图2：系统权限设置界面示意图，标注权限分配、密码登录入口等】\n\n（3）软件采用 B/S 架构或 C/S 架构；\n\n我方响应：完全满足。我方刀具管理系统采用B/S架构设计（可根据现场需求兼容C/S架构），无需在客户端安装专用软件，通过浏览器即可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理",
+      "score": -3.646484375,
+      "source_path": "/app/data/uploads/doc_20260326071937_37f67e8c__document.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5539181,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325071124_aab0f0ef-chunk-2",
+      "document_id": "doc_20260325071124_aab0f0ef",
+      "document_name": "zoom11.txt",
+      "snippet": "题。\nAnd you ran harmony, and this is post harmmony.\n你负责和谐，这是后伤害。\nAnd what it looks like to me is, if you were to look at this, you know, prior, you would probably see a lot more separation here, but you get a little more homogenization of the batches here. Still kind of not great here, but it looks better over here than it would if you had a batch corrected.\n在我看来，如果你看看这个，你知道的，之前，你可能会看到这里有更多的分离，但这里的批次会更加均匀。这里还是有点不太好，但这里看起来比你纠正一个批次要好。\nAnd your cell types still look good, you want to see good separation in cell types, so that all makes sense.\n你的细胞类型看起来还是不错的，你希望细胞类型之间有良好的区分，这样一切都说得通。\nSo how many principal components did you use here?\n那么你在这里使用了多少个主要组件？\nHow many principal components are you using for this?\n你用了多少个主要组件来做这个？\nhow many?\n多少个？\nOkay.\n好的。\nOkay, let me see here.\n好的，让我看看这里。\nLet's do me.",
+      "score": -4.45703125,
+      "source_path": "/app/data/uploads/doc_20260325071124_aab0f0ef__zoom11.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5696327,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325063225_ae80909a-chunk-15",
+      "document_id": "doc_20260325063225_ae80909a",
+      "document_name": "zoom5.txt",
+      "snippet": "screen and just show me what you were doing, and I can.\n好的，你可以输入你的问题，然后如果是关于代码的内容，你就可以分享你的屏幕，直接给我看看你在做什么，我就可以了。\nProvide some guidance.\n提供一些指导。\nOkay, why not some rather strange questions such as why one person.\n好吧，为什么不问一些相当奇怪的问题，比如为什么是一个人呢？\nOkay.\n好的。\nOkay, so you want ai to explain you things you know, like why one plus one equals to two, so that it explains you okay, so for this, you definitely.\n好的，你想让AI给你解释一些你知道的事情，比如为什么一加一等于二，这样它就能给你解释清楚了，所以对于这个，你肯定得解释清楚。\nLike a simple questioning answering system. Or you can build a chat bot stream. It allows us to build amazing ai chat bots as well, you know. So you can use stream it and linkin to build chat bot. Or you can build a simple questioning answering.\n就像一个简单的问答系统。或者你可以建一个聊天机器人直播。你知道的，它还能让我们创建超棒的AI聊天机器人。所以你可以使用流媒体和链接来构建聊天机器人。或者你可以构建一个简单的问答。",
+      "score": -4.69140625,
+      "source_path": "/app/data/uploads/doc_20260325063225_ae80909a__zoom5.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5636176,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-18",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "新的相关研究\n成果。 我们还扩充了对悖论放松 法的讨论， 探讨了是什么 细微的差别造成\n了它疗效的不同。 我们提出的观点 是：身体内部 肌肉 紧绷拧结 的状态， 是\n给许 多人带来疼痛以及其它扰乱他们正常生活的症 状的根本 原因。\n最后， 我们加入了最新使用我们治疗方案的病人自己讲述的故事。 我\n们希 望这个版本 能为那些寻求盆腔疼痛治疗方法的人提供更多的帮助。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士， 美国外科医师协会会员\n2006 年 11 月\nxxi\n\n第五版前言\n当我 们的第五版准备出版的时候 ， 我们很高兴地告诉大 家许多患有慢\n性盆腔疼痛综合征的患者巳经接受了我 们的观念和建议 ， 并且获得了很好\n的疗效。 虽然没有哪本书能够解 决盆腔疼痛患者的所有问题 ， 但本书的众\n多读者对我们的认可极大的鼓舞了我们。\n我们觉得非常幸运 ， 虽然 六天的浸入式强化治疗是一种治疗盆腔疼痛\n综合征的新模式 ， 但是每个月我们 都会有新的病人参加。 这让我们积累了\n宝贵的丰 富经验。 这个新版本 可以反映出自上 一版以来我们在 治疗患者的\n过程中所做出的改进。\n更具体的说， 这个版本 专门 增加了一个小节 ， 给盆腔疼痛综合征病人\n的伴侣及家人提出建议 ；也 增加了如何减少分挽后盆腔疼痛风险的建议；更\n详细讨论了调整怀斯－安德森 疗法用来治疗肛痰、 肠易激 综合征和便秘等\n其它肛直肠疾病的可能性。 本版 本 针对非专业读者将前列腺炎相关的术语\n进行了更清晰的解释 ；还 进一步讨论了饮食对间质 性膀胱炎的影响 ；焦 虑导\n致盆腔疼痛的问题 ；使 用注意 力训 练来放松盆底肌肉的做法 ； 在激痛点治疗\n中 RSA 呼吸法的使用以及关于悖论 放松法的新的心得体会。 另外 ， 本版中\n还添加了 更多图 片来解释怀斯 －安 德森 物理疗法的自我治疗部 分 ， 首次对",
+      "score": -5.015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 17.48996701626035,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-275",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "空 间来愈合。\n我认为这对我的康复大 有帮 助。\n3. 在做 自我 内部治疗的 期间 ， 我有时也不得不 面对沮丧和挫 折。 我把 自\n己的括 约肌及会阴部想 象为 盆底的\n“\n本垒\n＂\n， 我明 白 针对我的情况 ， 这些\n部位的释放可 以提供遍及整个区域的 全身性释 放。 我努力做到耐 心的去理\n解我 的身 体， 而不是试图靠 —次盆腔内部治疗来完全医 好自己 。 因为 这根\n本不可能 。 我在连续牵拉 括约肌数月 后才能做到很轻松地释放它 ， 然后我\n会通过即 时悖论放 松法和强 化悖论放松法来保持这 种放松。 既然我盆腔现\n在绷紧和疼痛的状 态是成 年累月 持续的收 紧和自 我保护所造成的 ， 那要让\n它恢复 原来放松 、 正常 的状态也需要 长时间的牵 拉和放 松练习。 了解自己\n盆腔肌 肉及其 间题部位是 我的责 任。 我反复研究 《盆腔疼痛》 和其它相关\n书籍。 我必须成为 我自 己想要 找的那 个医生 。\n\n19 6 盆腔之痛\n我开始尝试 着去相信盆腔 疼痐是来帮助 ， 而不是伤害我 。 当我开始把\n盆腔疼痛看作是对我有益的事情 ， 认为 它可 以让我懂得更多 ， 更富有耐心\n和同 清心 ， 更自律 和更 宽容 ， —切就都变得更好了 。\n对怀斯－安德森疗法中使用 的物理治疗方法的 详细介绍\n有许多对我们的疗法有兴趣的患者都表达了这样的疑 惑：怎 么 样才知\n道理疗和自 我治疗的训练 是有效果的？ 基于多年以来在斯坦福大学使用怀\n斯－安德森疗法 治疗众多病人所得出的经验 ， 我们总结出了自 己的看法。\n我们发现肌肉型盆腔疼痛不可能被快速 修复。 据我们的观\n察， 治疗的成 功来 自千对盆腔底缓 慢的， 有计划的修复 。\n我们访谈过很多接受 过不同理疗师治疗的病人 ， 他们对以前的理疗师\n和擅长我们疗法的理疗师做了比较。 我们仔细聆 听了他们的想法， 并做了",
+      "score": -5.0390625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 20.59752082077147,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢\n\n4.10 刀具管理系统技术要求逐条响应说明\n\n我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：\n\n4.10.1 基础要求\n\n（1）显示语言：系统默认为中文显示。\n\n我方响应：完全满足。我方刀具管理系统默认显示语言为中文，界面简洁直观、通俗易懂，适配国内操作人员使用习惯，同时支持多语言切换（可选英文），可根据现场需求灵活调整，确保操作便捷性。【附图1：系统中文界面示意图，标注中文菜单、中文操作提示等核心区域】\n\n（2）系统权限：使用用户密码方式登录，设置登录权限和查询权限。\n\n我方响应：完全满足。系统采用用户密码加密登录模式，支持精细化权限管控，可根据岗位需求（管理员、工艺员、配刀员、库管员等）分别设置登录权限、操作权限及查询权限，权限分配灵活可配置，可限制不同用户对数据的查看、编辑、导出等操作，保障系统数据安全，防止误操作和数据泄露。【附图2：系统权限设置界面示意图，标注权限分配、密码登录入口等】\n\n（3）软件采用 B/S 架构或 C/S 架构；\n\n我方响应：完全满足。我方刀具管理系统采用B/S架构设计（可根据现场需求兼容C/S架构），无需在客户端安装专用软件，通过浏览器即可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理",
+      "score": -3.646484375,
+      "source_path": "/app/data/uploads/doc_20260326071937_37f67e8c__document.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5539181,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "chunk_id": "doc_20260325071124_aab0f0ef-chunk-2",
+      "document_id": "doc_20260325071124_aab0f0ef",
+      "document_name": "zoom11.txt",
+      "snippet": "题。\nAnd you ran harmony, and this is post harmmony.\n你负责和谐，这是后伤害。\nAnd what it looks like to me is, if you were to look at this, you know, prior, you would probably see a lot more separation here, but you get a little more homogenization of the batches here. Still kind of not great here, but it looks better over here than it would if you had a batch corrected.\n在我看来，如果你看看这个，你知道的，之前，你可能会看到这里有更多的分离，但这里的批次会更加均匀。这里还是有点不太好，但这里看起来比你纠正一个批次要好。\nAnd your cell types still look good, you want to see good separation in cell types, so that all makes sense.\n你的细胞类型看起来还是不错的，你希望细胞类型之间有良好的区分，这样一切都说得通。\nSo how many principal components did you use here?\n那么你在这里使用了多少个主要组件？\nHow many principal components are you using for this?\n你用了多少个主要组件来做这个？\nhow many?\n多少个？\nOkay.\n好的。\nOkay, let me see here.\n好的，让我看看这里。\nLet's do me.",
+      "score": -4.45703125,
+      "source_path": "/app/data/uploads/doc_20260325071124_aab0f0ef__zoom11.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5696327,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "chunk_id": "doc_20260325063225_ae80909a-chunk-15",
+      "document_id": "doc_20260325063225_ae80909a",
+      "document_name": "zoom5.txt",
+      "snippet": "screen and just show me what you were doing, and I can.\n好的，你可以输入你的问题，然后如果是关于代码的内容，你就可以分享你的屏幕，直接给我看看你在做什么，我就可以了。\nProvide some guidance.\n提供一些指导。\nOkay, why not some rather strange questions such as why one person.\n好吧，为什么不问一些相当奇怪的问题，比如为什么是一个人呢？\nOkay.\n好的。\nOkay, so you want ai to explain you things you know, like why one plus one equals to two, so that it explains you okay, so for this, you definitely.\n好的，你想让AI给你解释一些你知道的事情，比如为什么一加一等于二，这样它就能给你解释清楚了，所以对于这个，你肯定得解释清楚。\nLike a simple questioning answering system. Or you can build a chat bot stream. It allows us to build amazing ai chat bots as well, you know. So you can use stream it and linkin to build chat bot. Or you can build a simple questioning answering.\n就像一个简单的问答系统。或者你可以建一个聊天机器人直播。你知道的，它还能让我们创建超棒的AI聊天机器人。所以你可以使用流媒体和链接来构建聊天机器人。或者你可以构建一个简单的问答。",
+      "score": -4.69140625,
+      "source_path": "/app/data/uploads/doc_20260325063225_ae80909a__zoom5.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5636176,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-18",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "新的相关研究\n成果。 我们还扩充了对悖论放松 法的讨论， 探讨了是什么 细微的差别造成\n了它疗效的不同。 我们提出的观点 是：身体内部 肌肉 紧绷拧结 的状态， 是\n给许 多人带来疼痛以及其它扰乱他们正常生活的症 状的根本 原因。\n最后， 我们加入了最新使用我们治疗方案的病人自己讲述的故事。 我\n们希 望这个版本 能为那些寻求盆腔疼痛治疗方法的人提供更多的帮助。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士， 美国外科医师协会会员\n2006 年 11 月\nxxi\n\n第五版前言\n当我 们的第五版准备出版的时候 ， 我们很高兴地告诉大 家许多患有慢\n性盆腔疼痛综合征的患者巳经接受了我 们的观念和建议 ， 并且获得了很好\n的疗效。 虽然没有哪本书能够解 决盆腔疼痛患者的所有问题 ， 但本书的众\n多读者对我们的认可极大的鼓舞了我们。\n我们觉得非常幸运 ， 虽然 六天的浸入式强化治疗是一种治疗盆腔疼痛\n综合征的新模式 ， 但是每个月我们 都会有新的病人参加。 这让我们积累了\n宝贵的丰 富经验。 这个新版本 可以反映出自上 一版以来我们在 治疗患者的\n过程中所做出的改进。\n更具体的说， 这个版本 专门 增加了一个小节 ， 给盆腔疼痛综合征病人\n的伴侣及家人提出建议 ；也 增加了如何减少分挽后盆腔疼痛风险的建议；更\n详细讨论了调整怀斯－安德森 疗法用来治疗肛痰、 肠易激 综合征和便秘等\n其它肛直肠疾病的可能性。 本版 本 针对非专业读者将前列腺炎相关的术语\n进行了更清晰的解释 ；还 进一步讨论了饮食对间质 性膀胱炎的影响 ；焦 虑导\n致盆腔疼痛的问题 ；使 用注意 力训 练来放松盆底肌肉的做法 ； 在激痛点治疗\n中 RSA 呼吸法的使用以及关于悖论 放松法的新的心得体会。 另外 ， 本版中\n还添加了 更多图 片来解释怀斯 －安 德森 物理疗法的自我治疗部 分 ， 首次对",
+      "score": -5.015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 17.48996701626035,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-275",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "空 间来愈合。\n我认为这对我的康复大 有帮 助。\n3. 在做 自我 内部治疗的 期间 ， 我有时也不得不 面对沮丧和挫 折。 我把 自\n己的括 约肌及会阴部想 象为 盆底的\n“\n本垒\n＂\n， 我明 白 针对我的情况 ， 这些\n部位的释放可 以提供遍及整个区域的 全身性释 放。 我努力做到耐 心的去理\n解我 的身 体， 而不是试图靠 —次盆腔内部治疗来完全医 好自己 。 因为 这根\n本不可能 。 我在连续牵拉 括约肌数月 后才能做到很轻松地释放它 ， 然后我\n会通过即 时悖论放 松法和强 化悖论放松法来保持这 种放松。 既然我盆腔现\n在绷紧和疼痛的状 态是成 年累月 持续的收 紧和自 我保护所造成的 ， 那要让\n它恢复 原来放松 、 正常 的状态也需要 长时间的牵 拉和放 松练习。 了解自己\n盆腔肌 肉及其 间题部位是 我的责 任。 我反复研究 《盆腔疼痛》 和其它相关\n书籍。 我必须成为 我自 己想要 找的那 个医生 。\n\n19 6 盆腔之痛\n我开始尝试 着去相信盆腔 疼痐是来帮助 ， 而不是伤害我 。 当我开始把\n盆腔疼痛看作是对我有益的事情 ， 认为 它可 以让我懂得更多 ， 更富有耐心\n和同 清心 ， 更自律 和更 宽容 ， —切就都变得更好了 。\n对怀斯－安德森疗法中使用 的物理治疗方法的 详细介绍\n有许多对我们的疗法有兴趣的患者都表达了这样的疑 惑：怎 么 样才知\n道理疗和自 我治疗的训练 是有效果的？ 基于多年以来在斯坦福大学使用怀\n斯－安德森疗法 治疗众多病人所得出的经验 ， 我们总结出了自 己的看法。\n我们发现肌肉型盆腔疼痛不可能被快速 修复。 据我们的观\n察， 治疗的成 功来 自千对盆腔底缓 慢的， 有计划的修复 。\n我们访谈过很多接受 过不同理疗师治疗的病人 ， 他们对以前的理疗师\n和擅长我们疗法的理疗师做了比较。 我们仔细聆 听了他们的想法， 并做了",
+      "score": -5.0390625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 20.59752082077147,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "基于上一轮问题中提到的内容，更详细的说明是关于慢性盆腔疼痛综合征（CPPS）的治疗和预防措施。这包括为病人的伴侣及家人提供的建议，以及减少术后盆腔疼痛风险的方法。此外，还有对如何调整生活方式来减轻症状的具体讨论。这些内容旨在为患者及其家属提供全面的支持和指导，帮助他们更好地应对慢性盆腔疼痛带来的挑战。",
+    "answer_chars": 151,
+    "citation_count": 5,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_accurate",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

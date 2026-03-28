@@ -22,6 +22,8 @@ class EventLogRepository(ABC):
         user_id: str | None = None,
         department_id: str | None = None,
         target_id: str | None = None,
+        rerank_strategy: str | None = None,
+        rerank_provider: str | None = None,
         date_from: date | None = None,
         date_to: date | None = None,
         limit: int | None = 100,
@@ -52,6 +54,8 @@ class FilesystemEventLogRepository(EventLogRepository):
         user_id: str | None = None,
         department_id: str | None = None,
         target_id: str | None = None,
+        rerank_strategy: str | None = None,
+        rerank_provider: str | None = None,
         date_from: date | None = None,
         date_to: date | None = None,
         limit: int | None = 100,
@@ -78,6 +82,10 @@ class FilesystemEventLogRepository(EventLogRepository):
                     if department_id is not None and record.actor.department_id != department_id:
                         continue
                     if target_id is not None and record.target_id != target_id:
+                        continue
+                    if rerank_strategy is not None and record.rerank_strategy != rerank_strategy:
+                        continue
+                    if rerank_provider is not None and record.rerank_provider != rerank_provider:
                         continue
                     if date_from is not None and record.occurred_at.date() < date_from:
                         continue

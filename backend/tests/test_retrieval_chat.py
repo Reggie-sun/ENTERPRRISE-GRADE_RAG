@@ -1015,7 +1015,9 @@ def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: 
     assert response.results[0].retrieval_strategy == "hybrid"
     assert response.results[0].vector_score == 0.84
     assert response.results[0].lexical_score == 2.4
-    assert response.results[0].fused_score == response.results[0].score
+    assert response.results[0].fused_score < response.results[0].score
+    assert response.results[0].score == pytest.approx(0.9919354838709679)
+    assert response.results[1].score == pytest.approx(0.5)
 
 
 @pytest.mark.parametrize(
@@ -1148,6 +1150,82 @@ def test_retrieval_service_logs_dynamic_weight_decision(tmp_path: Path, caplog: 
     assert "query_type=exact" in caplog.text
     assert "vector_weight=0.300" in caplog.text
     assert "lexical_weight=0.700" in caplog.text
+
+
+def test_retrieval_service_normalizes_exact_query_hybrid_score_by_branch_weights(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_dynamic_weighting_enabled": True,
+            "retrieval_hybrid_rrf_k": 1,
+            "query_fast_top_k_default": 3,
+            "query_fast_lexical_top_k_default": 3,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-vector",
+                score=0.98,
+                payload={
+                    "chunk_id": "chunk-vector",
+                    "document_id": "doc_vector",
+                    "document_name": "doc_vector.txt",
+                    "text": "night shift troubleshooting summary",
+                    "source_path": "/tmp/doc_vector.txt",
+                },
+            ),
+            SimpleNamespace(
+                id="point-shared",
+                score=0.91,
+                payload={
+                    "chunk_id": "chunk-shared",
+                    "document_id": "doc_shared",
+                    "document_name": "doc_shared.txt",
+                    "text": "SOP-1024 night shift downtime analysis",
+                    "source_path": "/tmp/doc_shared.txt",
+                },
+            ),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-lexical",
+                score=4.2,
+                payload={
+                    "chunk_id": "chunk-lexical",
+                    "document_id": "doc_lexical",
+                    "document_name": "doc_lexical.txt",
+                    "text": "PLC_A01 fault code recovery steps",
+                    "source_path": "/tmp/doc_lexical.txt",
+                },
+            ),
+            SimpleNamespace(
+                point_id="point-shared",
+                score=3.4,
+                payload={
+                    "chunk_id": "chunk-shared",
+                    "document_id": "doc_shared",
+                    "document_name": "doc_shared.txt",
+                    "text": "SOP-1024 night shift downtime analysis",
+                    "source_path": "/tmp/doc_shared.txt",
+                },
+            ),
+        ]
+    )
+
+    response = retrieval_service.search(request=RetrievalRequest(query="PLC_A01错误"))
+
+    assert response.mode == "hybrid"
+    assert response.results[0].chunk_id == "chunk-lexical"
+    assert response.results[0].score == pytest.approx(0.7)
+    assert response.results[0].fused_score == pytest.approx(0.35)
+    assert response.results[1].chunk_id == "chunk-shared"
+    assert response.results[1].score == pytest.approx(2 / 3)
+    assert response.results[1].fused_score == pytest.approx(1 / 3)
 
 
 def test_retrieval_service_falls_back_to_qdrant_when_lexical_retriever_errors(tmp_path: Path) -> None:

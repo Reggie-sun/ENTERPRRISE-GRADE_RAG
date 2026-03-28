@@ -78,7 +78,7 @@ export function PortalHomePage() {
       <section className="grid grid-cols-12 gap-5">
         <HeroCard className="col-span-8 max-lg:col-span-12">
           <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-            Portal Home
+            智能知识服务
           </div>
           <h2 className="m-0 mt-4 font-serif text-3xl md:text-5xl leading-tight text-ink">
             {experience.portalTitle}
@@ -197,7 +197,7 @@ export function PortalHomePage() {
         <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">推荐提问</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-            系统会先按你的当前角色和部门范围给出更贴近使用场景的问题入口。
+            系统会结合你的角色与部门范围，推荐更贴近日常工作的提问入口。
           </p>
           <div className="mt-4 grid gap-3">
             {experience.suggestedQuestions.map((item) => (

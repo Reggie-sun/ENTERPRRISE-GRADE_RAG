@@ -143,7 +143,7 @@ export function DocumentListPanel() {
   };
 
   const handleDelete = async (item: DocumentSummary) => {
-    const confirmed = window.confirm(`确认删除文档「${item.filename}」吗？该操作会清理向量副本。`);
+    const confirmed = window.confirm(`确认删除资料「${item.filename}」吗？该操作会同步清理知识索引。`);
     if (!confirmed) {
       return;
     }
@@ -152,7 +152,7 @@ export function DocumentListPanel() {
     setOperationError('');
     try {
       const result = await deleteDocument(item.document_id);
-      setOperationMessage(`文档已删除：${result.doc_id}，已清理向量 ${result.vector_points_removed} 条。`);
+      setOperationMessage(`资料已删除：${result.doc_id}，已清理知识索引 ${result.vector_points_removed} 条。`);
       if (previewData?.doc_id === item.document_id) {
         setPreviewData(null);
         setPreviewStatus('idle');
@@ -168,11 +168,11 @@ export function DocumentListPanel() {
 
   const handleRebuild = async (item: DocumentSummary) => {
     if (item.status === 'deleted') {
-      setOperationError('已删除文档不支持重建向量。');
+      setOperationError('已删除资料不支持更新知识索引。');
       setOperationMessage('');
       return;
     }
-    const confirmed = window.confirm(`确认重建文档「${item.filename}」的向量索引吗？`);
+    const confirmed = window.confirm(`确认更新资料「${item.filename}」的知识索引吗？`);
     if (!confirmed) {
       return;
     }
@@ -182,11 +182,11 @@ export function DocumentListPanel() {
     try {
       const result = await rebuildDocumentVectors(item.document_id);
       setOperationMessage(
-        `已触发重建向量任务：${result.job_id}（文档 ${result.doc_id}，预清理向量 ${result.previous_vector_points_removed} 条）。`
+        `已触发知识索引更新任务：${result.job_id}（资料 ${result.doc_id}，预清理索引 ${result.previous_vector_points_removed} 条）。`
       );
       await fetchDocuments(page, pageSize);
     } catch (err) {
-      setOperationError(formatApiError(err, '重建向量'));
+      setOperationError(formatApiError(err, '更新知识索引'));
     } finally {
       setRebuildLoadingDocId('');
     }
@@ -200,7 +200,7 @@ export function DocumentListPanel() {
     <Card className="col-span-12">
       <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">文档列表</h2>
       <p className="m-0 mb-4 text-ink-soft leading-relaxed">
-        按主数据筛选并分页浏览文档，区分文档状态与最新 ingest 状态。
+        按资料信息筛选并分页浏览内容，区分资料状态与最新处理状态。
       </p>
 
       <form onSubmit={handleSearch} className="grid gap-3 mb-4">
@@ -209,19 +209,19 @@ export function DocumentListPanel() {
             label="关键字"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="文件名或 doc_id"
+            placeholder="文件名或资料编号"
           />
           <Input
             label="部门"
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
-            placeholder="department_id"
+            placeholder="请输入部门"
           />
           <Input
             label="分类"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            placeholder="category_id"
+            placeholder="请输入分类"
           />
           <label className="grid gap-1.5 text-sm font-semibold text-ink">
             文档状态
@@ -297,7 +297,7 @@ export function DocumentListPanel() {
               <tr key={item.document_id}>
                 <td className="p-2 border-b border-[rgba(23,32,42,0.08)] align-top">
                   <p className="m-0 font-semibold">{item.filename}</p>
-                  <p className="m-0 mt-1 text-xs text-ink-soft break-all">{item.document_id}</p>
+                  <p className="m-0 mt-1 text-xs text-ink-soft break-all">资料编号：{item.document_id}</p>
                 </td>
                 <td className="p-2 border-b border-[rgba(23,32,42,0.08)] align-top">{item.department_id || '-'}</td>
                 <td className="p-2 border-b border-[rgba(23,32,42,0.08)] align-top">{item.category_id || '-'}</td>
@@ -334,7 +334,7 @@ export function DocumentListPanel() {
                       disabled={item.status === 'deleted'}
                       onClick={() => handleRebuild(item)}
                     >
-                      重建向量
+                      更新知识索引
                     </Button>
                   </div>
                 </td>

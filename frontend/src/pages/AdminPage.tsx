@@ -8,9 +8,11 @@ import {
   formatApiError,
   getAuthBootstrap,
   getHealth,
+  getOpsSummary,
   getSystemConfig,
   type HealthResponse,
   type ModelRoutingConfig,
+  type OpsSummaryResponse,
   updateSystemConfig,
   type QueryModeConfig,
   type QueryProfilesConfig,
@@ -129,6 +131,24 @@ function formatLocalTime(value: string | null): string {
     return value;
   }
   return parsed.toLocaleString('zh-CN', { hour12: false });
+}
+
+function rerankDecisionTone(decision: string | null | undefined): 'ok' | 'warn' | 'error' | 'default' {
+  switch (decision) {
+    case 'promote_to_provider':
+    case 'keep_provider':
+      return 'ok';
+    case 'rollback_to_heuristic':
+      return 'error';
+    case 'run_canary':
+    case 'observe_canary':
+    case 'observe_provider':
+    case 'keep_heuristic':
+    case 'not_applicable':
+      return 'warn';
+    default:
+      return 'default';
+  }
 }
 
 interface ToggleFieldProps {
@@ -255,6 +275,7 @@ export function AdminPage() {
   const [savedConcurrencyControls, setSavedConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [opsSummary, setOpsSummary] = useState<OpsSummaryResponse | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
@@ -262,10 +283,11 @@ export function AdminPage() {
       setStatus('loading');
       setError('');
       try {
-        const [configPayload, bootstrapPayload, healthPayload] = await Promise.all([
+        const [configPayload, bootstrapPayload, healthPayload, opsPayload] = await Promise.all([
           getSystemConfig(),
           getAuthBootstrap(),
           getHealth(),
+          getOpsSummary().catch(() => null),
         ]);
         setProfiles(cloneProfiles(configPayload.query_profiles));
         setSavedProfiles(cloneProfiles(configPayload.query_profiles));
@@ -283,9 +305,11 @@ export function AdminPage() {
         setUpdatedBy(configPayload.updated_by);
         setUsers(bootstrapPayload.users);
         setHealth(healthPayload as HealthResponse);
+        setOpsSummary(opsPayload);
         setStatus('success');
       } catch (err) {
         setHealth(null);
+        setOpsSummary(null);
         setStatus('error');
         setError(formatApiError(err, '系统配置加载'));
       }
@@ -370,7 +394,10 @@ export function AdminPage() {
         retry_controls: retryControls,
         concurrency_controls: concurrencyControls,
       });
-      const latestHealth = await getHealth();
+      const [latestHealth, latestOpsSummary] = await Promise.all([
+        getHealth(),
+        getOpsSummary().catch(() => null),
+      ]);
       setProfiles(cloneProfiles(payload.query_profiles));
       setSavedProfiles(cloneProfiles(payload.query_profiles));
       setModelRouting(cloneModelRouting(payload.model_routing));
@@ -386,6 +413,7 @@ export function AdminPage() {
       setUpdatedAt(payload.updated_at);
       setUpdatedBy(payload.updated_by);
       setHealth(latestHealth);
+      setOpsSummary(latestOpsSummary);
       setSaveStatus('success');
     } catch (err) {
       setSaveStatus('error');
@@ -608,6 +636,26 @@ export function AdminPage() {
               <p className="m-0 mt-1">cooldown remaining: {health ? `${health.reranker.cooldown_remaining_seconds.toFixed(1)} s` : '-'}</p>
               <p className="m-0 mt-1 break-all">{health?.reranker.base_url || '-'}</p>
               <p className="m-0 mt-2 leading-relaxed">{health?.reranker.detail || '刷新后可看到当前 rerank 探针状态。'}</p>
+            </div>
+            <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">默认策略结论</strong>
+                <StatusPill tone={rerankDecisionTone(opsSummary?.rerank_decision.decision)}>
+                  {opsSummary?.rerank_decision.decision || '未加载'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-3">
+                provider 样本: {opsSummary?.rerank_decision.provider_sample_count ?? '-'} / 阈值 {opsSummary?.rerank_decision.min_provider_samples ?? '-'}
+              </p>
+              <p className="m-0 mt-1">
+                heuristic 样本: {opsSummary?.rerank_decision.heuristic_sample_count ?? '-'}
+              </p>
+              <p className="m-0 mt-1">
+                promote: {opsSummary?.rerank_decision.should_promote_to_provider ? 'yes' : 'no'} / rollback: {opsSummary?.rerank_decision.should_rollback_to_heuristic ? 'yes' : 'no'}
+              </p>
+              <p className="m-0 mt-2 leading-relaxed">
+                {opsSummary?.rerank_decision.message || '刷新后可看到当前默认策略建议。'}
+              </p>
             </div>
           </Card>
 

@@ -11,7 +11,7 @@ import {
   type Citation,
   type QueryMode,
 } from '@/api';
-import { rememberDocument, rememberQuestion } from '@/portal/portalStorage';
+import { getOrCreateStoredSessionId, rememberDocument, rememberQuestion } from '@/portal/portalStorage';
 
 type PortalChatStatus = 'idle' | 'loading' | 'success' | 'error';
 const QUERY_MODE_OPTIONS: Array<{
@@ -33,6 +33,7 @@ export function PortalChatPage() {
   const initialQuestion = searchQuestion || suggestedDefaultQuestion;
   const [question, setQuestion] = useState(initialQuestion);
   const [queryMode, setQueryMode] = useState<QueryMode>('fast');
+  const [sessionId] = useState(() => getOrCreateStoredSessionId('portal_chat_session_id'));
   const [status, setStatus] = useState<PortalChatStatus>('idle');
   const [data, setData] = useState<ChatResponse | null>(null);
   const [error, setError] = useState('');
@@ -61,7 +62,7 @@ export function PortalChatPage() {
 
     try {
       const response = await askQuestionStream(
-        { question: normalizedQuestion, mode: queryMode },
+        { question: normalizedQuestion, mode: queryMode, session_id: sessionId },
         {
           onMeta: (meta: ChatStreamMeta) => {
             setData({
@@ -128,6 +129,9 @@ export function PortalChatPage() {
           <p className="m-0 mt-3 max-w-[62ch] text-base leading-relaxed text-ink-soft">
             这里不展示模型名、检索模式和调试分数，只保留客户真正需要理解的信息：
             回答内容、参考出处，以及回答当前基于什么权限范围生成。
+          </p>
+          <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
+            当前会话会自动承接最近几轮上下文，适合连续追问；如需完全切换话题，刷新页面即可重置。
           </p>
         </HeroCard>
 

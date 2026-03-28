@@ -52,6 +52,8 @@ export function LogsPage() {
   const [action, setAction] = useState('');
   const [username, setUsername] = useState('');
   const [targetId, setTargetId] = useState('');
+  const [rerankStrategy, setRerankStrategy] = useState('');
+  const [rerankProvider, setRerankProvider] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [departmentId, setDepartmentId] = useState(lockedDepartmentId);
@@ -88,6 +90,8 @@ export function LogsPage() {
           action: action.trim() || undefined,
           username: username.trim() || undefined,
           target_id: targetId.trim() || undefined,
+          rerank_strategy: rerankStrategy.trim() || undefined,
+          rerank_provider: rerankProvider.trim() || undefined,
           department_id: departmentId || undefined,
           date_from: dateFrom || undefined,
           date_to: dateTo || undefined,
@@ -104,7 +108,7 @@ export function LogsPage() {
     };
 
     void loadLogs();
-  }, [action, category, dateFrom, dateTo, departmentId, outcome, page, pageSize, refreshTick, targetId, username]);
+  }, [action, category, dateFrom, dateTo, departmentId, outcome, page, pageSize, refreshTick, rerankProvider, rerankStrategy, targetId, username]);
 
   useEffect(() => {
     if (!records.length) {
@@ -239,11 +243,31 @@ export function LogsPage() {
 
             <Input
               label="目标 ID"
-              placeholder="doc_id / job_id / session_id"
+              placeholder="资料编号 / 任务编号 / 会话编号"
               value={targetId}
               onChange={(event) => {
                 setPage(1);
                 setTargetId(event.target.value);
+              }}
+            />
+
+            <Input
+              label="rerank_strategy"
+              placeholder="provider / heuristic / fallback_profile"
+              value={rerankStrategy}
+              onChange={(event) => {
+                setPage(1);
+                setRerankStrategy(event.target.value);
+              }}
+            />
+
+            <Input
+              label="rerank_provider"
+              placeholder="openai_compatible / heuristic"
+              value={rerankProvider}
+              onChange={(event) => {
+                setPage(1);
+                setRerankProvider(event.target.value);
               }}
             />
 
@@ -333,6 +357,7 @@ export function LogsPage() {
                     <StatusPill tone={record.outcome === 'success' ? 'ok' : 'error'}>{record.outcome}</StatusPill>
                     <StatusPill tone="default">{record.category}</StatusPill>
                     {record.mode ? <StatusPill tone="warn">{record.mode}</StatusPill> : null}
+                    {record.rerank_strategy ? <StatusPill tone="warn">{record.rerank_strategy}</StatusPill> : null}
                   </div>
                   <div className="mt-3 grid gap-2 text-sm text-ink-soft md:grid-cols-[1.3fr_1fr_1fr]">
                     <p className="m-0">
@@ -358,6 +383,10 @@ export function LogsPage() {
                     <p className="m-0">
                       <strong className="text-ink">部门：</strong>
                       {renderNullable(record.actor.department_id)}
+                    </p>
+                    <p className="m-0">
+                      <strong className="text-ink">rerank：</strong>
+                      {renderNullable(record.rerank_provider)} / {renderNullable(record.rerank_strategy)}
                     </p>
                   </div>
                 </button>
@@ -419,6 +448,9 @@ export function LogsPage() {
                   <p className="m-0"><strong className="text-ink">top_k：</strong>{renderNullable(selectedRecord.top_k)}</p>
                   <p className="m-0"><strong className="text-ink">candidate_top_k：</strong>{renderNullable(selectedRecord.candidate_top_k)}</p>
                   <p className="m-0"><strong className="text-ink">rerank_top_n：</strong>{renderNullable(selectedRecord.rerank_top_n)}</p>
+                  <p className="m-0"><strong className="text-ink">rerank_strategy：</strong>{renderNullable(selectedRecord.rerank_strategy)}</p>
+                  <p className="m-0"><strong className="text-ink">rerank_provider：</strong>{renderNullable(selectedRecord.rerank_provider)}</p>
+                  <p className="m-0"><strong className="text-ink">rerank_model：</strong>{renderNullable(selectedRecord.rerank_model)}</p>
                 </div>
               </div>
 

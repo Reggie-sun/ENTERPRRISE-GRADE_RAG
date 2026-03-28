@@ -18,6 +18,13 @@ const RECENT_QUESTIONS_KEY = 'portal_recent_questions';
 const RECENT_DOCUMENTS_KEY = 'portal_recent_documents';
 const MAX_RECENT_ITEMS = 6;
 
+function createClientSessionId(): string {
+  if (typeof window !== 'undefined' && typeof window.crypto?.randomUUID === 'function') {
+    return `sess_${window.crypto.randomUUID().replace(/-/g, '')}`;
+  }
+  return `sess_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+}
+
 function readStorage<T>(key: string): T[] {
   if (typeof window === 'undefined') {
     return [];
@@ -55,6 +62,27 @@ export function rememberQuestion(question: string) {
     ...loadRecentQuestions().filter((item) => item.question !== normalized),
   ].slice(0, MAX_RECENT_ITEMS);
   writeStorage(RECENT_QUESTIONS_KEY, nextItems);
+}
+
+export function getOrCreateStoredSessionId(storageKey: string): string {
+  if (typeof window === 'undefined') {
+    return createClientSessionId();
+  }
+  const existing = window.localStorage.getItem(storageKey)?.trim();
+  if (existing) {
+    return existing;
+  }
+  const next = createClientSessionId();
+  window.localStorage.setItem(storageKey, next);
+  return next;
+}
+
+export function resetStoredSessionId(storageKey: string): string {
+  const next = createClientSessionId();
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(storageKey, next);
+  }
+  return next;
 }
 
 export function loadRecentDocuments(): RecentDocumentItem[] {

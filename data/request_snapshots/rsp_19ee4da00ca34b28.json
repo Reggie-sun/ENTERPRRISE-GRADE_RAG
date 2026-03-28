@@ -1,0 +1,152 @@
+{
+  "snapshot_id": "rsp_19ee4da00ca34b28",
+  "trace_id": "trc_cd6460bdaadd4fe4",
+  "request_id": "req_ed4d37efaca54126",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T08:58:25.312285Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "总结这份已上传文档里最相关的内容。",
+    "top_k": 5,
+    "mode": null,
+    "session_id": "sess_5eb6772f39b34eafadd8cb63e92ba8c3",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "总结这份已上传文档里最相关的内容。",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "## 1 文档定位\n\n本文档面向操作员、维修人员和现场服务人员使用，内容依据原始 PLC/PMC 报警资料整理，重点解决三个问题：\n\n1. 屏幕上出现某个报警码，现场人员应该先看什么。\n2. 对应的 PLC 输入点是否真的恢复，不能只看报警字样。\n3. 排查到什么程度，才可以复位、试车或继续加工。\n\n本文档只展开原始资料中已经明确列出的报警项，不额外补写原稿中未逐条说明的报警码。\n\n## 2 使用方法\n\n1. 先看数控系统上的报警码。\n2. 按本手册找到对应条目。\n3. 先看“这个报警说明什么”，再按“现场先查什么”“诊断判定”和“怎么处理”执行。\n4. 只有满足“什么状态下才能恢复”后，才允许复位和试运行。\n\n## 3 读信号的方法\n\n1. 每条报警都对应一个 PLC/PMC 输入点，信号地址已经写在条目里。\n2. 一般情况下，报警成立时对应输入点为 `1`，报警解除后应回到 `0`。\n3. 如果机械状态已经恢复，但输入点还停留在 `1`，优先检查传感器、接线、开关触点和 PLC 输入模块。\n4. 如果输入点已经恢复为 `0`，但报警仍不消失，再查联锁条件、其他相关输入点和系统复位条件。\n\n## 4 处理总原则\n\n1. 涉及急停、主轴、刀库、液压、安全门、碰撞的报警，先确认人和设备安全，再做排查。\n2. 不要一边报警一边强行复位运行，尤其是夹紧、松刀、门锁、碰撞、温度类报警。\n3. 先看机械实际状态，再看 HMI 诊断页或 PLC 信号状态，不要只盯着报警文本。\n4. 报警清除后，先单步、低速、空运行验证，再恢复正常加工。\n5. 同一个报警连续反复出现两次以上，或者伴随异响、卡滞、漏油、漏水时，应停止继续生产并转维修处理。\n\n## 5 快速索引\n\n| 类别 | 报警码 |\n|------|--------|\n| 急停类 | 700000-700003，700014 |",
+      "score": -3.755859375,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 17.31430720970912,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -4.5859375,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 22.48665181179468,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325063225_27028cac-chunk-16",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "and\n我们将在每周的星期一同一时间见面\nEvery week, I will give you a tasks you know, like tasks that you will do throughout the week.\n每周，我会给你一些你知道的任务，比如你将在整个星期内完成的任务。\nSo, yes, so each week, right before our meeting, you will share the summary of the work that you have done.\n所以，是的，每周在我们开会之前，你都会分享你所做工作的总结。\nYou can. You will write your summary in a word document and then share it in this live group so that I can read what you have done and will just walk me through the work that you have done each week, and then we will move towards our next task and so on.\n你可以的。你将把你的总结写在一个word文档中，然后在这个实时群组中分享，这样我就可以阅读你所做的事情，并且每周都会向我介绍你所做的工作。然后我们将朝着下一个任务前进，依此类推。\nSo I will keep on mentioning task.\n所以我会继续提到任务。\nIn the slide block for each week, so that you can read what you have to do for that week, and then you will give me the",
+      "score": -6.9140625,
+      "source_path": "/app/data/uploads/doc_20260325063225_27028cac__zom1.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 16.435855364624665,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "## 1 文档定位\n\n本文档面向操作员、维修人员和现场服务人员使用，内容依据原始 PLC/PMC 报警资料整理，重点解决三个问题：\n\n1. 屏幕上出现某个报警码，现场人员应该先看什么。\n2. 对应的 PLC 输入点是否真的恢复，不能只看报警字样。\n3. 排查到什么程度，才可以复位、试车或继续加工。\n\n本文档只展开原始资料中已经明确列出的报警项，不额外补写原稿中未逐条说明的报警码。\n\n## 2 使用方法\n\n1. 先看数控系统上的报警码。\n2. 按本手册找到对应条目。\n3. 先看“这个报警说明什么”，再按“现场先查什么”“诊断判定”和“怎么处理”执行。\n4. 只有满足“什么状态下才能恢复”后，才允许复位和试运行。\n\n## 3 读信号的方法\n\n1. 每条报警都对应一个 PLC/PMC 输入点，信号地址已经写在条目里。\n2. 一般情况下，报警成立时对应输入点为 `1`，报警解除后应回到 `0`。\n3. 如果机械状态已经恢复，但输入点还停留在 `1`，优先检查传感器、接线、开关触点和 PLC 输入模块。\n4. 如果输入点已经恢复为 `0`，但报警仍不消失，再查联锁条件、其他相关输入点和系统复位条件。\n\n## 4 处理总原则\n\n1. 涉及急停、主轴、刀库、液压、安全门、碰撞的报警，先确认人和设备安全，再做排查。\n2. 不要一边报警一边强行复位运行，尤其是夹紧、松刀、门锁、碰撞、温度类报警。\n3. 先看机械实际状态，再看 HMI 诊断页或 PLC 信号状态，不要只盯着报警文本。\n4. 报警清除后，先单步、低速、空运行验证，再恢复正常加工。\n5. 同一个报警连续反复出现两次以上，或者伴随异响、卡滞、漏油、漏水时，应停止继续生产并转维修处理。\n\n## 5 快速索引\n\n| 类别 | 报警码 |\n|------|--------|\n| 急停类 | 700000-700003，700014 |",
+      "score": -3.755859375,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 17.31430720970912,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -4.5859375,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 22.48665181179468,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "chunk_id": "doc_20260325063225_27028cac-chunk-16",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "and\n我们将在每周的星期一同一时间见面\nEvery week, I will give you a tasks you know, like tasks that you will do throughout the week.\n每周，我会给你一些你知道的任务，比如你将在整个星期内完成的任务。\nSo, yes, so each week, right before our meeting, you will share the summary of the work that you have done.\n所以，是的，每周在我们开会之前，你都会分享你所做工作的总结。\nYou can. You will write your summary in a word document and then share it in this live group so that I can read what you have done and will just walk me through the work that you have done each week, and then we will move towards our next task and so on.\n你可以的。你将把你的总结写在一个word文档中，然后在这个实时群组中分享，这样我就可以阅读你所做的事情，并且每周都会向我介绍你所做的工作。然后我们将朝着下一个任务前进，依此类推。\nSo I will keep on mentioning task.\n所以我会继续提到任务。\nIn the slide block for each week, so that you can read what you have to do for that week, and then you will give me the",
+      "score": -6.9140625,
+      "source_path": "/app/data/uploads/doc_20260325063225_27028cac__zom1.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 16.435855364624665,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "总结如下：\n\n该文档主要针对操作员、维修人员和现场服务人员，旨在帮助他们理解和处理PLC/PMC报警。文档提供了处理报警的基本方法和原则，包括如何查看报警码、如何根据报警码查找对应的处理步骤以及如何确保报警真正解除后再进行复位和试运行等。此外，文档强调了处理报警时的安全性和正确性，避免盲目复位导致潜在风险。",
+    "answer_chars": 154,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

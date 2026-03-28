@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_93d7ccf73da84db696c417a1d33b8c22",
+  "user_id": "user_digitalization_real_08",
+  "username": "digitalization.real.08",
+  "department_id": "dept_digitalization",
+  "updated_at": "2026-03-28T09:02:14.178186Z",
+  "turns": [
+    {
+      "turn_id": "turn_45520d65e3b4",
+      "asked_at": "2026-03-28T09:02:01.757998Z",
+      "question": "解释一下CPPS",
+      "answer": "CPPS即慢性盆腔疼痛综合征(Chronic Prostatitis Pain Syndrome)，文中指出其特征在于盆腔区域出现长期的疼痛感，并且这种疼痛并非总是局限于前列腺或其他单一器官。相反，疼痛可能涉及盆腔内外的多种肌肉和复杂的神经系统。文中强调，疼痛可能是由于盆腔内的复杂神经网络和肌肉结构的问题引起的，而不一定是某个具体器官的问题。此外，文中提到疼痛可能通过“引传”现象出现在远离原发疼痛位置的地方，甚至可能影响皮肤。因此，对于CPPS的理解需要超越传统将疼痛归咎于特定器官的方法，而更多关注于整个盆腔区域的解剖结构及其相互作用。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_5603de1999f9",
+      "asked_at": "2026-03-28T09:02:14.178176Z",
+      "question": "更详细一点",
+      "answer": "CPPS，即慢性盆腔疼痛综合征，是指盆腔区域出现长期疼痛的一种情况。这种疼痛并不局限于前列腺或其他单一器官，而是可能涉及盆腔内外的多种肌肉和复杂的神经系统。疼痛的原因可能不是某个具体器官的问题，而是盆腔内复杂神经网络和肌肉结构的问题。此外，疼痛可能通过“引传”现象出现在远离原发疼痛位置的地方，甚至可能影响皮肤。这意味着疼痛信号可能通过神经传递到身体其他部位，导致这些部位也感受到疼痛。因此，理解CPPS需要超越传统将疼痛归咎于特定器官的方法，而更多关注整个盆腔区域的解剖结构及其相互作用。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

@@ -22,14 +22,14 @@ export function DocumentsPage() {
     <div className="grid gap-5">
       <HeroCard>
         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-[rgba(182,70,47,0.09)] text-accent-deep text-sm font-bold uppercase tracking-wider">
-          Documents
+          资料管理
         </div>
         <h2 className="m-0 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          文档中心负责当前权限范围内的入库任务、文档列表和后续维护操作。
+          文档中心负责当前权限范围内的资料上传、资料列表和后续维护操作。
         </h2>
         <p className="m-0 mt-3 max-w-[62ch] leading-relaxed text-ink-soft">
           {experience.workspaceBoundary}
-          这里保留上传、预览、删除和重建向量这些内部动作，普通员工不会直接进入这一页。
+          这里提供上传、预览、删除和知识索引更新等管理能力，普通员工不会直接进入这一页。
         </p>
       </HeroCard>
 
@@ -41,14 +41,14 @@ export function DocumentsPage() {
           </div>
           <div className="mt-4 grid gap-3 text-sm text-ink-soft">
             <p className="m-0 break-all">
-              文档：{currentDocumentName || '未选择文件'}
+              资料：{currentDocumentName || '未选择资料'}
             </p>
             <p className="m-0 break-all">
-              {currentDocId ? `doc_id: ${currentDocId}` : 'doc_id: -'}
+              {currentDocId ? `资料编号：${currentDocId}` : '资料编号：-'}
             </p>
             <p className="m-0 leading-relaxed">{scopeSummary}</p>
             <p className="m-0 leading-relaxed">
-              相同内容文档再次上传时会覆盖旧记录并沿用原 doc_id，不再卡死在旧的死信任务上。
+              相同内容再次上传时会复用原资料编号，并继续跟进最新处理任务。
             </p>
           </div>
         </Card>

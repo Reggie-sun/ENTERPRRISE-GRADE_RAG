@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_55d6bcc7be494b9e923d66a93fe85630",
+  "user_id": "user_digitalization_real_08",
+  "username": "digitalization.real.08",
+  "department_id": "dept_digitalization",
+  "updated_at": "2026-03-28T08:44:38.389812Z",
+  "turns": [
+    {
+      "turn_id": "turn_fba982af0646",
+      "asked_at": "2026-03-28T08:44:28.747898Z",
+      "question": "解释一下悖论放松法",
+      "answer": "悖论放松法的悖论在于：接受紧张才能放松。这意味着要达到放松的状态，首先需要接受身体的紧张感，而不是试图去对抗它。放松并不是通过主动去做某些事情来实现的，而是通过停止努力，即所谓的“无为”来实现的。这种做法与传统上认为放松需要积极行动的观点相反，因此形成了悖论。悖论放松法强调，在放松过程中，不应试图改变任何东西，而应接受当前的状态，包括紧张感，从而真正地放松下来。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_36bab65fe865",
+      "asked_at": "2026-03-28T08:44:38.389800Z",
+      "question": "那第二步呢？",
+      "answer": "第二步是在第一步完成后进行的，重点是图像生成，具体来说是如何基于输入（如故事）生成图像。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

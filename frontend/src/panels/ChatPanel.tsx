@@ -14,6 +14,7 @@ import {
   type Citation,
   type IngestJobStatus,
 } from '@/api';
+import { resetStoredSessionId } from '@/portal/portalStorage';
 
 // 回答模式中文映射。
 const MODE_TEXT: Record<string, string> = {
@@ -55,6 +56,7 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
   // 表单状态。
   const [question, setQuestion] = useState('总结这份已上传文档里最相关的内容。');
   const [topK, setTopK] = useState(5);
+  const [sessionId, setSessionId] = useState(() => resetStoredSessionId('workspace_chat_session_id'));
 
   // 面板状态。
   const [status, setStatus] = useState<PanelStatus>('idle');
@@ -66,7 +68,12 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
     setData(null);
     setError('');
     setStatus('idle');
+    setSessionId(resetStoredSessionId('workspace_chat_session_id'));
   }, [resetSignal]);
+
+  useEffect(() => {
+    setSessionId(resetStoredSessionId('workspace_chat_session_id'));
+  }, [normalizedDocId]);
 
   // 发起问答。
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,6 +94,7 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
         {
           question: question.trim(),
           top_k: topK,
+          session_id: sessionId,
           document_id: normalizedDocId || undefined,
         },
         {
@@ -147,21 +155,24 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
       {/* 标题 */}
       <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">带引用的问答</h2>
       <p className="m-0 mb-4 text-ink-soft leading-relaxed">
-        把真实问题发给 chat 接口，直接看回答模式、模型名和引用片段。
+        输入真实问题，直接查看回答模式、模型信息和引用片段。
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        当前文档：{currentDocumentName || '未选择文件'}
+        当前资料：{currentDocumentName || '未选择资料'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        当前策略：有当前文档就按文档过滤；未指定时走全库问答（基于已入库 chunk）。
+        当前策略：有当前资料就按资料过滤；未指定时走全库问答（基于已入库知识片段）。
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft break-all">
-        {normalizedDocId ? `document_id: ${normalizedDocId}` : 'document_id: 全库'}
+        {normalizedDocId ? `资料编号：${normalizedDocId}` : '资料编号：全库'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft break-all">
         {normalizedDocId
           ? `当前入库状态: ${currentJobStatus ? (JOB_STATE_TEXT[currentJobStatus] || currentJobStatus) : '-'}`
           : '当前入库状态: 全库模式（不依赖当前上传任务）'}
+      </p>
+      <p className="m-0 mb-3 text-sm text-ink-soft">
+        同一资料下会自动承接最近几轮追问；切换资料或重新上传后，会话上下文会自动重置。
       </p>
 
       {/* 表单 */}
@@ -223,7 +234,7 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
               index={index}
               meta={[
                 { label: '分数', value: item.score.toFixed(4) },
-                { label: '', value: item.chunk_id.slice(0, 12) + '...' },
+                { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
               ]}
             >
               {item.snippet.length > 300 ? `${item.snippet.slice(0, 300)}...` : item.snippet}

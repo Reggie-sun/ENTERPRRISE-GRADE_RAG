@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_147be57989fd4e52b65ee0b440bdedfe",
+  "user_id": "user_digitalization_real_08",
+  "username": "digitalization.real.08",
+  "department_id": "dept_digitalization",
+  "updated_at": "2026-03-28T08:48:34.812926Z",
+  "turns": [
+    {
+      "turn_id": "turn_192a306e8c48",
+      "asked_at": "2026-03-28T08:48:23.091722Z",
+      "question": "解释一下CPPS",
+      "answer": "CPPS即慢性盆腔疼痛综合征，指的是长期存在于盆腔区域的疼痛症状。这种疼痛可能并非由细菌感染引起，而是涉及多种因素，包括但不限于解剖结构的问题、神经系统异常等。书中提出的观点认为，慢性盆腔疼痛综合征和其他相关病症有着共同的病因，并且这些症状与头痛有相似之处，只是疼痛发生在盆腔区域。因此，治疗这类病症通常需要综合性的方法，包括医学治疗、心理学支持和物理治疗等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_1415239975e3",
+      "asked_at": "2026-03-28T08:48:34.812911Z",
+      "question": "更详细一点",
+      "answer": "根据上下文，悖论放松法是一种用于治疗慢性盆腔疼痛的方法。在第三版前言中提到，这本书对悖论放松法的技巧进行了更详细的解释。如果您想了解更多细节，建议参考书籍中的具体章节，那里应该会有更详细的说明和指导。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

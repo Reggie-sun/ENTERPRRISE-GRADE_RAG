@@ -9,7 +9,9 @@ import { Card, Button, StatusPill, Textarea, Input, ResultCard } from '@/compone
 import {
   compareRetrievalRerank,
   formatApiError,
+  getSystemConfig,
   searchDocuments,
+  updateSystemConfig,
   type RetrievalRerankCompareResponse,
   type RetrievalResponse,
   type RetrievedChunk,
@@ -70,6 +72,8 @@ export function RetrievalPanel({
   const [comparisonStatus, setComparisonStatus] = useState<PanelStatus>('idle');
   const [comparisonData, setComparisonData] = useState<RetrievalRerankCompareResponse | null>(null);
   const [comparisonError, setComparisonError] = useState<string>('');
+  const [strategyActionStatus, setStrategyActionStatus] = useState<PanelStatus>('idle');
+  const [strategyActionMessage, setStrategyActionMessage] = useState<string>('');
 
   // 每次新上传文档时，自动清空旧的检索结果。
   useEffect(() => {
@@ -79,6 +83,8 @@ export function RetrievalPanel({
     setComparisonData(null);
     setComparisonError('');
     setComparisonStatus('idle');
+    setStrategyActionStatus('idle');
+    setStrategyActionMessage('');
   }, [resetSignal]);
 
   const buildRequest = () => ({
@@ -126,8 +132,38 @@ export function RetrievalPanel({
       setComparisonData(result);
       setComparisonStatus('success');
     } catch (err) {
-      setComparisonError(formatApiError(err, 'Rerank 对比验证'));
+      setComparisonError(formatApiError(err, '排序策略对比'));
       setComparisonStatus('error');
+    }
+  };
+
+  const handleApplyDefaultStrategy = async (nextStrategy: 'heuristic' | 'provider') => {
+    setStrategyActionStatus('loading');
+    setStrategyActionMessage('');
+    try {
+      const configPayload = await getSystemConfig();
+      const updatedConfig = await updateSystemConfig({
+        query_profiles: configPayload.query_profiles,
+        model_routing: configPayload.model_routing,
+        reranker_routing: {
+          ...configPayload.reranker_routing,
+          default_strategy: nextStrategy,
+        },
+        degrade_controls: configPayload.degrade_controls,
+        retry_controls: configPayload.retry_controls,
+        concurrency_controls: configPayload.concurrency_controls,
+      });
+      const refreshedComparison = await compareRetrievalRerank(buildRequest());
+      setComparisonData(refreshedComparison);
+      setStrategyActionStatus('success');
+      setStrategyActionMessage(
+        nextStrategy === 'provider'
+          ? `已把默认策略切到 provider（${updatedConfig.reranker_routing.provider} / ${updatedConfig.reranker_routing.model}）。`
+          : '已把默认策略回滚到 heuristic。',
+      );
+    } catch (err) {
+      setStrategyActionStatus('error');
+      setStrategyActionMessage(formatApiError(err, '默认策略切换'));
     }
   };
 
@@ -150,18 +186,18 @@ export function RetrievalPanel({
   return (
     <Card className="col-span-6 max-md:col-span-12">
       {/* 标题 */}
-      <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">检索测试</h2>
+      <h2 className="m-0 mb-1.5 text-xl font-semibold text-ink">知识检索</h2>
       <p className="m-0 mb-4 text-ink-soft leading-relaxed">
-        先看生成前的 top chunks，这是判断召回质量最快的方式。
+        先看命中的知识片段，这是判断资料匹配质量最快的方式。
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        当前文档：{currentDocumentName || '未选择文件'}
+        当前资料：{currentDocumentName || '未选择资料'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft">
-        当前策略：有当前文档就按文档过滤；未指定时走全库检索（读取已入库 chunk）。
+        当前策略：有当前资料就按资料过滤；未指定时走全库检索（读取已入库知识片段）。
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft break-all">
-        {normalizedDocId ? `document_id: ${normalizedDocId}` : 'document_id: 全库'}
+        {normalizedDocId ? `资料编号：${normalizedDocId}` : '资料编号：全库'}
       </p>
       <p className="m-0 mb-3 text-sm text-ink-soft break-all">
         {normalizedDocId
@@ -238,7 +274,7 @@ export function RetrievalPanel({
               index={index}
               meta={[
                 { label: '分数', value: item.score.toFixed(4) },
-                { label: '', value: item.chunk_id.slice(0, 12) + '...' },
+                { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
               ]}
             >
               {item.text.length > 300 ? `${item.text.slice(0, 300)}...` : item.text}
@@ -250,9 +286,9 @@ export function RetrievalPanel({
       <div className="mt-6 grid gap-3">
         <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
           <div>
-            <h3 className="m-0 text-lg font-semibold text-ink">Rerank 对比验证</h3>
+            <h3 className="m-0 text-lg font-semibold text-ink">排序策略对比</h3>
             <p className="m-0 mt-1 text-sm text-ink-soft">
-              在同一批检索候选上直接比较“当前默认 rerank 路由”和 “heuristic 基线”，判断模型 rerank 是否值得成为默认路径。
+              在同一批检索候选上直接比较“当前默认排序策略”和“规则基线”，判断模型排序是否值得作为默认路径。
             </p>
           </div>
           <StatusPill tone={
@@ -296,25 +332,25 @@ export function RetrievalPanel({
                 </StatusPill>
               </div>
               <p className="m-0 mt-3 text-sm text-ink-soft">
-                configured: {comparisonData.route_status.provider} / {comparisonData.route_status.model}
+                当前配置：{comparisonData.route_status.provider} / {comparisonData.route_status.model}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                default: {comparisonData.route_status.default_strategy}
+                默认策略：{comparisonData.route_status.default_strategy}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                effective: {comparisonData.route_status.effective_provider} / {comparisonData.route_status.effective_strategy}
+                当前生效：{comparisonData.route_status.effective_provider} / {comparisonData.route_status.effective_strategy}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                effective model: {comparisonData.route_status.effective_model}
+                当前模型：{comparisonData.route_status.effective_model}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                cooldown: {comparisonData.route_status.failure_cooldown_seconds}s / remaining {comparisonData.route_status.cooldown_remaining_seconds.toFixed(1)}s
+                冷却时间：{comparisonData.route_status.failure_cooldown_seconds}s / 剩余 {comparisonData.route_status.cooldown_remaining_seconds.toFixed(1)}s
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                fallback: {comparisonData.route_status.fallback_enabled ? 'on' : 'off'}
+                回退开关：{comparisonData.route_status.fallback_enabled ? '开启' : '关闭'}
               </p>
               <p className="m-0 mt-1 text-sm text-ink-soft">
-                lock: {comparisonData.route_status.lock_active ? 'active' : 'off'}{comparisonData.route_status.lock_source ? ` / ${comparisonData.route_status.lock_source}` : ''}
+                锁定状态：{comparisonData.route_status.lock_active ? '已锁定' : '未锁定'}{comparisonData.route_status.lock_source ? ` / ${comparisonData.route_status.lock_source}` : ''}
               </p>
               <p className="m-0 mt-2 text-sm leading-relaxed text-ink">
                 {comparisonData.route_status.detail || '无额外状态说明。'}
@@ -325,8 +361,8 @@ export function RetrievalPanel({
               <ResultCard
                 title="当前默认路由"
                 meta={[
-                  { label: 'provider', value: comparisonData.configured.provider },
-                  { label: 'strategy', value: comparisonData.configured.strategy },
+                  { label: '服务商', value: comparisonData.configured.provider },
+                  { label: '策略', value: comparisonData.configured.strategy },
                 ]}
               >
                 {comparisonData.configured.model || '无模型'}
@@ -334,8 +370,8 @@ export function RetrievalPanel({
               <ResultCard
                 title="heuristic 基线"
                 meta={[
-                  { label: 'provider', value: comparisonData.heuristic.provider },
-                  { label: 'strategy', value: comparisonData.heuristic.strategy },
+                  { label: '服务商', value: comparisonData.heuristic.provider },
+                  { label: '策略', value: comparisonData.heuristic.strategy },
                 ]}
               >
                 token overlap + vector blended
@@ -343,8 +379,8 @@ export function RetrievalPanel({
               <ResultCard
                 title="重叠结果"
                 meta={[
-                  { label: 'overlap', value: String(comparisonData.summary.overlap_count) },
-                  { label: 'top1', value: comparisonData.summary.top1_same ? 'same' : 'changed' },
+                  { label: '重叠数', value: String(comparisonData.summary.overlap_count) },
+                  { label: '首位结果', value: comparisonData.summary.top1_same ? '一致' : '发生变化' },
                 ]}
               >
                 {comparisonData.mode}
@@ -352,8 +388,8 @@ export function RetrievalPanel({
               <ResultCard
                 title="差异摘要"
                 meta={[
-                  { label: 'configured only', value: String(comparisonData.summary.configured_only_chunk_ids.length) },
-                  { label: 'heuristic only', value: String(comparisonData.summary.heuristic_only_chunk_ids.length) },
+                  { label: '当前策略独有', value: String(comparisonData.summary.configured_only_chunk_ids.length) },
+                  { label: '规则基线独有', value: String(comparisonData.summary.heuristic_only_chunk_ids.length) },
                 ]}
               >
                 {comparisonData.configured.provider === 'heuristic'
@@ -375,8 +411,53 @@ export function RetrievalPanel({
                 {comparisonData.recommendation.message}
               </p>
               <p className="m-0 mt-2 text-sm text-ink-soft">
-                action: {comparisonData.recommendation.should_switch_default_strategy ? '建议切到 provider 默认' : '建议继续保持 heuristic 默认'}
+                建议操作：{comparisonData.recommendation.should_switch_default_strategy ? '切换到模型排序默认' : '继续保持规则基线默认'}
               </p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {comparisonData.route_status.default_strategy !== 'provider' && comparisonData.recommendation.should_switch_default_strategy ? (
+                  <Button
+                    type="button"
+                    loading={strategyActionStatus === 'loading'}
+                    onClick={() => handleApplyDefaultStrategy('provider')}
+                  >
+                    切换到模型排序默认
+                  </Button>
+                ) : null}
+                {comparisonData.route_status.default_strategy === 'provider' ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    loading={strategyActionStatus === 'loading'}
+                    onClick={() => handleApplyDefaultStrategy('heuristic')}
+                  >
+                    恢复为规则基线默认
+                  </Button>
+                ) : null}
+              </div>
+              {strategyActionMessage ? (
+                <div className="mt-3">
+                  <StatusPill tone={
+                    strategyActionStatus === 'success'
+                      ? 'ok'
+                      : strategyActionStatus === 'error'
+                        ? 'error'
+                        : strategyActionStatus === 'loading'
+                          ? 'warn'
+                          : 'default'
+                  }>
+                    {strategyActionStatus === 'success'
+                      ? '已执行'
+                      : strategyActionStatus === 'error'
+                        ? '执行失败'
+                        : strategyActionStatus === 'loading'
+                          ? '执行中'
+                          : '待执行'}
+                  </StatusPill>
+                  <p className="m-0 mt-2 text-sm text-ink-soft leading-relaxed">
+                    {strategyActionMessage}
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             {comparisonData.configured.error_message ? (
@@ -403,13 +484,13 @@ export function RetrievalPanel({
                 ) : comparisonData.configured.results.map((item, index) => (
                   <ResultCard
                     key={`configured-${item.chunk_id}`}
-                    title={item.document_name}
-                    index={index}
-                    meta={[
-                      { label: '分数', value: item.score.toFixed(4) },
-                      { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
-                    ]}
-                  >
+                      title={item.document_name}
+                      index={index}
+                      meta={[
+                        { label: '分数', value: item.score.toFixed(4) },
+                        { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
+                      ]}
+                    >
                     {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
                   </ResultCard>
                 ))}
@@ -427,13 +508,13 @@ export function RetrievalPanel({
                 ) : comparisonData.heuristic.results.map((item, index) => (
                   <ResultCard
                     key={`heuristic-${item.chunk_id}`}
-                    title={item.document_name}
-                    index={index}
-                    meta={[
-                      { label: '分数', value: item.score.toFixed(4) },
-                      { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
-                    ]}
-                  >
+                      title={item.document_name}
+                      index={index}
+                      meta={[
+                        { label: '分数', value: item.score.toFixed(4) },
+                        { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
+                      ]}
+                    >
                     {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
                   </ResultCard>
                 ))}
@@ -443,17 +524,17 @@ export function RetrievalPanel({
             {comparisonData.provider_candidate ? (
               <div className="grid gap-3">
                 <div className="flex items-center justify-between gap-3">
-                  <h4 className="m-0 text-base font-semibold text-ink">Provider 候选结果</h4>
+                  <h4 className="m-0 text-base font-semibold text-ink">模型排序候选结果</h4>
                   <StatusPill tone={comparisonData.provider_candidate.strategy === 'provider' ? 'ok' : 'warn'}>
                     {comparisonData.provider_candidate.provider} / {comparisonData.provider_candidate.strategy}
                   </StatusPill>
                 </div>
-                <p className="m-0 text-sm text-ink-soft">
-                  这组结果会显式尝试模型级 rerank provider，即使当前默认策略仍固定在 heuristic，也能直接用它判断是否值得切换默认路由。
+                  <p className="m-0 text-sm text-ink-soft">
+                  这组结果会显式尝试模型排序能力，即使当前默认策略仍固定在规则基线，也能直接用它判断是否值得切换默认策略。
                 </p>
                 {comparisonData.provider_candidate_summary ? (
                   <p className="m-0 text-sm text-ink-soft">
-                    overlap {comparisonData.provider_candidate_summary.overlap_count} / top1 {comparisonData.provider_candidate_summary.top1_same ? 'same' : 'changed'}
+                    重叠 {comparisonData.provider_candidate_summary.overlap_count} / 首位结果 {comparisonData.provider_candidate_summary.top1_same ? '一致' : '发生变化'}
                   </p>
                 ) : null}
                 {comparisonData.provider_candidate.error_message ? (
@@ -464,7 +545,7 @@ export function RetrievalPanel({
                   </div>
                 ) : comparisonData.provider_candidate.results.length === 0 ? (
                   <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
-                    provider 候选没有返回结果。
+                    模型排序候选没有返回结果。
                   </div>
                 ) : (
                   <div className="grid gap-3">
@@ -475,7 +556,7 @@ export function RetrievalPanel({
                         index={index}
                         meta={[
                           { label: '分数', value: item.score.toFixed(4) },
-                          { label: 'chunk', value: item.chunk_id.slice(0, 12) + '...' },
+                          { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
                         ]}
                       >
                         {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
@@ -488,7 +569,7 @@ export function RetrievalPanel({
           </>
         ) : (
           <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
-            先执行一次对比，再看当前默认 rerank 路由是否真的优于 heuristic。
+            先执行一次对比，再看当前默认排序策略是否真的优于规则基线。
           </div>
         )}
       </div>

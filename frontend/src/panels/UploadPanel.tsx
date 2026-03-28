@@ -371,7 +371,7 @@ export function UploadPanel({
               errorMessage: null,
             },
           ]);
-          setHint('检测到重复文档，已复用历史 doc_id，并继续跟踪最新任务状态。');
+          setHint('检测到重复资料，已复用历史资料编号，并继续跟踪最新任务状态。');
           onUploadCreated?.(duplicateDetail.doc_id);
           startPolling([duplicateDetail.latest_job_id]);
           return;
@@ -520,7 +520,7 @@ export function UploadPanel({
 
         {profile ? (
           <p className="m-0 text-sm leading-relaxed text-ink-soft">
-            当前已登录为 {profile.user.display_name || profile.user.username}。租户和上传人会以后端权限上下文自动校准。
+            当前已登录为 {profile.user.display_name || profile.user.username}。系统会根据账号权限自动匹配资料归属范围。
           </p>
         ) : null}
 
@@ -541,7 +541,7 @@ export function UploadPanel({
           <Button type="submit" loading={status === 'uploading'}>
             <span className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
-              {allowMultiple && selectedFiles.length > 1 ? '批量创建入库任务' : '创建入库任务'}
+              {allowMultiple && selectedFiles.length > 1 ? '批量创建资料处理任务' : '创建资料处理任务'}
             </span>
           </Button>
           <Button
@@ -552,7 +552,7 @@ export function UploadPanel({
           >
             <span className="flex items-center gap-2">
               <RefreshCw className="w-4 h-4" />
-              轮询最新任务
+              刷新任务进度
             </span>
           </Button>
         </div>
@@ -565,9 +565,9 @@ export function UploadPanel({
       {/* 主结果展示 */}
       <div className="mt-4">
         <ResultBox>
-          {`文件: ${selectedFileText}
-doc_id: ${activeDocId}
-job_id: ${activeJobId}
+          {`资料文件: ${selectedFileText}
+资料编号: ${activeDocId}
+任务编号: ${activeJobId}
 当前阶段: ${stageText}
 当前进度: ${jobStatus ? `${jobStatus.progress}%` : '-'}
 错误码: ${failureCode}
@@ -586,9 +586,9 @@ ${error ? `面板错误: ${error}` : '面板错误: -'}
               <tr>
                 <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">文件</th>
                 <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">提交状态</th>
-                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">doc_id</th>
-                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">job_id</th>
-                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">入库阶段</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">资料编号</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">任务编号</th>
+                <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">处理阶段</th>
                 <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">进度</th>
                 <th className="text-left font-semibold p-2 border-b border-[rgba(23,32,42,0.12)]">错误</th>
               </tr>

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
 
@@ -67,6 +68,9 @@ def _append_record(
     duration_ms: int,
     timeout_flag: bool = False,
     downgraded_from: str | None = None,
+    rerank_strategy: str | None = None,
+    rerank_provider: str | None = None,
+    rerank_model: str | None = None,
 ) -> None:
     event_log_service.repository.append(
         EventLogRecord(
@@ -88,6 +92,9 @@ def _append_record(
             top_k=8,
             candidate_top_k=16,
             rerank_top_n=5,
+            rerank_strategy=rerank_strategy,
+            rerank_provider=rerank_provider,
+            rerank_model=rerank_model,
             duration_ms=duration_ms,
             timeout_flag=timeout_flag,
             downgraded_from=downgraded_from,
@@ -339,6 +346,9 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
         occurred_at="2026-03-27T01:00:00+00:00",
         target_id="chat_001",
         duration_ms=120,
+        rerank_strategy="provider",
+        rerank_provider="openai_compatible",
+        rerank_model="BAAI/bge-reranker-v2-m3",
     )
     _append_record(
         event_log_service,
@@ -355,6 +365,9 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
         duration_ms=240,
         timeout_flag=True,
         downgraded_from="accurate",
+        rerank_strategy="heuristic",
+        rerank_provider="heuristic",
+        rerank_model="heuristic",
     )
     _append_trace(
         request_trace_service,
@@ -416,6 +429,18 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
     assert payload["recent_window"]["timeout_count"] == 1
     assert payload["recent_window"]["downgraded_count"] == 1
     assert payload["recent_window"]["duration_p95_ms"] == 240
+    assert payload["rerank_usage"]["sample_size"] == 2
+    assert payload["rerank_usage"]["provider_count"] == 1
+    assert payload["rerank_usage"]["heuristic_count"] == 1
+    assert payload["rerank_usage"]["unknown_count"] == 0
+    assert payload["rerank_usage"]["last_provider_at"] == "2026-03-27T01:00:00Z"
+    assert payload["rerank_usage"]["last_heuristic_at"] == "2026-03-27T01:01:00Z"
+    assert payload["rerank_decision"]["decision"] == "not_applicable"
+    assert payload["rerank_decision"]["min_provider_samples"] == 5
+    assert payload["rerank_decision"]["provider_sample_count"] == 1
+    assert payload["rerank_decision"]["heuristic_sample_count"] == 1
+    assert payload["rerank_decision"]["should_promote_to_provider"] is False
+    assert payload["rerank_decision"]["should_rollback_to_heuristic"] is False
     assert payload["config"]["model_routing"]["fast_model"] == "Qwen/Test-7B"
     assert payload["recent_failures"][0]["event_id"] == "evt_chat_2"
     assert payload["recent_degraded"][0]["event_id"] == "evt_chat_2"
@@ -562,3 +587,55 @@ def test_ops_summary_rejects_employee_access(tmp_path: Path) -> None:
 
     assert response.status_code == 403
     assert response.json()["detail"] == "You do not have access to runtime operations."
+
+
+def test_build_rerank_decision_promotes_provider_after_enough_samples() -> None:
+    usage = OpsService._build_rerank_usage(
+        [
+            EventLogRecord(
+                event_id="evt_provider_1",
+                category="chat",
+                action="answer",
+                outcome="success",
+                occurred_at=datetime(2026, 3, 27, 1, 0, tzinfo=timezone.utc),
+                actor=EventLogActor(
+                    tenant_id="wl",
+                    user_id="user_sys_admin",
+                    username="sys.admin",
+                    role_id="sys_admin",
+                    department_id="dept_digitalization",
+                ),
+                target_type="document",
+                target_id="chat_001",
+                mode="fast",
+                top_k=5,
+                candidate_top_k=10,
+                rerank_top_n=3,
+                rerank_strategy="provider",
+                rerank_provider="openai_compatible",
+                rerank_model="BAAI/bge-reranker-v2-m3",
+                duration_ms=120,
+                timeout_flag=False,
+                downgraded_from=None,
+                details={},
+            )
+            for _ in range(5)
+        ]
+    )
+    health_reranker = SimpleNamespace(
+        provider="openai_compatible",
+        default_strategy="heuristic",
+        effective_strategy="heuristic",
+        ready=True,
+        lock_active=False,
+        lock_source=None,
+        detail="OpenAI-compatible reranker route is healthy.",
+    )
+
+    decision = OpsService._build_rerank_decision(health_reranker=health_reranker, usage=usage)
+
+    assert decision.decision == "promote_to_provider"
+    assert decision.should_promote_to_provider is True
+    assert decision.should_rollback_to_heuristic is False
+    assert decision.provider_sample_count == 5
+    assert decision.min_provider_samples == 5

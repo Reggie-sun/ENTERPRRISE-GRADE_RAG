@@ -35,13 +35,13 @@ export function PortalMePage() {
     <div className="grid gap-5">
       <HeroCard>
         <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-          My Portal
+          个人中心
         </div>
         <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
-          把当前账号、最近提问和最近查看资料收进一个个人入口。
+          在一个页面里查看账号信息、常用服务和最近访问记录。
         </h2>
         <p className="m-0 mt-3 max-w-[64ch] text-base leading-relaxed text-ink-soft">
-          当前已经接入登录与最小权限上下文。“我的”页面先把你的角色、数据范围和使用建议讲清楚，后续再继续扩展个人资料、收藏和推荐能力。
+          这里会集中展示你的账号角色、可访问范围和最近使用记录，方便继续问答、查资料和查看标准流程。
         </p>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3 text-sm text-ink-soft">

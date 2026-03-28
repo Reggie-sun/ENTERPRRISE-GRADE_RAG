@@ -116,6 +116,9 @@ def test_chat_ask_endpoint_writes_event_log(tmp_path: Path) -> None:
     assert records[0].action == "answer"
     assert records[0].outcome == "success"
     assert records[0].mode == "fast"
+    assert records[0].rerank_strategy == "heuristic"
+    assert records[0].rerank_provider == "heuristic"
+    assert records[0].rerank_model == "heuristic"
     assert records[0].details["response_mode"] == "rag"
     assert records[0].details["citation_count"] >= 1
 
@@ -211,3 +214,5 @@ def test_sop_generation_logs_success_and_failure(tmp_path: Path) -> None:
     assert records[0].outcome == "failed"
     assert records[1].outcome == "success"
     assert records[1].action == "generate_document"
+    assert records[1].rerank_strategy == "provider"
+    assert records[1].rerank_provider == "provider"

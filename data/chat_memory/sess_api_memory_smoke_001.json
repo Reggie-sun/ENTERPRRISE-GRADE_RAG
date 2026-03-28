@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_api_memory_smoke_001",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-28T08:44:00.646762Z",
+  "turns": [
+    {
+      "turn_id": "turn_7eaa1bf27a99",
+      "asked_at": "2026-03-28T08:43:59.115156Z",
+      "question": "悖论放松法是什么？",
+      "answer": "悖论放松法是一种通过接受紧张来达到放松状态的方法。这种方法的核心在于练习“无为”，即停止所有努力和行动，让身体得到深度休息，从而促进身体组织的自我修复和再生。悖论放松法利用了一种看似矛盾但实际上有效的策略：只有在接受紧张的同时，才能真正实现放松。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_754e0210298a",
+      "asked_at": "2026-03-28T08:44:00.646747Z",
+      "question": "那第二步呢？",
+      "answer": "那第二步是在第一步完成后，我们将专注于图像生成的部分，比如我们如何根据我们的故事来生成图像。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

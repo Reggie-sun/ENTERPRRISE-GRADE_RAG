@@ -16,14 +16,16 @@
     }
   },
   "model_routing": {
-    "fast_model": "Qwen2.5-14B-Instruct",
-    "accurate_model": "Qwen2.5-14B-Instruct",
-    "sop_generation_model": "Qwen2.5-14B-Instruct"
+    "fast_model": "Qwen2.5-14B-AWQ",
+    "accurate_model": "Qwen2.5-14B-AWQ",
+    "sop_generation_model": "Qwen2.5-14B-AWQ"
   },
   "reranker_routing": {
     "provider": "openai_compatible",
+    "default_strategy": "provider",
     "model": "BAAI/bge-reranker-v2-m3",
-    "timeout_seconds": 12.0
+    "timeout_seconds": 12.0,
+    "failure_cooldown_seconds": 15.0
   },
   "degrade_controls": {
     "rerank_fallback_enabled": true,
@@ -43,6 +45,6 @@
     "acquire_timeout_ms": 800,
     "busy_retry_after_seconds": 5
   },
-  "updated_at": "2026-03-28T06:03:03.093418Z",
+  "updated_at": "2026-03-28T08:55:38.073299Z",
   "updated_by": "user_sys_admin_demo"
 }

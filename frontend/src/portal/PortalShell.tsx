@@ -23,10 +23,10 @@ export function PortalShell() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-[760px]">
               <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-                DFMS Knowledge Portal
+                企业知识服务门户
               </div>
               <h1 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
-                面向企业用户的知识与 SOP 门户
+                伟立机器人知识与标准流程服务门户
               </h1>
               <p className="m-0 mt-3 max-w-[64ch] text-sm leading-relaxed text-ink-soft md:text-base">
                 {experience.portalHeaderNote}
@@ -88,7 +88,7 @@ export function PortalShell() {
         <Outlet />
 
         <footer className="rounded-[28px] border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.6)] px-5 py-4 text-sm leading-relaxed text-ink-soft">
-          当前门户已经支持员工端问答、SOP 生成、SOP 查看和知识资料浏览；重建向量、系统健康检查等研发能力仍保留在内部工作台。
+          门户已支持智能问答、SOP 生成与查看、知识资料浏览；资料维护、权限配置和平台状态管理请从管理中心进入。
         </footer>
       </div>
     </Layout>

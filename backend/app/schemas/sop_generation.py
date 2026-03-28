@@ -13,12 +13,12 @@ class SopGenerationCitation(BaseModel):
     document_id: str
     document_name: str
     snippet: str
-    score: float
+    score: float  # 对外相关度分数；hybrid 模式下为归一化后的融合分。
     source_path: str
     retrieval_strategy: str | None = None
     vector_score: float | None = None
     lexical_score: float | None = None
-    fused_score: float | None = None
+    fused_score: float | None = None  # 原始融合排序分数。
 
 
 class SopGenerationRequestBase(BaseModel):

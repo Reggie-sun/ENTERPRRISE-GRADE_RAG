@@ -566,20 +566,20 @@ export function SopPage() {
     <div className="grid gap-5">
       <HeroCard>
         <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-          SOP Workspace
+          SOP 管理
         </div>
         <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          这是内部高级入口，员工主流程已经切到门户直接生成 SOP。
+          这里提供更完整的 SOP 管理能力，适合维护来源资料、生成草稿和沉淀版本。
         </h2>
         <p className="m-0 mt-3 max-w-[74ch] leading-relaxed text-ink-soft">
           {experience.workspaceBoundary}
-          这里仍保留上传、按当前文件生成、下载 Markdown 草稿和系统内版本沉淀等高级能力，主要用于内部调试、补录和版本维护，不作为员工主路径。
+          这里保留上传、按当前资料生成、下载 Markdown 草稿和平台版本沉淀等能力，适合管理员做补录、校对和版本维护。
         </p>
       </HeroCard>
 
       <UploadPanel
         title="第一步：上传来源文件"
-        description="一份 SOP 对应一份来源文档。上传完成后，页面会自动锁定当前 doc_id，并用它直接生成草稿。"
+        description="一份 SOP 对应一份来源资料。上传完成后，页面会自动锁定当前资料编号，并基于这份资料直接生成草稿。"
         className="col-span-12"
         allowMultiple={false}
         showIdentityFields={false}
@@ -621,7 +621,7 @@ export function SopPage() {
                 <p className="m-0 mt-2 break-all">{currentDocumentName || '未上传来源文件'}</p>
               </div>
               <div className="rounded-2xl bg-[rgba(255,255,255,0.76)] p-4">
-                <strong className="block text-ink">当前 doc_id</strong>
+                <strong className="block text-ink">当前资料编号</strong>
                 <p className="m-0 mt-2 break-all">{currentDocId || '-'}</p>
               </div>
               <div className="rounded-2xl bg-[rgba(255,255,255,0.76)] p-4">
@@ -639,7 +639,7 @@ export function SopPage() {
               <div>
                 <h3 className="m-0 text-xl font-semibold text-ink">第二步：直接生成 SOP</h3>
                 <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-                  主流程只围绕当前文件生成。工序、场景和标题提示是辅助项，不再要求手填主题或 doc_id。
+                  主流程只围绕当前资料生成。工序、场景和标题提示是辅助项，不再要求手填主题或资料编号。
                 </p>
               </div>
               <Sparkles className="h-5 w-5 text-accent-deep" />
@@ -844,7 +844,7 @@ export function SopPage() {
               <div>
                 <h3 className="m-0 text-xl font-semibold text-ink">引用证据</h3>
                 <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-                  这里显示生成当前草稿时命中的证据块，便于确认 SOP 是否确实来自你刚上传的文档。
+                  这里显示生成当前草稿时命中的知识片段，便于确认 SOP 是否确实来自你刚上传的资料。
                 </p>
               </div>
               <div className="inline-flex items-center gap-2 text-sm text-ink-soft">
@@ -861,10 +861,10 @@ export function SopPage() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                     <strong className="text-ink">{item.document_name}</strong>
-                    <span className="text-ink-soft">score: {item.score.toFixed(4)}</span>
+                    <span className="text-ink-soft">相关度：{item.score.toFixed(4)}</span>
                   </div>
                   <p className="m-0 mt-2 text-xs text-ink-soft break-all">
-                    doc_id: {item.document_id} / chunk_id: {item.chunk_id}
+                    资料编号：{item.document_id} / 片段编号：{item.chunk_id}
                   </p>
                   <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">{item.snippet}</p>
                   <p className="m-0 mt-3 text-xs text-ink-soft break-all">{item.source_path}</p>
@@ -883,7 +883,7 @@ export function SopPage() {
 
       <details className="rounded-3xl border border-line bg-bg-soft p-6 shadow-soft">
         <summary className="cursor-pointer list-none text-lg font-semibold text-ink">
-          高级：保存到系统版本库 / 回看历史版本
+          高级：保存到平台版本库 / 查看历史版本
         </summary>
         <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
           默认主流程不依赖这部分。如果你后面想把草稿沉淀成系统内 SOP，再用这里保存和回看历史版本。

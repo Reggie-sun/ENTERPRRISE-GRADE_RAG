@@ -65,12 +65,14 @@ class QueryProfileService:
         safe_top_n = min(profile.rerank_top_n, len(candidates))
         if safe_top_n <= 0:
             return [], "skipped"
+        effective_strategy = self._resolve_effective_rerank_strategy(reranker_client)
         try:
-            return reranker_client.rerank(query=query, candidates=candidates, top_n=safe_top_n), "provider"
+            reranked = reranker_client.rerank(query=query, candidates=candidates, top_n=safe_top_n)
         except RuntimeError:
             if not self.system_config_service.get_degrade_controls().rerank_fallback_enabled:
                 raise
             return reranker_client.rerank_heuristic(query=query, candidates=candidates, top_n=safe_top_n), "heuristic"
+        return reranked, effective_strategy or "provider"
 
     @staticmethod
     def _default_mode_for_purpose(purpose: QueryPurpose) -> QueryMode:
@@ -92,6 +94,19 @@ class QueryProfileService:
 
     def _mode_timeout_budget_seconds(self, mode: QueryMode) -> float:
         return self.system_config_service.get_query_mode_settings(mode).timeout_budget_seconds
+
+    @staticmethod
+    def _resolve_effective_rerank_strategy(reranker_client: RerankerClient) -> str | None:
+        if not hasattr(reranker_client, "get_runtime_status"):
+            return None
+        try:
+            status = reranker_client.get_runtime_status()
+        except Exception:
+            return None
+        effective_strategy = str(status.get("effective_strategy") or "").strip().lower()
+        if effective_strategy in {"provider", "heuristic"}:
+            return effective_strategy
+        return None
 
 
 @lru_cache

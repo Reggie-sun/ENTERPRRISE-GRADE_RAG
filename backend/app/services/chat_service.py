@@ -14,10 +14,13 @@ from ..rag.rerankers.client import RerankerClient  # 导入 rerank 客户端。
 from ..schemas.auth import AuthContext  # 导入统一鉴权上下文，问答要与检索保持同一份权限边界。
 from ..schemas.chat import ChatRequest, ChatResponse, Citation  # 导入问答请求、响应和引用片段模型。
 from ..schemas.query_profile import QueryProfile
+from ..schemas.query_rewrite import QueryRewriteResult
 from ..schemas.request_trace import RequestTraceStage, RequestTraceStageStatus
 from ..schemas.retrieval import RetrievalRequest  # 导入检索请求模型，问答前要先做检索。
+from .chat_memory_service import ChatMemoryService, get_chat_memory_service
 from .event_log_service import EventLogService, get_event_log_service
 from .query_profile_service import QueryProfileService
+from .query_rewrite_service import QueryRewriteService, get_query_rewrite_service
 from .request_snapshot_service import RequestSnapshotService
 from .request_trace_service import RequestTraceService
 from .retrieval_service import RetrievalService  # 导入检索服务。
@@ -42,6 +45,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
         request_trace_service: RequestTraceService | None = None,
         request_snapshot_service: RequestSnapshotService | None = None,
         runtime_gate_service: RuntimeGateService | None = None,
+        chat_memory_service: ChatMemoryService | None = None,
+        query_rewrite_service: QueryRewriteService | None = None,
     ) -> None:  # 初始化问答服务。
         self.settings = settings or get_settings()  # 优先使用传入配置，否则读取全局配置。
         if query_profile_service is None:
@@ -65,6 +70,14 @@ class ChatService:  # 封装问答接口的业务逻辑。
         self.event_log_service = event_log_service or get_event_log_service()  # 统一写问答事件日志，后续查询/追溯复用这一层。
         self.request_trace_service = request_trace_service or RequestTraceService(self.settings)  # 请求级 trace 独立于审计日志持久化，给 v0.6 的阶段耗时和后续重放复用。
         self.request_snapshot_service = request_snapshot_service or RequestSnapshotService(self.settings)  # 请求快照给 v0.6 的 replay 复用，独立于日志/trace 存储。
+        self.chat_memory_service = chat_memory_service or (
+            ChatMemoryService(self.settings) if settings is not None else get_chat_memory_service()
+        )  # 轻记忆先走文件真源；当前只保留最近几轮上下文。
+        self.query_rewrite_service = query_rewrite_service or (
+            QueryRewriteService(self.settings, chat_memory_service=self.chat_memory_service)
+            if settings is not None
+            else get_query_rewrite_service()
+        )  # 短追问先走轻量规则改写，后续再替换成独立 rewrite provider。
         self.runtime_gate_service = runtime_gate_service or (
             RuntimeGateService(self.settings, system_config_service=self.system_config_service)
             if settings is not None
@@ -80,15 +93,6 @@ class ChatService:  # 封装问答接口的业务逻辑。
             requested_mode=request.mode,
             requested_top_k=request.top_k,
         )  # 先把请求展开为统一查询档位配置。
-        self._append_trace_stage(
-            trace_stages,
-            stage="query_rewrite",
-            status="skipped",
-            duration_ms=0,
-            input_size=len(request.question),
-            output_size=len(request.question),
-            details={"reason": "query rewrite is not enabled in the current V1 slice."},
-        )
         citations: list[Citation] = []
         rerank_strategy = "skipped"
         response_mode = "failed"
@@ -96,6 +100,18 @@ class ChatService:  # 封装问答接口的业务逻辑。
         error_message: str | None = None
         response_model = self._response_model_name(profile=profile)
         answer_text = ""
+        memory_summary = self._build_memory_summary(request=request, auth_context=auth_context)
+        rewrite_result = self._rewrite_question(request=request, auth_context=auth_context)
+        effective_question = rewrite_result.rewritten_question or request.question
+        self._append_trace_stage(
+            trace_stages,
+            stage="query_rewrite",
+            status="success" if rewrite_result.status == "applied" else rewrite_result.status,
+            duration_ms=0,
+            input_size=len(request.question),
+            output_size=len(effective_question),
+            details=rewrite_result.details,
+        )
         runtime_details: dict[str, object] = {}
         runtime_lease: RuntimeGateLease | None = None
         try:
@@ -107,6 +123,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
             citation_result = self._build_citations(
                 request,
                 profile,
+                query_text=effective_question,
                 auth_context=auth_context,
                 trace_stages=trace_stages,
             )  # 先统一构造引用列表。
@@ -145,6 +162,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     rerank_strategy=rerank_strategy,
                     duration_ms=self._elapsed_ms(started_at),
                     details=runtime_details,
+                    memory_summary=memory_summary,
+                    rewrite_result=rewrite_result,
                     trace_id=trace_id,
                     request_id=request_id,
                 )
@@ -154,8 +173,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
             try:  # 优先调用 LLM 生成最终回答。
                 llm_started_at = perf_counter()
                 answer = self.generation_client.generate(  # 执行回答生成。
-                    question=request.question,  # 传入用户问题。
+                    question=effective_question,  # 追问型问题先按最近一轮主题改写，再进入生成链路。
                     contexts=contexts,  # 传入检索证据上下文。
+                    memory_text=memory_summary,  # 最近几轮上下文只做轻量承接，不替代检索证据。
                     timeout_seconds=profile.timeout_budget_seconds,  # 问答超时预算统一来自查询档位配置。
                     model_name=response_model,
                 )
@@ -188,7 +208,12 @@ class ChatService:  # 封装问答接口的业务逻辑。
                         "model": response_model,
                     },
                 )
-                degraded_result = self._build_degraded_citations(request, profile, auth_context=auth_context)
+                degraded_result = self._build_degraded_citations(
+                    request,
+                    profile,
+                    query_text=effective_question,
+                    auth_context=auth_context,
+                )
                 if degraded_result is not None and degraded_result.citations:
                     citations = degraded_result.citations
                     rerank_strategy = degraded_result.rerank_strategy
@@ -228,6 +253,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
                 details=runtime_details,
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
                 trace_id=trace_id,
                 request_id=request_id,
             )
@@ -263,6 +290,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=error_message,
                 details=runtime_details,
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
                 trace_id=trace_id,
                 request_id=request_id,
             )
@@ -291,6 +320,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=error_message,
                 details=runtime_details,
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
                 trace_id=trace_id,
                 request_id=request_id,
             )
@@ -315,6 +346,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 error_message=error_message,
                 model=response_model,
                 details=runtime_details,
+                rewrite_result=rewrite_result,
             )
             self._record_chat_snapshot(
                 action="answer",
@@ -332,6 +364,16 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 downgraded_from=downgraded_from,
                 error_message=error_message,
                 details=runtime_details,
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
+            )
+            self._record_memory_turn(
+                request=request,
+                auth_context=auth_context,
+                answer_text=answer_text,
+                response_mode=response_mode,
+                citation_count=len(citations),
+                error_message=error_message,
             )
 
     def stream_answer_sse(self, request: ChatRequest, *, auth_context: AuthContext | None = None) -> Iterator[str]:  # 以 SSE 方式流式返回回答内容。
@@ -343,15 +385,6 @@ class ChatService:  # 封装问答接口的业务逻辑。
             requested_mode=request.mode,
             requested_top_k=request.top_k,
         )  # 先把请求展开为统一查询档位配置。
-        self._append_trace_stage(
-            trace_stages,
-            stage="query_rewrite",
-            status="skipped",
-            duration_ms=0,
-            input_size=len(request.question),
-            output_size=len(request.question),
-            details={"reason": "query rewrite is not enabled in the current V1 slice."},
-        )
         citations: list[Citation] = []
         rerank_strategy = "skipped"
         response_mode = "failed"
@@ -359,6 +392,18 @@ class ChatService:  # 封装问答接口的业务逻辑。
         error_message: str | None = None
         model = self._response_model_name(profile=profile)  # 提前计算响应模型名，给 meta 事件复用。
         answer_text = ""
+        memory_summary = self._build_memory_summary(request=request, auth_context=auth_context)
+        rewrite_result = self._rewrite_question(request=request, auth_context=auth_context)
+        effective_question = rewrite_result.rewritten_question or request.question
+        self._append_trace_stage(
+            trace_stages,
+            stage="query_rewrite",
+            status="success" if rewrite_result.status == "applied" else rewrite_result.status,
+            duration_ms=0,
+            input_size=len(request.question),
+            output_size=len(effective_question),
+            details=rewrite_result.details,
+        )
         runtime_details: dict[str, object] = {}
         runtime_lease: RuntimeGateLease | None = None
 
@@ -371,6 +416,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
             citation_result = self._build_citations(
                 request,
                 profile,
+                query_text=effective_question,
                 auth_context=auth_context,
                 trace_stages=trace_stages,
             )  # 先统一构造引用列表。
@@ -418,8 +464,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
             llm_started_at = perf_counter()
             try:  # 尝试真实流式生成。
                 for delta in self.generation_client.generate_stream(
-                    question=request.question,
+                    question=effective_question,
                     contexts=contexts,
+                    memory_text=memory_summary,
                     timeout_seconds=profile.timeout_budget_seconds,
                     model_name=model,
                 ):
@@ -462,7 +509,12 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     },
                 )
                 mode = "retrieval_fallback"
-                degraded_result = self._build_degraded_citations(request, profile, auth_context=auth_context)
+                degraded_result = self._build_degraded_citations(
+                    request,
+                    profile,
+                    query_text=effective_question,
+                    auth_context=auth_context,
+                )
                 if degraded_result is not None and degraded_result.citations:
                     citations = degraded_result.citations
                     rerank_strategy = degraded_result.rerank_strategy
@@ -601,6 +653,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 downgraded_from=downgraded_from,
                 error_message=error_message,
                 details={"streaming": True, **runtime_details},
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
                 trace_id=trace_id,
                 request_id=request_id,
             )
@@ -621,6 +675,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 error_message=error_message,
                 model=model,
                 details={"streaming": True, **runtime_details},
+                rewrite_result=rewrite_result,
             )
             self._record_chat_snapshot(
                 action="stream_answer",
@@ -638,6 +693,16 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 downgraded_from=downgraded_from,
                 error_message=error_message,
                 details={"streaming": True, **runtime_details},
+                memory_summary=memory_summary,
+                rewrite_result=rewrite_result,
+            )
+            self._record_memory_turn(
+                request=request,
+                auth_context=auth_context,
+                answer_text=answer_text,
+                response_mode=response_mode,
+                citation_count=len(citations),
+                error_message=error_message,
             )
 
     def _build_citations(
@@ -645,6 +710,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         request: ChatRequest,
         profile: QueryProfile,
         *,
+        query_text: str,
         auth_context: AuthContext | None = None,
         trace_stages: list[RequestTraceStage] | None = None,
     ) -> CitationBuildResult:  # 统一执行检索+重排并产出引用列表。
@@ -652,7 +718,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         try:
             retrieval_result = self.retrieval_service.search(  # 先调用检索服务拿候选片段。
                 RetrievalRequest(  # 把问答请求转换成检索请求。
-                    query=request.question,
+                    query=query_text,
                     top_k=profile.top_k,
                     mode=profile.mode,
                     candidate_top_k=profile.candidate_top_k,
@@ -667,10 +733,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     stage="retrieval",
                     status="failed",
                     duration_ms=self._elapsed_ms(retrieval_started_at),
-                    input_size=len(request.question),
+                    input_size=len(query_text),
                     output_size=0,
                     cache_hit=False,
-                    details={"document_id": request.document_id, "error_message": str(exc)},
+                    details={"document_id": request.document_id, "error_message": str(exc), "query_length": len(query_text)},
                 )
             raise
         if trace_stages is not None:
@@ -679,16 +745,16 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 stage="retrieval",
                 status="success",
                 duration_ms=self._elapsed_ms(retrieval_started_at),
-                input_size=len(request.question),
+                input_size=len(query_text),
                 output_size=len(retrieval_result.results),
                 cache_hit=False,
-                details={"document_id": request.document_id},
+                details={"document_id": request.document_id, "query_length": len(query_text)},
             )
 
         rerank_started_at = perf_counter()
         try:
             reranked_results, rerank_strategy = self.query_profile_service.rerank_with_fallback(
-                query=request.question,
+                query=query_text,
                 candidates=retrieval_result.results,
                 profile=profile,
                 reranker_client=self.reranker_client,
@@ -744,12 +810,13 @@ class ChatService:  # 封装问答接口的业务逻辑。
         request: ChatRequest,
         profile: QueryProfile,
         *,
+        query_text: str,
         auth_context: AuthContext | None = None,
     ) -> CitationBuildResult | None:
         fallback_profile = self.query_profile_service.build_fallback_profile(profile)
         if fallback_profile is None:
             return None
-        return self._build_citations(request, fallback_profile, auth_context=auth_context)
+        return self._build_citations(request, fallback_profile, query_text=query_text, auth_context=auth_context)
 
     def _acquire_chat_runtime_slot(
         self,
@@ -835,16 +902,32 @@ class ChatService:  # 封装问答接口的业务逻辑。
         downgraded_from: str | None = None,
         error_message: str | None = None,
         details: dict[str, object] | None = None,
+        memory_summary: str | None = None,
+        rewrite_result: QueryRewriteResult | None = None,
         trace_id: str | None = None,
         request_id: str | None = None,
     ) -> None:
+        rerank_log_fields = self._build_rerank_log_fields(rerank_strategy)
         payload = {
             "question_length": len(request.question),
             "document_id": request.document_id,
             "response_mode": response_mode,
             "citation_count": citation_count,
             "rerank_strategy": rerank_strategy,
+            "rerank_provider": rerank_log_fields["rerank_provider"],
+            "rerank_model": rerank_log_fields["rerank_model"],
+            "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+            "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
+            "memory_turns_used": self._memory_turn_count(memory_summary),
         }
+        if memory_summary:
+            payload["memory_summary"] = memory_summary
+        if rewrite_result is not None:
+            payload["rewrite_status"] = rewrite_result.status
+            if rewrite_result.rewritten_question:
+                payload["rewritten_question"] = rewrite_result.rewritten_question
+            if rewrite_result.details:
+                payload["rewrite_details"] = rewrite_result.details
         if trace_id:
             payload["trace_id"] = trace_id
         if request_id:
@@ -864,6 +947,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
             top_k=profile.top_k,
             candidate_top_k=profile.candidate_top_k,
             rerank_top_n=profile.rerank_top_n,
+            rerank_strategy=rerank_log_fields["rerank_strategy"],
+            rerank_provider=rerank_log_fields["rerank_provider"],
+            rerank_model=rerank_log_fields["rerank_model"],
             duration_ms=duration_ms,
             downgraded_from=downgraded_from,
             details=payload,
@@ -888,6 +974,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         downgraded_from: str | None = None,
         error_message: str | None = None,
         details: dict[str, object] | None = None,
+        rewrite_result: QueryRewriteResult | None = None,
     ) -> None:
         payload = {
             "question_length": len(request.question),
@@ -895,6 +982,12 @@ class ChatService:  # 封装问答接口的业务逻辑。
             "rerank_strategy": rerank_strategy,
             "model": model,
         }
+        if rewrite_result is not None:
+            payload["rewrite_status"] = rewrite_result.status
+            if rewrite_result.rewritten_question:
+                payload["rewritten_question"] = rewrite_result.rewritten_question
+            if rewrite_result.details:
+                payload["rewrite_details"] = rewrite_result.details
         if details:
             payload.update(details)
         self.request_trace_service.record(
@@ -937,6 +1030,8 @@ class ChatService:  # 封装问答接口的业务逻辑。
         downgraded_from: str | None = None,
         error_message: str | None = None,
         details: dict[str, object] | None = None,
+        memory_summary: str | None = None,
+        rewrite_result: QueryRewriteResult | None = None,
     ) -> None:
         self.request_snapshot_service.record_chat_snapshot(
             trace_id=trace_id,
@@ -954,6 +1049,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
             downgraded_from=downgraded_from,
             error_message=error_message,
             details=details,
+            memory_summary=memory_summary,
+            rewrite_status=(rewrite_result.status if rewrite_result is not None else "skipped"),
+            rewritten_question=(rewrite_result.rewritten_question if rewrite_result is not None else None),
         )
 
     @staticmethod
@@ -971,6 +1069,45 @@ class ChatService:  # 封装问答接口的业务逻辑。
         if rerank_strategy == "heuristic":
             return "degraded"
         return "skipped"
+
+    def _build_rerank_log_fields(self, rerank_strategy: str) -> dict[str, str | None]:
+        normalized = rerank_strategy.strip().lower()
+        if not normalized or normalized == "skipped":
+            return {
+                "rerank_strategy": normalized or None,
+                "rerank_provider": None,
+                "rerank_model": None,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": None,
+            }
+        if normalized in {"document_preview", "fallback_profile"}:
+            return {
+                "rerank_strategy": normalized,
+                "rerank_provider": None,
+                "rerank_model": None,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": None,
+            }
+        if not hasattr(self.reranker_client, "get_runtime_status"):
+            fallback_provider = "heuristic" if normalized == "heuristic" else "provider"
+            fallback_model = "heuristic" if normalized == "heuristic" else None
+            return {
+                "rerank_strategy": normalized,
+                "rerank_provider": fallback_provider,
+                "rerank_model": fallback_model,
+                "rerank_default_strategy": None,
+                "rerank_effective_strategy": normalized,
+            }
+        status = self.reranker_client.get_runtime_status()
+        rerank_provider = "heuristic" if normalized == "heuristic" else str(status["effective_provider"])
+        rerank_model = "heuristic" if normalized == "heuristic" else str(status["effective_model"])
+        return {
+            "rerank_strategy": normalized,
+            "rerank_provider": rerank_provider,
+            "rerank_model": rerank_model,
+            "rerank_default_strategy": str(status["default_strategy"]),
+            "rerank_effective_strategy": str(status["effective_strategy"]),
+        }
 
     @staticmethod
     def _has_answer_stage(stages: list[RequestTraceStage]) -> bool:
@@ -1051,6 +1188,61 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 snippet = f"{snippet[:177]}..."
             lines.append(f"{index}. {snippet}")  # 追加编号片段摘要。
         return "\n".join(lines)  # 返回多行文本结果。
+
+    def _build_memory_summary(
+        self,
+        *,
+        request: ChatRequest,
+        auth_context: AuthContext | None,
+    ) -> str | None:
+        return self.chat_memory_service.build_memory_summary(
+            session_id=request.session_id,
+            auth_context=auth_context,
+            document_id=request.document_id,
+        )
+
+    def _rewrite_question(
+        self,
+        *,
+        request: ChatRequest,
+        auth_context: AuthContext | None,
+    ) -> QueryRewriteResult:
+        return self.query_rewrite_service.rewrite_chat_question(
+            question=request.question,
+            session_id=request.session_id,
+            auth_context=auth_context,
+            document_id=request.document_id,
+        )
+
+    def _record_memory_turn(
+        self,
+        *,
+        request: ChatRequest,
+        auth_context: AuthContext | None,
+        answer_text: str,
+        response_mode: str,
+        citation_count: int,
+        error_message: str | None,
+    ) -> None:
+        if error_message:
+            return
+        if response_mode == "no_context":
+            return
+        self.chat_memory_service.record_turn(
+            session_id=request.session_id,
+            auth_context=auth_context,
+            document_id=request.document_id,
+            question=request.question,
+            answer=answer_text,
+            response_mode=response_mode,
+            citation_count=citation_count,
+        )
+
+    @staticmethod
+    def _memory_turn_count(memory_summary: str | None) -> int:
+        if not memory_summary:
+            return 0
+        return memory_summary.count("[Recent Turn ")
 
     @staticmethod
     def _to_sse(event: str, payload: dict[str, object]) -> str:  # 把事件和数据编码成标准 SSE 格式。

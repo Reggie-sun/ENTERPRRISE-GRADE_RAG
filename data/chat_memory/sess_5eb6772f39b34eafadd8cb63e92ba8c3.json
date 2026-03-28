@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_5eb6772f39b34eafadd8cb63e92ba8c3",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-28T08:58:41.189228Z",
+  "turns": [
+    {
+      "turn_id": "turn_da50caa334a5",
+      "asked_at": "2026-03-28T08:58:25.312675Z",
+      "question": "总结这份已上传文档里最相关的内容。",
+      "answer": "总结如下：\n\n该文档主要针对操作员、维修人员和现场服务人员，旨在帮助他们理解和处理PLC/PMC报警。文档提供了处理报警的基本方法和原则，包括如何查看报警码、如何根据报警码查找对应的处理步骤以及如何确保报警真正解除后再进行复位和试运行等。此外，文档强调了处理报警时的安全性和正确性，避免盲目复位导致潜在风险。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_7043d4a65f45",
+      "asked_at": "2026-03-28T08:58:41.189180Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS是慢性盆腔疼痛综合征(Chronic Prostatitis/Pelvic Pain Syndrome)的英文缩写。它指的是男性出现的一种持续性的盆腔区域疼痛症状，这种疼痛可能涉及多个部位，如生殖器官、排泄器官等，并且其成因复杂，不一定直接关联于前列腺的问题。书中指出，传统上医生倾向于将盆腔疼痛归因于具体的器官问题，但作者认为疼痛的原因可能更多地与支撑这些器官的结构（如韧带、肌肉、血管及其相关神经）有关。此外，书中还提到CPPS和其他一些病症可能具有共同的病因，因此可能存在通用的有效治疗方法。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

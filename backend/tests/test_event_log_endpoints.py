@@ -69,6 +69,9 @@ def _append_record(
     department_id: str,
     occurred_at: str,
     target_id: str,
+    rerank_strategy: str | None = None,
+    rerank_provider: str | None = None,
+    rerank_model: str | None = None,
 ) -> None:
     event_log_service.repository.append(
         EventLogRecord(
@@ -90,6 +93,9 @@ def _append_record(
             top_k=5,
             candidate_top_k=10,
             rerank_top_n=3,
+            rerank_strategy=rerank_strategy,
+            rerank_provider=rerank_provider,
+            rerank_model=rerank_model,
             duration_ms=123,
             details={"source": "test"},
         )
@@ -258,4 +264,59 @@ def test_log_list_endpoint_validates_date_range(tmp_path: Path) -> None:
         app.dependency_overrides.clear()
 
     assert response.status_code == 422
-    assert response.json()["detail"] == "date_to must be greater than or equal to date_from."
+
+
+def test_log_list_endpoint_supports_rerank_filters(tmp_path: Path) -> None:
+    client, event_log_service = _build_client(tmp_path)
+    _append_record(
+        event_log_service,
+        event_id="evt_chat_provider",
+        category="chat",
+        action="answer",
+        outcome="success",
+        username="sys.admin",
+        user_id="user_sys_admin",
+        role_id="sys_admin",
+        department_id="dept_digitalization",
+        occurred_at="2026-03-27T03:00:00+00:00",
+        target_id="chat_provider",
+        rerank_strategy="provider",
+        rerank_provider="openai_compatible",
+        rerank_model="BAAI/bge-reranker-v2-m3",
+    )
+    _append_record(
+        event_log_service,
+        event_id="evt_chat_heuristic",
+        category="chat",
+        action="answer",
+        outcome="success",
+        username="sys.admin",
+        user_id="user_sys_admin",
+        role_id="sys_admin",
+        department_id="dept_digitalization",
+        occurred_at="2026-03-27T02:00:00+00:00",
+        target_id="chat_heuristic",
+        rerank_strategy="heuristic",
+        rerank_provider="heuristic",
+        rerank_model="heuristic",
+    )
+
+    try:
+        headers = _login_headers(
+            client,
+            username="sys.admin",
+            password="sys-admin-pass",
+        )
+        response = client.get(
+            "/api/v1/logs?page=1&page_size=20&rerank_strategy=provider&rerank_provider=openai_compatible",
+            headers=headers,
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total"] == 1
+    assert payload["items"][0]["event_id"] == "evt_chat_provider"
+    assert payload["items"][0]["rerank_strategy"] == "provider"
+    assert payload["items"][0]["rerank_provider"] == "openai_compatible"

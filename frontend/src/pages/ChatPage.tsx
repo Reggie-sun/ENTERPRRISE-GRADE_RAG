@@ -18,14 +18,14 @@ export function ChatPage() {
     <div className="grid gap-5">
       <HeroCard>
         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-[rgba(182,70,47,0.09)] text-accent-deep text-sm font-bold uppercase tracking-wider">
-          Chat
+          智能问答
         </div>
         <h2 className="m-0 font-serif text-3xl md:text-4xl leading-tight tracking-tight text-ink">
-          问答页保留流式输出，用来验证当前权限范围内的回答和引用。
+          问答页提供流式回答，用于查看当前权限范围内的回答内容与引用依据。
         </h2>
         <p className="m-0 mt-3 max-w-[62ch] leading-relaxed text-ink-soft">
           {experience.workspaceBoundary}
-          问答链路保持流式输出，但不应该再跨部门返回你无权看到的内容。
+          问答过程会持续输出内容，但不会返回你无权查看的跨部门资料。
         </p>
       </HeroCard>
 
@@ -44,14 +44,14 @@ export function ChatPage() {
           </div>
           <div className="mt-4 grid gap-3 text-sm text-ink-soft">
             <p className="m-0 leading-relaxed">
-              当前实现会先收到 stream meta，再持续拼接 delta，所以页面展示的是逐步生成的真实回答，不是等全量结果回来后一次性填充。
+              页面会逐步显示实时生成的回答，方便直接查看内容变化与引用来源。
             </p>
             <p className="m-0 leading-relaxed">{scopeSummary}</p>
             <p className="m-0 break-all">
-              当前文档：{currentDocumentName || '全库模式'}
+              当前资料：{currentDocumentName || '全库模式'}
             </p>
             <p className="m-0 break-all">
-              {currentDocId ? `doc_id: ${currentDocId}` : 'doc_id: -'}
+              {currentDocId ? `资料编号：${currentDocId}` : '资料编号：-'}
             </p>
           </div>
         </Card>

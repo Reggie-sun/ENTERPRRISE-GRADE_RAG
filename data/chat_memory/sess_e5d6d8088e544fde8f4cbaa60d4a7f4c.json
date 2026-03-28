@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_e5d6d8088e544fde8f4cbaa60d4a7f4c",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-28T08:46:21.847877Z",
+  "turns": [
+    {
+      "turn_id": "turn_8e8f6b894ee6",
+      "asked_at": "2026-03-28T08:46:08.005876Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域的长期疼痛或不适。这种疼痛可能涉及多个部位，如直肠、生殖器或腹部，并且可能在坐下、性行为时或之后加剧。症状还包括尿频、尿急等。由于其复杂性和多变性，CPPS的成因至今仍有许多未解之谜，但普遍认为它不仅仅是由某个特定器官的问题引起的，而是涉及到盆腔内的多种因素，包括肌肉、神经和结缔组织等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_33fa968d25bd",
+      "asked_at": "2026-03-28T08:46:21.847867Z",
+      "question": "更详细一点",
+      "answer": "根据提供的上下文，悖论放松法的技巧在新版书籍中有更详细的解释。如果您想了解更多细节，建议参考该书籍中的相关章节。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

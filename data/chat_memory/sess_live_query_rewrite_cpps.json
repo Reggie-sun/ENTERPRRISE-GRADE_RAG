@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_live_query_rewrite_cpps",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-28T09:01:14.764687Z",
+  "turns": [
+    {
+      "turn_id": "turn_047ef0928e8c",
+      "asked_at": "2026-03-28T09:01:10.808884Z",
+      "question": "解释一下CPPS",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome），即慢性盆腔疼痛综合征，指的是发生在盆腔区域的一种长期疼痛状态。根据提供的上下文，CPPS并非单纯由某个特定器官引起，而是涉及多个解剖区域，包括但不限于生殖器官、排泄器官及其周围的肌肉、神经等结构。书中提出的观点认为，这些症状与头痛有相似之处，只是疼痛的位置在盆腔区域。此外，CPPS的成因复杂，并非单一因素所致，因此其治疗也需要综合考虑生理和心理因素，包括泌尿科医师的专业评估、心理学家的认知行为训练以及物理治疗师的激痛点治疗等多方面协作。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_6cbc7be7458c",
+      "asked_at": "2026-03-28T09:01:14.764652Z",
+      "question": "更详细一点",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome），即慢性盆腔疼痛综合征，是一种长期存在于盆腔区域的疼痛状态。这种疼痛并不局限于某一特定器官，而是涉及到多个解剖区域，包括生殖器官、排泄器官及其周围的肌肉、神经等结构。研究表明，CPPS的疼痛可能并不会局限在其来源器官，而可能在身体其他部位感受到，这一现象称为“引传”。\n\nCPPS的成因复杂，通常涉及生理和心理因素。治疗CPPS需要多学科的合作，包括泌尿科医师对相关症状和体征的评估，心理学家提供心理咨询和认知行为训练，以及物理治疗师对激痛点的治疗。此外，患者可能需要使用专门的工具（如治疗棒）来进行自我治疗。\n\n书中提出的观点认为，CPPS的症状与头痛有相似之处，只是疼痛的位置在盆腔区域。这意味着对于CPPS的理解和治疗，可以借鉴头痛的研究成果。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "snapshot_id": "rsp_ea4d97a2254b4638",
+  "trace_id": "trc_6222a87119b64231",
+  "request_id": "req_5c59d9f768d040bc",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-28T08:06:47.764198Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下悖论放松法",
+    "top_k": null,
+    "mode": "fast",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下悖论放松法",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-193",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？\n悖论是指 一种看起来自相矛盾 ， 但实际仍然是对的 命题。 悖论的例子\n在哲学著作中往往能够找到。 例如戒酒 的前提是， 你必须承认你在酒精面\n前的无能为力 ， 然后才能 对自己的酒瘾加以控制 。＜ ＜ 奇迹课程）〉 中提到\n“\n有\n舍才有 得\n“\n， 意思是如果你要有所得 ， 必先 舍弃自己现有的一切。 著名禅\n师铃木 曾经写道，\n“\n如果你想 一 匹马要靠近 你， 那就给它 一个大牧场 。”\n悖论放松法中的哱论是 ：要 接受 紧张才能放松。 雅各布森 的理解 很正\n确 ， 放松就是要放弃努力。 放弃努力意 味着不\n“\n做\n“\n任何事情。 一般\n“\n做\n“\n事情都会牵涉到一定的肌肉紧张。 “做事情\n”\n包括我们生活中从骑自行车到\n切胡萝 卜的 一 切行动。 “做事情\n”\n也可能会跟生存有关 ， 比如绷紧肌 肉准 备\n承受 击打 ， 全身肌肉收紧准备逃 跑或者进攻。\n“\n做事情\n”\n跟肌肉紧张紧密联\n系 ， 甚至在你躺下的时候也是 如此。 这个时候你\n“\n做的事情\n”\n可以被叫做\n“微努力\n”\n。从 这些微努力中放松下来就是悖论放松法的核心。 在下一章我\n们会对此做详细的介绍。\n悖论放松法的主要观点是 ：接 受紧张才能放松\n\n13 4 盆腔之痛\n如果我们告诉你要放松 ， 你的头脑可能会把该指 令解释为被要求\n“\n做\n“\n某事或做一 些努力， 而事实上放松意 味着要停止努力。 放松是指无为。 这\n种不做任何事情的\n“\n无为\n“\n是多 么 奇特的想法啊。\n悖论放松法就是练习\n“\n无为\n＂\n盆腔底放松是一种存在状态。 它不包含任何行动或意 志。",
+      "score": 0.032266458495966696,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.74162126,
+      "lexical_score": 17.912695647293475,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-192",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "最后， 因为雅各布森 非常担心他的 方法会被当 作是某种瑜伽、 冥想或\n唯灵论 的分支， 所 以他所使用的语言往往比较机械化也比较 准确， 与他同\n时代的科学家所用的 客观措 词方式一致。 这种措词方式有时候对他的读者\n来说不是很有帮助， 比较生僻也难以理解 。\n练习 悖论放松法就是练 习摆脱自 己强迫性思维的控制\n在雅各布森 时代， 科学是最流行的宗教信仰。 任何方法如果带有精神\n或神 秘的痕迹都 会引 起当 时的智者们的怀疑。 雅各布森 避免 了自己的方法\n与所谓 的灵性练习之间的任何联系。 渐进式放松法也确实是历史 上最好的\n智慧修习方 法 之一。\n在雅各布森 的时代 ， 人们很难理解 针炎、 气功、瑜伽和冥想的治愈功能。\n这跟现在的情形有很大不同， 现在这些方法以及与它们类似的方法甚至在\n科学文献当 中都有所记载。\n\n怀斯安德森治疗法概述 ： 悖论放松法与肌筋膜激痛点治疗 133\n我们对渐进式放 松法做了适当 的修改 ， 让它更适应现代人的需求。 我\n们使用了不同 的言词来表达它的见解 以及方法 ， 以帮助患者放松盆腔肌肉。\n更重要的是， 我们对这种方法做了特别的修改 ， 以帮助处于疼痛当 中的病\n人放松。 我们把这种经过修改 后的渐进 式放松法称为悖论 放松法。就像\n现代汽车是由 福特 T 型车演化而来 一样 ， 我们的悖论放松法也是在渐进\n式放松法的基础上发展而来。\n悖论放松法练 习中 采用 医学监测\n偶尔会有病人有医学监测的需要。 如果患者有高血压、 哮喘 或癫痛的\n情况， 需要在开始练 习悖论放 松法之前告知教导的医生 ， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？",
+      "score": 0.03036576949620428,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.7128078,
+      "lexical_score": 15.082404572935625,
+      "fused_score": 0.03036576949620428
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325071124_ddfe2855-chunk-2",
+      "document_id": "doc_20260325071124_ddfe2855",
+      "document_name": "zoom14.txt",
+      "snippet": "did you, what did you get from these plots? Can you explain them to me a little bit, or you can type it if you want to?\n你觉得这个怎么样，做了这个，你做了什么，你从这些情节中得到了什么？你能给我解释一下吗，或者如果你想的话可以打出来？\nOkay.\n好的。\nAll right.\n好吧。\nFunctional gene sets.\n功能基因集。\nExhaustion looks good digit proliferation check the genes exist in the data\n疲劳看起来不错，数字增殖检查一下数据中是否存在基因\nCalculate to the function status score.\n计算函数状态分数。\nUm.\n嗯。\nYeah.\n是的。\nOkay, so if activation score is high in the early stage and exhaustion score rises in the later stage, this indicates a c four t cells gradually enter functional exhaustion after activation.\n好的，所以如果激活分数在早期很高，而在后期疲劳分数上升，这表明激活后细胞逐渐进入功能性疲劳。\nWith the proliferation score increases in the middle range, it indicates that there is a cell proliferation stage in the middle.\n增殖分数在中间区域增加，表明中间有一个细胞增殖阶段。\nYeah,",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325071124_ddfe2855__zoom14.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 19.57465546114457,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-193",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？\n悖论是指 一种看起来自相矛盾 ， 但实际仍然是对的 命题。 悖论的例子\n在哲学著作中往往能够找到。 例如戒酒 的前提是， 你必须承认你在酒精面\n前的无能为力 ， 然后才能 对自己的酒瘾加以控制 。＜ ＜ 奇迹课程）〉 中提到\n“\n有\n舍才有 得\n“\n， 意思是如果你要有所得 ， 必先 舍弃自己现有的一切。 著名禅\n师铃木 曾经写道，\n“\n如果你想 一 匹马要靠近 你， 那就给它 一个大牧场 。”\n悖论放松法中的哱论是 ：要 接受 紧张才能放松。 雅各布森 的理解 很正\n确 ， 放松就是要放弃努力。 放弃努力意 味着不\n“\n做\n“\n任何事情。 一般\n“\n做\n“\n事情都会牵涉到一定的肌肉紧张。 “做事情\n”\n包括我们生活中从骑自行车到\n切胡萝 卜的 一 切行动。 “做事情\n”\n也可能会跟生存有关 ， 比如绷紧肌 肉准 备\n承受 击打 ， 全身肌肉收紧准备逃 跑或者进攻。\n“\n做事情\n”\n跟肌肉紧张紧密联\n系 ， 甚至在你躺下的时候也是 如此。 这个时候你\n“\n做的事情\n”\n可以被叫做\n“微努力\n”\n。从 这些微努力中放松下来就是悖论放松法的核心。 在下一章我\n们会对此做详细的介绍。\n悖论放松法的主要观点是 ：接 受紧张才能放松\n\n13 4 盆腔之痛\n如果我们告诉你要放松 ， 你的头脑可能会把该指 令解释为被要求\n“\n做\n“\n某事或做一 些努力， 而事实上放松意 味着要停止努力。 放松是指无为。 这\n种不做任何事情的\n“\n无为\n“\n是多 么 奇特的想法啊。\n悖论放松法就是练习\n“\n无为\n＂\n盆腔底放松是一种存在状态。 它不包含任何行动或意 志。",
+      "score": 0.032266458495966696,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.74162126,
+      "lexical_score": 17.912695647293475,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-192",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "最后， 因为雅各布森 非常担心他的 方法会被当 作是某种瑜伽、 冥想或\n唯灵论 的分支， 所 以他所使用的语言往往比较机械化也比较 准确， 与他同\n时代的科学家所用的 客观措 词方式一致。 这种措词方式有时候对他的读者\n来说不是很有帮助， 比较生僻也难以理解 。\n练习 悖论放松法就是练 习摆脱自 己强迫性思维的控制\n在雅各布森 时代， 科学是最流行的宗教信仰。 任何方法如果带有精神\n或神 秘的痕迹都 会引 起当 时的智者们的怀疑。 雅各布森 避免 了自己的方法\n与所谓 的灵性练习之间的任何联系。 渐进式放松法也确实是历史 上最好的\n智慧修习方 法 之一。\n在雅各布森 的时代 ， 人们很难理解 针炎、 气功、瑜伽和冥想的治愈功能。\n这跟现在的情形有很大不同， 现在这些方法以及与它们类似的方法甚至在\n科学文献当 中都有所记载。\n\n怀斯安德森治疗法概述 ： 悖论放松法与肌筋膜激痛点治疗 133\n我们对渐进式放 松法做了适当 的修改 ， 让它更适应现代人的需求。 我\n们使用了不同 的言词来表达它的见解 以及方法 ， 以帮助患者放松盆腔肌肉。\n更重要的是， 我们对这种方法做了特别的修改 ， 以帮助处于疼痛当 中的病\n人放松。 我们把这种经过修改 后的渐进 式放松法称为悖论 放松法。就像\n现代汽车是由 福特 T 型车演化而来 一样 ， 我们的悖论放松法也是在渐进\n式放松法的基础上发展而来。\n悖论放松法练 习中 采用 医学监测\n偶尔会有病人有医学监测的需要。 如果患者有高血压、 哮喘 或癫痛的\n情况， 需要在开始练 习悖论放 松法之前告知教导的医生 ， 因为在你更放松\n的时候 ， 你所服用的药物也许需要有所调整。 比如 ， 高血压患者在进入越\n来越深的放松当 中时 ， 之前服用的 抗压药剂量有可能对他或 她这种深入的\n放松状态来说会过重 ， 需要有所减轻。\n悖论放松法的悖论是什么？",
+      "score": 0.03036576949620428,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.7128078,
+      "lexical_score": 15.082404572935625,
+      "fused_score": 0.03036576949620428
+    },
+    {
+      "chunk_id": "doc_20260325071124_ddfe2855-chunk-2",
+      "document_id": "doc_20260325071124_ddfe2855",
+      "document_name": "zoom14.txt",
+      "snippet": "did you, what did you get from these plots? Can you explain them to me a little bit, or you can type it if you want to?\n你觉得这个怎么样，做了这个，你做了什么，你从这些情节中得到了什么？你能给我解释一下吗，或者如果你想的话可以打出来？\nOkay.\n好的。\nAll right.\n好吧。\nFunctional gene sets.\n功能基因集。\nExhaustion looks good digit proliferation check the genes exist in the data\n疲劳看起来不错，数字增殖检查一下数据中是否存在基因\nCalculate to the function status score.\n计算函数状态分数。\nUm.\n嗯。\nYeah.\n是的。\nOkay, so if activation score is high in the early stage and exhaustion score rises in the later stage, this indicates a c four t cells gradually enter functional exhaustion after activation.\n好的，所以如果激活分数在早期很高，而在后期疲劳分数上升，这表明激活后细胞逐渐进入功能性疲劳。\nWith the proliferation score increases in the middle range, it indicates that there is a cell proliferation stage in the middle.\n增殖分数在中间区域增加，表明中间有一个细胞增殖阶段。\nYeah,",
+      "score": 0.01639344262295082,
+      "source_path": "/app/data/uploads/doc_20260325071124_ddfe2855__zoom14.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 19.57465546114457,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "悖论放松法的悖论在于：接受紧张才能放松。这意味着要达到放松的状态，首先需要接受身体的紧张感，而不是试图去对抗它。放松并不是通过主动的行为或努力来实现，而是通过放弃努力，即所谓的“无为”，来达到放松的目的。这种方法强调的是存在状态而非具体的动作，因此在练习悖论放松法时，重点在于接受当前的感受，而不是试图改变它们。",
+    "answer_chars": 156,
+    "citation_count": 3,
+    "rerank_strategy": "heuristic",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

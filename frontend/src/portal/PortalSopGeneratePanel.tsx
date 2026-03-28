@@ -379,7 +379,7 @@ export function PortalSopGeneratePanel() {
     <div className="grid gap-5">
       <UploadPanel
         title="第一步：上传来源文档"
-        description="员工可以直接在门户上传一份来源文档。入库完成后，系统会锁定当前 doc_id，并基于这份文档生成 SOP 草稿。"
+        description="员工可以直接在门户上传一份来源资料。处理完成后，系统会锁定当前资料编号，并基于这份资料生成 SOP 草稿。"
         className="col-span-12"
         allowMultiple={false}
         showIdentityFields={false}
@@ -427,7 +427,7 @@ export function PortalSopGeneratePanel() {
                 <p className="m-0 mt-2 break-all">{currentDocumentName || '未上传来源文件'}</p>
               </div>
               <div className="rounded-2xl bg-[rgba(255,255,255,0.76)] p-4">
-                <strong className="block text-ink">当前 doc_id</strong>
+                <strong className="block text-ink">当前资料编号</strong>
                 <p className="m-0 mt-2 break-all">{currentDocId || '-'}</p>
               </div>
               <div className="rounded-2xl bg-[rgba(255,255,255,0.76)] p-4">
@@ -445,7 +445,7 @@ export function PortalSopGeneratePanel() {
               <div>
                 <h3 className="m-0 text-xl font-semibold text-ink">第二步：直接生成 SOP</h3>
                 <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-                  主流程只围绕当前文件生成。工序、场景和标题提示是辅助项，不再要求手填主题或 doc_id。
+                  主流程只围绕当前资料生成。工序、场景和标题提示是辅助项，不再要求手填主题或资料编号。
                 </p>
               </div>
               <Sparkles className="h-5 w-5 text-accent-deep" />
@@ -655,10 +655,10 @@ export function PortalSopGeneratePanel() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                     <strong className="text-ink">{item.document_name}</strong>
-                    <span className="text-ink-soft">score: {item.score.toFixed(4)}</span>
+                    <span className="text-ink-soft">相关度：{item.score.toFixed(4)}</span>
                   </div>
                   <p className="m-0 mt-2 text-xs text-ink-soft break-all">
-                    doc_id: {item.document_id} / chunk_id: {item.chunk_id}
+                    资料编号：{item.document_id} / 片段编号：{item.chunk_id}
                   </p>
                   <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">{item.snippet}</p>
                   <p className="m-0 mt-3 text-xs text-ink-soft break-all">{item.source_path}</p>

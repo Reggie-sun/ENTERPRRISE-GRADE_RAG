@@ -134,6 +134,46 @@ def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailabl
     assert len(reranked) == 4
 
 
+def test_query_profile_service_reports_heuristic_when_default_strategy_is_pinned(tmp_path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    current_config = system_config_service.get_config(auth_context=_build_sys_admin_context())
+    system_config_service.update_config(
+        payload=SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing,
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                default_strategy="heuristic",
+                model="BAAI/bge-reranker-v2-m3-prod",
+                timeout_seconds=9.5,
+            ),
+            degrade_controls=current_config.degrade_controls,
+            retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
+        ),
+        auth_context=_build_sys_admin_context(),
+    )
+    service = QueryProfileService(settings, system_config_service=system_config_service)
+    reranker_client = RerankerClient(settings, system_config_service=system_config_service)
+    profile = service.resolve(purpose="chat", requested_mode="accurate", requested_top_k=4)
+
+    reranked, strategy = service.rerank_with_fallback(
+        query="数字化部巡检步骤",
+        candidates=_build_chunks(6),
+        profile=profile,
+        reranker_client=reranker_client,
+    )
+
+    assert strategy == "heuristic"
+    assert len(reranked) == 4
+
+
 def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_off(tmp_path) -> None:
     settings = Settings(
         _env_file=None,

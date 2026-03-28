@@ -164,7 +164,7 @@ def _append_snapshot(
             ),
             target_type="document",
             target_id="doc_001",
-            request=ChatRequest(question="数字化部如何处理异常？"),
+            request=ChatRequest(question="数字化部如何处理异常？", session_id="sess_chat_001"),
             profile={
                 "purpose": "chat",
                 "mode": "accurate",
@@ -278,8 +278,10 @@ def test_request_snapshot_replay_endpoint_supports_original_and_current_modes(tm
     assert current.status_code == 200
     assert original.json()["replayed_request"]["mode"] == "accurate"
     assert original.json()["replayed_request"]["top_k"] == 8
+    assert original.json()["replayed_request"]["session_id"] is None
     assert current.json()["replayed_request"]["mode"] is None
     assert current.json()["replayed_request"]["top_k"] is None
+    assert current.json()["replayed_request"]["session_id"] is None
     assert fake_chat_service.requests[0].mode == "accurate"
     assert fake_chat_service.requests[1].mode is None
 

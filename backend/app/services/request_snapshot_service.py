@@ -283,6 +283,16 @@ class RequestSnapshotService:
     ) -> RequestSnapshotReplayResponse:
         record = self.get_snapshot(snapshot_id, auth_context=auth_context)
         replay_request = record.request.model_copy(deep=True)
+        if hasattr(replay_request, "session_id"):
+            replay_request.session_id = None
+        if (
+            replay_mode == "original"
+            and record.category == "chat"
+            and record.rewrite.status == "applied"
+            and record.rewrite.rewritten_question
+            and hasattr(replay_request, "question")
+        ):
+            replay_request.question = record.rewrite.rewritten_question
         if hasattr(replay_request, "mode") and hasattr(replay_request, "top_k"):
             if replay_mode == "original":
                 replay_request.mode = record.profile.mode

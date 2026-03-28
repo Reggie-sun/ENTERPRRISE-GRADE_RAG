@@ -40,13 +40,13 @@ function RootRedirect() {
         <div className="grid min-h-[70vh] place-items-center">
           <HeroCard>
             <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-              Session Restore
+              正在连接平台
             </div>
             <h1 className="m-0 mt-5 font-serif text-3xl leading-tight text-ink">
               正在恢复当前会话
             </h1>
             <p className="m-0 mt-3 max-w-[56ch] text-base leading-relaxed text-ink-soft">
-              系统正在校验浏览器里的登录信息，确认完成后会自动跳转到门户或登录页。
+              系统正在校验当前登录信息，确认后会自动进入门户首页或登录页。
             </p>
           </HeroCard>
         </div>

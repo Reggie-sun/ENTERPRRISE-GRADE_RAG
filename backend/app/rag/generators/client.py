@@ -1,4 +1,5 @@
 import json  # 导入 json，用于解析流式响应片段。
+import math
 from time import sleep
 from typing import Iterator  # 导入 Iterator，用于声明流式输出迭代器类型。
 
@@ -35,6 +36,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:  # 基于问题和上下文生成最终回答文本。
@@ -42,6 +44,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             lambda: self._generate_once(
                 question=question,
                 contexts=contexts,
+                memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )
@@ -52,6 +55,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:
@@ -62,6 +66,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             return self._generate_with_ollama(
                 question=question,
                 contexts=contexts,
+                memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )  # 返回模型生成结果。
@@ -69,6 +74,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             return self._generate_with_openai(
                 question=question,
                 contexts=contexts,
+                memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )  # 返回模型生成结果。
@@ -79,12 +85,14 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> Iterator[str]:  # 以流式片段形式返回回答内容。
         yield from self._stream_with_retry(
             question=question,
             contexts=contexts,
+            memory_text=memory_text,
             timeout_seconds=timeout_seconds,
             model_name=model_name,
         )
@@ -94,6 +102,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> Iterator[str]:
@@ -106,6 +115,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             yield from self._generate_with_ollama_stream(
                 question=question,
                 contexts=contexts,
+                memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )
@@ -114,6 +124,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             yield from self._generate_with_openai_stream(
                 question=question,
                 contexts=contexts,
+                memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )
@@ -133,6 +144,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:  # 调用 Ollama 风格接口生成回答。
@@ -142,7 +154,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         base_url = get_llm_base_url(self.settings)  # 读取当前生效的 LLM 服务地址。
         url = f"{base_url}/api/generate"  # 拼出 Ollama generate 接口地址。
         request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算，未显式传入时回退到全局默认。
-        prompt = self._build_prompt(question=question, contexts=contexts)  # 先构造提示词。
+        prompt = self._build_prompt(question=question, contexts=contexts, memory_text=memory_text)  # 先构造提示词。
         payload = {  # 组织请求体。
             "model": self._resolve_model_name(model_name),  # 指定模型名。
             "prompt": prompt,  # 传入 prompt。
@@ -178,6 +190,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> Iterator[str]:  # 调用 Ollama 流式生成接口。
@@ -190,7 +203,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         request_timeout = timeout_seconds or self.settings.llm_timeout_seconds  # 优先使用请求级预算。
         payload = {
             "model": self._resolve_model_name(model_name),
-            "prompt": self._build_prompt(question=question, contexts=contexts),
+            "prompt": self._build_prompt(question=question, contexts=contexts, memory_text=memory_text),
             "stream": True,  # 打开流式输出。
             "options": {"temperature": self.settings.llm_temperature},
         }
@@ -228,6 +241,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:  # 调用 OpenAI 兼容的 chat completions 接口生成回答。
@@ -248,11 +262,12 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 },
                 {
                     "role": "user",
-                    "content": self._build_prompt(question=question, contexts=contexts),
+                    "content": self._build_prompt(question=question, contexts=contexts, memory_text=memory_text),
                 },
             ],
             "temperature": self.settings.llm_temperature,  # 传入采样温度。
             "stream": False,  # 关闭流式，便于同步接口直接取回答。
+            "max_tokens": self.settings.llm_reserved_completion_tokens,  # 显式给回答保留 token，避免大 prompt 下只剩极少输出预算。
         }
 
         try:  # 尝试请求 OpenAI 兼容服务。
@@ -297,6 +312,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> Iterator[str]:  # 调用 OpenAI 兼容流式接口。
@@ -318,11 +334,12 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 },
                 {
                     "role": "user",
-                    "content": self._build_prompt(question=question, contexts=contexts),
+                    "content": self._build_prompt(question=question, contexts=contexts, memory_text=memory_text),
                 },
             ],
             "temperature": self.settings.llm_temperature,
             "stream": True,  # 打开流式输出。
+            "max_tokens": self.settings.llm_reserved_completion_tokens,  # 显式给流式回答保留 token，避免被 prompt 挤占完预算。
         }
 
         try:  # 尝试请求 OpenAI 兼容服务。
@@ -398,6 +415,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None,
         timeout_seconds: float | None,
         model_name: str | None,
     ) -> Iterator[str]:
@@ -411,6 +429,7 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
                 for token in self._generate_stream_once(
                     question=question,
                     contexts=contexts,
+                    memory_text=memory_text,
                     timeout_seconds=timeout_seconds,
                     model_name=model_name,
                 ):
@@ -457,16 +476,129 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
         for start in range(0, len(text), max(1, chunk_size)):
             yield text[start : start + max(1, chunk_size)]
 
-    @staticmethod
-    def _build_prompt(*, question: str, contexts: list[str]) -> str:  # 组装一个简单稳妥的 RAG prompt。
+    def _build_prompt(self, *, question: str, contexts: list[str], memory_text: str | None = None) -> str:  # 组装一个带软预算控制的 RAG prompt。
+        prepared_memory = self._prepare_memory_for_prompt(memory_text)
+        prepared_contexts = self._prepare_contexts_for_prompt(
+            question=question,
+            contexts=contexts,
+            memory_text=prepared_memory,
+        )
         context_blocks = []  # 初始化上下文块列表。
-        for index, chunk in enumerate(contexts, start=1):  # 给每段上下文编号，便于模型引用。
+        for index, chunk in enumerate(prepared_contexts, start=1):  # 给每段上下文编号，便于模型引用。
             context_blocks.append(f"[Context {index}]\n{chunk.strip()}")  # 写入编号和正文。
 
-        joined_context = "\n\n".join(context_blocks)  # 把上下文块拼接成最终文本。
-        return (
+        prompt_parts = [
+            "If the context does not contain the answer, say you cannot find enough evidence.",
+        ]
+        if prepared_memory:
+            prompt_parts.append(
+                "[Recent Conversation]\n"
+                "Use the recent conversation only to resolve follow-up references. Do not treat it as evidence over the retrieved context.\n"
+                f"{prepared_memory}"
+            )
+        if context_blocks:
+            prompt_parts.append("\n\n".join(context_blocks))
+        prompt_parts.append(f"Question: {question}\nAnswer:")
+        return "\n\n".join(prompt_parts)  # 返回完整 prompt。
+
+    def _prepare_contexts_for_prompt(self, *, question: str, contexts: list[str], memory_text: str | None = None) -> list[str]:
+        normalized_contexts = [chunk.strip() for chunk in contexts if isinstance(chunk, str) and chunk.strip()]
+        if not normalized_contexts:
+            return []
+
+        prompt_token_budget = max(256, self.settings.llm_max_prompt_tokens)
+        prompt_overhead_tokens = self._estimate_token_count(
             "If the context does not contain the answer, say you cannot find enough evidence.\n\n"
-            f"{joined_context}\n\n"
-            f"Question: {question}\n"
-            "Answer:"
-        )  # 返回完整 prompt。
+            + (
+                "[Recent Conversation]\n"
+                "Use the recent conversation only to resolve follow-up references. Do not treat it as evidence over the retrieved context.\n"
+                f"{memory_text}\n\n"
+                if memory_text
+                else ""
+            )
+            + f"Question: {question}\n"
+            + "Answer:"
+        )
+        remaining_budget = max(128, prompt_token_budget - prompt_overhead_tokens)
+        prepared_contexts: list[str] = []
+
+        for index, chunk in enumerate(normalized_contexts, start=1):
+            context_prefix = f"[Context {index}]\n"
+            prefix_tokens = self._estimate_token_count(context_prefix)
+            separator_tokens = 2
+            available_tokens = remaining_budget - prefix_tokens - separator_tokens
+            if available_tokens <= 0:
+                break
+
+            chunk_tokens = self._estimate_token_count(chunk)
+            if chunk_tokens <= available_tokens:
+                prepared_contexts.append(chunk)
+                remaining_budget -= prefix_tokens + chunk_tokens + separator_tokens
+                continue
+
+            truncated_chunk = self._truncate_text_to_token_budget(chunk, available_tokens)
+            if truncated_chunk:
+                prepared_contexts.append(truncated_chunk)
+            break
+
+        if prepared_contexts:
+            return prepared_contexts
+        return [self._truncate_text_to_token_budget(normalized_contexts[0], remaining_budget)]
+
+    def _prepare_memory_for_prompt(self, memory_text: str | None) -> str | None:
+        normalized = (memory_text or "").strip()
+        if not normalized:
+            return None
+        memory_budget = max(32, self.settings.chat_memory_max_prompt_tokens)
+        return self._truncate_text_to_token_budget(normalized, memory_budget)
+
+    @staticmethod
+    def _estimate_token_count(text: str) -> int:
+        token_count = 0
+        ascii_run = 0
+
+        def flush_ascii_run() -> int:
+            nonlocal ascii_run
+            if ascii_run <= 0:
+                return 0
+            estimated = max(1, math.ceil(ascii_run / 4))
+            ascii_run = 0
+            return estimated
+
+        for char in text:
+            if ord(char) < 128:
+                if char.isalnum() or char in {"_", "-", "/"}:
+                    ascii_run += 1
+                    continue
+                token_count += flush_ascii_run()
+                if not char.isspace():
+                    token_count += 1
+                continue
+            token_count += flush_ascii_run()
+            token_count += 1
+
+        token_count += flush_ascii_run()
+        return max(1, token_count)
+
+    def _truncate_text_to_token_budget(self, text: str, token_budget: int) -> str:
+        normalized_budget = max(1, token_budget)
+        if self._estimate_token_count(text) <= normalized_budget:
+            return text
+
+        truncated_chars: list[str] = []
+        for char in text:
+            candidate = "".join(truncated_chars) + char
+            if self._estimate_token_count(candidate) > normalized_budget:
+                break
+            truncated_chars.append(char)
+
+        truncated = "".join(truncated_chars).rstrip()
+        if not truncated:
+            return text[: max(1, min(len(text), normalized_budget))]
+        if truncated != text:
+            ellipsis = " ..."
+            while truncated and self._estimate_token_count(truncated + ellipsis) > normalized_budget:
+                truncated = truncated[:-1].rstrip()
+            if truncated:
+                return f"{truncated}{ellipsis}"
+        return truncated
