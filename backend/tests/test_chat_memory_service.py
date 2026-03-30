@@ -169,6 +169,57 @@ def test_chat_memory_service_builds_summary_and_filters_document_scope(tmp_path:
     assert "悖论放松法是什么" not in document_summary
 
 
+def test_chat_memory_service_prioritizes_latest_turns_within_prompt_budget(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = ChatMemoryService(settings)
+    auth_context = _build_auth_context()
+
+    service.record_turn(
+        session_id="sess_portal_budget",
+        auth_context=auth_context,
+        document_id=None,
+        question="第一轮问什么？",
+        answer="第一轮答复。",
+        response_mode="rag",
+        citation_count=1,
+    )
+    service.record_turn(
+        session_id="sess_portal_budget",
+        auth_context=auth_context,
+        document_id=None,
+        question="第二轮问什么？",
+        answer="第二轮答复。",
+        response_mode="rag",
+        citation_count=1,
+    )
+    service.record_turn(
+        session_id="sess_portal_budget",
+        auth_context=auth_context,
+        document_id=None,
+        question="第三轮问什么？",
+        answer="第三轮答复。",
+        response_mode="rag",
+        citation_count=1,
+    )
+
+    settings.chat_memory_max_prompt_tokens = service._estimate_token_count(
+        "[Recent Turn 1]\nUser: 第二轮问什么？\nAssistant: 第二轮答复。\n\n"
+        "[Recent Turn 2]\nUser: 第三轮问什么？\nAssistant: 第三轮答复。"
+    )
+
+    summary = service.build_memory_summary(
+        session_id="sess_portal_budget",
+        auth_context=auth_context,
+        document_id=None,
+    )
+
+    assert summary is not None
+    assert "第一轮问什么" not in summary
+    assert "第二轮问什么" in summary
+    assert "第三轮问什么" in summary
+
+
 def test_chat_service_uses_recent_memory_for_follow_up_question(tmp_path: Path) -> None:
     settings = _build_settings(tmp_path)
     ensure_data_directories(settings)

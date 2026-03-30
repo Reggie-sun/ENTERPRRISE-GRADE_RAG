@@ -1,0 +1,179 @@
+{
+  "snapshot_id": "rsp_535da5d5f8a446f8",
+  "trace_id": "trc_508f27f273104987",
+  "request_id": "req_363baad537554fb3",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T07:27:47.205746Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下cpps",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 根据提供的上下文信息，只能找到一个SOP相关文档的更新信息，即“数字化部 SOP 档位切换烟测文档”。该文档的最新版本为A/0，更新日期为2022-12-05。\n\n对于其他SOP或处理资料的更新情况，上下文未提供相关信息，因此无法提供更多细节。\n\n[Recent Turn 2]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 根据提供的上下文信息，只能找到一个SOP相关文档的更新信息，即“数字化部 SOP 档位切换烟测文档”。该文档的最新版本为A/0，更新日期为2022-12-05。对于其他SOP或处理资料的更新情况，上下文未提供相关信息，因此无法提供更多细节。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": 0.5927734375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5115614,
+      "lexical_score": 8.82145881391292,
+      "fused_score": 0.03177805800756621
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主轴箱端面，再用标准斜铁和用手锤轻轻敲打，不得碰打钻杆。\n4.13.钻孔时必须经常注意清除铁屑，钻头上有长屑时要停车清除，禁止用风吹手拉，要用刷子或铁钩清除。在扩孔时不得用偏刃钻具。\n4.14.工作中注意超负荷现象，发生异常响声，应立即停止自动进给，并消除超负荷原因。\n4.15.攻螺纹时，操纵可逆顺结合主轴正反转，但必须注意将手柄放在固定槽中。\n4.16.禁止开车变速，若变速挂轮的手柄挂不到位时，应点动一下再变换，但不得强力扳动手柄。\n4.17.钻孔过程中钻头未退离工件前不得停车。严禁用手去停住转动着的钻头，反车时，必须等主轴停止后再开动。\n4.18.薄板、大型或长形的工件竖着钻孔时，必须压牢，严禁用手扶着加工，工件钻通孔时应减压慢速，防止损伤平台。\n4.19.禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，",
+      "score": -4.73828125,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.31771964,
+      "lexical_score": 2.4193628187761886,
+      "fused_score": 0.03131881575727918
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "定\n6.1 倒角范围：外形楞、槽、台阶、孔口、螺纹孔口等部件C角、R角加工（C倒角：45°）。\n6.2 图纸应对不允许倒角的地方做出明确规定；\n6.3 图纸中所需要倒圆角的地方需要明确注明；\n6.4 图纸已有明确标注的按图加工检验，下表为普通零件倒角或圆角一般参考值；\n(d为直径或板面厚度）\n6.5图纸画出倒角而未标注的为未注倒角。未注倒角按技术要求所约定尺寸加工检验：\n外螺纹倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，倒角为：C*45°，C=0.1d-0.15d\n内螺纹倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，倒角后最大直径1.05d,角度90°或120°\n对光孔倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，分以下几种情况：\nd＜φ20  倒角（0.5-1）*45°\nΦ20＜d＜φ80  倒角（1-1.5）*45°\nd≥φ80  倒角（1.5-2）*45°\n对轴倒角，图纸有要求，按图纸要求，若无要求倒角原则为：\nd＜φ20  倒角（0.5-1）*45°\nΦ20≤d＜φ80  倒角（2-3）*45°\nd≥φ80  倒角（3-5）*45°\n6.6 图纸未画出倒角、未标明尖角且在技术要求中未作约定的，以不伤手为原则倒角，倒角大小最大不超过0.5mm；\n6.7 原则上各道工序的倒角由本道工序自行解决，倒角时遵循可机加工就不用手工操作的原则，但对某些不适合倒角的工序，工艺应综合考虑其成本和美观，另行安排工序倒角。\n6.8",
+      "score": -5.18359375,
+      "source_path": "/app/data/uploads/doc_20260330055115_5847f42f__WI-SJ-043_A1.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.36050248,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": 0.5927734375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.5115614,
+      "lexical_score": 8.82145881391292,
+      "fused_score": 0.03177805800756621,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主轴箱端面，再用标准斜铁和用手锤轻轻敲打，不得碰打钻杆。\n4.13.钻孔时必须经常注意清除铁屑，钻头上有长屑时要停车清除，禁止用风吹手拉，要用刷子或铁钩清除。在扩孔时不得用偏刃钻具。\n4.14.工作中注意超负荷现象，发生异常响声，应立即停止自动进给，并消除超负荷原因。\n4.15.攻螺纹时，操纵可逆顺结合主轴正反转，但必须注意将手柄放在固定槽中。\n4.16.禁止开车变速，若变速挂轮的手柄挂不到位时，应点动一下再变换，但不得强力扳动手柄。\n4.17.钻孔过程中钻头未退离工件前不得停车。严禁用手去停住转动着的钻头，反车时，必须等主轴停止后再开动。\n4.18.薄板、大型或长形的工件竖着钻孔时，必须压牢，严禁用手扶着加工，工件钻通孔时应减压慢速，防止损伤平台。\n4.19.禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，",
+      "score": -4.73828125,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.31771964,
+      "lexical_score": 2.4193628187761886,
+      "fused_score": 0.03131881575727918,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "定\n6.1 倒角范围：外形楞、槽、台阶、孔口、螺纹孔口等部件C角、R角加工（C倒角：45°）。\n6.2 图纸应对不允许倒角的地方做出明确规定；\n6.3 图纸中所需要倒圆角的地方需要明确注明；\n6.4 图纸已有明确标注的按图加工检验，下表为普通零件倒角或圆角一般参考值；\n(d为直径或板面厚度）\n6.5图纸画出倒角而未标注的为未注倒角。未注倒角按技术要求所约定尺寸加工检验：\n外螺纹倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，倒角为：C*45°，C=0.1d-0.15d\n内螺纹倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，倒角后最大直径1.05d,角度90°或120°\n对光孔倒角，图纸有要求的，按图纸要求加工检验，无图纸要求的，分以下几种情况：\nd＜φ20  倒角（0.5-1）*45°\nΦ20＜d＜φ80  倒角（1-1.5）*45°\nd≥φ80  倒角（1.5-2）*45°\n对轴倒角，图纸有要求，按图纸要求，若无要求倒角原则为：\nd＜φ20  倒角（0.5-1）*45°\nΦ20≤d＜φ80  倒角（2-3）*45°\nd≥φ80  倒角（3-5）*45°\n6.6 图纸未画出倒角、未标明尖角且在技术要求中未作约定的，以不伤手为原则倒角，倒角大小最大不超过0.5mm；\n6.7 原则上各道工序的倒角由本道工序自行解决，倒角时遵循可机加工就不用手工操作的原则，但对某些不适合倒角的工序，工艺应综合考虑其成本和美观，另行安排工序倒角。\n6.8",
+      "score": -5.18359375,
+      "source_path": "/app/data/uploads/doc_20260330055115_5847f42f__WI-SJ-043_A1.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.36050248,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "CPPS (Chronic Prostatitis/Pelvic Pain Syndrome) 是指慢性前列腺炎/盆腔疼痛综合征。这是一种复杂的病症，通常表现为持续性的盆腔区域疼痛，并可能伴有排尿困难等症状。值得注意的是，尽管它被称为“前列腺炎”，但在许多情况下，这种状况并非由细菌感染引起，因此抗生素治疗可能无效。CPPS的确切原因尚不完全清楚，可能是多种因素共同作用的结果，包括但不限于肌肉紧张、神经系统敏感性增加以及心理因素等。",
+    "answer_chars": 217,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 8,
+    "rerank_input_count": 8,
+    "rerank_output_count": 8,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

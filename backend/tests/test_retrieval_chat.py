@@ -1418,6 +1418,10 @@ def test_chat_service_persists_hybrid_retrieval_observability_to_trace_and_snaps
     assert retrieval_stage.details["query_type"] == "exact"
     assert retrieval_stage.details["vector_weight"] == pytest.approx(0.3)
     assert retrieval_stage.details["lexical_weight"] == pytest.approx(0.7)
+    assert rerank_stage.details["rerank_provider"] == "heuristic"
+    assert rerank_stage.details["rerank_model"] == "heuristic"
+    assert rerank_stage.details["rerank_default_strategy"] == "heuristic"
+    assert rerank_stage.details["rerank_effective_strategy"] == "heuristic"
     assert rerank_stage.details["rerank_input_count"] == 4
     assert rerank_stage.details["citation_count"] == 3
 
@@ -1426,6 +1430,10 @@ def test_chat_service_persists_hybrid_retrieval_observability_to_trace_and_snaps
     assert snapshot_record.details["query_type"] == "exact"
     assert snapshot_record.details["vector_weight"] == pytest.approx(0.3)
     assert snapshot_record.details["lexical_weight"] == pytest.approx(0.7)
+    assert snapshot_record.details["rerank_provider"] == "heuristic"
+    assert snapshot_record.details["rerank_model"] == "heuristic"
+    assert snapshot_record.details["rerank_default_strategy"] == "heuristic"
+    assert snapshot_record.details["rerank_effective_strategy"] == "heuristic"
     assert snapshot_record.details["rerank_input_count"] == 4
     assert snapshot_record.details["citation_count"] == 3
 
@@ -1769,6 +1777,46 @@ def test_chat_ask_propagates_source_scope_to_citations(tmp_path: Path) -> None:
     response = chat_service.answer(ChatRequest(question="解释一下E204"), auth_context=None)
 
     assert [item.source_scope for item in response.citations] == ["department", "global"]
+
+
+def test_chat_snapshot_propagates_source_scope_to_contexts(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    request_snapshot_service = RequestSnapshotService(settings)
+    chat_service = ChatService(
+        settings,
+        request_snapshot_service=request_snapshot_service,
+    )
+    chat_service.retrieval_service = _FakeRetrievalService(
+        [
+            RetrievedChunk(
+                chunk_id="chunk_dept_001",
+                document_id="doc_dept_001",
+                document_name="dept_manual.txt",
+                text="本部门 SOP 操作步骤。",
+                score=0.93,
+                source_path="/tmp/dept_manual.txt",
+                retrieval_strategy="hybrid",
+                source_scope="department",
+            ),
+            RetrievedChunk(
+                chunk_id="chunk_global_001",
+                document_id="doc_global_001",
+                document_name="global_manual.txt",
+                text="全局共享补充说明。",
+                score=0.82,
+                source_path="/tmp/global_manual.txt",
+                retrieval_strategy="hybrid",
+                source_scope="global",
+            ),
+        ]
+    )
+
+    response = chat_service.answer(ChatRequest(question="解释一下E204"), auth_context=None)
+
+    assert [item.source_scope for item in response.citations] == ["department", "global"]
+    snapshot_record = request_snapshot_service.repository.list_records(limit=1)[0]
+    assert [item.source_scope for item in snapshot_record.contexts] == ["department", "global"]
 
 
 def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

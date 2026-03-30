@@ -40,6 +40,7 @@ class RequestSnapshotContext(BaseModel):
     score: float
     source_path: str
     retrieval_strategy: str | None = None
+    source_scope: str | None = None
     vector_score: float | None = None
     lexical_score: float | None = None
     fused_score: float | None = None

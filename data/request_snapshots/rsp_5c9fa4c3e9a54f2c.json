@@ -1,0 +1,179 @@
+{
+  "snapshot_id": "rsp_5c9fa4c3e9a54f2c",
+  "trace_id": "trc_ee91911763db4bf7",
+  "request_id": "req_0fd1aeb93b484001",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T07:27:35.539056Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 根据提供的上下文信息，只能找到一个SOP相关文档的更新信息，即“数字化部 SOP 档位切换烟测文档”。该文档的最新版本为A/0，更新日期为2022-12-05。\n\n对于其他SOP或处理资料的更新情况，上下文未提供相关信息，因此无法提供更多细节。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+      "document_id": "doc_20260326063420_0ae34377",
+      "document_name": "sop_mode_toggle_smoke.txt",
+      "snippet": "数字化部 SOP 档位切换烟测文档。\n步骤一：检查任务调度服务。\n步骤二：核对数据库连接与消息队列。\n步骤三：处理完成后更新值班记录。",
+      "score": -3.8046875,
+      "source_path": "/app/data/uploads/doc_20260326063420_0ae34377__sop_mode_toggle_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.55166686,
+      "lexical_score": 21.772839285812243,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -5.625,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.51349247,
+      "lexical_score": 7.580856524733525,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+      "snippet": "电焊作业安全操作规范\t文件编号\tWI-SC-009\n版本号\tA/0\n页次\t2\n生效日期\t2022-05-06\n1.目的\n用于在电焊作业过程中，规范安全作业行为，增强安全意识。\n2.适用范围\n公司所有电焊作业涉及场景。\n3.操作说明\n3.1、参加焊接作业的所有人员，要经安全技术培训、考试合格，取得特种作业合格证。\n3.2、电焊机开机前，必须检查电焊机电线绝缘层、插头是否完好，如发现破损，不得使用。\n3.3、按作业性质的特殊要求。全套使用个体安全防护装备。\n3.4、执行防止触电、包扎、火灾、坠落及灼伤的安全措施。\n3.5、工作场所要保持适当通风，排除有害气体及烟尘。\n3.6、在工作开始前检查工作区域，要确认在5m范围内及其下方不会因火花飞溅接触到易燃物品。如不能保证时，必须设监护人。\n3.7、确保工作区域附近，紧急情况下能拿到适当的灭火器。\n3.8、焊线、地线禁止与钢丝、铁丝等金属绳接触，不得用金属绳或者其他机电设备代替零线，所有地线接头应连接牢固。\n3.9、消除焊渣时，应配戴护目镜及面罩以防铁渣飞溅伤人。\n3.10、钍钨极要放置在密闭铅盒内，磨削钍钨极，必须戴手套、口罩、将粉尘及时清理。\n3.11、工作结束后，必须切断电源或关闭气阀，收完工具及焊线或软管，清理现场，检查工作场所周围，确认无起火危险后方可离开。\n编制\t李双田\t校对\t审核\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-05-06\t全文\tALL\t新编制",
+      "score": -6.7578125,
+      "source_path": "/app/data/uploads/doc_20260330055115_2056c1bf__WI-SC-009.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4577218,
+      "lexical_score": 0.4183879936913815,
+      "fused_score": 0.030090497737556562
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+      "document_id": "doc_20260326063420_0ae34377",
+      "document_name": "sop_mode_toggle_smoke.txt",
+      "snippet": "数字化部 SOP 档位切换烟测文档。\n步骤一：检查任务调度服务。\n步骤二：核对数据库连接与消息队列。\n步骤三：处理完成后更新值班记录。",
+      "score": -3.8046875,
+      "source_path": "/app/data/uploads/doc_20260326063420_0ae34377__sop_mode_toggle_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.55166686,
+      "lexical_score": 21.772839285812243,
+      "fused_score": 0.03252247488101534,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -5.625,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51349247,
+      "lexical_score": 7.580856524733525,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+      "snippet": "电焊作业安全操作规范\t文件编号\tWI-SC-009\n版本号\tA/0\n页次\t2\n生效日期\t2022-05-06\n1.目的\n用于在电焊作业过程中，规范安全作业行为，增强安全意识。\n2.适用范围\n公司所有电焊作业涉及场景。\n3.操作说明\n3.1、参加焊接作业的所有人员，要经安全技术培训、考试合格，取得特种作业合格证。\n3.2、电焊机开机前，必须检查电焊机电线绝缘层、插头是否完好，如发现破损，不得使用。\n3.3、按作业性质的特殊要求。全套使用个体安全防护装备。\n3.4、执行防止触电、包扎、火灾、坠落及灼伤的安全措施。\n3.5、工作场所要保持适当通风，排除有害气体及烟尘。\n3.6、在工作开始前检查工作区域，要确认在5m范围内及其下方不会因火花飞溅接触到易燃物品。如不能保证时，必须设监护人。\n3.7、确保工作区域附近，紧急情况下能拿到适当的灭火器。\n3.8、焊线、地线禁止与钢丝、铁丝等金属绳接触，不得用金属绳或者其他机电设备代替零线，所有地线接头应连接牢固。\n3.9、消除焊渣时，应配戴护目镜及面罩以防铁渣飞溅伤人。\n3.10、钍钨极要放置在密闭铅盒内，磨削钍钨极，必须戴手套、口罩、将粉尘及时清理。\n3.11、工作结束后，必须切断电源或关闭气阀，收完工具及焊线或软管，清理现场，检查工作场所周围，确认无起火危险后方可离开。\n编制\t李双田\t校对\t审核\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-05-06\t全文\tALL\t新编制",
+      "score": -6.7578125,
+      "source_path": "/app/data/uploads/doc_20260330055115_2056c1bf__WI-SC-009.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4577218,
+      "lexical_score": 0.4183879936913815,
+      "fused_score": 0.030090497737556562,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "根据提供的上下文信息，只能找到一个SOP相关文档的更新信息，即“数字化部 SOP 档位切换烟测文档”。该文档的最新版本为A/0，更新日期为2022-12-05。对于其他SOP或处理资料的更新情况，上下文未提供相关信息，因此无法提供更多细节。",
+    "answer_chars": 120,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 8,
+    "rerank_input_count": 8,
+    "rerank_output_count": 8,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

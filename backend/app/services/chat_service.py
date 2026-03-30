@@ -914,6 +914,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 )
             raise
         citations_source = reranked_results[: min(profile.rerank_top_n, len(reranked_results))]
+        rerank_log_fields = self._build_rerank_log_fields(rerank_strategy)
         if trace_stages is not None:
             self._append_trace_stage(
                 trace_stages,
@@ -925,6 +926,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 cache_hit=False,
                 details={
                     "strategy": rerank_strategy,
+                    "rerank_provider": rerank_log_fields["rerank_provider"],
+                    "rerank_model": rerank_log_fields["rerank_model"],
+                    "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+                    "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
                     "rerank_input_count": len(retrieval_results),
                     "rerank_output_count": len(reranked_results),
                     "citation_count": len(citations_source),
@@ -958,6 +963,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
             reranked_count=len(citations_source),
             details={
                 **retrieval_details,
+                "rerank_provider": rerank_log_fields["rerank_provider"],
+                "rerank_model": rerank_log_fields["rerank_model"],
+                "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+                "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
                 "retrieved_count": len(retrieval_results),
                 "rerank_input_count": len(retrieval_results),
                 "rerank_output_count": len(reranked_results),

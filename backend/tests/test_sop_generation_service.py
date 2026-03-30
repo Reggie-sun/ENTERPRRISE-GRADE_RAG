@@ -518,6 +518,10 @@ def test_sop_generation_service_persists_hybrid_retrieval_observability_to_snaps
     assert snapshot_record.details["query_type"] == "mixed"
     assert snapshot_record.details["vector_weight"] == pytest.approx(0.5)
     assert snapshot_record.details["lexical_weight"] == pytest.approx(0.5)
+    assert snapshot_record.details["rerank_provider"] == "provider"
+    assert snapshot_record.details["rerank_model"] is None
+    assert snapshot_record.details["rerank_default_strategy"] is None
+    assert snapshot_record.details["rerank_effective_strategy"] == "provider"
     assert snapshot_record.details["rerank_input_count"] == 6
     assert snapshot_record.details["citation_count"] == 5
 
@@ -949,6 +953,7 @@ def test_sop_generation_service_still_rejects_document_generation_when_preview_i
 
 def test_sop_generation_service_propagates_ocr_metadata_to_citations(tmp_path: Path) -> None:
     identity_service = _build_identity_service(tmp_path)
+    request_snapshot_service = RequestSnapshotService(Settings(_env_file=None))
     auth_context = _build_auth_context(
         identity_service,
         username="digitalization.employee",
@@ -980,6 +985,7 @@ def test_sop_generation_service_propagates_ocr_metadata_to_citations(tmp_path: P
             ]
         ),
         document_service=_FakeDocumentService({"doc_digitalization": "dept_digitalization"}),
+        request_snapshot_service=request_snapshot_service,
         reranker_client=_FakeRerankerClient(),
         generation_client=_FakeGenerationClient(answer="基于 OCR 证据生成的 SOP 草稿。"),
     )

@@ -341,6 +341,7 @@ class RequestSnapshotService:
                 score=citation.score,
                 source_path=citation.source_path,
                 retrieval_strategy=citation.retrieval_strategy,
+                source_scope=citation.source_scope,
                 vector_score=citation.vector_score,
                 lexical_score=citation.lexical_score,
                 fused_score=citation.fused_score,
@@ -360,6 +361,7 @@ class RequestSnapshotService:
                 score=citation.score,
                 source_path=citation.source_path,
                 retrieval_strategy=citation.retrieval_strategy,
+                source_scope=citation.source_scope,
                 vector_score=citation.vector_score,
                 lexical_score=citation.lexical_score,
                 fused_score=citation.fused_score,
@@ -378,9 +380,15 @@ class RequestSnapshotService:
                 score=citation.score,
                 source_path=citation.source_path,
                 retrieval_strategy=citation.retrieval_strategy,
+                source_scope=citation.source_scope,
                 vector_score=citation.vector_score,
                 lexical_score=citation.lexical_score,
                 fused_score=citation.fused_score,
+                ocr_used=citation.ocr_used,
+                parser_name=citation.parser_name,
+                page_no=citation.page_no,
+                ocr_confidence=citation.ocr_confidence,
+                quality_score=citation.quality_score,
             )
             for citation in citations
         ]

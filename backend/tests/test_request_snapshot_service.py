@@ -7,6 +7,7 @@ from backend.app.schemas.query_profile import QueryProfile
 from backend.app.schemas.request_snapshot import RequestSnapshotReplayResponse
 from backend.app.schemas.sop_generation import (
     SopGenerateByDocumentRequest,
+    SopGenerationCitation,
     SopGenerationDraftResponse,
 )
 from backend.app.services.auth_service import AuthService
@@ -124,6 +125,7 @@ def test_record_chat_snapshot_persists_context_and_versions(tmp_path: Path) -> N
                 score=0.95,
                 source_path="asset://doc_001",
                 retrieval_strategy="hybrid",
+                source_scope="department",
                 vector_score=0.88,
                 lexical_score=2.1,
                 fused_score=0.95,
@@ -139,6 +141,7 @@ def test_record_chat_snapshot_persists_context_and_versions(tmp_path: Path) -> N
     assert persisted.trace_id == "trc_test_001"
     assert persisted.contexts[0].chunk_id == "chunk_001"
     assert persisted.contexts[0].retrieval_strategy == "hybrid"
+    assert persisted.contexts[0].source_scope == "department"
     assert persisted.contexts[0].vector_score == 0.88
     assert persisted.contexts[0].lexical_score == 2.1
     assert persisted.contexts[0].fused_score == 0.95
@@ -314,3 +317,66 @@ def test_replay_sop_snapshot_supports_original_and_current_modes(tmp_path: Path)
     assert original.response.request_mode == "document"
     assert fake_sop_generation_service.requests[0].mode == "accurate"
     assert fake_sop_generation_service.requests[1].mode is None
+
+
+def test_record_sop_snapshot_propagates_source_scope_to_contexts(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = RequestSnapshotService(settings)
+    auth_context = _build_auth_context(tmp_path, username="sys.admin", password="sys-admin-pass")
+
+    record = service.record_sop_snapshot(
+        request_mode="document",
+        outcome="success",
+        request=SopGenerateByDocumentRequest(document_id="doc_001", process_name="巡检"),
+        profile=QueryProfile(
+            purpose="sop_generation",
+            mode="accurate",
+            top_k=9,
+            candidate_top_k=18,
+            rerank_top_n=6,
+            timeout_budget_seconds=24.0,
+            fallback_mode="fast",
+        ),
+        auth_context=auth_context,
+        citations=[
+            SopGenerationCitation(
+                chunk_id="chunk_001",
+                document_id="doc_001",
+                document_name="数字化巡检图片.png",
+                snippet="STEP2：检查传感器连接状态并记录温度读数。",
+                score=0.96,
+                source_path="/tmp/digitalization.png",
+                retrieval_strategy="hybrid",
+                source_scope="department",
+                vector_score=0.91,
+                lexical_score=1.4,
+                fused_score=0.96,
+                ocr_used=True,
+                parser_name="docx_embedded_image_ocr_paddle",
+                page_no=2,
+                ocr_confidence=0.94,
+                quality_score=0.94,
+            )
+        ],
+        response=SopGenerationDraftResponse(
+            request_mode="document",
+            generation_mode="rag",
+            title="原始 SOP 草稿",
+            department_id="dept_digitalization",
+            department_name="数字化部",
+            process_name="巡检",
+            scenario_name=None,
+            topic="来源文档",
+            content="请根据文档生成 SOP。",
+            model="Qwen/Test-14B",
+            citations=[],
+        ),
+        rerank_strategy="heuristic",
+        model="Qwen/Test-14B",
+        content="请根据文档生成 SOP。",
+    )
+
+    persisted = service.get_snapshot(record.snapshot_id, auth_context=auth_context)
+    assert persisted.contexts[0].source_scope == "department"
+    assert persisted.citations[0].source_scope == "department"

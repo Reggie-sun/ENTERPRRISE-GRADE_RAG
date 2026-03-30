@@ -3,26 +3,8 @@
   "user_id": "user_roster_10565",
   "username": "10565",
   "department_id": "dept_production_technology",
-  "updated_at": "2026-03-30T06:06:51.019756Z",
+  "updated_at": "2026-03-30T07:28:24.148921Z",
   "turns": [
-    {
-      "turn_id": "turn_397c78d9209f",
-      "asked_at": "2026-03-30T05:58:45.521820Z",
-      "question": "如何判断零件可不可以倒角",
-      "answer": "根据提供的上下文信息，可以判断零件是否可以倒角的方法如下：\n\n1. 根据零件类别分类：\n   - 钣金件：如无特别要求，都应倒角，去毛刺。\n   - 机加工件：如无特别要求，所有不涉及刃口及刀口的边缘均需倒角，所有配合处理要求轴和孔配合的，都应倒角。\n\n这些是基于零件类型来决定是否需要倒角的基本准则。",
-      "response_mode": "rag",
-      "document_id": null,
-      "citation_count": 3
-    },
-    {
-      "turn_id": "turn_624d3ecce3da",
-      "asked_at": "2026-03-30T06:00:32.190174Z",
-      "question": "如何判断零件可不可以倒角",
-      "answer": "根据提供的上下文信息，可以判断零件是否可以倒角的方法如下：\n\n1. 根据零件类别分类：\n   - 钣金件：如无特别要求，都应倒角，去毛刺。\n   - 机加工件：如无特别要求，所有不涉及刃口及刀口的边缘均需倒角，所有配合处理要求轴和孔配合的，都应倒角。\n   \n2. 查看图纸是否有不允许倒角的规定，如果有，则遵循图纸规定。\n3. 如果图纸上没有特别标注，那么默认所有边都需要倒角。\n4. 对于螺纹孔口、光孔、轴等特定部分，如果没有特别规定，则按照标准参考值进行倒角。\n\n这些是基于零件类型和图纸标注来决定是否需要倒角的基本准则。",
-      "response_mode": "rag",
-      "document_id": null,
-      "citation_count": 5
-    },
     {
       "turn_id": "turn_e7229ddd6067",
       "asked_at": "2026-03-30T06:04:15.234858Z",
@@ -40,6 +22,42 @@
       "response_mode": "rag",
       "document_id": null,
       "citation_count": 3
+    },
+    {
+      "turn_id": "turn_205fc8f61bce",
+      "asked_at": "2026-03-30T07:27:35.539698Z",
+      "question": "本部门最近更新了哪些 SOP 或处理资料？",
+      "answer": "根据提供的上下文信息，只能找到一个SOP相关文档的更新信息，即“数字化部 SOP 档位切换烟测文档”。该文档的最新版本为A/0，更新日期为2022-12-05。对于其他SOP或处理资料的更新情况，上下文未提供相关信息，因此无法提供更多细节。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_0fd0e84c2911",
+      "asked_at": "2026-03-30T07:27:47.206144Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS (Chronic Prostatitis/Pelvic Pain Syndrome) 是指慢性前列腺炎/盆腔疼痛综合征。这是一种复杂的病症，通常表现为持续性的盆腔区域疼痛，并可能伴有排尿困难等症状。值得注意的是，尽管它被称为“前列腺炎”，但在许多情况下，这种状况并非由细菌感染引起，因此抗生素治疗可能无效。CPPS的确切原因尚不完全清楚，可能是多种因素共同作用的结果，包括但不限于肌肉紧张、神经系统敏感性增加以及心理因素等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_969efc365fe5",
+      "asked_at": "2026-03-30T07:27:55.996942Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS (Chronic Prostatitis/Pelvic Pain Syndrome) 是指慢性前列腺炎/盆腔疼痛综合征。这是一种复杂的病症，通常表现为持续性的盆腔区域疼痛，并可能伴有排尿困难等症状。尽管它被称为“前列腺炎”，但这种状况往往并不是由细菌感染引起的，因此抗生素治疗可能无效。CPPS的确切原因尚不完全清楚，可能是多种因素共同作用的结果，包括但不限于肌肉紧张、神经系统敏感性增加以及心理因素等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_3840923796c7",
+      "asked_at": "2026-03-30T07:28:24.148896Z",
+      "question": "更详细一点",
+      "answer": "CPPS (Chronic Prostatitis/Pelvic Pain Syndrome)，即慢性前列腺炎/盆腔疼痛综合征，是一种复杂的病症，主要特征为持续性的盆腔区域疼痛，可能伴有排尿困难等症状。值得注意的是，尽管名为“前列腺炎”，但该状况通常并非由细菌感染引起，因此抗生素治疗可能无效。CPPS的具体成因尚未完全明了，但普遍认为是由多种因素共同作用所致，包括肌肉紧张、神经系统敏感度增加以及心理因素等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
     }
   ]
 }

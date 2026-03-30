@@ -992,11 +992,16 @@ class SopGenerationService:
             auth_context=auth_context,
         )
         if not filtered_results:
+            rerank_log_fields = self._build_rerank_log_fields("skipped")
             return SopCitationBuildResult(
                 citations=[],
                 rerank_strategy="skipped",
                 details={
                     **retrieval_details,
+                    "rerank_provider": rerank_log_fields["rerank_provider"],
+                    "rerank_model": rerank_log_fields["rerank_model"],
+                    "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+                    "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
                     "retrieved_count": len(retrieval_results),
                     "rerank_input_count": 0,
                     "rerank_output_count": 0,
@@ -1012,6 +1017,7 @@ class SopGenerationService:
             top_n=len(filtered_results),
         )
         citations_source = reranked_results[: min(profile.rerank_top_n, len(reranked_results))]
+        rerank_log_fields = self._build_rerank_log_fields(rerank_strategy)
 
         return SopCitationBuildResult(
             citations=[
@@ -1038,6 +1044,10 @@ class SopGenerationService:
             rerank_strategy=rerank_strategy,
             details={
                 **retrieval_details,
+                "rerank_provider": rerank_log_fields["rerank_provider"],
+                "rerank_model": rerank_log_fields["rerank_model"],
+                "rerank_default_strategy": rerank_log_fields["rerank_default_strategy"],
+                "rerank_effective_strategy": rerank_log_fields["rerank_effective_strategy"],
                 "retrieved_count": len(retrieval_results),
                 "rerank_input_count": len(filtered_results),
                 "rerank_output_count": len(reranked_results),

@@ -41,28 +41,21 @@ class ChatMemoryService:
             return None
 
         selected_turns = turns[-self.settings.chat_memory_max_turns :]
-        blocks: list[str] = []
         memory_budget = self.settings.chat_memory_max_prompt_tokens
-        for index, turn in enumerate(selected_turns, start=1):
-            question = self._truncate_chars(turn.question, self.settings.chat_memory_question_max_chars)
-            answer = self._truncate_chars(turn.answer, self.settings.chat_memory_answer_max_chars)
-            block = (
-                f"[Recent Turn {index}]\n"
-                f"User: {question}\n"
-                f"Assistant: {answer}"
+        retained_turns_newest_first: list[ChatMemoryTurn] = []
+        # When the prompt budget is tight, keep the latest contiguous turns first.
+        for turn in reversed(selected_turns):
+            candidate_turns_newest_first = retained_turns_newest_first + [turn]
+            candidate_summary = self._render_memory_summary(
+                list(reversed(candidate_turns_newest_first))
             )
-            if self._estimate_token_count("\n\n".join(blocks + [block])) > memory_budget:
+            if self._estimate_token_count(candidate_summary) > memory_budget:
                 break
-            blocks.append(block)
+            retained_turns_newest_first = candidate_turns_newest_first
 
-        if not blocks:
-            first_turn = selected_turns[-1]
-            return (
-                f"[Recent Turn 1]\n"
-                f"User: {self._truncate_chars(first_turn.question, self.settings.chat_memory_question_max_chars)}\n"
-                f"Assistant: {self._truncate_chars(first_turn.answer, self.settings.chat_memory_answer_max_chars)}"
-            )
-        return "\n\n".join(blocks)
+        if not retained_turns_newest_first:
+            return self._render_memory_summary([selected_turns[-1]])
+        return self._render_memory_summary(list(reversed(retained_turns_newest_first)))
 
     def record_turn(
         self,
@@ -136,6 +129,21 @@ class ChatMemoryService:
 
     def _estimate_token_count(self, text: str) -> int:
         return self.token_budget_service.estimate_token_count(text)
+
+    def _render_memory_summary(self, turns: list[ChatMemoryTurn]) -> str:
+        return "\n\n".join(
+            self._build_memory_block(index=index, turn=turn)
+            for index, turn in enumerate(turns, start=1)
+        )
+
+    def _build_memory_block(self, *, index: int, turn: ChatMemoryTurn) -> str:
+        question = self._truncate_chars(turn.question, self.settings.chat_memory_question_max_chars)
+        answer = self._truncate_chars(turn.answer, self.settings.chat_memory_answer_max_chars)
+        return (
+            f"[Recent Turn {index}]\n"
+            f"User: {question}\n"
+            f"Assistant: {answer}"
+        )
 
     @staticmethod
     def _filter_turns_for_document(

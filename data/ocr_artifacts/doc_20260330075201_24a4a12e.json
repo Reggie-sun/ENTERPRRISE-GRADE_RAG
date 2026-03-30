@@ -1,0 +1,96 @@
+{
+  "document_id": "doc_20260330075201_24a4a12e",
+  "file_name": "齿条安装SOP .docx",
+  "source_path": "/app/data/uploads/doc_20260330075201_24a4a12e__SOP.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 14,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n-0.01mm\n0-10mm\n0106\n山测\n009\n80\n70%\n\n品\n山测\n品\n20",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "-0.01mm",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.9515774846076965
+    },
+    {
+      "text": "0-10mm",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.9890789985656738
+    },
+    {
+      "text": "0106",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.7991555333137512
+    },
+    {
+      "text": "山测",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.9995100498199463
+    },
+    {
+      "text": "009",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.910511314868927
+    },
+    {
+      "text": "80",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.41480422019958496
+    },
+    {
+      "text": "70%",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.48440566658973694
+    },
+    {
+      "text": "品",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.8974434733390808
+    },
+    {
+      "text": "山测",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.9968608617782593
+    },
+    {
+      "text": "品",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.41090455651283264
+    },
+    {
+      "text": "20",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.5156322121620178
+    }
+  ]
+}

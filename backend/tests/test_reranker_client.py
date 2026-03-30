@@ -186,6 +186,51 @@ def test_reranker_client_uses_openai_compatible_provider(tmp_path: Path, monkeyp
     assert reranked[1].score == 0.77
 
 
+def test_reranker_client_backfills_missing_provider_results_with_remaining_candidates(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _build_settings(
+        tmp_path,
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    _persist_openai_reranker_route(system_config_service)
+    client = RerankerClient(settings, system_config_service=system_config_service)
+
+    class FakeResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        @staticmethod
+        def json() -> dict[str, object]:
+            return {
+                "results": [
+                    {"index": 1, "relevance_score": 0.95},
+                    {"index": 1, "relevance_score": 0.91},
+                    {"index": 99, "relevance_score": 0.88},
+                    {"index": "bad", "relevance_score": 0.77},
+                ]
+            }
+
+    monkeypatch.setattr(
+        "backend.app.rag.rerankers.client.httpx.get",
+        lambda url, **kwargs: FakeResponse(),
+    )
+    monkeypatch.setattr(
+        "backend.app.rag.rerankers.client.httpx.post",
+        lambda url, **kwargs: FakeResponse(),
+    )
+
+    reranked = client.rerank(query="servo reset", candidates=_build_candidates(), top_n=3)
+
+    assert [item.chunk_id for item in reranked] == ["chunk_2", "chunk_1", "chunk_3"]
+    assert reranked[0].score == 0.95
+    assert reranked[1].score == _build_candidates()[0].score
+    assert reranked[2].score == _build_candidates()[2].score
+
+
 def test_reranker_client_rejects_non_ascii_api_key(tmp_path: Path) -> None:
     settings = _build_settings(
         tmp_path,
@@ -330,6 +375,33 @@ def test_reranker_heuristic_gently_prefers_higher_quality_ocr_candidates(tmp_pat
     assert [item.chunk_id for item in reranked] == ["chunk_high", "chunk_low"]
 
 
+def test_reranker_heuristic_uses_chinese_overlap_for_fallback_ranking(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path, reranker_provider="heuristic")
+    client = RerankerClient(settings)
+    candidates = [
+        RetrievedChunk(
+            chunk_id="chunk_generic",
+            document_id="doc_generic",
+            document_name="通用维修说明",
+            text="伺服电机复位前先释放急停，再检查报警信号。",
+            score=0.92,
+            source_path="/tmp/doc_generic.txt",
+        ),
+        RetrievedChunk(
+            chunk_id="chunk_exact",
+            document_id="doc_exact",
+            document_name="真空阀排障指南",
+            text="真空阀异常时先检查供气压力，再检查阀体污染情况。",
+            score=0.78,
+            source_path="/tmp/doc_exact.txt",
+        ),
+    ]
+
+    reranked = client.rerank(query="真空阀异常怎么处理", candidates=candidates, top_n=2)
+
+    assert [item.chunk_id for item in reranked] == ["chunk_exact", "chunk_generic"]
+
+
 def test_reranker_client_pins_default_route_to_heuristic_by_policy(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -406,6 +478,87 @@ def test_query_profile_service_falls_back_to_heuristic_when_openai_reranker_is_u
     def fake_post(url: str, **kwargs):
         request = httpx.Request("POST", url)
         raise httpx.RequestError("connection failed", request=request)
+
+    monkeypatch.setattr(
+        "backend.app.rag.rerankers.client.httpx.get",
+        lambda url, **kwargs: FakeHealthResponse(),
+    )
+    monkeypatch.setattr("backend.app.rag.rerankers.client.httpx.post", fake_post)
+
+    reranked, strategy = service.rerank_with_fallback(
+        query="servo reset",
+        candidates=_build_candidates(),
+        profile=profile,
+        reranker_client=client,
+    )
+
+    assert strategy == "heuristic"
+    assert len(reranked) == 3
+    assert reranked[0].chunk_id == "chunk_2"
+
+
+def test_reranker_client_surfaces_retry_after_when_provider_is_rate_limited(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _build_settings(
+        tmp_path,
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    _persist_openai_reranker_route(system_config_service)
+    client = RerankerClient(settings, system_config_service=system_config_service)
+
+    class FakeHealthResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_post(url: str, **kwargs):
+        request = httpx.Request("POST", url)
+        response = httpx.Response(status_code=429, request=request, headers={"Retry-After": "7"})
+        raise httpx.HTTPStatusError("rate limited", request=request, response=response)
+
+    monkeypatch.setattr(
+        "backend.app.rag.rerankers.client.httpx.get",
+        lambda url, **kwargs: FakeHealthResponse(),
+    )
+    monkeypatch.setattr("backend.app.rag.rerankers.client.httpx.post", fake_post)
+
+    with pytest.raises(RuntimeError, match=r"rate limited"):
+        client.rerank(query="servo reset", candidates=_build_candidates(), top_n=2)
+
+    status = client.get_runtime_status()
+
+    assert status["ready"] is False
+    assert status["lock_active"] is True
+    assert status["lock_source"] == "request"
+    assert "Retry-After: 7s." in str(status["detail"])
+
+
+def test_query_profile_service_falls_back_to_heuristic_when_openai_reranker_is_rate_limited(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _build_settings(
+        tmp_path,
+        reranker_provider="heuristic",
+        reranker_base_url="http://127.0.0.1:8001/v1",
+    )
+    system_config_service = SystemConfigService(settings)
+    _persist_openai_reranker_route(system_config_service)
+    client = RerankerClient(settings, system_config_service=system_config_service)
+    service = QueryProfileService(settings)
+    profile = service.resolve(purpose="chat", requested_mode="accurate", requested_top_k=3)
+
+    class FakeHealthResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_post(url: str, **kwargs):
+        request = httpx.Request("POST", url)
+        response = httpx.Response(status_code=429, request=request, headers={"Retry-After": "5"})
+        raise httpx.HTTPStatusError("rate limited", request=request, response=response)
 
     monkeypatch.setattr(
         "backend.app.rag.rerankers.client.httpx.get",
