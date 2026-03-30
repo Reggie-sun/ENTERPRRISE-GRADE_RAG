@@ -1,0 +1,176 @@
+{
+  "snapshot_id": "rsp_4a8380bd7f9f4cfc",
+  "trace_id": "trc_d5a07523334f455d",
+  "request_id": "req_acbe71d719c4473d",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T02:51:38.067846Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "E204 怎么处理",
+    "top_k": 5,
+    "mode": null,
+    "session_id": "sess_8193564cc5dd42378c877544c18243f1",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "E204 怎么处理",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326073110_ce704d3e-chunk-3",
+      "document_id": "doc_20260326073110_ce704d3e",
+      "document_name": "Linux_必备命令_完整精简排版 (1).docx",
+      "snippet": "e_204\n    interval: 600\n\n- name: Final\n    type: select\n    proxies: [Proxy, DIRECT]\n\n# ===== 规则 =====\nrules:\n  - MATCH,Proxy\n\n安装conda\n\n# 1) 下载 Miniconda 安装包（64 位 Linux）\n\nwget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh\n\n# 2) 运行安装（一路回车，Prefix 默认在 ~/miniconda3）\n\nbash miniconda.sh -b -p $HOME/miniconda3\n\n# 3) 初始化 shell\n\n~/miniconda3/bin/conda init\n\n# 4) 让设置生效（或重启终端）\n\nexec $SHELL\n\nconda install -n base -c conda-forge mamba\n\n#5）接受\n\nconda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main\n\nconda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r\n\n创建深度学习环境\n\nconda create -n dl python=3.10 -y\n\nconda activate dl\n\n根据自己cuda版本（nvidia-smi显示）\n\npip install --pre torch torchvision torchaudio --index-url",
+      "score": 0.79736328125,
+      "source_path": "/app/data/uploads/doc_20260326073110_ce704d3e__Linux____1.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.485827,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "先记录报警出现时的现场状态；2. 核对 `DB2.DBX186.0` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：机床当前处于安全模式 2，部分速度、动作或权限会受到限制。\n- 问题：现场先查什么？回答：先确认是谁切换到了安全模式，以及当前作业是否确实需要该模式。\n- 问题：具体怎么处理？回答：如果是在调试或维修，按该模式要求作业；如果是误切换，按规定切回正常模式；切换前确认现场无人处于危险区域。\n- 问题：什么状态下才能恢复？回答：机床回到预期的运行模式、相关联锁正确、操作权限与当前工作一致，才算处理完成。\n\n#### 700049 安全模式 3 已选择\n- 信号地址：`DB2.DBX186.1`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX186.1`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先记录报警出现时的现场状态；2. 核对 `DB2.DBX186.1` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：机床处于更高限制级别的安全模式 3，通常只允许更受控的动作。\n- 问题：现场先查什么？回答：先确认当前是否为维修、校验或特殊操作工况；再确认模式切换开关状态和权限设置。\n- 问题：具体怎么处理？回答：如果不是当前需要的模式，按流程切回正常模式；如果需要该模式，严格按低速、受控操作执行，不得误认为设备故障强行取消。\n- 问题：什么状态下才能恢复？回答：安全模式与当前作业相符、所有联锁正常、切换后系统无附加报警，才可继续。\n\n#### 700061 天窗未关闭\n- 信号地址：`DB2.DBX187.5`\n- 诊断判定：在",
+      "score": -3.048828125,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 10.21820723319842,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-20",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：液压站油箱油位低于下限，液压动作可能不稳定。\n- 问题：现场先查什么？回答：先看油箱液位窗，再沿管路、接头、阀块和执行元件周边查看是否漏油。\n- 问题：具体怎么处理？回答：补充指定型号液压油到标准液位；如果油位明显下降，必须找到泄漏点后再运行；同时检查液位开关是否正常。\n- 问题：什么状态下才能恢复？回答：液位恢复、无新增漏油、液压动作压力稳定，才可清除报警继续使用。\n\n#### 700026 液压站补压超时\n- 信号地址：`DB2.DBX183.2`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX183.2`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先记录报警出现时的现场状态；2. 核对 `DB2.DBX183.2` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：液压系统在规定时间内没能把压力补到设定值，可能是泵弱、泄漏或设定异常。\n- 问题：现场先查什么？回答：先看液压泵是否运转、压力表能否上升，再看系统是否有明显泄漏和溢流阀是否异常回油。\n- 问题：具体怎么处理？回答：检查液压泵、联轴器和电机；检查压力传感器、溢流阀设定和管路泄漏；必要时隔离分支回路确认哪个回路泄压。\n- 问题：什么状态下才能恢复？回答：液压站补压时间恢复正常、压力能稳定维持、不再频繁补压，才可以继续运行。\n\n#### 700027 液压站电源未就绪\n- 信号地址：`DB2.DBX183.3`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX183.3`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；",
+      "score": -3.15625,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 9.95298649373705,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326073110_ce704d3e-chunk-3",
+      "document_id": "doc_20260326073110_ce704d3e",
+      "document_name": "Linux_必备命令_完整精简排版 (1).docx",
+      "snippet": "e_204\n    interval: 600\n\n- name: Final\n    type: select\n    proxies: [Proxy, DIRECT]\n\n# ===== 规则 =====\nrules:\n  - MATCH,Proxy\n\n安装conda\n\n# 1) 下载 Miniconda 安装包（64 位 Linux）\n\nwget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh\n\n# 2) 运行安装（一路回车，Prefix 默认在 ~/miniconda3）\n\nbash miniconda.sh -b -p $HOME/miniconda3\n\n# 3) 初始化 shell\n\n~/miniconda3/bin/conda init\n\n# 4) 让设置生效（或重启终端）\n\nexec $SHELL\n\nconda install -n base -c conda-forge mamba\n\n#5）接受\n\nconda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main\n\nconda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r\n\n创建深度学习环境\n\nconda create -n dl python=3.10 -y\n\nconda activate dl\n\n根据自己cuda版本（nvidia-smi显示）\n\npip install --pre torch torchvision torchaudio --index-url",
+      "score": 0.79736328125,
+      "source_path": "/app/data/uploads/doc_20260326073110_ce704d3e__Linux____1.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.485827,
+      "lexical_score": null,
+      "fused_score": 0.015625,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "先记录报警出现时的现场状态；2. 核对 `DB2.DBX186.0` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：机床当前处于安全模式 2，部分速度、动作或权限会受到限制。\n- 问题：现场先查什么？回答：先确认是谁切换到了安全模式，以及当前作业是否确实需要该模式。\n- 问题：具体怎么处理？回答：如果是在调试或维修，按该模式要求作业；如果是误切换，按规定切回正常模式；切换前确认现场无人处于危险区域。\n- 问题：什么状态下才能恢复？回答：机床回到预期的运行模式、相关联锁正确、操作权限与当前工作一致，才算处理完成。\n\n#### 700049 安全模式 3 已选择\n- 信号地址：`DB2.DBX186.1`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX186.1`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先记录报警出现时的现场状态；2. 核对 `DB2.DBX186.1` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：机床处于更高限制级别的安全模式 3，通常只允许更受控的动作。\n- 问题：现场先查什么？回答：先确认当前是否为维修、校验或特殊操作工况；再确认模式切换开关状态和权限设置。\n- 问题：具体怎么处理？回答：如果不是当前需要的模式，按流程切回正常模式；如果需要该模式，严格按低速、受控操作执行，不得误认为设备故障强行取消。\n- 问题：什么状态下才能恢复？回答：安全模式与当前作业相符、所有联锁正常、切换后系统无附加报警，才可继续。\n\n#### 700061 天窗未关闭\n- 信号地址：`DB2.DBX187.5`\n- 诊断判定：在",
+      "score": -3.048828125,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 10.21820723319842,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260321070337_445684f4-chunk-20",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：液压站油箱油位低于下限，液压动作可能不稳定。\n- 问题：现场先查什么？回答：先看油箱液位窗，再沿管路、接头、阀块和执行元件周边查看是否漏油。\n- 问题：具体怎么处理？回答：补充指定型号液压油到标准液位；如果油位明显下降，必须找到泄漏点后再运行；同时检查液位开关是否正常。\n- 问题：什么状态下才能恢复？回答：液位恢复、无新增漏油、液压动作压力稳定，才可清除报警继续使用。\n\n#### 700026 液压站补压超时\n- 信号地址：`DB2.DBX183.2`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX183.2`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先记录报警出现时的现场状态；2. 核对 `DB2.DBX183.2` 是否回零；3. 查机械、传感器和接线；4. 处理后做一次低速试运行。\n- 问题：这个报警说明什么？回答：液压系统在规定时间内没能把压力补到设定值，可能是泵弱、泄漏或设定异常。\n- 问题：现场先查什么？回答：先看液压泵是否运转、压力表能否上升，再看系统是否有明显泄漏和溢流阀是否异常回油。\n- 问题：具体怎么处理？回答：检查液压泵、联轴器和电机；检查压力传感器、溢流阀设定和管路泄漏；必要时隔离分支回路确认哪个回路泄压。\n- 问题：什么状态下才能恢复？回答：液压站补压时间恢复正常、压力能稳定维持、不再频繁补压，才可以继续运行。\n\n#### 700027 液压站电源未就绪\n- 信号地址：`DB2.DBX183.3`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX183.3`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；",
+      "score": -3.15625,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 9.95298649373705,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "你提供的上下文中没有关于如何处理 E204 的信息。因此，无法直接从这些内容中得出 E204 的处理方法。请提供更具体的关于 E204 的描述或错误代码含义。",
+    "answer_chars": 79,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

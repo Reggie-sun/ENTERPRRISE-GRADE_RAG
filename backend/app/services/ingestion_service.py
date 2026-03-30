@@ -199,22 +199,38 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
                 ocr_result,
                 ocr_result.warning_message,
             )
-        if suffix != ".pdf" or not self.parser.should_attempt_pdf_ocr(
-            parsed_document.text,
-            min_chars=self.settings.ocr_pdf_native_text_min_chars,
-        ):
+        if suffix != ".pdf":
+            return parsed_document, None, None
+
+        native_page_texts = self.parser.extract_pdf_page_texts(source_path)
+        pages_needing_ocr = [
+            page_index
+            for page_index, page_text in enumerate(native_page_texts, start=1)
+            if self.parser.should_attempt_pdf_ocr(
+                page_text,
+                min_chars=self.settings.ocr_pdf_native_text_min_chars,
+            )
+        ]
+        if not pages_needing_ocr:
             return parsed_document, None, None
 
         if on_stage is not None:
             on_stage("ocr_processing", 20)
         try:
-            ocr_result = self.ocr_client.extract_pdf_text(source_path=source_path, filename=filename)
+            ocr_result = self.ocr_client.extract_pdf_text(
+                source_path=source_path,
+                filename=filename,
+                page_numbers=pages_needing_ocr,
+            )
         except RuntimeError as exc:
             if parsed_document.text:  # 原生文本仍然可用时，保留结果并标记 partial_failed。
                 return parsed_document, None, str(exc)
             raise
 
-        merged_text = self._merge_native_and_ocr_text(parsed_document.text, ocr_result.text)
+        merged_text = self._merge_pdf_native_and_ocr_text(
+            native_page_texts=native_page_texts,
+            ocr_result=ocr_result,
+        )
         normalized_text = self.parser.normalize_text(merged_text)
         if not normalized_text:
             raise ValueError(f"No extractable text found in '{filename}'.")
@@ -378,6 +394,42 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
         if normalized_ocr in normalized_native:
             return normalized_native
         return f"{normalized_native}\n\n{normalized_ocr}"
+
+    @classmethod
+    def _merge_pdf_native_and_ocr_text(
+        cls,
+        *,
+        native_page_texts: list[str],
+        ocr_result: OCRExtractionResult,
+    ) -> str:  # 对 PDF 按页合并原生文本与 OCR fallback，避免少数缺字页强制整本文档都走 OCR。
+        if not native_page_texts:
+            return ocr_result.text
+
+        ocr_page_texts = cls._group_ocr_text_by_page(ocr_result)
+        merged_pages: list[str] = []
+        for page_index, native_page_text in enumerate(native_page_texts, start=1):
+            ocr_page_text = ocr_page_texts.get(page_index, "")
+            merged_pages.append(cls._merge_native_and_ocr_text(native_page_text, ocr_page_text))
+
+        # 个别 OCR provider 可能返回无法映射页码的片段；此时把剩余文本附加到末尾，避免证据直接丢失。
+        unmapped_ocr_text = ocr_page_texts.get(None, "").strip()
+        if unmapped_ocr_text:
+            merged_pages.append(unmapped_ocr_text)
+        return "\n\n".join(page_text for page_text in merged_pages if page_text.strip())
+
+    @staticmethod
+    def _group_ocr_text_by_page(ocr_result: OCRExtractionResult) -> dict[int | None, str]:  # 把 OCR 结果按页聚合，供按页合并 PDF 文本复用。
+        grouped: dict[int | None, list[str]] = {}
+        for segment in ocr_result.segments:
+            normalized = segment.text.strip()
+            if not normalized:
+                continue
+            grouped.setdefault(segment.page_no, []).append(normalized)
+        return {
+            page_no: "\n".join(lines).strip()
+            for page_no, lines in grouped.items()
+            if lines
+        }
 
 
 def get_document_ingestion_service() -> DocumentIngestionService:  # 提供 FastAPI 或其他调用方使用的依赖入口。

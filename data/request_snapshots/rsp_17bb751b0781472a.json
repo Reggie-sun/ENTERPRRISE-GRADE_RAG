@@ -1,0 +1,75 @@
+{
+  "snapshot_id": "rsp_17bb751b0781472a",
+  "trace_id": "trc_af256c11b5ec48df",
+  "request_id": "req_b08265a7ecd1418a",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "failed",
+  "occurred_at": "2026-03-30T06:03:24.735628Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "倒角标准及规范",
+    "top_k": null,
+    "mode": "accurate",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 如何判断零件可不可以倒角\nAssistant: 根据提供的上下文信息，可以判断零件是否可以倒角的方法如下：\n\n1. 根据零件类别分类：\n   - 钣金件：如无特别要求，都应倒角，去毛刺。\n   - 机加工件：如无特别要求，所有不涉及刃口及刀口的边缘均需倒角，所有配合处理要求轴和孔配合的，都应倒角。\n\n这些是基于零件类型来决定是否需要倒角的基本准则。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "倒角标准及规范",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "timed out"
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_accurate",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

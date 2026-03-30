@@ -41,6 +41,7 @@ When you need the concrete nested-field contract for this repository, prefer che
 - [MAIN_CONTRACT_MATRIX.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/MAIN_CONTRACT_MATRIX.md)
 
 Use `V1_PLAN.md` and `RAG架构.md` for rationale and scope, but treat `MAIN_CONTRACT_MATRIX.md` as the quickest reference for stable-vs-diagnostic field boundaries.
+When there is any wording mismatch between the longer docs and the matrix, prefer the matrix for concrete field names and envelope shape, then bring the longer docs back into alignment.
 
 Treat these as **diagnostic surfaces**, useful for debugging but not default stability targets:
 

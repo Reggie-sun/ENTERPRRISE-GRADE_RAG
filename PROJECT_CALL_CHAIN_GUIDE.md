@@ -38,14 +38,40 @@
 3. Retrieval 链
 
 - `backend/app/services/retrieval_service.py`
-- `RetrievalService.search -> QueryProfileService.resolve`
-- `RetrievalService.search -> EmbeddingClient.embed_texts`
-- `RetrievalService.search -> DocumentService.is_document_readable`
-- `RetrievalService.search -> DocumentService.get_document_readability_map`
-- `RetrievalService.search -> RetrievalService._collect_candidates`
+- `RetrievalService.search -> RetrievalService.search_candidates`
+- `RetrievalService.search_candidates -> QueryProfileService.resolve`
+- `RetrievalService.search_candidates -> EmbeddingClient.embed_texts`
+- `RetrievalService.search_candidates -> DocumentService.is_document_readable`
+- `RetrievalService.search_candidates -> DocumentService.get_document_readability_map`
+- `RetrievalService.search_candidates -> RetrievalService._collect_candidates`
+- `RetrievalService.search_candidates -> RetrievalService._response_score`
 - `RetrievalService._collect_candidates -> RetrievalQueryRouter.resolve_branch_weights`
 - `RetrievalService._collect_candidates -> RetrievalService._fuse_candidates`
 - `RetrievalService._fuse_candidates -> RetrievalQueryRouter.fixed_branch_weights`
+- `RetrievalService.compare_rerank -> RetrievalService.search`
+- `RetrievalService.compare_rerank -> RerankerClient.rerank / rerank_heuristic / rerank_provider_candidate`
+- `RetrievalService.compare_rerank -> RerankCanaryService.record_compare_sample`
+
+4. Chat / SOP 链
+
+- `backend/app/services/chat_service.py`
+- `ChatService.answer -> ChatService._build_citations`
+- `ChatService.stream_answer_sse -> ChatService._build_citations`
+- `ChatService._build_citations -> RetrievalService.search_candidates`
+- `ChatService._build_citations -> QueryProfileService.rerank_with_fallback`
+- `backend/app/services/sop_generation_service.py`
+- `SopGenerationService._generate_draft -> SopGenerationService._build_citations`
+- `SopGenerationService._stream_draft_sse -> SopGenerationService._build_citations`
+- `SopGenerationService._build_citations -> RetrievalService.search_candidates`
+- `SopGenerationService._build_citations -> RetrievalService.build_observability_details`
+- `SopGenerationService._build_citations -> QueryProfileService.rerank_with_fallback`
+
+5. Query profile / rerank 链
+
+- `backend/app/services/query_profile_service.py`
+- `QueryProfileService.rerank_with_fallback -> QueryProfileService._resolve_effective_rerank_strategy`
+- `QueryProfileService.rerank_with_fallback -> RerankerClient.rerank`
+- `QueryProfileService.rerank_with_fallback -> RerankerClient.rerank_heuristic`
 
 同时你也要记住它现在的边界：
 
@@ -458,60 +484,101 @@
 
 ### 第 8 层：`backend/app/services/retrieval_service.py` -> `search`
 
-这是检索真正的业务入口。
+现在这个函数已经变成“对外薄入口”。
 
-这个函数做什么？
+它做什么？
 
-1. 先解析查询档位
-2. 校验 `document_id` 权限
-3. 生成 query embedding
-4. 调 vector store 做向量召回
-5. 视策略决定是否补 lexical recall
-6. 做 fusion
-7. 再把结果整理成 `RetrievedChunk`
+- 调 `search_candidates(...)`
+- 强制 `truncate_to_top_k=True`
+- 把内部结果包成 `RetrievalResponse`
 
 人话解释：
 
-它就是“检索总控室”。
-
-真正和检索有关的关键动作，都是在这里串起来的。
+- `search()` 现在主要服务公开接口 `/api/v1/retrieval/search`
+- 它负责保持外部契约稳定
+- 但不再承担全部检索细节
 
 为什么这样设计？
 
-因为这个项目不想让：
+因为现在系统内部已经有两种不同需求：
 
-- endpoint 自己调 embedding
-- chat 自己写一份检索
-- SOP 再写一份检索
+- 对外检索页：
+  只需要最终 `top_k`
+- chat / SOP：
+  需要更大的 fusion 候选池，给后置 rerank 使用
 
-所以要有一个统一的检索服务入口。
+如果还把所有逻辑都塞在 `search()` 里，就没法同时满足这两种需求。
 
 它和上一层是什么关系？
 
-- endpoint 只负责接请求
-- `RetrievalService.search()` 才负责真正组织检索流程
+- endpoint 还是只调 `RetrievalService.search()`
+- 但 `search()` 现在只是公共外壳
+- 真正的检索工作已经下沉到下一层 `search_candidates()`
 
-这一层是目前 `codegraph` 最有价值的地方，因为主调用链已经能直接跑出来：
+这一层 `codegraph` 已验证到最关键的一条关系：
 
-- `RetrievalService.search -> QueryProfileService.resolve`
-- `RetrievalService.search -> EmbeddingClient.embed_texts`
-- `RetrievalService.search -> DocumentService.is_document_readable`
-- `RetrievalService.search -> DocumentService.get_document_readability_map`
-- `RetrievalService.search -> RetrievalService._collect_candidates`
+- `RetrievalService.search -> RetrievalService.search_candidates`
 
-这几条关系能帮你建立一个正确顺序：
+这条关系很重要，因为它说明：
+
+- 现在要看真实检索主线，不能只盯 `search()`
+- 你应该往下继续读 `search_candidates()`
+
+### 第 9 层：`backend/app/services/retrieval_service.py` -> `search_candidates`
+
+这才是当前检索真正的工作总控室。
+
+这个函数做什么？
+
+1. 先 resolve 查询档位
+2. 校验 `document_id` 权限
+3. 生成 query embedding
+4. 调 vector store 做向量召回
+5. 交给 `_collect_candidates()` 收集和融合候选
+6. 做权限过滤
+7. 用 `_response_score()` 把内部排序分转换成对外相关度分
+8. 再整理成 `RetrievedChunk`
+
+人话解释：
+
+它负责把“内部检索过程”和“外部返回结构”接起来。
+
+为什么这样设计？
+
+因为现在项目已经要同时服务三条链：
+
+- retrieval 搜索页
+- chat
+- SOP
+
+它们都需要同一套召回逻辑，但不一定都需要同一种“最终截断方式”。
+所以这里把“拿候选”和“截到多少条”拆开了。
+
+它和上一层是什么关系？
+
+- `search()` 是公共门面
+- `search_candidates()` 是真正干活的内层
+
+这里 `codegraph` 已经能直接跑出当前真实关系：
+
+- `RetrievalService.search_candidates -> QueryProfileService.resolve`
+- `RetrievalService.search_candidates -> DocumentService.is_document_readable`
+- `RetrievalService.search_candidates -> EmbeddingClient.embed_texts`
+- `RetrievalService.search_candidates -> RetrievalService._collect_candidates`
+- `RetrievalService.search_candidates -> DocumentService.get_document_readability_map`
+- `RetrievalService.search_candidates -> RetrievalService._response_score`
+
+这几条关系能帮你建立一个当前版本正确顺序：
 
 1. 先定查询档位
 2. 再做权限预检查
 3. 再生成 query embedding
 4. 再收集候选
-5. 最后才整理结果并做可读性过滤
+5. 再做输出分数归一化和结果组装
 
-这比只盯着一坨长函数更容易抓主线。
+### 第 10 层：`backend/app/services/query_profile_service.py` -> `resolve`
 
-### 第 9 层：`backend/app/services/query_profile_service.py` -> `resolve`
-
-`RetrievalService.search()` 里第一件重要的事，就是先调这个函数。
+`RetrievalService.search_candidates()` 里第一件重要的事，就是先调这个函数。
 
 它做什么？
 
@@ -541,7 +608,7 @@
 
 它和上一层是什么关系？
 
-- `RetrievalService.search()` 不直接手写各种 magic number
+- `RetrievalService.search_candidates()` 不直接手写各种 magic number
 - 它先让 `QueryProfileService` 把“本次检索该怎么跑”算出来
 
 配置依赖：
@@ -552,6 +619,8 @@
 - `query_accurate_top_k_default`
 - `query_accurate_candidate_multiplier`
 - `query_accurate_lexical_top_k_default`
+- `query_fast_rerank_top_n`
+- `query_accurate_rerank_top_n`
 
 如果这些配置没写会怎样？
 
@@ -559,9 +628,9 @@
 - 系统仍然能跑
 - 但你的 fast/accurate 行为就完全依赖默认基线
 
-### 第 10 层：`backend/app/rag/embeddings/client.py` -> `embed_texts`
+### 第 11 层：`backend/app/rag/embeddings/client.py` -> `embed_texts`
 
-在拿到 `QueryProfile` 后，`RetrievalService.search()` 会把 query 先变成向量。
+在拿到 `QueryProfile` 后，`RetrievalService.search_candidates()` 会把 query 先变成向量。
 
 这个函数做什么？
 
@@ -581,7 +650,7 @@
 
 它和上一层是什么关系？
 
-- `RetrievalService.search()` 负责组织流程
+- `RetrievalService.search_candidates()` 负责组织流程
 - `EmbeddingClient.embed_texts()` 负责把 query 变成可检索的向量
 
 配置依赖：
@@ -597,7 +666,7 @@
 - `mock` 模式下还能跑，用伪向量
 - 非 mock 模式下，如果远端不可达，会在这里抛错
 
-### 第 11 层：`backend/app/rag/vectorstores/qdrant_store.py` -> `search`
+### 第 12 层：`backend/app/rag/vectorstores/qdrant_store.py` -> `search`
 
 query 有了向量之后，会进这一层。
 
@@ -636,7 +705,7 @@ query 有了向量之后，会进这一层。
 - 如果 collection 不存在，会直接返回空结果
 - 如果服务地址不可达，在更底层 client 调用时会报错
 
-### 第 12 层：`backend/app/rag/retrievers/lexical_retriever.py` -> `QdrantLexicalRetriever.search`
+### 第 13 层：`backend/app/rag/retrievers/lexical_retriever.py` -> `QdrantLexicalRetriever.search`
 
 这一层是 hybrid retrieval 的另一条支路。
 
@@ -680,7 +749,7 @@ query 有了向量之后，会进这一层。
 - 代码会走 fallback token 路径
 - 但系统不会因为这个直接起不来
 
-### 第 13 层：`backend/app/services/retrieval_service.py` -> `_collect_candidates`
+### 第 14 层：`backend/app/services/retrieval_service.py` -> `_collect_candidates`
 
 这一层是“把两条召回支路收口”的地方。
 
@@ -720,7 +789,7 @@ query 有了向量之后，会进这一层。
 - 不是 lexical retriever 决定最终权重
 - 而是 `_collect_candidates()` 先判断“本次 query 用什么分支策略”，再把候选交给融合层
 
-### 第 14 层：`backend/app/services/retrieval_service.py` -> `_fuse_candidates`
+### 第 15 层：`backend/app/services/retrieval_service.py` -> `_fuse_candidates`
 
 这一层是 hybrid retrieval 最关键的一层。
 
@@ -765,6 +834,19 @@ RRF 的好处是：
 - 一旦没传 branch weights，融合层会自己回退到 fixed baseline
 - 也就是说，系统把“可扩展”和“可回退”都收在了融合层，不会把风险散到别的模块
 
+这里再补一个当前版本新加的小点：
+
+- `_fuse_candidates()` 产出的 `score` 是内部融合原始分
+- `search_candidates()` 后面还会调 `_response_score()`
+- 把 hybrid 的原始 RRF 量级归一化成更可解释的对外 `score`
+
+所以现在你要区分两层分数：
+
+- `fused_score`
+  真正的内部排序依据
+- `score`
+  返回给前端、chat、SOP 的对外相关度分
+
 配置依赖：
 
 - `retrieval_strategy_default`
@@ -781,9 +863,9 @@ RRF 的好处是：
 - 会走 fixed fallback
 - 也就是保持当前稳定基线
 
-到这里，retrieval 主链路就算完整闭环了：
+到这里，retrieval 主链路当前版本才算完整闭环：
 
-`retrieval endpoint -> RetrievalService.search -> QueryProfileService.resolve -> EmbeddingClient.embed_texts -> QdrantVectorStore.search -> QdrantLexicalRetriever.search -> _collect_candidates -> _fuse_candidates`
+`retrieval endpoint -> RetrievalService.search -> RetrievalService.search_candidates -> QueryProfileService.resolve -> EmbeddingClient.embed_texts -> QdrantVectorStore.search -> QdrantLexicalRetriever.search -> _collect_candidates -> _fuse_candidates -> _response_score`
 
 ---
 
@@ -791,7 +873,7 @@ RRF 的好处是：
 
 这条链很重要，因为它说明这个项目不是“检索一套、问答再写一套”。
 
-### 第 15 层：`backend/app/api/v1/endpoints/chat.py` -> `ask_question`
+### 第 16 层：`backend/app/api/v1/endpoints/chat.py` -> `ask_question`
 
 这一层和 retrieval endpoint 很像。
 
@@ -812,7 +894,7 @@ RRF 的好处是：
 - `v1/router.py` 把 `/chat/ask` 路径分到这里
 - 这里把 HTTP 请求交给 `ChatService`
 
-### 第 16 层：`backend/app/services/chat_service.py` -> `answer`
+### 第 17 层：`backend/app/services/chat_service.py` -> `answer`
 
 这个函数是问答链的总控室。
 
@@ -840,40 +922,81 @@ RRF 的好处是：
 - endpoint 只把请求交给它
 - 它才真正负责把 retrieval、rerank、generation 串起来
 
-### 第 17 层：`backend/app/services/chat_service.py` -> `_build_citations`
+这层再补一个当前版本已经很重要、但很容易被忽略的点：
+
+- `answer()` 不只是拼回答
+- 它还会在结束时统一写：
+  - event log
+  - request trace
+  - request snapshot
+
+也就是说，chat 链现在已经不是“只要答案”，而是默认带可追踪信息。
+
+### 第 18 层：`backend/app/services/chat_service.py` -> `_build_citations`
 
 这是 chat 和 retrieval 接上的关键点。
 
 它做什么？
 
-1. 调 `RetrievalService.search()`
-2. 拿到检索结果
-3. 调 `QueryProfileService.rerank_with_fallback()`
-4. 把结果转成 `Citation`
+1. 调 `RetrievalService.search_candidates(...)`
+2. 明确传 `truncate_to_top_k=False`
+3. 拿到更大的 fused candidate pool
+4. 调 `QueryProfileService.rerank_with_fallback(...)`
+5. 明确传 `top_n=len(retrieval_results)`
+6. rerank 完整个候选池
+7. 最后再截到 `profile.rerank_top_n`
+8. 把结果转成 `Citation`
 
 为什么这样设计？
 
-因为 chat 需要的不是“裸 chunk”，而是“可直接回给前端的引用结构”。
+因为 chat 现在明确区分了两件事：
 
-所以这里做了一层转换：
+- rerank 输入候选量
+- 最终给 LLM / 前端的 citations 数量
 
-- retrieval 返回的是 `RetrievedChunk`
-- chat 最后需要的是 `Citation`
+这两个量已经不再绑死。
+
+所以这里做了两层转换：
+
+- retrieval 内部先返回较大的 `RetrievedChunk` 候选池
+- rerank 看完整池子
+- chat 最后只保留较小的 `Citation`
 
 它和上一层是什么关系？
 
 - `ChatService.answer()` 负责总流程
 - `_build_citations()` 负责其中的“证据构建”这一步
 
-### 第 18 层：`backend/app/services/query_profile_service.py` -> `rerank_with_fallback`
+这里 `codegraph` 现在已经能验证到的关键关系是：
+
+- `ChatService.answer -> ChatService._build_citations`
+- `ChatService.stream_answer_sse -> ChatService._build_citations`
+- `ChatService._build_citations -> RetrievalService.search_candidates`
+
+这几条关系很重要，因为它们说明：
+
+- 普通问答和流式问答复用的是同一条证据构建链
+- chat 已经不再直接消费 `RetrievalService.search()`
+- 它拿的是“更大的融合候选池”
+
+这一层还做了一个新动作：
+
+- 调 `RetrievalService.build_observability_details(...)`
+- 把 `retrieval_mode / query_type / vector_weight / lexical_weight` 写进 trace/snapshot/details
+
+所以现在如果你排查“为什么这次检索偏向 lexical 或 vector”，不能只看最终 citations，还要看 trace/snapshot。
+
+### 第 19 层：`backend/app/services/query_profile_service.py` -> `rerank_with_fallback`
 
 这一层是 chat 里“重排”的统一入口。
 
 它做什么？
 
 - 先调用 `RerankerClient.rerank()`
+- 先解析当前 runtime 的 `effective_strategy`
 - 如果 provider 出错，而且允许降级
 - 就退回 `rerank_heuristic()`
+- 同时允许上层显式传 `top_n`
 
 为什么这样设计？
 
@@ -885,13 +1008,21 @@ RRF 的好处是：
 
 - provider 能用就走模型级 rerank
 - 不能用就退回 heuristic
+- chat / SOP 都走同一套入口
+- 但上层可以自己决定“这次要让 rerank 看多少个候选”
 
 它和上一层是什么关系？
 
 - `_build_citations()` 拿到了 retrieval 结果
 - `rerank_with_fallback()` 决定这些候选证据如何重排
 
-### 第 19 层：`backend/app/rag/rerankers/client.py` -> `RerankerClient.rerank`
+这一层 `codegraph` 也已经验证到：
+
+- `QueryProfileService.rerank_with_fallback -> QueryProfileService._resolve_effective_rerank_strategy`
+- `QueryProfileService.rerank_with_fallback -> RerankerClient.rerank`
+- `QueryProfileService.rerank_with_fallback -> RerankerClient.rerank_heuristic`
+
+### 第 20 层：`backend/app/rag/rerankers/client.py` -> `RerankerClient.rerank`
 
 这一层是真正执行 rerank 的客户端。
 
@@ -912,7 +1043,7 @@ RRF 的好处是：
 - `QueryProfileService.rerank_with_fallback()` 决定“要不要降级”
 - `RerankerClient.rerank()` 负责真正发请求或做启发式排序
 
-### 第 20 层：`backend/app/rag/generators/client.py` -> `LLMGenerationClient.generate`
+### 第 21 层：`backend/app/rag/generators/client.py` -> `LLMGenerationClient.generate`
 
 这就是问答链最后的生成层。
 
@@ -941,17 +1072,159 @@ RRF 的好处是：
 
 到这里，chat 主链路就闭环了：
 
-`chat endpoint -> ChatService.answer -> _build_citations -> RetrievalService.search -> rerank_with_fallback -> RerankerClient.rerank -> LLMGenerationClient.generate`
+`chat endpoint -> ChatService.answer -> _build_citations -> RetrievalService.search_candidates -> QueryProfileService.rerank_with_fallback -> RerankerClient.rerank -> 截到 citations -> LLMGenerationClient.generate`
 
 ---
 
-## 5. Worker 链为什么是另一条入口
+## 5. SOP 链怎么复用同一套证据链
+
+如果你只看函数名，很容易以为 SOP 是另一套系统。
+
+其实不是。
+
+SOP 生成现在在“找证据”这一步，已经和 chat 尽量共用一条主线。
+
+### 第 22 层：`backend/app/api/v1/endpoints/sops.py`
+
+这个 endpoint 文件做什么？
+
+- 接收：
+  - `/api/v1/sops/generate/document`
+  - `/api/v1/sops/generate/scenario`
+  - `/api/v1/sops/generate/topic`
+- 通过依赖注入拿到 `SopGenerationService`
+- 然后把请求交给：
+  - `generate_from_document()`
+  - `generate_from_scenario()`
+  - `generate_from_topic()`
+
+它和 chat endpoint 的设计是一致的：
+
+- endpoint 薄
+- 复杂逻辑全部下沉到 service
+
+### 第 23 层：`backend/app/services/sop_generation_service.py` -> `_generate_draft` / `_stream_draft_sse`
+
+这一层是 SOP 的总控室。
+
+它做什么？
+
+- 先解析生成目标
+- 组装 search query 和 generation instruction
+- 调 `_build_citations()` 拿证据
+- 调生成模型产出草稿
+- 记录 event log 和 request snapshot
+
+为什么这样设计？
+
+因为 SOP 不是简单问答，它还多了：
+
+- 部门语义
+- 文档模式 / topic 模式 / scenario 模式
+- 文档预览兜底
+
+所以它要有自己的总控层。
+
+### 第 24 层：`backend/app/services/sop_generation_service.py` -> `_build_citations`
+
+这是 SOP 和 retrieval 真正接上的位置。
+
+它做什么？
+
+1. 调 `RetrievalService.search_candidates(...)`
+2. 拿到更大的 fusion 候选池
+3. 调 `RetrievalService.build_observability_details(...)`
+4. 先做部门过滤
+5. 再调 `QueryProfileService.rerank_with_fallback(...)`
+6. 最后截到 `profile.rerank_top_n`
+7. 转成 `SopGenerationCitation`
+
+为什么这样设计？
+
+因为 SOP 和 chat 虽然都复用 retrieval / rerank，但 SOP 还必须额外保证：
+
+- 生成证据符合部门范围
+- document 模式下不串文档
+- retrieval 为空时还能走 document preview fallback
+
+它和上一层是什么关系？
+
+- `_generate_draft()` 负责整条生成链
+- `_build_citations()` 负责其中的证据部分
+
+这里 `codegraph` 已验证到的关系有：
+
+- `SopGenerationService._generate_draft -> SopGenerationService._build_citations`
+- `SopGenerationService._stream_draft_sse -> SopGenerationService._build_citations`
+- `SopGenerationService._build_citations -> RetrievalService.search_candidates`
+- `SopGenerationService._build_citations -> RetrievalService.build_observability_details`
+- `SopGenerationService._build_citations -> QueryProfileService.rerank_with_fallback`
+
+所以现在 chat 和 SOP 在证据链上，已经共享了这条主干：
+
+`fusion candidates -> rerank full pool -> final citations`
+
+---
+
+## 6. 再补一条诊断链：`/api/v1/retrieval/rerank-compare`
+
+这条链不是主业务接口，但对你理解当前 rerank 路由很有帮助。
+
+### 第 25 层：`backend/app/api/v1/endpoints/retrieval.py` -> `compare_rerank_routes`
+
+这个 endpoint 做什么？
+
+- 接收 `POST /api/v1/retrieval/rerank-compare`
+- 通过依赖注入拿到 `RetrievalService`
+- 调 `retrieval_service.compare_rerank(...)`
+
+它和普通 `/retrieval/search` 的区别是：
+
+- 不是只返回一份结果
+- 而是返回“当前配置路由”和 “heuristic 基线”的对比结果
+
+### 第 26 层：`backend/app/services/retrieval_service.py` -> `compare_rerank`
+
+这个函数做什么？
+
+1. 先复用普通 `search()` 拿一批候选
+2. 调 `rerank_heuristic()` 跑 baseline
+3. 调 `rerank()` 跑当前默认路由
+4. 如果 provider 已配置，再显式跑一次 `rerank_provider_candidate()`
+5. 组装 comparison summary 和 recommendation
+6. 调 `RerankCanaryService.record_compare_sample(...)` 落一条 canary 样本
+
+为什么这样设计？
+
+因为它解决的是“要不要把 provider 提升成默认路由”这个问题。
+
+它不是线上主链，而是一个诊断和验证链。
+
+它和上一层是什么关系？
+
+- endpoint 只负责接住对比请求
+- `compare_rerank()` 才真正负责：
+  - 对比 configured vs heuristic
+  - 产出 recommendation
+  - 沉淀 canary 样本
+
+这里 `codegraph` 已验证到的关系有：
+
+- `RetrievalService.compare_rerank -> RetrievalService.search`
+- `RetrievalService.compare_rerank -> RerankerClient.rerank`
+- `RetrievalService.compare_rerank -> RerankerClient.rerank_heuristic`
+- `RetrievalService.compare_rerank -> RerankerClient.rerank_provider_candidate`
+- `RetrievalService.compare_rerank -> RerankCanaryService.record_compare_sample`
+
+---
+
+## 7. Worker 链为什么是另一条入口
 
 这个项目不是所有逻辑都走在线请求。
 
 文档入库是后台异步任务。
 
-### 第 21 层：`backend/app/worker/celery_app.py` -> `celery_app`
+### 第 27 层：`backend/app/worker/celery_app.py` -> `celery_app`
 
 这是 worker 入口。
 
@@ -990,7 +1263,7 @@ Worker 是：
 - 但连不上 broker
 - 或者收不到 ingest 队列里的任务
 
-### 第 22 层：`backend/app/worker/celery_app.py` -> `_register_tasks` / `run_ingest_job_task`
+### 第 28 层：`backend/app/worker/celery_app.py` -> `_register_tasks` / `run_ingest_job_task`
 
 这一步才真正把任务注册进 Celery。
 
@@ -1015,7 +1288,7 @@ Worker 是：
 - `celery_app` 是 worker 运行容器
 - `run_ingest_job_task` 是容器里真正执行的业务任务
 
-### 第 23 层：`backend/app/services/document_service.py` -> `run_ingest_job`
+### 第 29 层：`backend/app/services/document_service.py` -> `run_ingest_job`
 
 这一层就是异步入库真正的业务入口。
 
@@ -1044,7 +1317,7 @@ Worker 是：
 
 ---
 
-## 6. 配置层为什么你一定要一起看
+## 8. 配置层为什么你一定要一起看
 
 如果你想真正看懂这个项目，`backend/app/core/config.py` 不能跳过。
 
@@ -1073,6 +1346,9 @@ Worker 是：
 - `embedding_model`
 - `reranker_provider`
 - `reranker_model`
+- `reranker_default_strategy`
+- `reranker_timeout_seconds`
+- `reranker_failure_cooldown_seconds`
 - `llm_provider`
 - `llm_model`
 
@@ -1100,6 +1376,14 @@ Worker 是：
 - `retrieval_hybrid_exact_*`
 - `retrieval_hybrid_semantic_*`
 - `retrieval_hybrid_mixed_*`
+- `retrieval_query_classifier_exact_signal_threshold`
+- `retrieval_query_classifier_semantic_signal_threshold`
+
+8. 运行时观测与诊断
+
+- `request_trace_dir`
+- `request_snapshot_dir`
+- `rerank_canary_dir`
 
 如果 `.env` 里没配会怎样？
 
@@ -1113,7 +1397,7 @@ Worker 是：
 
 ---
 
-## 7. 推荐你接下来怎么读
+## 9. 推荐你接下来怎么读
 
 如果你现在要继续往下真正读代码，我建议顺序是：
 
@@ -1127,17 +1411,21 @@ Worker 是：
 
 - 这是整个项目最核心的公共能力
 
-3. 再看 chat
+3. 再看 chat 和 SOP
 
-- 因为 chat 是在 retrieval 上加 rerank 和 generation
+- 因为它们都在 retrieval 上加 rerank 和 generation
 
-4. 最后再看 worker 和 document ingest
+4. 再看 `rerank-compare`
+
+- 因为它能帮你看懂当前 provider / heuristic 路由到底怎么切
+
+5. 最后再看 worker 和 document ingest
 
 - 因为它是另一条运行入口
 
 如果你只想先搞懂一个最重要的问题，那就先吃透这条链：
 
-`RetrievalService.search()`
+`RetrievalService.search_candidates()`
 
 因为它是：
 

@@ -9,6 +9,12 @@ from backend.app.main import app
 from backend.app.schemas.event_log import EventLogActor, EventLogRecord
 from backend.app.schemas.document import DocumentRecord, IngestJobRecord
 from backend.app.schemas.ops import OpsQueueSummary
+from backend.app.schemas.rerank_canary import RerankCanarySampleRecord
+from backend.app.schemas.retrieval import (
+    RetrievalRerankRouteStatus,
+    RerankComparisonSummary,
+    RerankPromotionRecommendation,
+)
 from backend.app.schemas.request_snapshot import (
     RequestSnapshotComponentVersions,
     RequestSnapshotModelRoute,
@@ -21,6 +27,7 @@ from backend.app.services.auth_service import AuthService, get_auth_service
 from backend.app.services.event_log_service import EventLogService
 from backend.app.services.identity_service import get_identity_service
 from backend.app.services.ops_service import OpsService, get_ops_service
+from backend.app.services.rerank_canary_service import RerankCanaryService
 from backend.app.services.request_snapshot_service import RequestSnapshotService
 from backend.app.services.request_trace_service import RequestTraceService
 from backend.app.services.system_config_service import SystemConfigService
@@ -226,7 +233,79 @@ def _append_snapshot(
     )
 
 
-def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestTraceService, RequestSnapshotService]:
+def _append_canary(
+    rerank_canary_service: RerankCanaryService,
+    *,
+    sample_id: str,
+    username: str,
+    user_id: str,
+    role_id: str,
+    department_id: str,
+    occurred_at: str,
+    decision: str,
+    should_switch_default_strategy: bool = False,
+    message: str = "provider canary sample",
+) -> None:
+    rerank_canary_service.repository.append(
+        RerankCanarySampleRecord(
+            sample_id=sample_id,
+            occurred_at=datetime.fromisoformat(occurred_at).astimezone(timezone.utc),
+            actor=EventLogActor(
+                tenant_id="wl",
+                user_id=user_id,
+                username=username,
+                role_id=role_id,
+                department_id=department_id,
+            ),
+            query="servo reset",
+            mode="hybrid",
+            target_id="doc_001",
+            candidate_count=2,
+            rerank_top_n=2,
+            route_status=RetrievalRerankRouteStatus(
+                provider="openai_compatible",
+                model="BAAI/bge-reranker-v2-m3",
+                default_strategy="heuristic",
+                failure_cooldown_seconds=15.0,
+                effective_provider="heuristic",
+                effective_model="heuristic",
+                effective_strategy="heuristic",
+                fallback_enabled=True,
+                lock_active=False,
+                lock_source=None,
+                cooldown_remaining_seconds=0.0,
+                ready=True,
+                detail="OpenAI-compatible reranker health probe succeeded.",
+            ),
+            configured_provider="openai_compatible",
+            configured_strategy="heuristic",
+            configured_error_message=None,
+            heuristic_strategy="heuristic",
+            provider_candidate_strategy="provider",
+            provider_candidate_error_message=None,
+            summary=RerankComparisonSummary(
+                overlap_count=1,
+                top1_same=False,
+                configured_only_chunk_ids=["chunk-a"],
+                heuristic_only_chunk_ids=["chunk-b"],
+            ),
+            provider_candidate_summary=RerankComparisonSummary(
+                overlap_count=0,
+                top1_same=False,
+                configured_only_chunk_ids=["chunk-b"],
+                heuristic_only_chunk_ids=["chunk-a"],
+            ),
+            recommendation=RerankPromotionRecommendation(
+                decision=decision,
+                should_switch_default_strategy=should_switch_default_strategy,
+                message=message,
+            ),
+            details={},
+        )
+    )
+
+
+def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestTraceService, RequestSnapshotService, RerankCanaryService]:
     settings = _build_settings(tmp_path)
     ensure_data_directories(settings)
     identity_service = _build_identity_service(tmp_path)
@@ -242,12 +321,14 @@ def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestT
     event_log_service = EventLogService(settings)
     request_trace_service = RequestTraceService(settings)
     request_snapshot_service = RequestSnapshotService(settings)
+    rerank_canary_service = RerankCanaryService(settings)
     system_config_service = SystemConfigService(settings)
     ops_service = OpsService(
         settings,
         event_log_service=event_log_service,
         request_trace_service=request_trace_service,
         request_snapshot_service=request_snapshot_service,
+        rerank_canary_service=rerank_canary_service,
         system_config_service=system_config_service,
         queue_probe=lambda: OpsQueueSummary(
             available=True,
@@ -259,7 +340,7 @@ def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestT
     app.dependency_overrides[get_identity_service] = lambda: identity_service
     app.dependency_overrides[get_auth_service] = lambda: auth_service
     app.dependency_overrides[get_ops_service] = lambda: ops_service
-    return TestClient(app), event_log_service, request_trace_service, request_snapshot_service
+    return TestClient(app), event_log_service, request_trace_service, request_snapshot_service, rerank_canary_service
 
 
 def _persist_document_with_job(
@@ -319,7 +400,7 @@ def _login_headers(client: TestClient, *, username: str, password: str) -> dict[
 
 
 def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> None:
-    client, event_log_service, request_trace_service, request_snapshot_service = _build_client(tmp_path)
+    client, event_log_service, request_trace_service, request_snapshot_service, rerank_canary_service = _build_client(tmp_path)
     _persist_document_with_job(
         tmp_path,
         doc_id="doc_stuck_1",
@@ -394,6 +475,18 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
         occurred_at="2026-03-27T01:01:00+00:00",
         target_id="chat_002",
     )
+    _append_canary(
+        rerank_canary_service,
+        sample_id="rcs_canary_1",
+        username="sys.admin",
+        user_id="user_sys_admin",
+        role_id="sys_admin",
+        department_id="dept_digitalization",
+        occurred_at="2026-03-27T01:02:00+00:00",
+        decision="eligible",
+        should_switch_default_strategy=True,
+        message="provider canary 已可用。",
+    )
 
     try:
         headers = _login_headers(client, username="sys.admin", password="sys-admin-pass")
@@ -441,6 +534,10 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
     assert payload["rerank_decision"]["heuristic_sample_count"] == 1
     assert payload["rerank_decision"]["should_promote_to_provider"] is False
     assert payload["rerank_decision"]["should_rollback_to_heuristic"] is False
+    assert payload["rerank_canary"]["sample_size"] == 1
+    assert payload["rerank_canary"]["eligible_count"] == 1
+    assert payload["rerank_canary"]["latest_sample_id"] == "rcs_canary_1"
+    assert payload["rerank_canary"]["latest_decision"] == "eligible"
     assert payload["config"]["model_routing"]["fast_model"] == "Qwen/Test-7B"
     assert payload["config"]["prompt_budget"]["max_prompt_tokens"] == 2200
     assert payload["recent_failures"][0]["event_id"] == "evt_chat_2"
@@ -451,7 +548,7 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
 
 
 def test_ops_summary_scopes_logs_for_department_admin(tmp_path: Path) -> None:
-    client, event_log_service, request_trace_service, request_snapshot_service = _build_client(tmp_path)
+    client, event_log_service, request_trace_service, request_snapshot_service, rerank_canary_service = _build_client(tmp_path)
     _persist_document_with_job(
         tmp_path,
         doc_id="doc_scope_visible",
@@ -556,6 +653,29 @@ def test_ops_summary_scopes_logs_for_department_admin(tmp_path: Path) -> None:
         occurred_at="2026-03-27T01:01:00+00:00",
         target_id="doc_002",
     )
+    _append_canary(
+        rerank_canary_service,
+        sample_id="rcs_scope_visible",
+        username="digitalization.admin",
+        user_id="user_digitalization_admin",
+        role_id="department_admin",
+        department_id="dept_digitalization",
+        occurred_at="2026-03-27T01:02:00+00:00",
+        decision="hold",
+        message="继续观察。",
+    )
+    _append_canary(
+        rerank_canary_service,
+        sample_id="rcs_scope_hidden",
+        username="assembly.admin",
+        user_id="user_assembly_admin",
+        role_id="department_admin",
+        department_id="dept_assembly",
+        occurred_at="2026-03-27T01:03:00+00:00",
+        decision="eligible",
+        should_switch_default_strategy=True,
+        message="装配部样本。",
+    )
 
     try:
         headers = _login_headers(client, username="digitalization.admin", password="digitalization-admin-pass")
@@ -573,12 +693,15 @@ def test_ops_summary_scopes_logs_for_department_admin(tmp_path: Path) -> None:
     assert payload["stuck_ingest_jobs"][0]["doc_id"] == "doc_scope_visible"
     assert payload["stuck_ingest_jobs"][0]["reason"] == "stale_inflight"
     assert payload["recent_failures"] == []
+    assert payload["rerank_canary"]["sample_size"] == 1
+    assert payload["rerank_canary"]["latest_sample_id"] == "rcs_scope_visible"
+    assert payload["rerank_canary"]["latest_decision"] == "hold"
     assert payload["recent_traces"][0]["trace_id"] == "trc_digitalization_1"
     assert payload["recent_snapshots"][0]["snapshot_id"] == "rsp_digitalization_1"
 
 
 def test_ops_summary_rejects_employee_access(tmp_path: Path) -> None:
-    client, _, _, _ = _build_client(tmp_path)
+    client, _, _, _, _ = _build_client(tmp_path)
 
     try:
         headers = _login_headers(client, username="digitalization.employee", password="digitalization-employee-pass")

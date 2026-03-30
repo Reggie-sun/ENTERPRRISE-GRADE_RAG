@@ -54,6 +54,7 @@ function buildStoredSession(payload: LoginResponse): StoredAuthSession {
       role: payload.role,
       department: payload.department,
       accessible_department_ids: payload.accessible_department_ids,
+      department_query_isolation_enabled: payload.department_query_isolation_enabled,
     },
   };
 }

@@ -2,7 +2,7 @@ import { MessageSquareText, Sparkles } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
-import { Button, Card, HeroCard, StatusPill, Textarea } from '@/components';
+import { Button, Card, HeroCard, StatusPill, Textarea, EvidenceSourceSummary } from '@/components';
 import {
   askQuestionStream,
   formatApiError,
@@ -240,6 +240,14 @@ export function PortalChatPage() {
                   <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
                     {item.snippet.length > 180 ? `${item.snippet.slice(0, 180)}...` : item.snippet}
                   </p>
+                  <EvidenceSourceSummary
+                    retrievalStrategy={item.retrieval_strategy}
+                    ocrUsed={item.ocr_used}
+                    parserName={item.parser_name}
+                    pageNo={item.page_no}
+                    ocrConfidence={item.ocr_confidence}
+                    qualityScore={item.quality_score}
+                  />
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Link
                       to={`/portal/library?doc_id=${encodeURIComponent(item.document_id)}`}

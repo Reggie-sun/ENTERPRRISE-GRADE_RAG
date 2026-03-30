@@ -1,0 +1,174 @@
+{
+  "snapshot_id": "rsp_87f5fe12e9a041f8",
+  "trace_id": "trc_e8632264e21a4428",
+  "request_id": "req_7f14a62c829940f7",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:12:39.485070Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "这个是什么意思",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_debug_rewrite_chain_stream",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: CPPS是什么？\nAssistant: CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频、尿急、排尿踌躇不畅等。书中提出的观点是这些症状与头痛有相似之处，只是疼痛部位在盆腔而已。",
+  "rewrite": {
+    "status": "applied",
+    "original_question": "这个是什么意思",
+    "rewritten_question": "CPPS是什么意思？",
+    "details": {}
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": 2.685546875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.51181424,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": 1.8173828125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4897523,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经\n我们关于前列腺炎 (CPPS) 的观点不同于传统的做法。 传统做法是将盆\n腔疼痛当 作前列腺炎进行治疗， 但我们不认为前列腺是大部 分男性盆腔疼\n痛问 题的根源。 多年来我们一直提倡， 这与我们对引起疼痛的解 剖区 域以\n及疼痛是如何产生的观点有关。\n找出盆腔 疼痛的罪魁祸首\n当然 所有的疼痛信息都会通过感觉神 经受 体来传送 ， 然后混合进脊髓\n的神 经末端网 络 ， 并最终传送到 大脑。 不同个体会对大脑接受 到的 信号作\n出不同的主观解释。 医生传统上把疼痛怪罪于盆腔 的各个器官。 生殖器官\n如子宫、阴 道、睾 丸、 阴茎、 前列腺以及排泄 器官如直肠和膀胱等都 是怪\n罪的对象。 我们把疼痛归 因于这些器官， 而不怀疑这 些器官的支撑结 构，\n也就是如韧带和肌健这样的结缔组织、肌 肉、血 管和相关的神 经。\n还有一种被称为\n“\n引传\n”\n的现象， 即源自某 个器官的 疼痛可能不会在\n这个器官上 感觉到 ， 而是在远离该器官的 地方甚至是皮 肤上感觉到 。由 于\n神经 之间连接紧密， 从一个地 区传出的强烈信号可能会让相邻的神 经兴奋，\n即使相邻的神 经并没有受 到刺 激。 这也就是为什么 与受 刺激的部 位不相连\n的肌肉也会变得紧绷的缘故。\n盆腔内外有20 多块不同的肌肉存在， 也分布着复杂的神 经系统。 这些\n肌肉显然与它 们所支撑的器官 一起扮演着不可 或缺的角色。\n了解 盆底肌肉\n无数的神 经交织在盆腔 之中。 其中负责剌激 平滑肌收缩和器官功能的\n神经 ， 以及控制支撑肌肉的运动神 经 ， 必须保持协调合作。 我们把肌肉分",
+      "score": 1.0390625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.49357814,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": 2.685546875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.51181424,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": 1.8173828125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4897523,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经\n我们关于前列腺炎 (CPPS) 的观点不同于传统的做法。 传统做法是将盆\n腔疼痛当 作前列腺炎进行治疗， 但我们不认为前列腺是大部 分男性盆腔疼\n痛问 题的根源。 多年来我们一直提倡， 这与我们对引起疼痛的解 剖区 域以\n及疼痛是如何产生的观点有关。\n找出盆腔 疼痛的罪魁祸首\n当然 所有的疼痛信息都会通过感觉神 经受 体来传送 ， 然后混合进脊髓\n的神 经末端网 络 ， 并最终传送到 大脑。 不同个体会对大脑接受 到的 信号作\n出不同的主观解释。 医生传统上把疼痛怪罪于盆腔 的各个器官。 生殖器官\n如子宫、阴 道、睾 丸、 阴茎、 前列腺以及排泄 器官如直肠和膀胱等都 是怪\n罪的对象。 我们把疼痛归 因于这些器官， 而不怀疑这 些器官的支撑结 构，\n也就是如韧带和肌健这样的结缔组织、肌 肉、血 管和相关的神 经。\n还有一种被称为\n“\n引传\n”\n的现象， 即源自某 个器官的 疼痛可能不会在\n这个器官上 感觉到 ， 而是在远离该器官的 地方甚至是皮 肤上感觉到 。由 于\n神经 之间连接紧密， 从一个地 区传出的强烈信号可能会让相邻的神 经兴奋，\n即使相邻的神 经并没有受 到刺 激。 这也就是为什么 与受 刺激的部 位不相连\n的肌肉也会变得紧绷的缘故。\n盆腔内外有20 多块不同的肌肉存在， 也分布着复杂的神 经系统。 这些\n肌肉显然与它 们所支撑的器官 一起扮演着不可 或缺的角色。\n了解 盆底肌肉\n无数的神 经交织在盆腔 之中。 其中负责剌激 平滑肌收缩和器官功能的\n神经 ， 以及控制支撑肌肉的运动神 经 ， 必须保持协调合作。 我们把肌肉分",
+      "score": 1.0390625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.49357814,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "CPPS是Chronic Pelvic Pain Syndrome的缩写，指的是慢性盆腔疼痛综合征，表现为盆腔区域持续不断的不适或疼痛。",
+    "answer_chars": 68,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

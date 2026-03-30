@@ -17,6 +17,13 @@ def test_health_returns_metadata_store_status() -> None:
     assert payload["ocr"]["provider"] in {"disabled", "mock", "paddleocr"}
     assert isinstance(payload["ocr"]["enabled"], bool)
     assert isinstance(payload["ocr"]["ready"], bool)
+    assert "tokenizer" in payload
+    assert payload["tokenizer"]["provider"] in {"heuristic", "transformers_auto"}
+    assert isinstance(payload["tokenizer"]["model"], str)
+    assert isinstance(payload["tokenizer"]["ready"], bool)
+    assert isinstance(payload["tokenizer"]["trust_remote_code"], bool)
+    assert payload["tokenizer"]["detail"] is None or isinstance(payload["tokenizer"]["detail"], str)
+    assert payload["tokenizer"]["error"] is None or isinstance(payload["tokenizer"]["error"], str)
     assert "reranker" in payload
     assert isinstance(payload["reranker"]["provider"], str)
     assert isinstance(payload["reranker"]["model"], str)

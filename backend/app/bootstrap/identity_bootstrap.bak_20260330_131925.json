@@ -1,0 +1,3567 @@
+{
+  "roles": [
+    {
+      "role_id": "employee",
+      "name": "Employee",
+      "description": "Can search and view content within the assigned department scope.",
+      "data_scope": "department",
+      "is_admin": false
+    },
+    {
+      "role_id": "department_admin",
+      "name": "Department Admin",
+      "description": "Can manage documents and SOP assets within the assigned department.",
+      "data_scope": "department",
+      "is_admin": true
+    },
+    {
+      "role_id": "sys_admin",
+      "name": "System Admin",
+      "description": "Can access all departments and system management capabilities.",
+      "data_scope": "global",
+      "is_admin": true
+    }
+  ],
+  "departments": [
+    {
+      "department_id": "dept_dfc37da27ccd",
+      "tenant_id": "wl",
+      "department_name": "企业外部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_enterprise_management",
+      "tenant_id": "wl",
+      "department_name": "企管部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_supply_management",
+      "tenant_id": "wl",
+      "department_name": "供应管理部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_quality_assurance",
+      "tenant_id": "wl",
+      "department_name": "品质保障部",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_fd9b651f9d84",
+      "tenant_id": "wl",
+      "department_name": "宁波伟联信息科技有限公司",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c3e8827dbb11",
+      "tenant_id": "wl",
+      "department_name": "宁波明舜物业管理有限公司",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_installation_service",
+      "tenant_id": "wl",
+      "department_name": "安调服务部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_54de11e913bb",
+      "tenant_id": "wl",
+      "department_name": "安调服务部;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_general_manager_office",
+      "tenant_id": "wl",
+      "department_name": "总经办",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_9aaa103a6d46",
+      "tenant_id": "wl",
+      "department_name": "总经办;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_digitalization",
+      "tenant_id": "wl",
+      "department_name": "数字化部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_production_technology",
+      "tenant_id": "wl",
+      "department_name": "生产技术部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_238102af2dc8",
+      "tenant_id": "wl",
+      "department_name": "生产技术部;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_production_management",
+      "tenant_id": "wl",
+      "department_name": "生产管理部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c99f7c15998e",
+      "tenant_id": "wl",
+      "department_name": "生产管理部;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_research_and_development",
+      "tenant_id": "wl",
+      "department_name": "研发部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_integrated_technology",
+      "tenant_id": "wl",
+      "department_name": "综合技术部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_0d61853bb504",
+      "tenant_id": "wl",
+      "department_name": "综合技术部;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_marketing_management_center",
+      "tenant_id": "wl",
+      "department_name": "营销管理中心",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_5f59e63b7ec9",
+      "tenant_id": "wl",
+      "department_name": "营销管理中心;伟立机器人",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_finance",
+      "tenant_id": "wl",
+      "department_name": "财务部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_project_management",
+      "tenant_id": "wl",
+      "department_name": "项目管理部",
+      "parent_department_id": null,
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c8b925a56507",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_0d61853bb504",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_ab14f60df1b0",
+      "tenant_id": "wl",
+      "department_name": "注塑组",
+      "parent_department_id": "dept_10b9b8c18c07",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_9dc62ad403f3",
+      "tenant_id": "wl",
+      "department_name": "企管部;伟立机器人",
+      "parent_department_id": "dept_1da41718c00e",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_69daa102b44e",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_238102af2dc8",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c588b3b139e9",
+      "tenant_id": "wl",
+      "department_name": "数字化部;伟立机器人",
+      "parent_department_id": "dept_293d38359286",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_0dcbd2856e80",
+      "tenant_id": "wl",
+      "department_name": "品质保障部",
+      "parent_department_id": "dept_4dbb0d049099",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_9b74688b2dbe",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_54de11e913bb",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_cb517b9b3da8",
+      "tenant_id": "wl",
+      "department_name": "华东",
+      "parent_department_id": "dept_56f3af38b4f0",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_8ea909cf5efd",
+      "tenant_id": "wl",
+      "department_name": "华中",
+      "parent_department_id": "dept_56f3af38b4f0",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_acc8a51c93d5",
+      "tenant_id": "wl",
+      "department_name": "华北",
+      "parent_department_id": "dept_56f3af38b4f0",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_a3d79ed5cce0",
+      "tenant_id": "wl",
+      "department_name": "华南",
+      "parent_department_id": "dept_56f3af38b4f0",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_d0cfb7edc040",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_5f59e63b7ec9",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_293d38359286",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_611dda0a22c8",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_da7ee0abf0c1",
+      "tenant_id": "wl",
+      "department_name": "营销管理中心",
+      "parent_department_id": "dept_61c6db8f8c00",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_a5db4987df5e",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_64f7b6a62d86",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_00164b79de0d",
+      "tenant_id": "wl",
+      "department_name": "品质保障部",
+      "parent_department_id": "dept_69daa102b44e",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_dc2ea661333b",
+      "tenant_id": "wl",
+      "department_name": "一组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_89fa18d7cf8b",
+      "tenant_id": "wl",
+      "department_name": "三组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_38b43f2f2657",
+      "tenant_id": "wl",
+      "department_name": "二组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c96d21d0e784",
+      "tenant_id": "wl",
+      "department_name": "四组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_3145bd10e9e4",
+      "tenant_id": "wl",
+      "department_name": "电控组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_cbaa4666d315",
+      "tenant_id": "wl",
+      "department_name": "部品组",
+      "parent_department_id": "dept_6a9c0794b75b",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_611dda0a22c8",
+      "tenant_id": "wl",
+      "department_name": "生产技术部;伟立机器人",
+      "parent_department_id": "dept_6f0c1d19218e",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_4dbb0d049099",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_7ae0077a9c85",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_1da41718c00e",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_9aaa103a6d46",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_10b9b8c18c07",
+      "tenant_id": "wl",
+      "department_name": "安调服务部",
+      "parent_department_id": "dept_9b74688b2dbe",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_6f0c1d19218e",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_9dc62ad403f3",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_7ae0077a9c85",
+      "tenant_id": "wl",
+      "department_name": "项目管理部;伟立机器人",
+      "parent_department_id": "dept_a5db4987df5e",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_411282427a47",
+      "tenant_id": "wl",
+      "department_name": "喷涂组",
+      "parent_department_id": "dept_a6f0c5f185cd",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_9608486e917d",
+      "tenant_id": "wl",
+      "department_name": "机加组",
+      "parent_department_id": "dept_a6f0c5f185cd",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_e6e4ce477764",
+      "tenant_id": "wl",
+      "department_name": "钣金组",
+      "parent_department_id": "dept_a6f0c5f185cd",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_64f7b6a62d86",
+      "tenant_id": "wl",
+      "department_name": "生产管理部;伟立机器人",
+      "parent_department_id": "dept_a8d308c346f9",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_a8d308c346f9",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_c588b3b139e9",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_a9832881ef2d",
+      "tenant_id": "wl",
+      "department_name": "安调服务部",
+      "parent_department_id": "dept_c6e317b6b4e7",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_031ab88ffbb5",
+      "tenant_id": "wl",
+      "department_name": "研发部",
+      "parent_department_id": "dept_c8b925a56507",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_c6e317b6b4e7",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_c99f7c15998e",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_dd8701c5fd5d",
+      "tenant_id": "wl",
+      "department_name": "安调服务部;伟立机器人",
+      "parent_department_id": "dept_d0cfb7edc040",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_219efc85f4a2",
+      "tenant_id": "wl",
+      "department_name": "物流组",
+      "parent_department_id": "dept_d5e041d2f296",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_b61d1de380f5",
+      "tenant_id": "wl",
+      "department_name": "业务组",
+      "parent_department_id": "dept_da7ee0abf0c1",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_61c6db8f8c00",
+      "tenant_id": "wl",
+      "department_name": "宁波伟立机器人科技股份有限公司",
+      "parent_department_id": "dept_dd8701c5fd5d",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_f9fd429adfa7",
+      "tenant_id": "wl",
+      "department_name": "注塑组",
+      "parent_department_id": "dept_installation_service",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_6cdcf4abf4ee",
+      "tenant_id": "wl",
+      "department_name": "金属一组",
+      "parent_department_id": "dept_installation_service",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_cf9e90b166d5",
+      "tenant_id": "wl",
+      "department_name": "金属三组",
+      "parent_department_id": "dept_installation_service",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_8a2d59b1e51b",
+      "tenant_id": "wl",
+      "department_name": "金属二组",
+      "parent_department_id": "dept_installation_service",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_ad7fb57d8317",
+      "tenant_id": "wl",
+      "department_name": "金属四组",
+      "parent_department_id": "dept_installation_service",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_56f3af38b4f0",
+      "tenant_id": "wl",
+      "department_name": "业务组",
+      "parent_department_id": "dept_marketing_management_center",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_d2ee7e26dbf3",
+      "tenant_id": "wl",
+      "department_name": "售前组",
+      "parent_department_id": "dept_marketing_management_center",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_7f3744e49351",
+      "tenant_id": "wl",
+      "department_name": "外贸组",
+      "parent_department_id": "dept_marketing_management_center",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_317d51196ebc",
+      "tenant_id": "wl",
+      "department_name": "市场策划",
+      "parent_department_id": "dept_marketing_management_center",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_7e1e4824ebb4",
+      "tenant_id": "wl",
+      "department_name": "订单管理",
+      "parent_department_id": "dept_marketing_management_center",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_d5e041d2f296",
+      "tenant_id": "wl",
+      "department_name": "仓库",
+      "parent_department_id": "dept_production_management",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_a6f0c5f185cd",
+      "tenant_id": "wl",
+      "department_name": "机加车间",
+      "parent_department_id": "dept_production_management",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_6a9c0794b75b",
+      "tenant_id": "wl",
+      "department_name": "装配车间",
+      "parent_department_id": "dept_production_management",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_58ddcc1d76e8",
+      "tenant_id": "wl",
+      "department_name": "电气组",
+      "parent_department_id": "dept_research_and_development",
+      "is_active": true
+    },
+    {
+      "department_id": "dept_74325f79381f",
+      "tenant_id": "wl",
+      "department_name": "软件组",
+      "parent_department_id": "dept_research_and_development",
+      "is_active": true
+    }
+  ],
+  "users": [
+    {
+      "user_id": "user_employee_demo",
+      "tenant_id": "wl",
+      "username": "employee.demo",
+      "display_name": "Employee Demo",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$85bad70aa22bd1bc01e53fda2e678bab$58c892a3862943b5ad5e2edbc7516d799eef5aca3f098a769543f86936ffbda6"
+    },
+    {
+      "user_id": "user_department_admin_demo",
+      "tenant_id": "wl",
+      "username": "department.admin.demo",
+      "display_name": "Department Admin Demo",
+      "department_id": "dept_digitalization",
+      "role_id": "department_admin",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a6ee3dcbdb3f47ba59b109f63714d64c$47639ecd42275e0461303fb926c894cbf51aa2fdbe857a687c5e4f3674bcff27"
+    },
+    {
+      "user_id": "user_digitalization_admin_01",
+      "tenant_id": "wl",
+      "username": "digitalization.admin.01",
+      "display_name": "数字化部管理员01",
+      "department_id": "dept_digitalization",
+      "role_id": "department_admin",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a1f845bdbd7c6deb492bb57d8042f27d$be6bb6c607c3e7487e4be44ea662fe25e91713b2138667f782c7fc2f9db1ef22"
+    },
+    {
+      "user_id": "user_digitalization_employee_01",
+      "tenant_id": "wl",
+      "username": "digitalization.employee.01",
+      "display_name": "数字化部员工01",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$dd31bc89af792c482f03551bb434d568$2854f718f4500fac09ae8db29008c7ddd22b21d06fc864f888164f065d977d64"
+    },
+    {
+      "user_id": "user_digitalization_employee_02",
+      "tenant_id": "wl",
+      "username": "digitalization.employee.02",
+      "display_name": "数字化部员工02",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9b64b13daaf07ab5256139e5397a27fb$80179209a8d9a87c26b79ae28f7d51c5554e26c2865bf63306833f08a6195f07"
+    },
+    {
+      "user_id": "user_digitalization_real_01",
+      "tenant_id": "wl",
+      "username": "digitalization.real.01",
+      "display_name": "黄前超",
+      "department_id": "dept_digitalization",
+      "role_id": "department_admin",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$56bc3cd151e955a27c65f6207ffbe0c0$1fe728f86601eaa2d5b200d7c6756e83c1e23fa40e6325dbb3f376c8bc5c497f"
+    },
+    {
+      "user_id": "user_digitalization_real_02",
+      "tenant_id": "wl",
+      "username": "digitalization.real.02",
+      "display_name": "陈明明",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$684be53901f2b4c7500828035ece9b9d$accf12c1239c5db78b122c1ca10bad09a27a7cf2ad5d8025a6c9b2a9c7c8c736"
+    },
+    {
+      "user_id": "user_digitalization_real_03",
+      "tenant_id": "wl",
+      "username": "digitalization.real.03",
+      "display_name": "陈琦",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$df90ae6f9fb0d9417b66eb94bd81caf3$4e2ad966d52f4ea51aa64e847334e79c8bdb8a7b0016e440eaa118e39bae3ed3"
+    },
+    {
+      "user_id": "user_digitalization_real_04",
+      "tenant_id": "wl",
+      "username": "digitalization.real.04",
+      "display_name": "冯成浩",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d9555f199e29516ed5c93aa488acc6dc$7a0184828643610ea5c746dfa4d090acc0397ab31b109aa063fd571bd47e5a1c"
+    },
+    {
+      "user_id": "user_digitalization_real_05",
+      "tenant_id": "wl",
+      "username": "digitalization.real.05",
+      "display_name": "冯嘉琦",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$2ec17c15eb01b2c22210508ccaa920b3$52bae3a8ef3e8020a95a13e30db3e6f17a15332f6c4b6868d287b1a75c6d5c9b"
+    },
+    {
+      "user_id": "user_digitalization_real_06",
+      "tenant_id": "wl",
+      "username": "digitalization.real.06",
+      "display_name": "葛嘉宝",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7190906641e1e1484189634a9fe6492d$a569be67d1af0ef5888645cf0f39c3b456fd6a2f00d7ca3f3543c7fa625f2ab2"
+    },
+    {
+      "user_id": "user_digitalization_real_07",
+      "tenant_id": "wl",
+      "username": "digitalization.real.07",
+      "display_name": "韩青云",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$07f191925a273a3d999914581eb714b2$1de26ceb12c1b0dc2e4716b43da8434952461526934780d2fce2709a73746179"
+    },
+    {
+      "user_id": "user_digitalization_real_08",
+      "tenant_id": "wl",
+      "username": "digitalization.real.08",
+      "display_name": "黄梦伟",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f44c8228c1f99695c1f900402274daf1$fa8cebda60f56c50c97b91c485a1a7c8a4559084b847010b5a532afa8b135e4c"
+    },
+    {
+      "user_id": "user_digitalization_real_09",
+      "tenant_id": "wl",
+      "username": "digitalization.real.09",
+      "display_name": "江文静",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3030b2b364852331417dd9a3dbe6f86b$8dea3e229fb48bf7b16123f5eb8d945664551e5f257a2d7c9458ba52e3a0a51b"
+    },
+    {
+      "user_id": "user_digitalization_real_10",
+      "tenant_id": "wl",
+      "username": "digitalization.real.10",
+      "display_name": "李岱",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b7e91932178432ce5e32b8ebe9bae98d$006bc7952d81c98ae21f8eff0afcb70e7dc2fc3ee861c4f718c181550621c86c"
+    },
+    {
+      "user_id": "user_digitalization_real_11",
+      "tenant_id": "wl",
+      "username": "digitalization.real.11",
+      "display_name": "罗兴撑",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$933f3474fbab7e848737ab58a26b200f$d2f61aae0b87995d59f0cebfd4a955016e7204c780459d94eef4438189d87b8d"
+    },
+    {
+      "user_id": "user_digitalization_real_12",
+      "tenant_id": "wl",
+      "username": "digitalization.real.12",
+      "display_name": "吕政权",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f46b2c84a4fef30f29c80dff58695fab$22ff5c1e347f5dd94719a30d461f19689b396c20586f28114957538961183301"
+    },
+    {
+      "user_id": "user_digitalization_real_13",
+      "tenant_id": "wl",
+      "username": "digitalization.real.13",
+      "display_name": "孙建校",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a53a6de89d0ba200c807ac629b974440$8abc1806ec8d1cb1ab3dc402b32f9ba6b501e24e3790c361bb3f1f2651b37845"
+    },
+    {
+      "user_id": "user_digitalization_real_14",
+      "tenant_id": "wl",
+      "username": "digitalization.real.14",
+      "display_name": "孙瑞杰",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$df7ecf68309daaa0b106399f1d64eb25$69e9f53b96e2c63280427dbe5d3259c59a41f7c43cb2af947c357c448e76f402"
+    },
+    {
+      "user_id": "user_digitalization_real_15",
+      "tenant_id": "wl",
+      "username": "digitalization.real.15",
+      "display_name": "童双棋",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f03e13ee82bc0fa95d22996097389f85$5a5c8fb844ad39bb6d1a51a24bd177e1e7f61ca89c7aa13e0def30b733eb608a"
+    },
+    {
+      "user_id": "user_digitalization_real_16",
+      "tenant_id": "wl",
+      "username": "digitalization.real.16",
+      "display_name": "王冬冬",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0e17ed33ddc7b23fb3e1232f425ddbff$e6a54d9ec66d10ba6ce6a372f4ee909408b95c5093aa56a24f7b3109a2c6c6e0"
+    },
+    {
+      "user_id": "user_digitalization_real_17",
+      "tenant_id": "wl",
+      "username": "digitalization.real.17",
+      "display_name": "王科",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$19242d47a53898c826704b49b1bceb0e$8fbf063fb72911f8fbd068109ffb05374354a145aa07546d4572e8040e42117c"
+    },
+    {
+      "user_id": "user_digitalization_real_18",
+      "tenant_id": "wl",
+      "username": "digitalization.real.18",
+      "display_name": "王强强",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$c9a602bffb52924cc7f457824ed2f4b1$32ec9d585e5d3f87b3bacbfcef009b8b350a0f3319ded0d990bfca354f1d2c9a"
+    },
+    {
+      "user_id": "user_digitalization_real_19",
+      "tenant_id": "wl",
+      "username": "digitalization.real.19",
+      "display_name": "万胜国",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5c304ec1237d96818b03962f8f18de52$9704e87284bec066564a105bd15900d4190a49b32074e46ed423dd70fc2cb3d9"
+    },
+    {
+      "user_id": "user_digitalization_real_20",
+      "tenant_id": "wl",
+      "username": "digitalization.real.20",
+      "display_name": "位朝阳",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$45f3ff042cbedbfacea8fb41e32eed0e$6616f8b8ec986edc79391cab0502ef6602c0e0d1e6d3d342dd26ab8c57a84ac4"
+    },
+    {
+      "user_id": "user_digitalization_real_21",
+      "tenant_id": "wl",
+      "username": "digitalization.real.21",
+      "display_name": "颜洪加",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f88126bf6bbc7b71a1c3faae05fd7a20$9114cdb3e839df9adb39bbf5af02ba488d6e77db50cbc18898e5503731c862d1"
+    },
+    {
+      "user_id": "user_digitalization_real_22",
+      "tenant_id": "wl",
+      "username": "digitalization.real.22",
+      "display_name": "应旭冲",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fab28101d10b6b2647f716b79f45a5ef$295257c08c625621aab7e9acceeaa2017a4352e8b935d2c3c41843a2954f4137"
+    },
+    {
+      "user_id": "user_sys_admin_demo",
+      "tenant_id": "wl",
+      "username": "sys.admin.demo",
+      "display_name": "System Admin Demo",
+      "department_id": "dept_general_manager_office",
+      "role_id": "sys_admin",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7d8321838373579773f161fbc045e423$f1794f670a4a4f33020e77384fddb9a534f8442b56a3e3de9a17876950150f73"
+    },
+    {
+      "user_id": "user_roster_10169",
+      "tenant_id": "wl",
+      "username": "10169",
+      "display_name": "傅迪永",
+      "department_id": "dept_research_and_development",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d6a2d7d8d189db5252047cb0b7b8933a$64e3dfcbe929d8a65837d59ab4fd39882f7d1f8325258a9c81884cfdc71c2c6c"
+    },
+    {
+      "user_id": "user_roster_30023",
+      "tenant_id": "wl",
+      "username": "30023",
+      "display_name": "何海峰",
+      "department_id": "dept_cb517b9b3da8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$29439ee091c4216b7327528490a52c43$42db2fc306ba0e9e017600a091cb35952ffc8145ef2b09b47155bca4ea6686df"
+    },
+    {
+      "user_id": "user_roster_12006",
+      "tenant_id": "wl",
+      "username": "12006",
+      "display_name": "唐志友",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$17e6f6e89cf926bca9eca6558749b57f$e4227dbaca9d1a364ed8a1808ecc4b79c49a6b3804f24f96944132246478c491"
+    },
+    {
+      "user_id": "user_roster_10190",
+      "tenant_id": "wl",
+      "username": "10190",
+      "display_name": "杨思雨",
+      "department_id": "dept_production_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$70b1596392c9e700a1883c8501a79000$5faba5c658cd1be4d8b21c35fb0dce2c24ae27eb4d3d508d3ad3a8a193d5eb5c"
+    },
+    {
+      "user_id": "user_roster_10344",
+      "tenant_id": "wl",
+      "username": "10344",
+      "display_name": "杨将勋",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d9466bf92df571df7259e5ffca85abea$8fc4c167a414225cbcda01b0a15e5c8ec575200187fa61513963a819b7b37f79"
+    },
+    {
+      "user_id": "user_roster_30001",
+      "tenant_id": "wl",
+      "username": "30001",
+      "display_name": "张凤勒",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$db014469882851738fba9455a2db4f37$e9ed2ff05e6301c7485d42ccaea7227f62ed51f108d8687ab13edcee9d42d2e9"
+    },
+    {
+      "user_id": "user_roster_12092",
+      "tenant_id": "wl",
+      "username": "12092",
+      "display_name": "张耀亮",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ece7212a4673f60a791d3045852a8345$4f6e3c2405f097ef0d395aad7600aa48c630aa5904d7d56de67d904f35a43bfb"
+    },
+    {
+      "user_id": "user_roster_10332",
+      "tenant_id": "wl",
+      "username": "10332",
+      "display_name": "符琪杰",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a3a33ae03a024db16a6c58414c631480$6c32f3e0edf5fb04e2393527f0932e8edffb4edea66250efc2e995fc260612b4"
+    },
+    {
+      "user_id": "user_roster_10250",
+      "tenant_id": "wl",
+      "username": "10250",
+      "display_name": "马铖",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$42ca9e0313dd7fa03ddfc37a213fbfee$214fcb946fbbd862e3efcdbd3b8b36c41a8677ab0277ed4c9c738c92a94b01f9"
+    },
+    {
+      "user_id": "user_roster_10273",
+      "tenant_id": "wl",
+      "username": "10273",
+      "display_name": "邓从茂",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e77887857a3d91775a88bbc75b7126f8$e233c20c905940e95493f35035706f82c1bd007bb347cd6a2755a16a8340ce05"
+    },
+    {
+      "user_id": "user_roster_10331",
+      "tenant_id": "wl",
+      "username": "10331",
+      "display_name": "杭银杰",
+      "department_id": "dept_production_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$153509e339ca3463ffecb065826a3585$c7cda95e63abd0ec96505c9f0cf3163051603c3401b593c454d2991453f84ad9"
+    },
+    {
+      "user_id": "user_roster_12139",
+      "tenant_id": "wl",
+      "username": "12139",
+      "display_name": "刘科",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fdadd04f35bad1cca2953b9314e280a4$6a8124b9499df5104b38b98732cd94f63ef13f3f76d3e021f6391c367f05a5b9"
+    },
+    {
+      "user_id": "user_roster_10328",
+      "tenant_id": "wl",
+      "username": "10328",
+      "display_name": "孟凡虎",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$c4dd07843e619a8481f3d01900ec6b39$9f08c8a53cde875f20221c68a9ac89c4e83493478a28ef3ac1870dd3c5cc88eb"
+    },
+    {
+      "user_id": "user_roster_10353",
+      "tenant_id": "wl",
+      "username": "10353",
+      "display_name": "苗传香",
+      "department_id": "dept_89fa18d7cf8b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7b5d25ae9c7d3600d647e6e81033455f$c8802cee5169bac61bdb04efa92d6d736950a47f81c91bb2dbe86fe803448985"
+    },
+    {
+      "user_id": "user_roster_30003",
+      "tenant_id": "wl",
+      "username": "30003",
+      "display_name": "汪辉",
+      "department_id": "dept_a3d79ed5cce0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5f5f68f469e00a4d0ac1d7f8a8071bfa$0318883a756fc0bcc1fe8f130edebeefdbb4e357259012ed51c2232d8772fa01"
+    },
+    {
+      "user_id": "user_roster_12180",
+      "tenant_id": "wl",
+      "username": "12180",
+      "display_name": "吴坚立",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$155a59e638702a41d9d0aceeadd40f6d$1143cdbbbde34adff9aec426c8c2a4ac6ec6ce8712ce74754d8d83536178fb38"
+    },
+    {
+      "user_id": "user_roster_10333",
+      "tenant_id": "wl",
+      "username": "10333",
+      "display_name": "徐会杰",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e42746196cf4c1d985f16a0abc14f606$bea8ea27356ba4955a9dec2f37d4e5be5364a11c38c98097bb0ea86ddb788b3e"
+    },
+    {
+      "user_id": "user_roster_10290",
+      "tenant_id": "wl",
+      "username": "10290",
+      "display_name": "李双田",
+      "department_id": "dept_production_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$23424ce2b41cf84899062eb1a925443b$6c3b9e40dda96439277aa386e3dffe70de7bcd91911275618aed68700622ff0f"
+    },
+    {
+      "user_id": "user_roster_10224",
+      "tenant_id": "wl",
+      "username": "10224",
+      "display_name": "卢敏明",
+      "department_id": "dept_7f3744e49351",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$18b5842da5e691b8afdf168c792787f6$598f59838486f94bcc94e1cd6d9f0461a89c2e9423c86ef13742141336109071"
+    },
+    {
+      "user_id": "user_roster_12904",
+      "tenant_id": "wl",
+      "username": "12904",
+      "display_name": "周建明",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6f437e911169e459bc8e358e500f2a0b$cbb53d9c9f3d89e9c81a5eff37597e7058c875e39bfb16bf3aff78d6c134552d"
+    },
+    {
+      "user_id": "user_roster_30027",
+      "tenant_id": "wl",
+      "username": "30027",
+      "display_name": "陈慧",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$bccd0a1a1aa9d34909ebf27beb57d2c2$4adff0bb9f7a6062f2dd0a8da04d319fd208577b19b69fdc5f03d365547dc83c"
+    },
+    {
+      "user_id": "user_roster_10235",
+      "tenant_id": "wl",
+      "username": "10235",
+      "display_name": "陈卫东",
+      "department_id": "dept_317d51196ebc",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$36be8769e4cc5bdcadca05a611f3f3cf$76e9b113cb5280d2880b4d2e1f174cf4e3a2783999f85e0ddd661c6166360fb0"
+    },
+    {
+      "user_id": "user_roster_10238",
+      "tenant_id": "wl",
+      "username": "10238",
+      "display_name": "冯睿妍",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$711159e0f13001ba678a3ab15474dab0$05db0e4192695fb5cbc1fccb4cc6c94e82bcd55adc31027b45490c4ad3f0f7d4"
+    },
+    {
+      "user_id": "user_roster_12924",
+      "tenant_id": "wl",
+      "username": "12924",
+      "display_name": "李应选",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$199b16513dc3d7cce1ecef707d09f4cd$054f84bdfb703cd8ee216fb10b23701bab2f93dcf2fb7e9536ad06b8df4a0504"
+    },
+    {
+      "user_id": "user_roster_30025",
+      "tenant_id": "wl",
+      "username": "30025",
+      "display_name": "职磊",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$867c3fe604080f53b7394eb74743301a$bc2e142b0bd47963565b45e7fb059bf4fc86b945845f10fee5c6ce4abd3c845c"
+    },
+    {
+      "user_id": "user_roster_10271",
+      "tenant_id": "wl",
+      "username": "10271",
+      "display_name": "王忠恩",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$994cf0cab8c02bc4d694c90695c25070$979b12968a6e783c8826ffc50f099b76c39f0e32f06b8ad746cff31d055fb96d"
+    },
+    {
+      "user_id": "user_roster_10316",
+      "tenant_id": "wl",
+      "username": "10316",
+      "display_name": "许泽丰",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4b030a4cec0b6c48f2d06c6d37824dfb$7218df12377b392cef2013d51b937958af5820edf49b59c5aac126fe1bbb504b"
+    },
+    {
+      "user_id": "user_roster_30031",
+      "tenant_id": "wl",
+      "username": "30031",
+      "display_name": "邵豪佳",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8ad9d2de613d103f75c345fe668e1235$67d62c2ee9a49bcc37c6d3ceb6ff5509bf4f9b7cdfae09b94b0e3bbb381fbf85"
+    },
+    {
+      "user_id": "user_roster_10299",
+      "tenant_id": "wl",
+      "username": "10299",
+      "display_name": "许贝贝",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8b20f05dd0a405d34a7fa87a989c6b01$689a487edc6b6d71cf54fc1955c367b36605605eccafb6a3660bc9727edbef69"
+    },
+    {
+      "user_id": "user_roster_10152",
+      "tenant_id": "wl",
+      "username": "10152",
+      "display_name": "岳苗苗",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$521f27efd8b6e8eb159caf00e0575192$6048d5bce7e6cc0ee9bd820de7553f2e98d5608b3bd5aeeacd536766ac98da30"
+    },
+    {
+      "user_id": "user_roster_10282",
+      "tenant_id": "wl",
+      "username": "10282",
+      "display_name": "孙秋云",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$11ab244e2a6022edb3bad9c10b95eacd$17115d86c54adde1df5752bd3ac8ffe35370781d9ff2bc319067fb79f1147967"
+    },
+    {
+      "user_id": "user_roster_10314",
+      "tenant_id": "wl",
+      "username": "10314",
+      "display_name": "应旭冲",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f1d507c09c8e6a6eb805ed248ebfddaf$ca516079ad23832351e58795a2d050ddde674b20af5bd233704b2d7cd2a4ada8"
+    },
+    {
+      "user_id": "user_roster_13212",
+      "tenant_id": "wl",
+      "username": "13212",
+      "display_name": "宋利锋",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$979d8ec7c25c8d722474210b2c8567e7$746cbc0a9d04b386eac05e93342d2ba8d41647648a65318b6353eee87cc040aa"
+    },
+    {
+      "user_id": "user_roster_10388",
+      "tenant_id": "wl",
+      "username": "10388",
+      "display_name": "张国玺",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$90343c1d580ee10129c8ff89d2597642$ce56a9cf1259016999e6d6f64bd5a930736572ddca30b29389beadf78a9e0d28"
+    },
+    {
+      "user_id": "user_roster_30043",
+      "tenant_id": "wl",
+      "username": "30043",
+      "display_name": "毛辉",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a56d8f476193260d82ad1a907d3481e5$d7a6d4872e2c254f008321baf8bfe38952c7f55f1f00292c1843e9d2d1f2b41f"
+    },
+    {
+      "user_id": "user_roster_10320",
+      "tenant_id": "wl",
+      "username": "10320",
+      "display_name": "张佳燚",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9dea4a62a687dcfa967393d2583899c4$a0da0fd3f3e13652e757ede3c01d39da88f28a7b890d16e05651a379c5a00a80"
+    },
+    {
+      "user_id": "user_roster_30046",
+      "tenant_id": "wl",
+      "username": "30046",
+      "display_name": "沈杭涛",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f343f79daa003856e3e14466fd4a1476$5369ea71fe7e00b8325c8d983004e72ef53b284549b7a2ae94fed80bfe4ba99e"
+    },
+    {
+      "user_id": "user_roster_30109",
+      "tenant_id": "wl",
+      "username": "30109",
+      "display_name": "舒珂",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$2cd5e2e347619801a5e9da1817414c54$33d46dce517630f5d6b371a1db0581bcf7052c241924dd369e9b203f7f628235"
+    },
+    {
+      "user_id": "user_roster_10085",
+      "tenant_id": "wl",
+      "username": "10085",
+      "display_name": "项舒静",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a85c7a0b68aafef480824d8ac50d4cdf$e80672cdeefe757c73901f38e51575dd18a01a10d818fdc7b4e378f84f92a6cb"
+    },
+    {
+      "user_id": "user_roster_30110",
+      "tenant_id": "wl",
+      "username": "30110",
+      "display_name": "张官正",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$90dfb686d6c024bf0d2b2f60a420e85b$240b090e8fb5cea4a68b547017afd9b6a4e81f6347ea370bcd5f42ce36411e4a"
+    },
+    {
+      "user_id": "user_roster_10396",
+      "tenant_id": "wl",
+      "username": "10396",
+      "display_name": "童双棋",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5cf7990007662246525960d5e30439b8$18a8b03b6bb81bc812cf9c8acbbd8032b1587d9e6cf1afa9cf5c20a7479d5d9e"
+    },
+    {
+      "user_id": "user_roster_30048",
+      "tenant_id": "wl",
+      "username": "30048",
+      "display_name": "杨明",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0fb4c56e018bccf6dbc84e5660f02598$62e67efdd0342c5283aaa2f8d54664aa6bd11165d58e4ec2b51b534710ce16de"
+    },
+    {
+      "user_id": "user_roster_13326",
+      "tenant_id": "wl",
+      "username": "13326",
+      "display_name": "陈垦豪",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a0fb64ab6b859a9af387522589d2f86f$31f0d0948acbb62a49c1741ba29cccb6eb57662a50f8f59f23b453d171cd55e3"
+    },
+    {
+      "user_id": "user_roster_13315",
+      "tenant_id": "wl",
+      "username": "13315",
+      "display_name": "宁照友",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$cfc02b6f4b8529c1242351318e923d11$bc31ee4edecc89c8190c6ac2c4ffac4c902f0fec620db8145f6f00537bb8bdee"
+    },
+    {
+      "user_id": "user_roster_30116",
+      "tenant_id": "wl",
+      "username": "30116",
+      "display_name": "郑征",
+      "department_id": "dept_8ea909cf5efd",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0c996e1f5dcc407a55a77a0bc5d5507e$a77b60630efee8d2908fd3c783d0bb5529694db8a36f8798610735857d989abf"
+    },
+    {
+      "user_id": "user_roster_30105",
+      "tenant_id": "wl",
+      "username": "30105",
+      "display_name": "蔡汉政",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d8749c99e3151bbb9928bdba38b911e6$6cf91e0fdfdb547447b2ab55648c4cb6bbf707dc248129b824d8a107dcc8e6b1"
+    },
+    {
+      "user_id": "user_roster_30108",
+      "tenant_id": "wl",
+      "username": "30108",
+      "display_name": "柴厚胜",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4b14a09c01a3740b3b906c310135394d$63db1bfe987fb085902e0ee0104eb93b9d8af6ba209aef1af102c91e6e7d4093"
+    },
+    {
+      "user_id": "user_roster_30117",
+      "tenant_id": "wl",
+      "username": "30117",
+      "display_name": "许添乐",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$375d81bef0cc816e7582d5ec38325ed6$334708424dde618bc6f0df802bdd653b13d409bcde24d492b1bac4cb2af4b2c7"
+    },
+    {
+      "user_id": "user_roster_10230",
+      "tenant_id": "wl",
+      "username": "10230",
+      "display_name": "周著豹",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$71070d495bfdf23f29db0359e5596d2b$b36a17d8ede21c138fbef41db01167a9ad43ba857f17df184336dac1e7752455"
+    },
+    {
+      "user_id": "user_roster_10410",
+      "tenant_id": "wl",
+      "username": "10410",
+      "display_name": "赵孟",
+      "department_id": "dept_a9832881ef2d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3c126fb6031b276a416a5515021613d1$dec3a6dd3b935b8bb8fe82514d247eac6440a59edf1d32ba890704f2cec41bdd"
+    },
+    {
+      "user_id": "user_roster_10415",
+      "tenant_id": "wl",
+      "username": "10415",
+      "display_name": "冯伟涛",
+      "department_id": "dept_production_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9bfcb80cb1f4c5aa89834c354ffe9b55$cc46f463bc3f6bce46f2d186cb8b6ba9810d01c77505e311de1ba7ae3b81f9b0"
+    },
+    {
+      "user_id": "user_roster_30103",
+      "tenant_id": "wl",
+      "username": "30103",
+      "display_name": "刘鹏",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$30d58abe07dcb1b05cb5629d3b8ed161$de9fb175654a2c8a887f8cc0b823556a6b6e4d7e78a07298dd6486ae5435a550"
+    },
+    {
+      "user_id": "user_roster_13398",
+      "tenant_id": "wl",
+      "username": "13398",
+      "display_name": "李发洪",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ccceb27d53413a8b86619eb3cce9a856$71cf8fe31d0e2bc306840d3d84d18d3179c16860ac84776ef2f0e441f3c4d370"
+    },
+    {
+      "user_id": "user_roster_10422",
+      "tenant_id": "wl",
+      "username": "10422",
+      "display_name": "罗帅",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b6edea941b67f8063cb0ae668e276f17$3adeef86b0e235dc1da985c23195db3c792228bc4a014b07cc738de8aa701d4d"
+    },
+    {
+      "user_id": "user_roster_10419",
+      "tenant_id": "wl",
+      "username": "10419",
+      "display_name": "朱依雷",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$178c6e04df89bf2c0bf4b9ff87c5ecaa$b3c979e727cedc880f99bb5e14dcfb4a8cccb0bc874d991453ad0fc23661058b"
+    },
+    {
+      "user_id": "user_roster_30052",
+      "tenant_id": "wl",
+      "username": "30052",
+      "display_name": "崔延杰",
+      "department_id": "dept_acc8a51c93d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$26495d1207f9a41c86dd6c726edf9544$0fdb43c0243d48e1294e70a526e62ae7558868900b928adf72649adc6b763c9b"
+    },
+    {
+      "user_id": "user_roster_13413",
+      "tenant_id": "wl",
+      "username": "13413",
+      "display_name": "井建华",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5ec8e2016bb1b0dd9bc65c985400afd8$435c298dcf70d78407ba85320813d991607cf3fc6f2bb77e0fe8a7d18e01b3bc"
+    },
+    {
+      "user_id": "user_roster_10426",
+      "tenant_id": "wl",
+      "username": "10426",
+      "display_name": "劳凯伦",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$68a357f36f8b4841daa5a4de92fb92e0$ae38fe7fbea44c32e63c4bfad7e4e28a7dcd4f5712006e26f0545ebad87d5ec7"
+    },
+    {
+      "user_id": "user_roster_13415",
+      "tenant_id": "wl",
+      "username": "13415",
+      "display_name": "李博",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5c614933139281faca546f5f7fcd215d$ca011c7f9d0bfb2e52e868b3e9a0822edcff9c1cf5a3744775e118168712aca6"
+    },
+    {
+      "user_id": "user_roster_10588",
+      "tenant_id": "wl",
+      "username": "10588",
+      "display_name": "杨富强",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$96243123b0fb092f657d713421a29bcb$d57897a341a4511e7178d5607fa3a7421fe371761f1a20fdd20952b38028a2d8"
+    },
+    {
+      "user_id": "user_roster_30102",
+      "tenant_id": "wl",
+      "username": "30102",
+      "display_name": "汪良峰",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3bfcd7a5f969ac7b82aab870e259b084$0398954c39da74c903c6a78e151913031c9d375457d8ffda195ae7104f01e10c"
+    },
+    {
+      "user_id": "user_roster_10431",
+      "tenant_id": "wl",
+      "username": "10431",
+      "display_name": "孔丽",
+      "department_id": "dept_7f3744e49351",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4a33ea8476adabd5f71141c135969e2c$710e7b2613a8ee3d2d4633872f3196d6a2157f0b32fdc0ede85d8da462ae1508"
+    },
+    {
+      "user_id": "user_roster_10433",
+      "tenant_id": "wl",
+      "username": "10433",
+      "display_name": "卢棋",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5f466343eef3a474a56d2608c02faccc$a1f3746d04d5c58ec9e0217be4f34c1f2e12fdf28865be0b4d4c197b5d67488a"
+    },
+    {
+      "user_id": "user_roster_13468",
+      "tenant_id": "wl",
+      "username": "13468",
+      "display_name": "赵俞聪",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$abe22e4a4a05ba1035cae2a655651df5$08bcc34e46d17dba37f99d97d56931cd25eaeba1b637d6647d09865ddc9c54e1"
+    },
+    {
+      "user_id": "user_roster_10432",
+      "tenant_id": "wl",
+      "username": "10432",
+      "display_name": "杨尚钢",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$209fe54f1394826d9d37a3f794872714$7a8264c2c140b4db526d145c81a2fca70a01a74aee89da06939bc44870bcdd09"
+    },
+    {
+      "user_id": "user_roster_10440",
+      "tenant_id": "wl",
+      "username": "10440",
+      "display_name": "华金帅",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1e894a4e8f088901dacf7b75b507dacc$5c6c2f8556c1fe818837d5cbad732c515d4de3406e4364131c3a4c5d2b31cfd6"
+    },
+    {
+      "user_id": "user_roster_30112",
+      "tenant_id": "wl",
+      "username": "30112",
+      "display_name": "周慧茜",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$775c25c192d90044a103f181b316d78d$438a6f7f1f5a8696ee7bf6eb815fc3aa3232c304cdd5e9ad3dbcd984f237c381"
+    },
+    {
+      "user_id": "user_roster_13496",
+      "tenant_id": "wl",
+      "username": "13496",
+      "display_name": "周建苗",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fdfaf45adb7a9da89a4006cf69ce2c68$f349d18e85ad2d59a3a428892660015642fca4fb565fa36a4802e3a18b660814"
+    },
+    {
+      "user_id": "user_roster_30119",
+      "tenant_id": "wl",
+      "username": "30119",
+      "display_name": "曹乔辉",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0a8b241d9fa5652622d49aa5788e60f2$d820db8ccd684ea2fc53b4cc0c5badef865adb208d6062af5e419c9f588553c2"
+    },
+    {
+      "user_id": "user_roster_30115",
+      "tenant_id": "wl",
+      "username": "30115",
+      "display_name": "凌增龙",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$67ebe08c87c6c814d8ad3fb93e841741$6064c30baf4ce341f94d99da6aae8a18b187701cfa229213937acf6c41aad16d"
+    },
+    {
+      "user_id": "user_roster_10450",
+      "tenant_id": "wl",
+      "username": "10450",
+      "display_name": "沈利烘",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a21926869877820cd27bee0d3c695cd2$74a98beb7c061bd52ca040ce549eb528b24b239401046b1cbd3dc80653edab69"
+    },
+    {
+      "user_id": "user_roster_10132",
+      "tenant_id": "wl",
+      "username": "10132",
+      "display_name": "顾镇洲",
+      "department_id": "dept_219efc85f4a2",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4f4af8913786a0b12765ff649854930a$e3bc7b4aea946a00ac043021d6d67eb9ec608add4605cf4b1134cb54a2c181a7"
+    },
+    {
+      "user_id": "user_roster_13531",
+      "tenant_id": "wl",
+      "username": "13531",
+      "display_name": "黄春梅",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$eb74f0e374905cf1c19ff7050f020aa9$e8fff523e9d83a86491ec59bbb8bae402e5b7d9a4833d720d4855af08eed0a72"
+    },
+    {
+      "user_id": "user_roster_13539",
+      "tenant_id": "wl",
+      "username": "13539",
+      "display_name": "李绍松",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$27ae9d1cd4cd33968a71ad8581342e43$fe3e2452091028de16ef5491fc8b3685d45796851e6dad2ee2e6b0b1a925879d"
+    },
+    {
+      "user_id": "user_roster_10451",
+      "tenant_id": "wl",
+      "username": "10451",
+      "display_name": "陈春江",
+      "department_id": "dept_b61d1de380f5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$916b240886ab180146c390cef0e160de$c57b20247798d6c3b1e19295d6c40cde8bdf05e963913da62a1b78aae0920f74"
+    },
+    {
+      "user_id": "user_roster_10458",
+      "tenant_id": "wl",
+      "username": "10458",
+      "display_name": "成枭",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b8746c82eadcb2fa1d713a3a6dd14b06$a691c365330f2f2c1e268abb1db870c1b92a2cda2610a4479772a5ec0b919c65"
+    },
+    {
+      "user_id": "user_roster_13590",
+      "tenant_id": "wl",
+      "username": "13590",
+      "display_name": "姜晓晨",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e71c0028d660b3e55bee36a679871b8d$1eaf5b854048d748a630ee9b99e764d03053cf99c350831524cfc737c25328de"
+    },
+    {
+      "user_id": "user_roster_13586",
+      "tenant_id": "wl",
+      "username": "13586",
+      "display_name": "李国峰",
+      "department_id": "dept_89fa18d7cf8b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d30798d645f4bf4df688241b2b6d42f8$9fd3fa0cd3209b662c11fbd80fec656259a9b483e177c5aa970f4c16a8e0014c"
+    },
+    {
+      "user_id": "user_roster_13582",
+      "tenant_id": "wl",
+      "username": "13582",
+      "display_name": "徐东",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f3d41f568f7dd41839ff48dad2dec3f8$67e1236b1d4c9bdc7aa6493ead873567d35aab1c9fc6ab2564c11ac5f0e48133"
+    },
+    {
+      "user_id": "user_roster_13566",
+      "tenant_id": "wl",
+      "username": "13566",
+      "display_name": "张琴",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f262b485e23cbe206c16a397fb0835e9$3b744870861d56e47271768bfe03bee6ea3ce0c3677944a08e15001659283e46"
+    },
+    {
+      "user_id": "user_roster_13573",
+      "tenant_id": "wl",
+      "username": "13573",
+      "display_name": "周建峰",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$efd13b068275a103bd1d89e38cc035ad$5dbb52a83674ee5f3da21fa0b193ac3f145a5924743e68ea0168fe7ef75fa78c"
+    },
+    {
+      "user_id": "user_roster_10526",
+      "tenant_id": "wl",
+      "username": "10526",
+      "display_name": "杜鑫锋",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5654a4f108a972f79fe8338a4bb9d330$cfa562f526597bd11555e036febdcb44347a5bd8ea377464135da41f503c63b7"
+    },
+    {
+      "user_id": "user_roster_30122",
+      "tenant_id": "wl",
+      "username": "30122",
+      "display_name": "龚春林",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ba3129fb15a2bc6cc8fbada863551ca9$de10169e0a3054306c1dece57919a5afd1858cb9644d263fe62cfb1dd818c0dc"
+    },
+    {
+      "user_id": "user_roster_10535",
+      "tenant_id": "wl",
+      "username": "10535",
+      "display_name": "郭尧尧",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$62521d46559e2622928a3e0d57c6b787$b2a762ca5b7b1d1845bb31aaf7e9160edd66025151ee7adf14b010bb70b4dfa6"
+    },
+    {
+      "user_id": "user_roster_30044",
+      "tenant_id": "wl",
+      "username": "30044",
+      "display_name": "汤烊烊",
+      "department_id": "dept_56f3af38b4f0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f9bb41a0012aafb22d75423704684c49$77783ca4df6c250bf659f48d1663d4f68b9a5d1b5bfbc70d17149edf4eacdb50"
+    },
+    {
+      "user_id": "user_roster_10534",
+      "tenant_id": "wl",
+      "username": "10534",
+      "display_name": "张栓虎",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$112789e6237a21a3c322142e10480548$2bbe6a1f67210ac11f905c3796c4b586115dd06d76ad09063a5df154fe910586"
+    },
+    {
+      "user_id": "user_roster_13638",
+      "tenant_id": "wl",
+      "username": "13638",
+      "display_name": "干焕佳",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3a6bcb6d29b8302b9d286e3f7d8120d9$9bc270bd39877de59cd96522bd80f1ef43b0f3ba549975514e3feb6fc7845564"
+    },
+    {
+      "user_id": "user_roster_10558",
+      "tenant_id": "wl",
+      "username": "10558",
+      "display_name": "何宇恒",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6d886e58253af27dd3236b2546be3a39$17e86bf2216d92cb2922efe834c6baa530f57469e4d01d148afb9afb11ebbe13"
+    },
+    {
+      "user_id": "user_roster_30125",
+      "tenant_id": "wl",
+      "username": "30125",
+      "display_name": "秦明功",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b2d70ba1547d921026fb592b99557dac$cd27910d1071924e5c599015b4473982092881950335000f07b44b9729616b14"
+    },
+    {
+      "user_id": "user_roster_30123",
+      "tenant_id": "wl",
+      "username": "30123",
+      "display_name": "王本缘",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fb20a1ad57e116da3422bc2e2ba16809$f55ccb02da80f90f1b4d7fad3c7baf8e965d93bb09b0b4d8c32cb32ea37b9f63"
+    },
+    {
+      "user_id": "user_roster_10556",
+      "tenant_id": "wl",
+      "username": "10556",
+      "display_name": "谢佳琪",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ed54413eda6bc4bcd1fee5b47b449810$f337a5533b10801972f97e32adc9c6116e690e6b11e94f5151b81e154f22d81b"
+    },
+    {
+      "user_id": "user_roster_10555",
+      "tenant_id": "wl",
+      "username": "10555",
+      "display_name": "杨杰",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4e07b3778748112cc19f65fcf46d80b1$978dc53ef91bf49654ede3b08c09ca761783e22fe0a0affd79dd757eb951baa9"
+    },
+    {
+      "user_id": "user_roster_10565",
+      "tenant_id": "wl",
+      "username": "10565",
+      "display_name": "方梦然",
+      "department_id": "dept_00164b79de0d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$37d987acd225df817d5e778b6b937196$73fcc9407383075e760e53d8b5219f9a4d8d6695f92033b4f917090b7281613c"
+    },
+    {
+      "user_id": "user_roster_12215",
+      "tenant_id": "wl",
+      "username": "12215",
+      "display_name": "罗进忠",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$38f18fbd4c7f0a9c58b7f8ac3b41f6aa$950e2fa4fbeea7cdcf247cbf7b37a5f59ba794c99194140e63ab604d2d33e802"
+    },
+    {
+      "user_id": "user_roster_10568",
+      "tenant_id": "wl",
+      "username": "10568",
+      "display_name": "郑佳绮",
+      "department_id": "dept_quality_assurance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$790431c3fd98f5c51094e499b34bea88$569a717526bec287d6afbcb5fa986a51167d1a47e8248ac0413327e6064e7df8"
+    },
+    {
+      "user_id": "user_roster_10578",
+      "tenant_id": "wl",
+      "username": "10578",
+      "display_name": "符仲鑫",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e931fea8fd15a83b0ca45400f9602ec0$a292812892c006b03b5fc7ed6727ad553372ce488cb0b71047e78b7eeb016082"
+    },
+    {
+      "user_id": "user_roster_10194",
+      "tenant_id": "wl",
+      "username": "10194",
+      "display_name": "谷利娜",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$501222728849ee86fe206c26814b335d$01f6ec9b8789ea929f7ac3d8a7f0142ca5c4527de03728dafb2bf5464bdfa746"
+    },
+    {
+      "user_id": "user_roster_30131",
+      "tenant_id": "wl",
+      "username": "30131",
+      "display_name": "郭炯淦",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5a293f4a19e095c01925f85525ba0f42$adfabee54b1e4b46e9f82beb34720f21e5f378509be7347156029bcf88714ee3"
+    },
+    {
+      "user_id": "user_roster_10573",
+      "tenant_id": "wl",
+      "username": "10573",
+      "display_name": "卢煜翔",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f6b97c82e2ddfd9757287b101d36cff0$0b21ece91e96ceabe13729802b51b2b6adeec52d82e8920d21c968798cd0395e"
+    },
+    {
+      "user_id": "user_roster_10583",
+      "tenant_id": "wl",
+      "username": "10583",
+      "display_name": "倪海波",
+      "department_id": "dept_supply_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$216272409c47f87f109d43fba8b3723c$fbc8c54b29c20d3ff68aaa59c2d88e36ab4bd98e22bf810c2ac72cb2df6d301b"
+    },
+    {
+      "user_id": "user_roster_33001",
+      "tenant_id": "wl",
+      "username": "33001",
+      "display_name": "宋浩渤",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ef7793bf2cc92f4e501324839871dcd1$c8bf6e56652a219735ec6125fd7a4528f640fd22878f20879604ebfe1c2282bc"
+    },
+    {
+      "user_id": "user_roster_30128",
+      "tenant_id": "wl",
+      "username": "30128",
+      "display_name": "唐龙",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fa50420eb69c37e8fe7d0a196c06a17d$d5152df4e1d7a74bc4279cfd76904c1650f0608a76b6bd6d2bde76b7f0db599d"
+    },
+    {
+      "user_id": "user_roster_13685",
+      "tenant_id": "wl",
+      "username": "13685",
+      "display_name": "唐平",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$bf36530085a2086f8ff17619f69fc09a$73e6baa7ca1770161467ac20150095454b4265a474fc75d796285a86db4cea7c"
+    },
+    {
+      "user_id": "user_roster_13674",
+      "tenant_id": "wl",
+      "username": "13674",
+      "display_name": "万绍强",
+      "department_id": "dept_219efc85f4a2",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$97a93fbb633a462b25a8ef0066f83666$00ec0be8046cf1d7ff8d609478ac78286f8aae48324ed9a2e3864dc08ba8ad68"
+    },
+    {
+      "user_id": "user_roster_30129",
+      "tenant_id": "wl",
+      "username": "30129",
+      "display_name": "万宗明",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$87b5dfc771d00cb5c5f74f3304aba3ee$1f5e94d42cfc34d4ddfdfde12b5748b1e61dcb7e3ff243bc7033875f5bccc797"
+    },
+    {
+      "user_id": "user_roster_30057",
+      "tenant_id": "wl",
+      "username": "30057",
+      "display_name": "徐智",
+      "department_id": "dept_8ea909cf5efd",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$790fdcc4c54c111e9e8e58e006ee97bd$0ff533de7f1d2c236cea5db5320da022a9fa2152c9d93168e566047ec4c21bd6"
+    },
+    {
+      "user_id": "user_roster_10572",
+      "tenant_id": "wl",
+      "username": "10572",
+      "display_name": "于莹莹",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$033af79f1b452f213f292c0e3c593247$2a388225694f489f0bb10a462bd20d5a2522f46700b59029188c605ed45dd657"
+    },
+    {
+      "user_id": "user_roster_10577",
+      "tenant_id": "wl",
+      "username": "10577",
+      "display_name": "俞钧阳",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$74ee6ee6862577837be5209c896196aa$a77466981a180e2017f4a608ddf4f872a93aae7ff3453187c610fa6c4c3588cc"
+    },
+    {
+      "user_id": "user_roster_30130",
+      "tenant_id": "wl",
+      "username": "30130",
+      "display_name": "周威林",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6d18803c607d5518e803919cfe69e5dd$3df24645d0b613732c4b0e32f5424daa5a86042b1d7d4bcf2cb2c76d7b8b850d"
+    },
+    {
+      "user_id": "user_roster_10575",
+      "tenant_id": "wl",
+      "username": "10575",
+      "display_name": "魏保江",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f0558981d32d608216b74cbf08720b29$2ab1c8dcc4c4405ec0eb193fe18ca8430eb1a2acb373b27c6cd0d43e2b6e70ef"
+    },
+    {
+      "user_id": "user_roster_10001",
+      "tenant_id": "wl",
+      "username": "10001",
+      "display_name": "李玉方",
+      "department_id": "dept_general_manager_office",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$921632b8fe9c1ec0b0a1be22652cb4e0$bd7d31aff69e6b3bb7442d50e645eb7ac9e0ccede15be0fe341d2a95bd31eeee"
+    },
+    {
+      "user_id": "user_roster_10000",
+      "tenant_id": "wl",
+      "username": "10000",
+      "display_name": "裘洪立",
+      "department_id": "dept_general_manager_office",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6504fa464338c9740664c538ce9432ce$33c02956560cfeeeabc89a768fd2484b1db39e0afdf651d2df209ae7be254011"
+    },
+    {
+      "user_id": "user_roster_10050",
+      "tenant_id": "wl",
+      "username": "10050",
+      "display_name": "裘泉军",
+      "department_id": "dept_ab14f60df1b0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7a2666fdadf4c79295029b1cfa609cd1$12f28066ea45a92f0abca2e4c63c922869832937f8841f47a99322269c202dfd"
+    },
+    {
+      "user_id": "user_roster_10072",
+      "tenant_id": "wl",
+      "username": "10072",
+      "display_name": "朱友玉",
+      "department_id": "dept_89fa18d7cf8b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7e7e6eb541910d3252920cba58e59ae7$51c0c9dcf2a2eb41fe4b69e1960d65e22f432d8a97495fe38b325f31bf77f1b3"
+    },
+    {
+      "user_id": "user_roster_10051",
+      "tenant_id": "wl",
+      "username": "10051",
+      "display_name": "周静",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$52b1d0603d879322d3cb7973cd8fbcf3$ff2774ecc5b6150b4d74777a04e57786622e8b34abd64507fe2a728d1f54d23d"
+    },
+    {
+      "user_id": "user_roster_10589",
+      "tenant_id": "wl",
+      "username": "10589",
+      "display_name": "黄梦伟",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b8e835b16b53757e7695d12563a0fcd6$db8c78dcbaeb8e9110d74537c393cd03252b9dd488cc0eb61f9c59602ca14725"
+    },
+    {
+      "user_id": "user_roster_10582",
+      "tenant_id": "wl",
+      "username": "10582",
+      "display_name": "刘忠军",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$64e0624a96d552043aa97f191ad17126$a13fa4c921350386f220e3cf3c6cdaa20d1e7a7c553e6caa061589f02ca54cc0"
+    },
+    {
+      "user_id": "user_roster_10580",
+      "tenant_id": "wl",
+      "username": "10580",
+      "display_name": "涂永林",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8fca8e090e3eef3d5af4f8e8143d0ab5$ad540f9d87638fcfb3a80c2a3b7737fb988e732565114d345269aee2459731ea"
+    },
+    {
+      "user_id": "user_roster_13713",
+      "tenant_id": "wl",
+      "username": "13713",
+      "display_name": "干斌斌",
+      "department_id": "dept_c96d21d0e784",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7e606fc542e80fd4985e8216a518e768$6e7383b716acc9780248eb751c02aeff26b9eac8d35b10de8821fcdffb6caca6"
+    },
+    {
+      "user_id": "user_roster_39001",
+      "tenant_id": "wl",
+      "username": "39001",
+      "display_name": "胡振雷",
+      "department_id": "dept_acc8a51c93d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$342922dcc9ed0214bbf23fa33519420d$4acf4bf7cac5d758925a4efa35c9a26141c732bd3a47b5518b15783febe8b8e8"
+    },
+    {
+      "user_id": "user_roster_10593",
+      "tenant_id": "wl",
+      "username": "10593",
+      "display_name": "罗兴撑",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$daa4021615afeea723353a1e8532f715$0b365d4cc71ee155a6b262a16d1b5f37f65a2f90700d039241d04befac7063ed"
+    },
+    {
+      "user_id": "user_roster_wangchenguang",
+      "tenant_id": "wl",
+      "username": "WangChenGuang",
+      "display_name": "王晨光",
+      "department_id": "dept_project_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b230b48600625a340d9deb9911d35b89$f530af7b025434e606fa8faca58619021406cdcaa8cee0da84f6a0ab2b435cab"
+    },
+    {
+      "user_id": "user_roster_yesenhui",
+      "tenant_id": "wl",
+      "username": "YeSenHui",
+      "display_name": "叶森辉",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0d5ce834e13ff3c6ae649af26a405e8f$c74dc1a091c30ce5e49b40372a03cd5254323066bd3f72dae63e38a24e47d7f9"
+    },
+    {
+      "user_id": "user_roster_13758",
+      "tenant_id": "wl",
+      "username": "13758",
+      "display_name": "柳彦斌",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$38d40ce870fe7c53de099c720681338c$5a40e74bcdda3232fc660c2483483fae5636106268f3fa7cafe58d6bc094feb1"
+    },
+    {
+      "user_id": "user_roster_13757",
+      "tenant_id": "wl",
+      "username": "13757",
+      "display_name": "金健刚",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1ceb1ebe1c306b30e2377bd205782961$3ad6d49d2c791ea30615c74718a83e96193e6c732698c0be4e69017786856674"
+    },
+    {
+      "user_id": "user_roster_13763",
+      "tenant_id": "wl",
+      "username": "13763",
+      "display_name": "陈明",
+      "department_id": "dept_d2ee7e26dbf3",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$86089eb87efd08b17a087678bd2c7183$cef86f3d8c82e83d49eb2f1c29c56bf417d2681f19da8e332c41cc30e1aba30c"
+    },
+    {
+      "user_id": "user_roster_13762",
+      "tenant_id": "wl",
+      "username": "13762",
+      "display_name": "俞爱娜",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9ae0f98c701157eee0e4d63dbf1c9095$23fab1c605df03f8bb62ba8619fe3df93e226199c90872196bbd6e1330cdabf7"
+    },
+    {
+      "user_id": "user_roster_13765",
+      "tenant_id": "wl",
+      "username": "13765",
+      "display_name": "赵子文",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5b91a97a5202d66a6bf722652bc76b6f$d93517540d02b2912c17128f2930d8e0097043900462552443a8562c81e6e79d"
+    },
+    {
+      "user_id": "user_roster_13778",
+      "tenant_id": "wl",
+      "username": "13778",
+      "display_name": "涂鑫",
+      "department_id": "dept_8a2d59b1e51b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1ff628cdc8cb075a560650bf67f92bf2$8953d5ae786c39cec5443822bf2163231b6c0e4092ef9ea98a31c3c754c5ab8f"
+    },
+    {
+      "user_id": "user_roster_13770",
+      "tenant_id": "wl",
+      "username": "13770",
+      "display_name": "刘小稳",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e37f06cdb26df721b8578902b2733068$cf0340bb0bc001ee4088b6730b1da79b014b5f6d055803fcc7e72b154e1a55b0"
+    },
+    {
+      "user_id": "user_roster_13771",
+      "tenant_id": "wl",
+      "username": "13771",
+      "display_name": "罗水明",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e2ab554c3d604032a3491fd9fa1221e2$e859bf2aec5e245b7a4c1254b6488995d424976752579bd4b686474f069cc45b"
+    },
+    {
+      "user_id": "user_roster_10091",
+      "tenant_id": "wl",
+      "username": "10091",
+      "display_name": "黎龙生",
+      "department_id": "dept_219efc85f4a2",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0e8551dac2a41f61a9017c2e8acdf8fe$d6b6ed9acf7dfef4b4beb98d86b6944ee9c32d65ad3ffa7e0036bcbaf9440f24"
+    },
+    {
+      "user_id": "user_roster_10052",
+      "tenant_id": "wl",
+      "username": "10052",
+      "display_name": "吴华江",
+      "department_id": "dept_031ab88ffbb5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ab05f48b7b6fb64c5b6fb71aa374db7f$df43e6c354a9e5e35ec79ceef45c33ab81ff7221d5045a36f0a449773b8e283a"
+    },
+    {
+      "user_id": "user_roster_10174",
+      "tenant_id": "wl",
+      "username": "10174",
+      "display_name": "史东生",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ae097f71a8afaa6966aefc862335440b$cdda2c2f787d444e6fa5031507aec7bb349b3bf489901da92182372572af6b9f"
+    },
+    {
+      "user_id": "user_roster_13794",
+      "tenant_id": "wl",
+      "username": "13794",
+      "display_name": "许世全",
+      "department_id": "dept_cbaa4666d315",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3d03deec4e9dd5ee233b1b67a79f40e9$3a3b6c367e56e9b56660b9c331e51e6877cbc7caef7188ecb063f7c3a1610c8e"
+    },
+    {
+      "user_id": "user_roster_10063",
+      "tenant_id": "wl",
+      "username": "10063",
+      "display_name": "谌鸿清",
+      "department_id": "dept_production_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$832e88bce340ca5aa392f81b3dc7c6bc$099513cf42bb79204648b0fb7885d3749db4a32d8c4b6fe24240bd34c350c4a1"
+    },
+    {
+      "user_id": "user_roster_10041",
+      "tenant_id": "wl",
+      "username": "10041",
+      "display_name": "夏芬",
+      "department_id": "dept_supply_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$2920042f051b599f3f777432ee2b7f37$db75e65b7b906db3f5a39907767953709da1b7a5dc31c3ffe008d73073819bcb"
+    },
+    {
+      "user_id": "user_roster_10342",
+      "tenant_id": "wl",
+      "username": "10342",
+      "display_name": "杨有春",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$dc8b5a254a5ea6edbd00ed700caf7f2d$9c6a63493ae7af777b764ff80af5d82b8b3a08d63d670b0f856cb69f17d1938b"
+    },
+    {
+      "user_id": "user_roster_10055",
+      "tenant_id": "wl",
+      "username": "10055",
+      "display_name": "姚科",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$61e74fa58345ba35a06a117e78d596b3$1592f28733b37edf628d475f94fec5558b0155ae464c2eaa90c79979ab35ad96"
+    },
+    {
+      "user_id": "user_roster_10066",
+      "tenant_id": "wl",
+      "username": "10066",
+      "display_name": "张大滚",
+      "department_id": "dept_56f3af38b4f0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b4411a02a10d243ac389df8a1f6cd826$3e8beafd4fec6f0bfdddc8ef65133bf35a269dd8f2af95885a5c87420f485abc"
+    },
+    {
+      "user_id": "user_roster_10327",
+      "tenant_id": "wl",
+      "username": "10327",
+      "display_name": "李高军",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0bd3b1381512534d61a8c042bd71a83a$93002011c81f9fbd73d5d840ea608e9689121c4032d622445122f0522eee119f"
+    },
+    {
+      "user_id": "user_roster_10086",
+      "tenant_id": "wl",
+      "username": "10086",
+      "display_name": "沈银尔",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b5835e7d84200b0263964924eac2e346$0021d6c99d1f4e3dbc16ad0a9f955910a44a4530f4f714fed2119eeea3381f70"
+    },
+    {
+      "user_id": "user_roster_10341",
+      "tenant_id": "wl",
+      "username": "10341",
+      "display_name": "江时明",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a6dc1febd4c4cf16e76d2e1cca9d3a11$dca50da46ae4e6601c5d008a7d1d218727979a17f129adb9cef74773155dab4b"
+    },
+    {
+      "user_id": "user_roster_10357",
+      "tenant_id": "wl",
+      "username": "10357",
+      "display_name": "鲁海炯",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b8302097715572eb95fd2b8db0b644cf$d423be12bce499d66a86c08763dd9d2c0ad828b80262571a1fb3fa8b42185ffd"
+    },
+    {
+      "user_id": "user_roster_11338",
+      "tenant_id": "wl",
+      "username": "11338",
+      "display_name": "杨炳新",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$53b6cd34ac1878d3e3c463e3ccbedb77$d8a0ae99766992fd30e710da943ec9e5073cb253c3b710a952606f4f60202ea7"
+    },
+    {
+      "user_id": "user_roster_10321",
+      "tenant_id": "wl",
+      "username": "10321",
+      "display_name": "江时亮",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$eda138eea795f21c909ecd1166391c00$1af3e6b33b631fd67d5ee01e8698e270e24006d38e10e06643660f293d5e53f5"
+    },
+    {
+      "user_id": "user_roster_10351",
+      "tenant_id": "wl",
+      "username": "10351",
+      "display_name": "夏文彬",
+      "department_id": "dept_89fa18d7cf8b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$61a583328d0adc560f7933960392b2b8$8ada6c49cc47fd66d40b8e17560c1e8f39a6572c63e702d1f4d603d43df572aa"
+    },
+    {
+      "user_id": "user_roster_11495",
+      "tenant_id": "wl",
+      "username": "11495",
+      "display_name": "董鑫浓",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$880834b829da01d72a82e655f81c4989$5b232888ecbb0e99b6dc224b3a37fff6808bb49f8344dad86732e1e7c88592fa"
+    },
+    {
+      "user_id": "user_roster_10168",
+      "tenant_id": "wl",
+      "username": "10168",
+      "display_name": "吕政权",
+      "department_id": "dept_0dcbd2856e80",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$42008f98672b84a93f0758fd43aa0524$194fec635ab998e9a184063ea495ef1b95b2c469166c1a27530c49c22dd32a3c"
+    },
+    {
+      "user_id": "user_roster_10142",
+      "tenant_id": "wl",
+      "username": "10142",
+      "display_name": "王俊",
+      "department_id": "dept_quality_assurance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d209e1aa3a9c718d8543db2d0fcb4933$761e769f479eb5968bdd5dd83ed294f7efc13e5c31f045e1141289ad72812375"
+    },
+    {
+      "user_id": "user_roster_10166",
+      "tenant_id": "wl",
+      "username": "10166",
+      "display_name": "干科明",
+      "department_id": "dept_production_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$379f2e86ed450b06a9e05aa5eacbd154$3aa22472164b3ee9038101aecc8dc4dfa83782cc460154049817143aa35a1d3c"
+    },
+    {
+      "user_id": "user_roster_10306",
+      "tenant_id": "wl",
+      "username": "10306",
+      "display_name": "韩蔡俊",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8b1e1617150b624546976bb149852ae4$a1403c83d5167663be34a20ad572b6861ec2e4173e4eb03d1ab4599ffb64b10f"
+    },
+    {
+      "user_id": "user_roster_10171",
+      "tenant_id": "wl",
+      "username": "10171",
+      "display_name": "杨君飞",
+      "department_id": "dept_d2ee7e26dbf3",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4a81627484f61cdac414c085aac7180e$b3fcd639ec7db19ed1e3909cc3d61e78017bfe175e6a0c7e2d902ce9e7fe4654"
+    },
+    {
+      "user_id": "user_roster_11674",
+      "tenant_id": "wl",
+      "username": "11674",
+      "display_name": "吴挺",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$dc2e037c05332cbe8ac2dffc3ac19011$a424cdfbc7902095bc54ec849ac41fcf022f7ab478ef331ac6ae5a4cd906bed2"
+    },
+    {
+      "user_id": "user_roster_11719",
+      "tenant_id": "wl",
+      "username": "11719",
+      "display_name": "黄文策",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$cc4f490e251fd258ca9c380175143d94$b42a1710e6aaa3d0ee907d54e687cffb9c877fd9be3468665869556a58ec92a0"
+    },
+    {
+      "user_id": "user_roster_10269",
+      "tenant_id": "wl",
+      "username": "10269",
+      "display_name": "黄维烈",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7db131a9ada27b735dee9498314563b5$5db3c672da073e59c45fb33542c9b1241b5fd0f26e2a996b075968a07ccea1b9"
+    },
+    {
+      "user_id": "user_roster_10525",
+      "tenant_id": "wl",
+      "username": "10525",
+      "display_name": "宋佰春",
+      "department_id": "dept_quality_assurance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e27c7aee07417e23b2cc4efb748f6cbd$30f8af44f9dea17edfc32b1099a6f0477c81c93713d2681b26a71e96e6d7c6d0"
+    },
+    {
+      "user_id": "user_roster_10343",
+      "tenant_id": "wl",
+      "username": "10343",
+      "display_name": "符天明",
+      "department_id": "dept_c96d21d0e784",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$48791e04d1f3f59b186a8c31cdb34c35$741d9875b3adcfd4c3768fc6e1df9b0ea2a05b43c98b39f8557759fa49f2472b"
+    },
+    {
+      "user_id": "user_roster_10129",
+      "tenant_id": "wl",
+      "username": "10129",
+      "display_name": "周科",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$29af5ecf0dbe87e08e3a6e3ddf53ac5b$212f106f2255e1e111d8b255a630a1a56fa75b75380437d684626bf5e2199231"
+    },
+    {
+      "user_id": "user_roster_10180",
+      "tenant_id": "wl",
+      "username": "10180",
+      "display_name": "吴飞云",
+      "department_id": "dept_7e1e4824ebb4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7372e07e1c9406d85efb0d4c3a44e750$fd825c150acc21d986fc5812f7804e2825ce66c4479c45551e18241d3ec8ec59"
+    },
+    {
+      "user_id": "user_roster_10184",
+      "tenant_id": "wl",
+      "username": "10184",
+      "display_name": "吴奶君",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$48d9a1f63dca95a6d9eebe40eb8262f4$18cd9bc505488326fceee2d0088046482a51c9435d5a1f2123d9dc0ee325cff5"
+    },
+    {
+      "user_id": "user_roster_30005",
+      "tenant_id": "wl",
+      "username": "30005",
+      "display_name": "严豪杰",
+      "department_id": "dept_7f3744e49351",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$340737c430ea9c6f0ab409af04c5865b$6345c14796e9c12bde6d406425c7d2abbc79d6ee8f3db1b77d9ca61c304c39f7"
+    },
+    {
+      "user_id": "user_roster_10027",
+      "tenant_id": "wl",
+      "username": "10027",
+      "display_name": "干伟栋",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3d3fbe9157f2a199a7cc5fc9a6371548$596594e77d66d8ca7c04d6c8ddf1bcc7f470de0a908f3b0d94bd78c2b362e065"
+    },
+    {
+      "user_id": "user_roster_10330",
+      "tenant_id": "wl",
+      "username": "10330",
+      "display_name": "蔡星民",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1d0051dcbc02a90f40f028f3debcee42$cf26d1c4ca0f65706e3f6e9f86b22fa3121adcf53ce2d4596fce20f81f7c157c"
+    },
+    {
+      "user_id": "user_roster_30004",
+      "tenant_id": "wl",
+      "username": "30004",
+      "display_name": "陶齐",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f25a1eeff01d1e5b27a18caa2857b366$de14ca6ee506646c6eff184408a741a3cd5f70233344e6afd241353b0da496b0"
+    },
+    {
+      "user_id": "user_roster_13798",
+      "tenant_id": "wl",
+      "username": "13798",
+      "display_name": "葛嘉宝",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$674459ed7ebc674e63c91da2b241ef6a$e324aa72b23d9ad20b905a9f5a5b13a02d57b75a771e1711d21e8cac5d98d0ee"
+    },
+    {
+      "user_id": "user_roster_13797",
+      "tenant_id": "wl",
+      "username": "13797",
+      "display_name": "王强强",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d485b52e7a93e1ae0f17944ce48426f4$c93643afd124e9afcd4c7019f8a9a1c35e53e1d6f3f94f77fbe1a98a64575371"
+    },
+    {
+      "user_id": "user_roster_13791",
+      "tenant_id": "wl",
+      "username": "13791",
+      "display_name": "郑立炯",
+      "department_id": "dept_supply_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$dafd14aa93d6c257ce73b38f9e1bf04a$30f53e7030b1e6424c1a101e89614f61febd30e78ac15ae7a323f74bdc84c3f9"
+    },
+    {
+      "user_id": "user_roster_huangyinyang",
+      "tenant_id": "wl",
+      "username": "HuangYinYang",
+      "display_name": "黄银炀",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1bd86860b2bfa6e184b5640c97a985f4$feee57c6eb9de4e26d8aa7c953bdfb4b50897545b5a471d873acca3f9eff4ae1"
+    },
+    {
+      "user_id": "user_roster_13807",
+      "tenant_id": "wl",
+      "username": "13807",
+      "display_name": "张龙",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5a3ec13c582974957972fb58507ff836$0f89ed0f7eeffd212497fa9a724886c039bdc02765e0558c20fd4199665759fd"
+    },
+    {
+      "user_id": "user_roster_13829",
+      "tenant_id": "wl",
+      "username": "13829",
+      "display_name": "励迪锋",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1620f2bdee5fd00653d98210c788d404$8cd8a8a1ca73882818606b08c18b39d98b84334939625925b49026aff8359f1f"
+    },
+    {
+      "user_id": "user_roster_13814",
+      "tenant_id": "wl",
+      "username": "13814",
+      "display_name": "董莉敏",
+      "department_id": "dept_finance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$682c8ef303585cd5e01352bfdd530604$8100a9140c4e5b86506ee1e6362e0bfe0f135a89cf14e3849191af4d30827add"
+    },
+    {
+      "user_id": "user_roster_13830",
+      "tenant_id": "wl",
+      "username": "13830",
+      "display_name": "王冬冬",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1b71a131347de609af5d581506d88dce$ebf5d4e7e9f6a7f2350e26917c6705ee9b616a14a425592a2d680817dbc2572d"
+    },
+    {
+      "user_id": "user_roster_13819",
+      "tenant_id": "wl",
+      "username": "13819",
+      "display_name": "李岱",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8de5edab3a26313bcf7963d6447ca20f$ad625e76a9a6ca8f529483161f53b4d09d7a6a30dfccf4cbb32578980ec95240"
+    },
+    {
+      "user_id": "user_roster_13836",
+      "tenant_id": "wl",
+      "username": "13836",
+      "display_name": "符卫峰",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7401fbf7d66b5596b4a878fdc134eef0$abc7408f6b7d7c1fb053047d44f194a9e7cd854146e872d5791343eeb7f441b7"
+    },
+    {
+      "user_id": "user_roster_13844",
+      "tenant_id": "wl",
+      "username": "13844",
+      "display_name": "花宗保",
+      "department_id": "dept_c96d21d0e784",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1329206dcc9826b2409a0eaf9cd02437$65170465d4a3a5554fda00f47dbe4a204e2783205474ab165d9bb2f043aeac99"
+    },
+    {
+      "user_id": "user_roster_13834",
+      "tenant_id": "wl",
+      "username": "13834",
+      "display_name": "刘美升",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$da3ad698cdfbc477d6fb6fa369f09fbd$adcb16e433856d8a1f8aeb9fabe8f83b759da3e185ad8200a39d990f67899127"
+    },
+    {
+      "user_id": "user_roster_13840",
+      "tenant_id": "wl",
+      "username": "13840",
+      "display_name": "任明元",
+      "department_id": "dept_219efc85f4a2",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1dd6968ce88891a6fb9211da5da1735f$2d082a0ea6530fddcaa0d22b0c9b96e2228aee7aee7e4dd94d7507bcb85ef78e"
+    },
+    {
+      "user_id": "user_roster_13835",
+      "tenant_id": "wl",
+      "username": "13835",
+      "display_name": "吴佳明",
+      "department_id": "dept_219efc85f4a2",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0efecb8a5c7860e332226306bd30c57e$5e7f0520e49411ac8d218b5e2b7fb683ba3808e36158c4caf0b3aeb2eb2aeee9"
+    },
+    {
+      "user_id": "user_roster_13842",
+      "tenant_id": "wl",
+      "username": "13842",
+      "display_name": "朱齐军",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$7db9b38d44d99f39f8c4540315e60dc7$fe8a028cd9c6e2befad35831c65146cea6b444270c58b38ddbd00daa1900995a"
+    },
+    {
+      "user_id": "user_roster_13856",
+      "tenant_id": "wl",
+      "username": "13856",
+      "display_name": "陈天福",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$dc89e80f66ecd071fc61c536f93f43f1$0a00f6804c63ad77f909fcbd551ba2ee2ef4500b46082d5c178a0775d0908353"
+    },
+    {
+      "user_id": "user_roster_13848",
+      "tenant_id": "wl",
+      "username": "13848",
+      "display_name": "何佳栋",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3cca392284f7a7ee99f7f4513e641b20$c1086e40999c1e0692ff7b289ee8695ff94267cab384097dccc5b8f4a64e0fd2"
+    },
+    {
+      "user_id": "user_roster_13850",
+      "tenant_id": "wl",
+      "username": "13850",
+      "display_name": "钱世超",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$f2edf8b1ef8ac7a2a3f65d87d507528c$224d1d265160a5eae383106602b0df3002dfe6c143ff6347d6b016fe5ec22cfc"
+    },
+    {
+      "user_id": "user_roster_13857",
+      "tenant_id": "wl",
+      "username": "13857",
+      "display_name": "姚一洲",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ffe79275e3a4a5eaf81872eb29eae6c0$85a2423ad92f15ed3d3e4a205d6dd468ccb8e8831b361808575ff6fb2b93a438"
+    },
+    {
+      "user_id": "user_roster_13846",
+      "tenant_id": "wl",
+      "username": "13846",
+      "display_name": "袁立涛",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$64a9a459506b1312942ba3a93c4306dc$b0c0a8c9ca64c5430526ec62f37ea421a1809e77acb1de766b052fd842468195"
+    },
+    {
+      "user_id": "user_roster_13851",
+      "tenant_id": "wl",
+      "username": "13851",
+      "display_name": "左恒明",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a5ca61af29756d43b15ed58cad2e4798$3ee41b0a6b1dccc19d68c0d296c7c236f04321194f8b676f8c4fcb2a249af2ae"
+    },
+    {
+      "user_id": "user_roster_13864",
+      "tenant_id": "wl",
+      "username": "13864",
+      "display_name": "刘友城",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9e9e4b93aba35a67f199d883274711a0$76fa1ddce6b963ac2ba7ebd5a5d8896a8023fbb6e874cd4931f759ef5769ada2"
+    },
+    {
+      "user_id": "user_roster_13862",
+      "tenant_id": "wl",
+      "username": "13862",
+      "display_name": "饶仕刚",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$411d9bba478cbcf3b93dd1b354272657$5b590c6f0d023bc8431d70201d370d4ae4732e29e82ef3c10d514b476be6d695"
+    },
+    {
+      "user_id": "user_roster_13868",
+      "tenant_id": "wl",
+      "username": "13868",
+      "display_name": "王方",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$990830eee0418b7104a95577dae9261f$ea45d43315368177ee5c50242004268ae805716db2b0479ce03f97c3ab5989ac"
+    },
+    {
+      "user_id": "user_roster_13860",
+      "tenant_id": "wl",
+      "username": "13860",
+      "display_name": "仵高鹏",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e4c11e6109c7e39cbcf40641db0eb58d$e49b5668e8cfe5e4c2ccde4f4bf47a1a3c71ffb66b86cd0041fbbf70a311595f"
+    },
+    {
+      "user_id": "user_roster_13872",
+      "tenant_id": "wl",
+      "username": "13872",
+      "display_name": "谭选波",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ab5dab4c20615e61364a5418975be019$9470bb5575f9d3303f251c1b1725ddc6a95ed3943ea97e50ead0c5ccb36740d7"
+    },
+    {
+      "user_id": "user_roster_13875",
+      "tenant_id": "wl",
+      "username": "13875",
+      "display_name": "万胜国",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$c2134d62d212cbb2bc15ba04c6118f72$dcecee723d60aea8f36a716d1508854fb4c46521ea8cee4d2766f3ec7822b0ee"
+    },
+    {
+      "user_id": "user_roster_13883",
+      "tenant_id": "wl",
+      "username": "13883",
+      "display_name": "冯嘉琦",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$d737ef6fc7fa13a12c9f4fcd17b338fc$044b59ec4dd97145dba958086325ea632558a386e811a90e1eaef4dc0ef85758"
+    },
+    {
+      "user_id": "user_roster_10429",
+      "tenant_id": "wl",
+      "username": "10429",
+      "display_name": "高双双",
+      "department_id": "dept_7e1e4824ebb4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a5168390acd30673561cea3a952f65c3$3019fabe1b3cdb995353a7b52b4fff0506e1dd88c772959eff85ef6d2007bd9b"
+    },
+    {
+      "user_id": "user_roster_13891",
+      "tenant_id": "wl",
+      "username": "13891",
+      "display_name": "刘洪志",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$81229e771014d89bb40be1b955f6b0b1$90d9f2b9243832c19de58f7ec0f4bff222e831a7077ccdbdb068fd9dd25e30da"
+    },
+    {
+      "user_id": "user_roster_13890",
+      "tenant_id": "wl",
+      "username": "13890",
+      "display_name": "唐勇杰",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b0e2096b71c972f6a4398caccc355f71$f5db6960d5ddc9956c08582e4c8a0cb04a6d05b236216fce56faae748919d52a"
+    },
+    {
+      "user_id": "user_roster_13914",
+      "tenant_id": "wl",
+      "username": "13914",
+      "display_name": "何杨帆",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$95c07cbd6eb5d70ccfe441c9a0e793bc$167dc60756ecb9c6de4aec65eaabd1772813b9d7846697353a5fcec20a555505"
+    },
+    {
+      "user_id": "user_roster_13897",
+      "tenant_id": "wl",
+      "username": "13897",
+      "display_name": "何治强",
+      "department_id": "dept_d2ee7e26dbf3",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b32d13ed531dbd2e0d513dad7a480342$9930459af5f11e94561e0635169a1ea2332b75d506da3d26f81e9256e0c88b3a"
+    },
+    {
+      "user_id": "user_roster_13898",
+      "tenant_id": "wl",
+      "username": "13898",
+      "display_name": "黄绍平",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$163560ab9a9e7754123a51cb85f6c557$e069f54691ebf46b2769822180cc68286a1396a99b43f2a05c2f9b075dbd5edf"
+    },
+    {
+      "user_id": "user_roster_13920",
+      "tenant_id": "wl",
+      "username": "13920",
+      "display_name": "鲁杰1",
+      "department_id": "dept_c96d21d0e784",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9f7a8bf65ba374bd9c459cbdb5fe1fb2$c5f49189887b5db0c0ca881fc3c401090175419ea20b0c3038a7e9d9317f2668"
+    },
+    {
+      "user_id": "user_roster_13901",
+      "tenant_id": "wl",
+      "username": "13901",
+      "display_name": "饶峰",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4198e59507aa1433a99def181634e67d$3daf4b22c9ec653d9e2d99a141561c850e6d2df254e8373e6709be0447fc4186"
+    },
+    {
+      "user_id": "user_roster_13912",
+      "tenant_id": "wl",
+      "username": "13912",
+      "display_name": "沈洁",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1305a408d66fb19dd72c5de4dcf6a3d6$7c90101bd4f912c754db4073bf7d5851ca77f6ef630cc75b3fa816e922724e5f"
+    },
+    {
+      "user_id": "user_roster_13922",
+      "tenant_id": "wl",
+      "username": "13922",
+      "display_name": "田伟吉",
+      "department_id": "dept_supply_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1f078ae9401201111e1871b41b574e5b$3249aa767e97ef608a791f805cc7af4ac2cd4c4315fe9f1e5789d72b7eb71925"
+    },
+    {
+      "user_id": "user_roster_13895",
+      "tenant_id": "wl",
+      "username": "13895",
+      "display_name": "汪杰俊",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$eff9998b182a4cae835b3a143b293d77$5f0ccf763de92ef527db059b8245e7ed15ae7524cbeb9c420c1b975da2f68ec3"
+    },
+    {
+      "user_id": "user_roster_wangke13893",
+      "tenant_id": "wl",
+      "username": "WangKe13893",
+      "display_name": "王科",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e1fc0fe1c68349354924de039268f1c4$03588d250b8da3d3335d79c9ed08b7707f979e61bdcf465d0f6c4cbaec03ee0a"
+    },
+    {
+      "user_id": "user_roster_13907",
+      "tenant_id": "wl",
+      "username": "13907",
+      "display_name": "位朝阳",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0448ebbd943a1367c7b31d0938084b3b$00c9e57fcbd7ed2b90141486436cfc158711e52f803b00c1190f258d40cddbc4"
+    },
+    {
+      "user_id": "user_roster_13909",
+      "tenant_id": "wl",
+      "username": "13909",
+      "display_name": "吴剑峰",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$97bfe0519feb23aececf0bc84ad9fc6b$7b3cb4df5e34291864811a2424562a269c448ed20b58eb9fba27323fcd9c298f"
+    },
+    {
+      "user_id": "user_roster_13926",
+      "tenant_id": "wl",
+      "username": "13926",
+      "display_name": "杨东",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$cd762ab7eb737a2e8da1ae8c0b324fb3$504c1cb3fda397827a031e115498d1a8de9c824de58e9955be15f12354bbe21e"
+    },
+    {
+      "user_id": "user_roster_13904",
+      "tenant_id": "wl",
+      "username": "13904",
+      "display_name": "余志远",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$75d90213514e7327f1dea8b22589c9c4$942c8e69aed0cc3987a6a30aa6e7ded6a182d985e2c8098c7cef8d5d5d0904fb"
+    },
+    {
+      "user_id": "user_roster_13943",
+      "tenant_id": "wl",
+      "username": "13943",
+      "display_name": "陈艳",
+      "department_id": "dept_317d51196ebc",
+      "role_id": "employee",
+      "is_active": false,
+      "password_hash": "pbkdf2_sha256$200000$9b35c831d1e3891651c37be032ba841f$43d4b020d79b72b5f483b99b19503786fd0aec479b02df84862c555685551f58"
+    },
+    {
+      "user_id": "user_roster_13935",
+      "tenant_id": "wl",
+      "username": "13935",
+      "display_name": "丁程栋",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$cee16b01811de5a0e267c5914d60b639$4f2a4397c01fe1f414232d752ce817ecfdbd9ee2ad68ae40d8fc5f3f10a69cda"
+    },
+    {
+      "user_id": "user_roster_13931",
+      "tenant_id": "wl",
+      "username": "13931",
+      "display_name": "黄前超",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$69dba26cf1cf5a34983749f953bdbd0f$cc7c38d9ac4a9a87b2afb26a2f026380a16b9cc0e0ad9c71e97f2840a6c337e6"
+    },
+    {
+      "user_id": "user_roster_13942",
+      "tenant_id": "wl",
+      "username": "13942",
+      "display_name": "罗苏球",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e0d62a28e1d99b7a65b0fda900ad4d67$4f7918c7732d8f3efc34ba6560952cb94352ad663c3283e5573e3e7c2a282ed7"
+    },
+    {
+      "user_id": "user_roster_13930",
+      "tenant_id": "wl",
+      "username": "13930",
+      "display_name": "马苗侠",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3b5b2102c58b40e966a6460adbc71cab$a81c54d438d8bc8038853ded730ace246b7212c90f8053aab809efeef875044f"
+    },
+    {
+      "user_id": "user_roster_13938",
+      "tenant_id": "wl",
+      "username": "13938",
+      "display_name": "杨红",
+      "department_id": "dept_cbaa4666d315",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6e67b3bc443c448ffd80621c18e7da08$631508509f480f520615fc847679a72870b5c4cc8814064cb0806c6af8027064"
+    },
+    {
+      "user_id": "user_roster_13951",
+      "tenant_id": "wl",
+      "username": "13951",
+      "display_name": "陈明明",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e73333bbdd594054b5eef787f0d5adec$5faa2841b615ac2000d3b156d161932e927815c413a48e3e9b1098102f59cf28"
+    },
+    {
+      "user_id": "user_roster_13945",
+      "tenant_id": "wl",
+      "username": "13945",
+      "display_name": "叶垚",
+      "department_id": "dept_project_management",
+      "role_id": "employee",
+      "is_active": false,
+      "password_hash": "pbkdf2_sha256$200000$6a27b4c9561bf29668f90a4d9a42758c$db6ecc11aa2d109ef58278baddce431821b485be83e01f90ef5d03dfca1018ba"
+    },
+    {
+      "user_id": "user_roster_13952",
+      "tenant_id": "wl",
+      "username": "13952",
+      "display_name": "朱挺",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ab224ad3a0b553146bbe2793b5416e93$8f899b5dcb39b101eb73a2703d4d0e51ee5dcea4ae5ae0eac4a962b59edcea2d"
+    },
+    {
+      "user_id": "user_roster_13957",
+      "tenant_id": "wl",
+      "username": "13957",
+      "display_name": "邹磊",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$fbd804472c5d6763eca576ed17d7c522$d3dff2ecffffde4b25e29d21d9b10aac821077aa144b77ede170e3c70a4e7701"
+    },
+    {
+      "user_id": "user_roster_13964",
+      "tenant_id": "wl",
+      "username": "13964",
+      "display_name": "董洪超",
+      "department_id": "dept_74325f79381f",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e1dd7d94a47af68274f0eeceb4868cd3$f4e9fb5f1d77669120669fc20d017f41dd79ab673a3243de179ec9e418a68988"
+    },
+    {
+      "user_id": "user_roster_13959",
+      "tenant_id": "wl",
+      "username": "13959",
+      "display_name": "黄劲翔",
+      "department_id": "dept_317d51196ebc",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$aa350e2c0ba84e295f46da33c658916e$1590255abc94f06ee658e70cb2fd9b0134337a3fb0f5ec097babefd1366f6fe1"
+    },
+    {
+      "user_id": "user_roster_13974",
+      "tenant_id": "wl",
+      "username": "13974",
+      "display_name": "鲁杰2",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$6e23e6bb165eadfa2452894bc8bbea69$1a699b7c09688351822b1fc09e6036397508dfca915fbff6c150dff663b67773"
+    },
+    {
+      "user_id": "user_roster_13973",
+      "tenant_id": "wl",
+      "username": "13973",
+      "display_name": "汪灿",
+      "department_id": "dept_6cdcf4abf4ee",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$857436c8b4ca1db02435ca9f4f15ef31$fee42e1698ac7c960911ffee5eb656138d63d42b69ae96b313bb0976c2c31199"
+    },
+    {
+      "user_id": "user_roster_13971",
+      "tenant_id": "wl",
+      "username": "13971",
+      "display_name": "王宫昊",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5c099c55deb78c939a1bab59e72af6ed$79d3b68025045cb732f16921a0736b3d2360ac00ff47739b9e3f5fa9e3f5d669"
+    },
+    {
+      "user_id": "user_roster_13967",
+      "tenant_id": "wl",
+      "username": "13967",
+      "display_name": "王江涛",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$278d8ab5199bcb192381bfa250617add$80465ee751ecea92cb9e7a92716fa87ace8eb989587b2236e78019fa26e2fbeb"
+    },
+    {
+      "user_id": "user_roster_13972",
+      "tenant_id": "wl",
+      "username": "13972",
+      "display_name": "武乐乐",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ac7797bbcee19c5bc31f54b9eba49c67$ebbe9a7a923e1cdc65930904162e49780c8e18eb77be90c007bf4b4c5f19fb91"
+    },
+    {
+      "user_id": "user_roster_13977",
+      "tenant_id": "wl",
+      "username": "13977",
+      "display_name": "徐煌奇",
+      "department_id": "dept_56f3af38b4f0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$824b6be5603a58f8696276c62a6926e0$2a0499e5120ab50695f0f8f9114d778aecc69ee77713fa5a58931e973fec9ca2"
+    },
+    {
+      "user_id": "user_roster_13960",
+      "tenant_id": "wl",
+      "username": "13960",
+      "display_name": "杨镭",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$ac06ab72fb6ed739a2abfd30f2d5e7fa$1246571ddd829d3fba23ad69020db71df3703f53c5f39e17c2e6e63202c7bfde"
+    },
+    {
+      "user_id": "user_roster_13963",
+      "tenant_id": "wl",
+      "username": "13963",
+      "display_name": "张文佳",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$016f0ae0d6287ff4d2a8af7427984957$b3a17e65387fbcd44b86f792dc88166b080284ae61a56c97380c20ddd1324a17"
+    },
+    {
+      "user_id": "user_roster_13969",
+      "tenant_id": "wl",
+      "username": "13969",
+      "display_name": "张子华",
+      "department_id": "dept_d5e041d2f296",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$930214bf2e8823ac8de580bed6e30e08$1cb31d6ec0545afa417b26b939b9994cff2cb82e2ead439dd78af53ccba9c7b1"
+    },
+    {
+      "user_id": "user_roster_13975",
+      "tenant_id": "wl",
+      "username": "13975",
+      "display_name": "赵琪",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$111d329717a5156739fc3762dcbe307f$a26a80a0085e577f6f6a746897f022ebeb2895fcb9632ef01bca9991aa10b187"
+    },
+    {
+      "user_id": "user_roster_13982",
+      "tenant_id": "wl",
+      "username": "13982",
+      "display_name": "韩青云",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4b160f1a4ff7bcf4cf967c9021a6d0ea$efe7e9b3d864c2a7ffd54aaaf6c2619805f64600b7227b6ed6af9c9c534457df"
+    },
+    {
+      "user_id": "user_roster_13979",
+      "tenant_id": "wl",
+      "username": "13979",
+      "display_name": "马闯",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$89edef9f5e53849fd53dc18440f2ede9$10c52582513a65705ab7c35b874893c6b59316bf23e44eb5c5a39471beded96f"
+    },
+    {
+      "user_id": "user_roster_13985",
+      "tenant_id": "wl",
+      "username": "13985",
+      "display_name": "杨晨",
+      "department_id": "dept_58ddcc1d76e8",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3eef597f610760686bc4eb48afbb43ae$e8373adfaec7f4a2a18b8f95d819de08ae67e437be6cf1b09cfbb93d9d435d57"
+    },
+    {
+      "user_id": "user_roster_13992",
+      "tenant_id": "wl",
+      "username": "13992",
+      "display_name": "李森",
+      "department_id": "dept_enterprise_management",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$2e4f8d357c1bede5f55f5f7eea252a9d$f7b7a2c5d4481ba31b0813b688cf25aea736ee6a9096d9fdabc97234b1087a00"
+    },
+    {
+      "user_id": "user_roster_13991",
+      "tenant_id": "wl",
+      "username": "13991",
+      "display_name": "孙建校",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5fa17e612c94ee61d7736ff783a5c073$d9d11b7830ecf7a2bfbd05842efe36ec99b9220daa7608fb6b0857c52f4b6bbf"
+    },
+    {
+      "user_id": "user_roster_13990",
+      "tenant_id": "wl",
+      "username": "13990",
+      "display_name": "涂蒙杰",
+      "department_id": "dept_38b43f2f2657",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$adb62eb6cb5ba81bdb01be4c6ad86325$41a9ba3c71566d134bd40ace892b603d8fa34fac373573a04218a001b6e3817c"
+    },
+    {
+      "user_id": "user_roster_13989",
+      "tenant_id": "wl",
+      "username": "13989",
+      "display_name": "颜洪加",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$af2cb13076a75559e17572a285a0855a$87b0a610c78ba4f29089cf3589dc15d7c4ba8d9d95e257acdc1644a94c070dea"
+    },
+    {
+      "user_id": "user_roster_13987",
+      "tenant_id": "wl",
+      "username": "13987",
+      "display_name": "杨天瑜",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a41197e3db9ebdd6ca1905be9a7d562a$10b96a894758c26da7366900ab099e9b7f22c976efaa12bf6f545eebbfd71db3"
+    },
+    {
+      "user_id": "user_roster_13988",
+      "tenant_id": "wl",
+      "username": "13988",
+      "display_name": "张悦",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$366a9e6668c9d8412ad2e7b8e5774c6e$34be266af7beee79394c8ea2b726441b7781aebf1866953618232273907668e9"
+    },
+    {
+      "user_id": "user_roster_13994",
+      "tenant_id": "wl",
+      "username": "13994",
+      "display_name": "潘治涛",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$4c4c3acfd2868f2a094bb377ff466a83$9d5db3ca0577e192faea3187d0d34800b0fbc1f7a77785a9ed34eba7cc083fa4"
+    },
+    {
+      "user_id": "user_roster_13996",
+      "tenant_id": "wl",
+      "username": "13996",
+      "display_name": "应永豪",
+      "department_id": "dept_cf9e90b166d5",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$742526217b0f7d7af8aeb38f5a00ffe5$3fdec7d0359486905e1c90db3a405cde1219d86406d02e641ec4a29c69d363f3"
+    },
+    {
+      "user_id": "user_roster_14000",
+      "tenant_id": "wl",
+      "username": "14000",
+      "display_name": "丁希鹏",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8da6077311e98cfe41c286258d21f868$43e2caa7bac332dd5cfcbde2417080661140cb274f637f4bde04df153cd73096"
+    },
+    {
+      "user_id": "user_roster_13998",
+      "tenant_id": "wl",
+      "username": "13998",
+      "display_name": "裘棋",
+      "department_id": "dept_56f3af38b4f0",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$9871ac9759352b72a8f2284b55712e27$20529962cb71557463855730aaa147e28ddb3c310302a44a98531aa9f012d622"
+    },
+    {
+      "user_id": "user_roster_14001",
+      "tenant_id": "wl",
+      "username": "14001",
+      "display_name": "许异攀",
+      "department_id": "dept_ad7fb57d8317",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5cc5cc542d4b48e7faf6754b2772ad37$6242b9ee3aad090efec5d949afe6dba16bfa441deac4ea95020c2fd81f3f1b19"
+    },
+    {
+      "user_id": "user_roster_13997",
+      "tenant_id": "wl",
+      "username": "13997",
+      "display_name": "张哲政",
+      "department_id": "dept_f9fd429adfa7",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$acea4eeb5a533471895b92d7b71abe7a$18992362ba5eab5baa2ce7d6eacfa281c419bb49a4dbec5fd5bfadc1e2e1243e"
+    },
+    {
+      "user_id": "user_roster_zoujiajie",
+      "tenant_id": "wl",
+      "username": "ZouJiaJie",
+      "display_name": "邹家杰",
+      "department_id": "dept_quality_assurance",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$729627bf3f337757d982c9d9103e5ead$4ca8e44c2896013780af8e980496839fff92c680b6ea04e76c59855cc7c0d95f"
+    },
+    {
+      "user_id": "user_roster_14006",
+      "tenant_id": "wl",
+      "username": "14006",
+      "display_name": "钟正涛",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$66f3dc2620af11bd230536f555a86357$a14424b7b635c3affe40bdec4d17323ea72808366cd3746983a3a39ec25ddd84"
+    },
+    {
+      "user_id": "user_roster_14004",
+      "tenant_id": "wl",
+      "username": "14004",
+      "display_name": "王科举",
+      "department_id": "dept_3145bd10e9e4",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$b4e54287f2f7267c495defd870f91b77$fc13dbcc568e641c7bb8abff09a3456da30e10495f4f7d083195d6c09382ce12"
+    },
+    {
+      "user_id": "user_roster_14005",
+      "tenant_id": "wl",
+      "username": "14005",
+      "display_name": "戴文轩",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$338f5d4ec79b2e2af14c5413f2e5a82c$ad191048342b343191d50bc49209903300df7e3413e2289a4ce2847d1068928b"
+    },
+    {
+      "user_id": "user_roster_14008",
+      "tenant_id": "wl",
+      "username": "14008",
+      "display_name": "方盛浩",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5c8cd43207c1f84156df80dd69a44357$77380ff2b3aa26f85702718eb9213f2d18fe357a28ae1614e9f66378ddf9ff0d"
+    },
+    {
+      "user_id": "user_roster_14009",
+      "tenant_id": "wl",
+      "username": "14009",
+      "display_name": "马仔杰",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$196841f90e3c17db02a88479ec8076d7$7316ecfd711f09e815fb0a845d435e9c04501fbb7e5a767c7f835a89081bf32b"
+    },
+    {
+      "user_id": "user_roster_14023",
+      "tenant_id": "wl",
+      "username": "14023",
+      "display_name": "丁自立",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$cd9222a1ab2f342b06f1733c06216732$a091be3574f6a57956e53e46cd2ee3e0e03eb9d9fafb85ff555a91c32bb3a371"
+    },
+    {
+      "user_id": "user_roster_14019",
+      "tenant_id": "wl",
+      "username": "14019",
+      "display_name": "洪玮",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$caf54e2d5b243b7dcf73b60c13d393fe$6ea89c89c5033d0a6817cd97bac6c0f56b02b0c451fa0ca60c21f947f91fdba0"
+    },
+    {
+      "user_id": "user_roster_14014",
+      "tenant_id": "wl",
+      "username": "14014",
+      "display_name": "黄庆波",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$e0c9a921fd1c60c932aaece4537d75eb$346f11936ff7f5b01cc3ae3d53f43cf62e93a05d94621092a5046601c4a47cda"
+    },
+    {
+      "user_id": "user_roster_14022",
+      "tenant_id": "wl",
+      "username": "14022",
+      "display_name": "简加涛",
+      "department_id": "dept_411282427a47",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$5b30f2a14ad20775ebd287b087dad3ad$0f9c8e3b426bb9804c5d85296d15b60d19864e7d089cbc27fe8762c24a5f6ff5"
+    },
+    {
+      "user_id": "user_roster_14021",
+      "tenant_id": "wl",
+      "username": "14021",
+      "display_name": "江文静",
+      "department_id": "dept_digitalization",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$c2e567779995c3ba61988ea45bb3f16c$1251d599b4d5e7bc5c183472b24c93f1b9d4b49f4ef518e9dfb69f5d95a43ac5"
+    },
+    {
+      "user_id": "user_roster_14025",
+      "tenant_id": "wl",
+      "username": "14025",
+      "display_name": "李鑫隆",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$369f51bcc7ba7ac444e5a521f0a9021c$bd3cdb1cff28bae24bc8c80e77c05450e13f063726fe2a4a00d1bc3962e6ae9a"
+    },
+    {
+      "user_id": "user_roster_14020",
+      "tenant_id": "wl",
+      "username": "14020",
+      "display_name": "刘俊成",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1e04ca86fac5f8a119a09144e8a74a82$e541d90c974fb3cf49a31823f442f3caae9f008d159b9cc45e1fad11477a7752"
+    },
+    {
+      "user_id": "user_roster_14013",
+      "tenant_id": "wl",
+      "username": "14013",
+      "display_name": "裘雨昕",
+      "department_id": "dept_7f3744e49351",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$94ddd3483157eeca8e45daea30f8cc9e$95d1202d0e0c370a9d9877a1b8581fd395b4f56744f673ed9dfc4117de6ba3d4"
+    },
+    {
+      "user_id": "user_roster_14024",
+      "tenant_id": "wl",
+      "username": "14024",
+      "display_name": "邵陈添",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1be3cad68023b0e2211819f614def305$a840b78fd09f411cb8e97a512eedf9ca9ac2ef9269ce42cc6f1545c1c1313c9a"
+    },
+    {
+      "user_id": "user_roster_14018",
+      "tenant_id": "wl",
+      "username": "14018",
+      "display_name": "杨运洪",
+      "department_id": "dept_e6e4ce477764",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$893db42d0d83e4e7b45591e4e9aef7bb$4267d8ddba82377e6a2767729fbea8c0402b30e718549e335392d4e857f57ed1"
+    },
+    {
+      "user_id": "user_roster_14017",
+      "tenant_id": "wl",
+      "username": "14017",
+      "display_name": "岳帅",
+      "department_id": "dept_dc2ea661333b",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$79fa518f206e5ea1f7c55d62e6f3b8a2$091fb45e1a5963ae6cc66c8d9e6fdf0b4ccd30bc0395a622f82000d2f987a668"
+    },
+    {
+      "user_id": "user_roster_14016",
+      "tenant_id": "wl",
+      "username": "14016",
+      "display_name": "左安琴",
+      "department_id": "dept_cbaa4666d315",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$1c02faa44ba67481c84ad64cd4d4783e$da77b3c0e658a032dbc2fdd935d4bb07d5508a4eba079678b5036fd6fd4ffc4e"
+    },
+    {
+      "user_id": "user_roster_14015",
+      "tenant_id": "wl",
+      "username": "14015",
+      "display_name": "蔡琦",
+      "department_id": "dept_9608486e917d",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8ef97cddad7aadaed49f686c96026792$fc48cbecde09d5db3a6831facb03146883f3e8bc0d9ab47a39263f27b9dd87e5"
+    },
+    {
+      "user_id": "user_roster_huruqiang",
+      "tenant_id": "wl",
+      "username": "huruqiang",
+      "display_name": "胡如强",
+      "department_id": "dept_c3e8827dbb11",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8f56d43dd1d2cd75fa2962df48d50aea$f331242c8f9b68302f79ef182c8e01637e7bf965570ebbe46d44d37caf97c408"
+    },
+    {
+      "user_id": "user_roster_67577",
+      "tenant_id": "wl",
+      "username": "67577",
+      "display_name": "胡伟达",
+      "department_id": "dept_fd9b651f9d84",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$c880bd214f36aff8ed77febc59927810$a1612dc1414778542015eff4b5ff3fbe9ccc7ba08a71ea610e0aa3ba6d88c4f6"
+    },
+    {
+      "user_id": "user_roster_90001",
+      "tenant_id": "wl",
+      "username": "90001",
+      "display_name": "李依臻",
+      "department_id": "dept_dfc37da27ccd",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$3b97f7d003f3737b5ff03c0328c915e3$57117e14cd996d04eea5c0e00b09db904ce196b0732456e478ebfe6b1c847e4d"
+    },
+    {
+      "user_id": "user_roster_liyingchao",
+      "tenant_id": "wl",
+      "username": "liyingchao",
+      "display_name": "李应超",
+      "department_id": "dept_c3e8827dbb11",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$8712dda6b7b20559c50ec738638bdbfe$b046cf59bb1d069e1c98479e175b2dea214bda47509f3c855c752f745fe43e8f"
+    },
+    {
+      "user_id": "user_roster_yanzhenzhen",
+      "tenant_id": "wl",
+      "username": "yanzhenzhen",
+      "display_name": "晏振振",
+      "department_id": "dept_c3e8827dbb11",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$0e02f467d7bb7e7bae1abb26acbf9126$b432048dd9da561b587d3164f47447a483195590c09740704c268283e08a286f"
+    },
+    {
+      "user_id": "user_roster_zhangqijiang",
+      "tenant_id": "wl",
+      "username": "zhangqijiang",
+      "display_name": "张启江",
+      "department_id": "dept_c3e8827dbb11",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$23564cf8e653d8bd1941207e1365f4e7$a5c7fbd3b5eeebf419b6125eae3eca71dfda8162a2a4fc8ff5c3c2759f494d86"
+    },
+    {
+      "user_id": "user_roster_13804",
+      "tenant_id": "wl",
+      "username": "13804",
+      "display_name": "安宇翔",
+      "department_id": "dept_integrated_technology",
+      "role_id": "employee",
+      "is_active": true,
+      "password_hash": "pbkdf2_sha256$200000$a095cd3c34e116840f1b631e36f9af18$9993682a909514c178fe1e190e6263e37e627c3e1721d04f462d40b2d3c3d8c2"
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "snapshot_id": "rsp_c692c7e43db14713",
+  "trace_id": "trc_4b17ae44ba5e4604",
+  "request_id": "req_e629de630a064925",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:11:16.855821Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "这个是什么意思",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_debug_rewrite_cpps",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "这个是什么意思",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-10",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "ut these guys, what did these kind of represent for you?\n好吧，这些家伙对你来说代表了什么？\nOkay.\n好的。\nSche have time value of each cell.\n每个单元格都有时间值。\nRepresents the gene expression level of the cells.\n代表细胞的基因表达水平。\nThis way, one can observe the dynamic changes in the genes along the trajectory, especially ccr seven changes in pseudo time.\n这样，就可以观察到基因在轨迹上的动态变化，特别是ccr七的伪时间变化。\nYeah, high expression, early stage marker of naive t cells. Yep, our intermediate stage may show high expression for central memory.\n是的，高表达，早期幼稚T细胞的标记。是的，我们的中间阶段可能在中央记忆方面表现出高表达。\nYeah, grandy be had to express in the late stages, yeah, so that all.\n是的，奶奶在后期阶段需要表达，就是这样。\nR seven makes lots of sense, right? Because it's it's a naive marker. And then grandzyme b makes a lot of sense, right? And it's you know, highly up regulated. The further",
+      "score": -0.79248046875,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.53580415,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325063225_43dc9002-chunk-25",
+      "document_id": "doc_20260325063225_43dc9002",
+      "document_name": "zoom3.txt",
+      "snippet": "e is the other one.\n你的文件是另一个。\nNot this one, it is in the next step that this is not the right tab, close this tab, open up the next step.\n不是这个，是在下一步，这个标签不对，关闭这个标签，打开下一个步骤。\nWhich, okay, open up the tab on the right.\n好的，打开右边的标签。\nGo back.\n回去。\nCheck the, yeah, check the streamulate application.\n检查一下，是的，检查一下streamulate应用程序。\nStreamulate application, open it up your streamulate application.\nStreamulate应用，打开你的Streamulate应用。\nIs it this one?\n是这个吗？\nNo, it's not this one, it's on the right side.\n不，不是这个，是在右边。\nThis is not the this is not the one, it's on the right side.\n这不是这个，这不是那个，它在右边。\nThis is not the the right tab, this tab is the old one.\n这不是正确的标签页，这个标签页是旧的。\nOpen up this one.\n打开这个。\nWhich is the correct one, yeah.\n哪个是正确的，对。\nYeah, so it is giving error.\n嗯，所以它出错了。\nOpen it up.\n打开它。\nInstaller return and",
+      "score": -2.16796875,
+      "source_path": "/app/data/uploads/doc_20260325063225_43dc9002__zoom3.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.521598,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325063225_27028cac-chunk-17",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "In the slide block for each week, so that you can read what you have to do for that week, and then you will give me the update.\n在每周的滑块中，这样你就可以阅读那一周你需要做的事情，然后你会给我更新。\nCan you see again project what\n你能再看一遍项目吗\nCan you repeat?\n你能重复一遍吗？\nWhat you were seeing?\n你看到了什么？\nCan you okay, so you asked what the project growth is?\n你能接受吗？所以你问的是项目增长是什么？\nOkay, can you type it here in the chat?\n好的，你能在聊天中输入吗？\nSimply type it in the chat so that so that I can read it.\n只需在聊天中输入，这样我就可以阅读了。\nOkay, okay, so this pro, this project that we are building, is part of saas, do you know what is sas sas s yeah, so.\n好的，好的，所以我们正在建设的这个专业项目是saas的一部分，你知道什么是sas sas吗？\nSo says sas ss sas means.\n所以说sas ss sas的意思是。\nSoftware as a service.\n软件即服务。\nSoftware as a service, right?\n软件即服务，对吗？\nService, so basically, sa this project is part of a",
+      "score": -2.755859375,
+      "source_path": "/app/data/uploads/doc_20260325063225_27028cac__zom1.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52119714,
+      "lexical_score": 10.475995136320343,
+      "fused_score": 0.031024531024531024
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-10",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "ut these guys, what did these kind of represent for you?\n好吧，这些家伙对你来说代表了什么？\nOkay.\n好的。\nSche have time value of each cell.\n每个单元格都有时间值。\nRepresents the gene expression level of the cells.\n代表细胞的基因表达水平。\nThis way, one can observe the dynamic changes in the genes along the trajectory, especially ccr seven changes in pseudo time.\n这样，就可以观察到基因在轨迹上的动态变化，特别是ccr七的伪时间变化。\nYeah, high expression, early stage marker of naive t cells. Yep, our intermediate stage may show high expression for central memory.\n是的，高表达，早期幼稚T细胞的标记。是的，我们的中间阶段可能在中央记忆方面表现出高表达。\nYeah, grandy be had to express in the late stages, yeah, so that all.\n是的，奶奶在后期阶段需要表达，就是这样。\nR seven makes lots of sense, right? Because it's it's a naive marker. And then grandzyme b makes a lot of sense, right? And it's you know, highly up regulated. The further",
+      "score": -0.79248046875,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.53580415,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325063225_43dc9002-chunk-25",
+      "document_id": "doc_20260325063225_43dc9002",
+      "document_name": "zoom3.txt",
+      "snippet": "e is the other one.\n你的文件是另一个。\nNot this one, it is in the next step that this is not the right tab, close this tab, open up the next step.\n不是这个，是在下一步，这个标签不对，关闭这个标签，打开下一个步骤。\nWhich, okay, open up the tab on the right.\n好的，打开右边的标签。\nGo back.\n回去。\nCheck the, yeah, check the streamulate application.\n检查一下，是的，检查一下streamulate应用程序。\nStreamulate application, open it up your streamulate application.\nStreamulate应用，打开你的Streamulate应用。\nIs it this one?\n是这个吗？\nNo, it's not this one, it's on the right side.\n不，不是这个，是在右边。\nThis is not the this is not the one, it's on the right side.\n这不是这个，这不是那个，它在右边。\nThis is not the the right tab, this tab is the old one.\n这不是正确的标签页，这个标签页是旧的。\nOpen up this one.\n打开这个。\nWhich is the correct one, yeah.\n哪个是正确的，对。\nYeah, so it is giving error.\n嗯，所以它出错了。\nOpen it up.\n打开它。\nInstaller return and",
+      "score": -2.16796875,
+      "source_path": "/app/data/uploads/doc_20260325063225_43dc9002__zoom3.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.521598,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325063225_27028cac-chunk-17",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "In the slide block for each week, so that you can read what you have to do for that week, and then you will give me the update.\n在每周的滑块中，这样你就可以阅读那一周你需要做的事情，然后你会给我更新。\nCan you see again project what\n你能再看一遍项目吗\nCan you repeat?\n你能重复一遍吗？\nWhat you were seeing?\n你看到了什么？\nCan you okay, so you asked what the project growth is?\n你能接受吗？所以你问的是项目增长是什么？\nOkay, can you type it here in the chat?\n好的，你能在聊天中输入吗？\nSimply type it in the chat so that so that I can read it.\n只需在聊天中输入，这样我就可以阅读了。\nOkay, okay, so this pro, this project that we are building, is part of saas, do you know what is sas sas s yeah, so.\n好的，好的，所以我们正在建设的这个专业项目是saas的一部分，你知道什么是sas sas吗？\nSo says sas ss sas means.\n所以说sas ss sas的意思是。\nSoftware as a service.\n软件即服务。\nSoftware as a service, right?\n软件即服务，对吗？\nService, so basically, sa this project is part of a",
+      "score": -2.755859375,
+      "source_path": "/app/data/uploads/doc_20260325063225_27028cac__zom1.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52119714,
+      "lexical_score": 10.475995136320343,
+      "fused_score": 0.031024531024531024,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "这个问题没有提供足够的背景信息来直接回答“这个是什么意思”。从提供的上下文来看，无法确定具体指的是哪一部分内容或概念。因此，不能找到足够的证据来解释“这个”所指的具体含义。",
+    "answer_chars": 86,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

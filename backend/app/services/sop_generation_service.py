@@ -1,6 +1,6 @@
 import json
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
@@ -46,6 +46,7 @@ def _normalize_optional_str(value: str | None) -> str | None:
 class SopCitationBuildResult:
     citations: list[SopGenerationCitation]
     rerank_strategy: str
+    details: dict[str, object] = field(default_factory=dict)
 
 
 class SopGenerationService:
@@ -409,6 +410,7 @@ class SopGenerationService:
         snapshot_record: RequestSnapshotRecord | None = None
         runtime_details: dict[str, object] = {}
         runtime_lease: RuntimeGateLease | None = None
+        citation_details: dict[str, object] = {}
         try:
             runtime_lease, runtime_details = self._acquire_generation_runtime_slot(
                 profile,
@@ -422,6 +424,7 @@ class SopGenerationService:
                 auth_context=auth_context,
             )
             citations = citation_result.citations
+            citation_details = dict(citation_result.details)
             if citations:
                 rerank_strategy = citation_result.rerank_strategy
             if not citations and request_mode == "document" and document_id is not None:
@@ -431,6 +434,13 @@ class SopGenerationService:
                 )
                 if citations:
                     rerank_strategy = "document_preview"
+                    citation_details = {
+                        "retrieval_mode": "document_preview",
+                        "retrieved_count": 0,
+                        "rerank_input_count": 0,
+                        "rerank_output_count": 0,
+                        "citation_count": len(citations),
+                    }
             if not citations:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -438,16 +448,27 @@ class SopGenerationService:
                 )
 
             contexts = [item.snippet for item in citations]
+            prepared_prompt = (
+                self.generation_client.prepare_prompt(
+                    question=generation_instruction,
+                    contexts=contexts,
+                )
+                if hasattr(self.generation_client, "prepare_prompt")
+                else None
+            )
             downgraded_from: str | None = None
             response_model = self._response_model_name(profile=profile)
             try:
+                generation_kwargs = dict(
+                    question=generation_instruction,
+                    contexts=contexts,
+                    timeout_seconds=profile.timeout_budget_seconds,
+                    model_name=response_model,
+                )
+                if prepared_prompt is not None:
+                    generation_kwargs["prepared_prompt"] = prepared_prompt
                 content = self._strip_markdown_code_fence(
-                    self.generation_client.generate(
-                        question=generation_instruction,
-                        contexts=contexts,
-                        timeout_seconds=profile.timeout_budget_seconds,
-                        model_name=response_model,
-                    )
+                    self.generation_client.generate(**generation_kwargs)
                 )
                 generation_mode = "rag"
             except LLMGenerationRetryableError:
@@ -463,6 +484,7 @@ class SopGenerationService:
                     citations = degraded_citations
                     rerank_strategy = "fallback_profile"
                     downgraded_from = profile.mode
+                    citation_details = dict(degraded_citation_result.details)
                 if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
                     raise
                 content = self._build_retrieval_fallback_draft(
@@ -500,7 +522,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
-                extra_details=runtime_details,
+                extra_details={**citation_details, **runtime_details},
             )
             snapshot_record = self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -524,6 +546,7 @@ class SopGenerationService:
                     "process_name": process_name,
                     "scenario_name": scenario_name,
                     "topic": topic,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -549,7 +572,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=exc.detail,
-                extra_details=runtime_details,
+                extra_details={**citation_details, **runtime_details},
             )
             self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -573,6 +596,7 @@ class SopGenerationService:
                     "process_name": process_name,
                     "scenario_name": scenario_name,
                     "topic": topic,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -590,7 +614,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=str(exc),
-                extra_details=runtime_details,
+                extra_details={**citation_details, **runtime_details},
             )
             self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -614,6 +638,7 @@ class SopGenerationService:
                     "process_name": process_name,
                     "scenario_name": scenario_name,
                     "topic": topic,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -651,6 +676,7 @@ class SopGenerationService:
         citations: list[SopGenerationCitation] = []
         response_model = self._response_model_name(profile=profile)
         downgraded_from: str | None = None
+        citation_details: dict[str, object] = {}
 
         try:
             runtime_lease, runtime_details = self._acquire_generation_runtime_slot(
@@ -665,6 +691,7 @@ class SopGenerationService:
                 auth_context=auth_context,
             )
             citations = citation_result.citations
+            citation_details = dict(citation_result.details)
             if citations:
                 rerank_strategy = citation_result.rerank_strategy
             if not citations and request_mode == "document" and document_id is not None:
@@ -674,6 +701,13 @@ class SopGenerationService:
                 )
                 if citations:
                     rerank_strategy = "document_preview"
+                    citation_details = {
+                        "retrieval_mode": "document_preview",
+                        "retrieved_count": 0,
+                        "rerank_input_count": 0,
+                        "rerank_output_count": 0,
+                        "citation_count": len(citations),
+                    }
             if not citations:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -699,13 +733,24 @@ class SopGenerationService:
             )
 
             answer_parts: list[str] = []
+            prepared_prompt = (
+                self.generation_client.prepare_prompt(
+                    question=generation_instruction,
+                    contexts=contexts,
+                )
+                if hasattr(self.generation_client, "prepare_prompt")
+                else None
+            )
             try:
-                for delta in self.generation_client.generate_stream(
+                generation_kwargs = dict(
                     question=generation_instruction,
                     contexts=contexts,
                     timeout_seconds=profile.timeout_budget_seconds,
                     model_name=response_model,
-                ):
+                )
+                if prepared_prompt is not None:
+                    generation_kwargs["prepared_prompt"] = prepared_prompt
+                for delta in self.generation_client.generate_stream(**generation_kwargs):
                     if not delta:
                         continue
                     answer_parts.append(delta)
@@ -722,9 +767,10 @@ class SopGenerationService:
                     auth_context=auth_context,
                 )
                 if degraded_citations:
-                    citations = degraded_citations
+                    citations = degraded_citations.citations
                     rerank_strategy = "fallback_profile"
                     downgraded_from = profile.mode
+                    citation_details = dict(degraded_citations.details)
                 if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
                     raise
                 generation_mode = "retrieval_fallback"
@@ -778,7 +824,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
-                extra_details={"streaming": True, **runtime_details},
+                extra_details={"streaming": True, **citation_details, **runtime_details},
             )
             snapshot_record = self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -803,6 +849,7 @@ class SopGenerationService:
                     "scenario_name": scenario_name,
                     "topic": topic,
                     "streaming": True,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -828,7 +875,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=exc.detail,
-                extra_details={"streaming": True, **runtime_details},
+                extra_details={"streaming": True, **citation_details, **runtime_details},
             )
             self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -853,6 +900,7 @@ class SopGenerationService:
                     "scenario_name": scenario_name,
                     "topic": topic,
                     "streaming": True,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -878,7 +926,7 @@ class SopGenerationService:
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=str(error_message),
-                extra_details={"streaming": True, **runtime_details},
+                extra_details={"streaming": True, **citation_details, **runtime_details},
             )
             self.request_snapshot_service.record_sop_snapshot(
                 request_mode=request_mode,
@@ -903,6 +951,7 @@ class SopGenerationService:
                     "scenario_name": scenario_name,
                     "topic": topic,
                     "streaming": True,
+                    **citation_details,
                     **runtime_details,
                 },
             )
@@ -920,7 +969,7 @@ class SopGenerationService:
         document_id: str | None,
         auth_context: AuthContext,
     ) -> SopCitationBuildResult:
-        retrieval_results, _, _ = self.retrieval_service.search_candidates(
+        retrieval_results, retrieval_mode, _ = self.retrieval_service.search_candidates(
             RetrievalRequest(
                 query=search_query,
                 top_k=profile.top_k,
@@ -932,13 +981,28 @@ class SopGenerationService:
             profile=profile,
             truncate_to_top_k=False,
         )
+        retrieval_details = (
+            self.retrieval_service.build_observability_details(query=search_query, retrieval_mode=retrieval_mode)
+            if hasattr(self.retrieval_service, "build_observability_details")
+            else {"retrieval_mode": retrieval_mode}
+        )
         filtered_results = self._filter_results_by_department(
             retrieval_results,
             target_department_id=target_department_id,
             auth_context=auth_context,
         )
         if not filtered_results:
-            return SopCitationBuildResult(citations=[], rerank_strategy="skipped")
+            return SopCitationBuildResult(
+                citations=[],
+                rerank_strategy="skipped",
+                details={
+                    **retrieval_details,
+                    "retrieved_count": len(retrieval_results),
+                    "rerank_input_count": 0,
+                    "rerank_output_count": 0,
+                    "citation_count": 0,
+                },
+            )
 
         reranked_results, rerank_strategy = self.query_profile_service.rerank_with_fallback(
             query=search_query,
@@ -959,6 +1023,7 @@ class SopGenerationService:
                     score=item.score,
                     source_path=item.source_path,
                     retrieval_strategy=item.retrieval_strategy,
+                    source_scope=item.source_scope,
                     vector_score=item.vector_score,
                     lexical_score=item.lexical_score,
                     fused_score=item.fused_score,
@@ -971,6 +1036,13 @@ class SopGenerationService:
                 for item in citations_source
             ],
             rerank_strategy=rerank_strategy,
+            details={
+                **retrieval_details,
+                "retrieved_count": len(retrieval_results),
+                "rerank_input_count": len(filtered_results),
+                "rerank_output_count": len(reranked_results),
+                "citation_count": len(citations_source),
+            },
         )
 
     def _build_degraded_citations(

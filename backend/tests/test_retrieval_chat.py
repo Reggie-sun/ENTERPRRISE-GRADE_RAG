@@ -12,7 +12,9 @@ from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefiniti
 from backend.app.schemas.chat import ChatRequest
 from backend.app.schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求/响应模型，用于直接调用服务层测试过滤逻辑。
 from backend.app.services.chat_service import ChatService, get_chat_service  # 导入问答服务和依赖入口。
-from backend.app.services.document_service import DocumentService, get_document_service  # 导入文档服务和依赖入口。
+from backend.app.services.document_service import DepartmentPriorityRetrievalScope, DocumentService, get_document_service  # 导入文档服务和依赖入口。
+from backend.app.services.request_snapshot_service import RequestSnapshotService
+from backend.app.services.request_trace_service import RequestTraceService
 from backend.app.services.runtime_gate_service import RuntimeGateBusyError, RuntimeGateService
 from backend.app.services.retrieval_service import RetrievalService, get_retrieval_service  # 导入检索服务和依赖入口。
 from backend.app.services.system_config_service import SystemConfigService
@@ -331,6 +333,101 @@ def test_retrieval_search_returns_ocr_metadata_for_docx_embedded_images(tmp_path
     assert "E204" in ocr_item.text
 
 
+def test_retrieval_service_filters_low_quality_ocr_candidates_when_alternatives_exist(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "ocr_low_quality_filter_enabled": True,
+            "ocr_low_quality_min_score": 0.55,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-low-ocr",
+                score=0.98,
+                payload={
+                    "chunk_id": "chunk-low-ocr",
+                    "document_id": "doc_ocr_low",
+                    "document_name": "ocr_low.png",
+                    "text": "模糊识别片段",
+                    "source_path": "/tmp/ocr_low.png",
+                    "ocr_used": True,
+                    "parser_name": "image_ocr_paddle",
+                    "quality_score": 0.2,
+                },
+            ),
+            SimpleNamespace(
+                id="point-good-ocr",
+                score=0.92,
+                payload={
+                    "chunk_id": "chunk-good-ocr",
+                    "document_id": "doc_ocr_good",
+                    "document_name": "ocr_good.png",
+                    "text": "传感器校准步骤：先断电，再复位。",
+                    "source_path": "/tmp/ocr_good.png",
+                    "ocr_used": True,
+                    "parser_name": "image_ocr_paddle",
+                    "quality_score": 0.94,
+                },
+            ),
+            SimpleNamespace(
+                id="point-native",
+                score=0.88,
+                payload={
+                    "chunk_id": "chunk-native",
+                    "document_id": "doc_native",
+                    "document_name": "manual.txt",
+                    "text": "传感器复位前先检查供电和连接状态。",
+                    "source_path": "/tmp/manual.txt",
+                    "ocr_used": False,
+                },
+            ),
+        ]
+    )
+
+    response = retrieval_service.search(RetrievalRequest(query="传感器怎么复位", top_k=3))
+
+    assert [item.chunk_id for item in response.results] == ["chunk-good-ocr", "chunk-native"]
+    assert all(item.chunk_id != "chunk-low-ocr" for item in response.results)
+
+
+def test_retrieval_service_keeps_low_quality_ocr_candidates_when_filter_would_empty_results(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "ocr_low_quality_filter_enabled": True,
+            "ocr_low_quality_min_score": 0.55,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id="point-only-low-ocr",
+                score=0.84,
+                payload={
+                    "chunk_id": "chunk-only-low-ocr",
+                    "document_id": "doc_only_low",
+                    "document_name": "ocr_only.png",
+                    "text": "模糊识别片段",
+                    "source_path": "/tmp/ocr_only.png",
+                    "ocr_used": True,
+                    "parser_name": "image_ocr_paddle",
+                    "quality_score": 0.18,
+                },
+            )
+        ]
+    )
+
+    response = retrieval_service.search(RetrievalRequest(query="模糊识别片段", top_k=1))
+
+    assert [item.chunk_id for item in response.results] == ["chunk-only-low-ocr"]
+
+
 def test_chat_ask_endpoint_uses_openai_reranker_for_citation_order(tmp_path: Path, monkeypatch) -> None:
     settings = build_test_settings(tmp_path).model_copy(
         update={
@@ -439,6 +536,7 @@ def test_chat_stream_returns_sse_events_and_done_payload(tmp_path: Path) -> None
 
     assert upload_response.status_code == 201
     assert status_code == 200
+    assert raw_stream.startswith(": keepalive\n\n")
     events = parse_sse_events(raw_stream)
     event_names = [event_name for event_name, _ in events]
     assert "meta" in event_names
@@ -1256,6 +1354,82 @@ def test_retrieval_service_logs_dynamic_weight_decision(tmp_path: Path, caplog: 
     assert "lexical_weight=0.700" in caplog.text
 
 
+def test_chat_service_persists_hybrid_retrieval_observability_to_trace_and_snapshot(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_dynamic_weighting_enabled": True,
+            "query_fast_top_k_default": 5,
+            "query_fast_lexical_top_k_default": 10,
+        }
+    )
+    ensure_data_directories(settings)
+    retrieval_service = RetrievalService(settings)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id=f"point-{index}",
+                score=0.95 - index * 0.01,
+                payload={
+                    "chunk_id": f"chunk-{index}",
+                    "document_id": f"doc_{index}",
+                    "document_name": f"doc_{index}.txt",
+                    "text": f"PLC_A01 fault recovery step {index}",
+                    "source_path": f"/tmp/doc_{index}.txt",
+                },
+            )
+            for index in range(4)
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-0",
+                score=4.2,
+                payload={
+                    "chunk_id": "chunk-0",
+                    "document_id": "doc_0",
+                    "document_name": "doc_0.txt",
+                    "text": "PLC_A01 exact recovery step",
+                    "source_path": "/tmp/doc_0.txt",
+                },
+            )
+        ]
+    )
+    request_trace_service = RequestTraceService(settings)
+    request_snapshot_service = RequestSnapshotService(settings)
+    chat_service = ChatService(
+        settings,
+        request_trace_service=request_trace_service,
+        request_snapshot_service=request_snapshot_service,
+    )
+    chat_service.retrieval_service = retrieval_service
+
+    response = chat_service.answer(ChatRequest(question="PLC_A01错误"), auth_context=None)
+
+    assert response.mode == "rag"
+    assert len(response.citations) == 3
+
+    trace_record = request_trace_service.repository.list_records(limit=1)[0]
+    retrieval_stage = next(stage for stage in trace_record.stages if stage.stage == "retrieval")
+    rerank_stage = next(stage for stage in trace_record.stages if stage.stage == "rerank")
+
+    assert retrieval_stage.details["retrieval_mode"] == "hybrid"
+    assert retrieval_stage.details["query_type"] == "exact"
+    assert retrieval_stage.details["vector_weight"] == pytest.approx(0.3)
+    assert retrieval_stage.details["lexical_weight"] == pytest.approx(0.7)
+    assert rerank_stage.details["rerank_input_count"] == 4
+    assert rerank_stage.details["citation_count"] == 3
+
+    snapshot_record = request_snapshot_service.repository.list_records(limit=1)[0]
+    assert snapshot_record.details["retrieval_mode"] == "hybrid"
+    assert snapshot_record.details["query_type"] == "exact"
+    assert snapshot_record.details["vector_weight"] == pytest.approx(0.3)
+    assert snapshot_record.details["lexical_weight"] == pytest.approx(0.7)
+    assert snapshot_record.details["rerank_input_count"] == 4
+    assert snapshot_record.details["citation_count"] == 3
+
+
 def test_retrieval_service_normalizes_exact_query_hybrid_score_by_branch_weights(tmp_path: Path) -> None:
     settings = build_test_settings(tmp_path).model_copy(
         update={
@@ -1420,6 +1594,183 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
     assert retrieval_service.document_service.calls == [["doc_a", "doc_b"]]
 
 
+def test_retrieval_service_department_priority_dual_route_fuses_department_and_global_candidates(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            self.scope_calls += 1
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept", "doc_shared"],
+                global_document_ids=["doc_shared", "doc_global"],
+            )
+
+        def is_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> bool:
+            return True
+
+        def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+    lexical_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        if "doc_dept" in ids:
+            results.append(
+                SimpleNamespace(
+                    id="point-dept",
+                    score=0.95,
+                    payload={
+                        "chunk_id": "chunk-dept",
+                        "document_id": "doc_dept",
+                        "document_name": "dept_manual.txt",
+                        "text": "研发部 E204 处理步骤",
+                        "source_path": "/tmp/dept_manual.txt",
+                    },
+                )
+            )
+        if "doc_shared" in ids:
+            results.append(
+                SimpleNamespace(
+                    id="point-shared",
+                    score=0.9,
+                    payload={
+                        "chunk_id": "chunk-shared",
+                        "document_id": "doc_shared",
+                        "document_name": "shared_manual.txt",
+                        "text": "公共巡检总则",
+                        "source_path": "/tmp/shared_manual.txt",
+                    },
+                )
+            )
+        if "doc_global" in ids:
+            results.append(
+                SimpleNamespace(
+                    id="point-global",
+                    score=0.86,
+                    payload={
+                        "chunk_id": "chunk-global",
+                        "document_id": "doc_global",
+                        "document_name": "global_manual.txt",
+                        "text": "跨部门设备点检规范",
+                        "source_path": "/tmp/global_manual.txt",
+                    },
+                )
+            )
+        return results
+
+    def fake_lexical_search(query, *, limit, document_id=None, document_ids=None):
+        lexical_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        if "doc_dept" in ids:
+            results.append(
+                SimpleNamespace(
+                    point_id="point-dept",
+                    score=2.2,
+                    payload={
+                        "chunk_id": "chunk-dept",
+                        "document_id": "doc_dept",
+                        "document_name": "dept_manual.txt",
+                        "text": "研发部 E204 处理步骤",
+                        "source_path": "/tmp/dept_manual.txt",
+                    },
+                )
+            )
+        if "doc_shared" in ids:
+            results.append(
+                SimpleNamespace(
+                    point_id="point-shared",
+                    score=1.7,
+                    payload={
+                        "chunk_id": "chunk-shared",
+                        "document_id": "doc_shared",
+                        "document_name": "shared_manual.txt",
+                        "text": "公共巡检总则",
+                        "source_path": "/tmp/shared_manual.txt",
+                    },
+                )
+            )
+        if "doc_global" in ids:
+            results.append(
+                SimpleNamespace(
+                    point_id="point-global",
+                    score=1.3,
+                    payload={
+                        "chunk_id": "chunk-global",
+                        "document_id": "doc_global",
+                        "document_name": "global_manual.txt",
+                        "text": "跨部门设备点检规范",
+                        "source_path": "/tmp/global_manual.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=fake_lexical_search)
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="E204怎么处理", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert response.mode == "hybrid"
+    assert vector_route_calls == [["doc_dept", "doc_shared"], ["doc_shared", "doc_global"]]
+    assert lexical_route_calls == [["doc_dept", "doc_shared"], ["doc_shared", "doc_global"]]
+    assert response.results[-1].chunk_id == "chunk-global"
+    assert response.results[-1].source_scope == "global"
+    assert {item.chunk_id for item in response.results[:2]} == {"chunk-dept", "chunk-shared"}
+    assert {item.source_scope for item in response.results[:2]} == {"department", "both"}
+    assert retrieval_service.document_service.scope_calls == 1
+
+
+def test_chat_ask_propagates_source_scope_to_citations(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    chat_service = ChatService(settings)
+    chat_service.retrieval_service = _FakeRetrievalService(
+        [
+            RetrievedChunk(
+                chunk_id="chunk_dept_001",
+                document_id="doc_dept_001",
+                document_name="dept_manual.txt",
+                text="本部门 SOP 操作步骤。",
+                score=0.93,
+                source_path="/tmp/dept_manual.txt",
+                retrieval_strategy="hybrid",
+                source_scope="department",
+            ),
+            RetrievedChunk(
+                chunk_id="chunk_global_001",
+                document_id="doc_global_001",
+                document_name="global_manual.txt",
+                text="全局共享补充说明。",
+                score=0.82,
+                source_path="/tmp/global_manual.txt",
+                retrieval_strategy="hybrid",
+                source_scope="global",
+            ),
+        ]
+    )
+
+    response = chat_service.answer(ChatRequest(question="解释一下E204"), auth_context=None)
+
+    assert [item.source_scope for item in response.citations] == ["department", "global"]
+
+
 def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     settings = build_test_settings(tmp_path)
     ensure_data_directories(settings)
@@ -1519,6 +1870,10 @@ def test_retrieval_compare_rerank_reports_provider_vs_heuristic(tmp_path: Path, 
     assert response.summary.overlap_count == 2
     assert response.recommendation.decision == "provider_active"
     assert response.recommendation.should_switch_default_strategy is False
+    assert response.canary_sample_id is not None
+    records = retrieval_service.rerank_canary_service.repository.list_records(limit=None)
+    assert records[0].sample_id == response.canary_sample_id
+    assert records[0].recommendation.decision == "provider_active"
 
 
 def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1614,6 +1969,7 @@ def test_retrieval_compare_rerank_surfaces_provider_error_and_fallback(tmp_path:
     assert response.summary.top1_same is True
     assert response.recommendation.decision == "rollback_active"
     assert response.recommendation.should_switch_default_strategy is False
+    assert response.canary_sample_id is not None
 
 
 def test_retrieval_compare_rerank_recommends_provider_when_pinned_heuristic_has_meaningful_delta(
@@ -1704,6 +2060,7 @@ def test_retrieval_compare_rerank_recommends_provider_when_pinned_heuristic_has_
     assert response.provider_candidate_summary.top1_same is False
     assert response.recommendation.decision == "eligible"
     assert response.recommendation.should_switch_default_strategy is True
+    assert response.canary_sample_id is not None
 
 
 def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: Path) -> None:
@@ -1826,6 +2183,7 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
                     "should_switch_default_strategy": True,
                     "message": "provider 候选已可用且与 heuristic 存在可观察差异，可以把 default_strategy 切到 provider 做真实流量验证。",
                 },
+                "canary_sample_id": "rcs_demo_001",
             }
 
     app.dependency_overrides[get_retrieval_service] = lambda: FakeRetrievalService()
@@ -1852,3 +2210,4 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
     assert payload["summary"]["configured_only_chunk_ids"] == []
     assert payload["provider_candidate_summary"]["configured_only_chunk_ids"] == ["chunk-b"]
     assert payload["recommendation"]["decision"] == "eligible"
+    assert payload["canary_sample_id"] == "rcs_demo_001"

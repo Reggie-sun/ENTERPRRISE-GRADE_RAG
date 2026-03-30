@@ -14,6 +14,46 @@
 
 ---
 
+## 0. Common Conventions
+
+### 主字段与兼容别名
+
+- 外部统一主字段使用 `document_id`
+- `doc_id` 只作为过渡期兼容别名保留
+- 请求体里只有明确标注支持别名的接口才接受 `doc_id`
+- 响应体里只有 `documents / ingest` 当前仍同时返回 `document_id + doc_id`
+
+### 时间与分页
+
+- 时间字段统一使用 ISO 8601 datetime
+- 分页统一使用：
+  - `total`
+  - `page`
+  - `page_size`
+  - `items`
+
+### 错误包
+
+- 主业务接口统一保留兼容字段 `detail`
+- 同时返回结构化错误字段：
+  - `error.code`
+  - `error.message`
+  - `error.status_code`
+- `422` 请求校验错误继续保留 FastAPI 风格 `detail[]`
+- `POST /api/v1/chat/ask/stream` 的 `error` 事件固定返回：
+  - `code`
+  - `message`
+  - `retryable`
+  - `retry_after_seconds`
+
+### 稳定面与诊断面
+
+- 这里列出的“稳定字段”视为当前 V1 主契约
+- 同一对象里未列入稳定字段的内容，默认属于诊断面
+- 诊断字段可以继续扩展，但不能静默替换稳定字段语义
+
+---
+
 ## 1. Health / Auth
 
 ### `GET /api/v1/health`
@@ -29,6 +69,7 @@
 - `queue`
 - `metadata_store`
 - `ocr`
+- `tokenizer`
 
 稳定嵌套字段：
 - `vector_store.provider / url / collection`
@@ -38,11 +79,14 @@
 - `queue.provider / broker_url / result_backend / ingest_queue`
 - `metadata_store.provider / postgres_enabled / dsn_configured`
 - `ocr.provider / language / enabled / ready / pdf_native_text_min_chars / angle_cls_enabled`
+- `tokenizer.provider / model / ready / trust_remote_code`
 
 诊断字段：
 - `reranker.lock_source`
 - `reranker.detail`
 - `ocr.detail`
+- `tokenizer.detail`
+- `tokenizer.error`
 
 ### `POST /api/v1/auth/login`
 
@@ -255,9 +299,7 @@
 - `page_size`
 - `items`
 
-### `GET /api/v1/sops/{sop_id}`
-
-稳定字段：
+每条 `items[]` 的稳定字段：
 - `sop_id`
 - `title`
 - `department_id`
@@ -266,9 +308,43 @@
 - `scenario_name`
 - `version`
 - `status`
-- `updated_at`
 - `preview_available`
-- `download_formats`
+- `downloadable_formats`
+- `updated_at`
+
+### `GET /api/v1/sops/{sop_id}`
+
+稳定字段：
+- `sop_id`
+- `title`
+- `tenant_id`
+- `department_id`
+- `department_name`
+- `process_name`
+- `scenario_name`
+- `version`
+- `status`
+- `preview_resource_path`
+- `preview_resource_type`
+- `download_docx_available`
+- `download_pdf_available`
+- `tags`
+- `source_document_id`
+- `created_by`
+- `updated_by`
+- `created_at`
+- `updated_at`
+
+### `GET /api/v1/sops/{sop_id}/preview`
+
+稳定字段：
+- `sop_id`
+- `title`
+- `preview_type`
+- `content_type`
+- `text_content`
+- `preview_file_url`
+- `updated_at`
 
 ### `POST /api/v1/sops/generate/document`
 
@@ -314,10 +390,12 @@
 
 稳定行为：
 - 未保存草稿可直接导出
-- 当前主格式：
-  - `md`
+- 当前 API 主格式：
   - `docx`
   - `pdf`
+
+说明：
+- `Markdown` 草稿下载当前属于前端工作流能力，不属于 `/api/v1/sops/export` 主契约
 
 ---
 
@@ -513,5 +591,6 @@
 - `GET /api/v1/request-snapshots`
 - replay endpoints
 - OCR artifact JSON 结构
+- `ops.rerank_canary`
 
 如果这些路径未来要升级成稳定契约，先改 `V1_PLAN.md` 和 `RAG架构.md`，再补主契约回归。

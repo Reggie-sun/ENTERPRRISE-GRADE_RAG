@@ -27,6 +27,7 @@ class Citation(BaseModel):  # 定义回答里每条引用片段的结构。
     score: float  # 当前片段的对外相关度分数；hybrid 模式下为归一化后的融合分。
     source_path: str  # 当前片段原始文件的路径。
     retrieval_strategy: str | None = None  # 主契约稳定解释字段：当前引用的召回策略。
+    source_scope: str | None = None  # 诊断字段：两路召回融合后的来源范围，例如 department / global / both。
     vector_score: float | None = None  # 诊断字段：原始向量召回分数。
     lexical_score: float | None = None  # 诊断字段：原始词项召回分数。
     fused_score: float | None = None  # 诊断字段：当前引用的原始融合排序分数。

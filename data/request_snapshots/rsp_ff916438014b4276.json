@@ -1,0 +1,176 @@
+{
+  "snapshot_id": "rsp_ff916438014b4276",
+  "trace_id": "trc_4cb43be74cee488a",
+  "request_id": "req_b0e4ef17947546e1",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T02:52:30.179152Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "STEP4CHECKTEMPERATURE97531 是什么内容",
+    "top_k": 5,
+    "mode": null,
+    "session_id": "sess_8193564cc5dd42378c877544c18243f1",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: E204 怎么处理\nAssistant: 你提供的上下文中没有关于如何处理 E204 的信息。因此，无法直接从这些内容中得出 E204 的处理方法。请提供更具体的关于 E204 的描述或错误代码含义。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "STEP4CHECKTEMPERATURE97531 是什么内容",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+      "document_id": "doc_20260328035056_fd1b630f",
+      "document_name": "ocr_mobile_fresh_validation_v3.png",
+      "snippet": "OCR构建最终验证V3\n批次20260328-115600\n设备巡检步骤 B1 B2 B3\nSTEP4CHECKTEMPERATURE97531",
+      "score": 0.83935546875,
+      "source_path": "/app/data/uploads/doc_20260328035056_fd1b630f__ocr_mobile_fresh_validation_v3.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.618361,
+      "lexical_score": 11.047931342220158,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "输入模块。\n- 具体排查顺序：1. 先看电柜空调、风扇和滤网；2. 检查柜门是否关严、风道是否堵住；3. 温度回落后再上负载；4. 仍升温就继续查散热系统。\n- 问题：这个报警说明什么？回答：电柜内部温度过高，电气元件工作环境超限。\n- 问题：现场先查什么？回答：先看电柜空调是否运行、风扇是否转动，再检查滤网是否堵塞和环境温度是否过高。\n- 问题：具体怎么处理？回答：清洗空调滤网和散热通道；确认空调制冷有效；必要时暂时降低设备负荷并改善周围通风。\n- 问题：什么状态下才能恢复？回答：电柜温度回到正常范围、空调和风扇运行正常、后续不再超温，才可继续运行。\n\n#### 700047 空调故障\n- 信号地址：`DB2.DBX185.7`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX185.7`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先看空调电源和本体报警码；2. 检查滤网、冷凝器和排水；3. 确认风机和压缩机是否启动；4. 本体故障排除后再看柜温。\n- 问题：这个报警说明什么？回答：电柜空调本体出现故障，可能导致电柜很快升温。\n- 问题：现场先查什么？回答：先看空调电源、运行灯和本体报码，再查滤网、冷凝器和排水情况。\n- 问题：具体怎么处理？回答：恢复空调供电，清洗滤网，确认风机和压缩机是否工作；如本体仍报码，需要按空调设备故障处理。\n- 问题：什么状态下才能恢复？回答：空调能稳定制冷、电柜温度回落、空调本体无报警，才可继续长时间运行机床。\n\n#### 700045 总气源压力不足\n- 信号地址：`DB2.DBX185.5`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX185.5`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；",
+      "score": -4.0390625,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5170248,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325031547_86d6329d-chunk-0",
+      "document_id": "doc_20260325031547_86d6329d",
+      "document_name": "mcp_test_doc.txt",
+      "snippet": "这是一份用于前端联调的测试文档。\n包含关键词：E102，风扇，检修步骤。",
+      "score": -5.95703125,
+      "source_path": "/app/data/uploads/doc_20260325031547_86d6329d__mcp_test_doc.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52798796,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+      "document_id": "doc_20260328035056_fd1b630f",
+      "document_name": "ocr_mobile_fresh_validation_v3.png",
+      "snippet": "OCR构建最终验证V3\n批次20260328-115600\n设备巡检步骤 B1 B2 B3\nSTEP4CHECKTEMPERATURE97531",
+      "score": 0.83935546875,
+      "source_path": "/app/data/uploads/doc_20260328035056_fd1b630f__ocr_mobile_fresh_validation_v3.png",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.618361,
+      "lexical_score": 11.047931342220158,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": true,
+      "parser_name": "image_ocr_paddle",
+      "page_no": 1,
+      "ocr_confidence": 0.9842,
+      "quality_score": 0.9842
+    },
+    {
+      "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "输入模块。\n- 具体排查顺序：1. 先看电柜空调、风扇和滤网；2. 检查柜门是否关严、风道是否堵住；3. 温度回落后再上负载；4. 仍升温就继续查散热系统。\n- 问题：这个报警说明什么？回答：电柜内部温度过高，电气元件工作环境超限。\n- 问题：现场先查什么？回答：先看电柜空调是否运行、风扇是否转动，再检查滤网是否堵塞和环境温度是否过高。\n- 问题：具体怎么处理？回答：清洗空调滤网和散热通道；确认空调制冷有效；必要时暂时降低设备负荷并改善周围通风。\n- 问题：什么状态下才能恢复？回答：电柜温度回到正常范围、空调和风扇运行正常、后续不再超温，才可继续运行。\n\n#### 700047 空调故障\n- 信号地址：`DB2.DBX185.7`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX185.7`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先看空调电源和本体报警码；2. 检查滤网、冷凝器和排水；3. 确认风机和压缩机是否启动；4. 本体故障排除后再看柜温。\n- 问题：这个报警说明什么？回答：电柜空调本体出现故障，可能导致电柜很快升温。\n- 问题：现场先查什么？回答：先看空调电源、运行灯和本体报码，再查滤网、冷凝器和排水情况。\n- 问题：具体怎么处理？回答：恢复空调供电，清洗滤网，确认风机和压缩机是否工作；如本体仍报码，需要按空调设备故障处理。\n- 问题：什么状态下才能恢复？回答：空调能稳定制冷、电柜温度回落、空调本体无报警，才可继续长时间运行机床。\n\n#### 700045 总气源压力不足\n- 信号地址：`DB2.DBX185.5`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX185.5`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；",
+      "score": -4.0390625,
+      "source_path": "/app/data/uploads/doc_20260321070337_445684f4__123.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5170248,
+      "lexical_score": null,
+      "fused_score": 0.015625,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325031547_86d6329d-chunk-0",
+      "document_id": "doc_20260325031547_86d6329d",
+      "document_name": "mcp_test_doc.txt",
+      "snippet": "这是一份用于前端联调的测试文档。\n包含关键词：E102，风扇，检修步骤。",
+      "score": -5.95703125,
+      "source_path": "/app/data/uploads/doc_20260325031547_86d6329d__mcp_test_doc.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52798796,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "STEP4CHECKTEMPERATURE97531 这个内容出现在 Context 1 中，但是并没有明确解释其具体内容。根据上下文推测，这可能是指某个步骤或者指令，与检查温度有关，但具体细节未被提供。",
+    "answer_chars": 102,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

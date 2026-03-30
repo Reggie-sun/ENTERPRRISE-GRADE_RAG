@@ -60,6 +60,15 @@ class HealthOCR(BaseModel):
     detail: str | None = None  # 诊断字段：OCR 初始化/探活详情。
 
 
+class HealthTokenizer(BaseModel):
+    provider: str  # 主契约稳定字段：tokenizer provider。
+    model: str  # 主契约稳定字段：tokenizer 对应模型名或当前估算目标模型。
+    ready: bool  # 主契约稳定字段：tokenizer 预算服务是否 ready。
+    trust_remote_code: bool  # 主契约稳定字段：是否允许 remote code。
+    detail: str | None = None  # 诊断字段：当前 tokenizer 运行说明。
+    error: str | None = None  # 诊断字段：加载/探活失败详情。
+
+
 class HealthResponse(BaseModel):
     status: str  # 主契约稳定字段：整体状态。
     app_name: str  # 主契约稳定字段：应用名。
@@ -71,3 +80,4 @@ class HealthResponse(BaseModel):
     queue: HealthQueue  # 主契约稳定字段：队列摘要。
     metadata_store: HealthMetadataStore  # 主契约稳定字段：元数据存储摘要。
     ocr: HealthOCR  # 主契约稳定字段：OCR 摘要。
+    tokenizer: HealthTokenizer  # 主契约稳定字段：tokenizer 预算摘要。

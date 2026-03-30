@@ -8,6 +8,7 @@ from ..core.config import Settings, get_settings
 from ..db.chat_memory_repository import ChatMemoryRepository, FilesystemChatMemoryRepository
 from ..schemas.auth import AuthContext
 from ..schemas.chat_memory import ChatMemorySession, ChatMemoryTurn
+from .token_budget_service import TokenBudgetService
 
 
 class ChatMemoryService:
@@ -16,9 +17,11 @@ class ChatMemoryService:
         settings: Settings | None = None,
         *,
         repository: ChatMemoryRepository | None = None,
+        token_budget_service: TokenBudgetService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.repository = repository or FilesystemChatMemoryRepository(self.settings.chat_memory_dir)
+        self.token_budget_service = token_budget_service or TokenBudgetService(self.settings)
 
     def build_memory_summary(
         self,
@@ -131,33 +134,8 @@ class ChatMemoryService:
             return text
         return f"{text[: max_chars - 3].rstrip()}..."
 
-    @staticmethod
-    def _estimate_token_count(text: str) -> int:
-        token_count = 0
-        ascii_run = 0
-
-        def flush_ascii_run() -> int:
-            nonlocal ascii_run
-            if ascii_run <= 0:
-                return 0
-            estimated = max(1, (ascii_run + 3) // 4)
-            ascii_run = 0
-            return estimated
-
-        for char in text:
-            if ord(char) < 128:
-                if char.isalnum() or char in {"_", "-", "/"}:
-                    ascii_run += 1
-                    continue
-                token_count += flush_ascii_run()
-                if not char.isspace():
-                    token_count += 1
-                continue
-            token_count += flush_ascii_run()
-            token_count += 1
-
-        token_count += flush_ascii_run()
-        return max(1, token_count)
+    def _estimate_token_count(self, text: str) -> int:
+        return self.token_budget_service.estimate_token_count(text)
 
     @staticmethod
     def _filter_turns_for_document(

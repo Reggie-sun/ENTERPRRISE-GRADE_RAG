@@ -1,5 +1,5 @@
 import json  # 导入 json，用于序列化 SSE 事件数据。
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from time import perf_counter
 from typing import Iterator  # 导入 Iterator，用于声明流式输出类型。
 from uuid import uuid4
@@ -41,6 +41,7 @@ class CitationBuildResult:
     rerank_strategy: str
     retrieved_count: int
     reranked_count: int
+    details: dict[str, object] = field(default_factory=dict)
 
 
 class ChatService:  # 封装问答接口的业务逻辑。
@@ -110,6 +111,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         memory_summary = self._build_memory_summary(request=request, auth_context=auth_context)
         rewrite_result = self._rewrite_question(request=request, auth_context=auth_context)
         effective_question = rewrite_result.rewritten_question or request.question
+        citation_details: dict[str, object] = {}
         self._append_trace_stage(
             trace_stages,
             stage="query_rewrite",
@@ -136,6 +138,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
             )  # 先统一构造引用列表。
             citations = citation_result.citations
             rerank_strategy = citation_result.rerank_strategy
+            citation_details = dict(citation_result.details)
             if not citations:  # 如果连引用都没有，说明还没有可用上下文。
                 response = self._build_no_context_response(request.question, citations)
                 response_mode = response.mode
@@ -168,7 +171,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     citation_count=0,
                     rerank_strategy=rerank_strategy,
                     duration_ms=self._elapsed_ms(started_at),
-                    details=runtime_details,
+                    details={**citation_details, **runtime_details},
                     memory_summary=memory_summary,
                     rewrite_result=rewrite_result,
                     trace_id=trace_id,
@@ -177,15 +180,27 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 return response
 
             contexts = [citation.snippet for citation in citations]  # 提取引用文本，作为生成模型的上下文输入。
+            prepared_prompt = (
+                self.generation_client.prepare_prompt(
+                    question=effective_question,
+                    contexts=contexts,
+                    memory_text=memory_summary,
+                )
+                if hasattr(self.generation_client, "prepare_prompt")
+                else None
+            )
             try:  # 优先调用 LLM 生成最终回答。
                 llm_started_at = perf_counter()
-                answer = self.generation_client.generate(  # 执行回答生成。
+                generation_kwargs = dict(
                     question=effective_question,  # 追问型问题先按最近一轮主题改写，再进入生成链路。
                     contexts=contexts,  # 传入检索证据上下文。
                     memory_text=memory_summary,  # 最近几轮上下文只做轻量承接，不替代检索证据。
                     timeout_seconds=profile.timeout_budget_seconds,  # 问答超时预算统一来自查询档位配置。
                     model_name=response_model,
                 )
+                if prepared_prompt is not None:
+                    generation_kwargs["prepared_prompt"] = prepared_prompt
+                answer = self.generation_client.generate(**generation_kwargs)  # 执行回答生成。
                 self._append_trace_stage(
                     trace_stages,
                     stage="llm",
@@ -197,6 +212,20 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     details={
                         "context_chars": sum(len(context) for context in contexts),
                         "model": response_model,
+                        **(
+                            {
+                                "prompt_context_count": prepared_prompt.prepared_context_count,
+                                "prompt_context_original_count": prepared_prompt.original_context_count,
+                                "prompt_context_deduplicated_count": prepared_prompt.deduplicated_context_count,
+                                "prompt_pretrimmed_context_count": prepared_prompt.pretrimmed_context_count,
+                                "prompt_truncated_context_count": prepared_prompt.truncated_context_count,
+                                "prompt_context_token_estimate": prepared_prompt.context_token_estimate,
+                                "prompt_memory_token_estimate": prepared_prompt.memory_token_estimate,
+                                "prompt_token_estimate": prepared_prompt.prompt_token_estimate,
+                            }
+                            if prepared_prompt is not None
+                            else {}
+                        ),
                     },
                 )
                 mode = "rag"  # 生成成功时标记为完整 RAG 模式。
@@ -213,6 +242,20 @@ class ChatService:  # 封装问答接口的业务逻辑。
                         "context_chars": sum(len(context) for context in contexts),
                         "error_message": str(exc),
                         "model": response_model,
+                        **(
+                            {
+                                "prompt_context_count": prepared_prompt.prepared_context_count,
+                                "prompt_context_original_count": prepared_prompt.original_context_count,
+                                "prompt_context_deduplicated_count": prepared_prompt.deduplicated_context_count,
+                                "prompt_pretrimmed_context_count": prepared_prompt.pretrimmed_context_count,
+                                "prompt_truncated_context_count": prepared_prompt.truncated_context_count,
+                                "prompt_context_token_estimate": prepared_prompt.context_token_estimate,
+                                "prompt_memory_token_estimate": prepared_prompt.memory_token_estimate,
+                                "prompt_token_estimate": prepared_prompt.prompt_token_estimate,
+                            }
+                            if prepared_prompt is not None
+                            else {}
+                        ),
                     },
                 )
                 degraded_result = self._build_degraded_citations(
@@ -225,6 +268,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     citations = degraded_result.citations
                     rerank_strategy = degraded_result.rerank_strategy
                     downgraded_from = profile.mode
+                    citation_details = dict(degraded_result.details)
                 if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
                     raise
                 answer = self._build_retrieval_fallback_answer(citations)  # 用引用片段拼一个稳定可读的兜底回答。
@@ -259,7 +303,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 rerank_strategy=rerank_strategy,
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
-                details=runtime_details,
+                details={**citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
                 trace_id=trace_id,
@@ -296,7 +340,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 rerank_strategy="skipped",
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=error_message,
-                details=runtime_details,
+                details={**citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
                 trace_id=trace_id,
@@ -326,7 +370,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 rerank_strategy="skipped",
                 duration_ms=self._elapsed_ms(started_at),
                 error_message=error_message,
-                details=runtime_details,
+                details={**citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
                 trace_id=trace_id,
@@ -352,7 +396,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 downgraded_from=downgraded_from,
                 error_message=error_message,
                 model=response_model,
-                details=runtime_details,
+                details={**citation_details, **runtime_details},
                 rewrite_result=rewrite_result,
             )
             self._record_chat_snapshot(
@@ -370,7 +414,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 answer_text=answer_text,
                 downgraded_from=downgraded_from,
                 error_message=error_message,
-                details=runtime_details,
+                details={**citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
             )
@@ -402,6 +446,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
         memory_summary = self._build_memory_summary(request=request, auth_context=auth_context)
         rewrite_result = self._rewrite_question(request=request, auth_context=auth_context)
         effective_question = rewrite_result.rewritten_question or request.question
+        citation_details: dict[str, object] = {}
         self._append_trace_stage(
             trace_stages,
             stage="query_rewrite",
@@ -413,6 +458,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
         )
         runtime_details: dict[str, object] = {}
         runtime_lease: RuntimeGateLease | None = None
+
+        # 先发一个 SSE comment，尽早让浏览器收到首字节，避免首轮请求在重检索/重排前长时间保持 pending。
+        yield self._to_sse_comment("keepalive")
 
         try:
             profile, runtime_lease, downgraded_from, runtime_details = self._acquire_chat_runtime_slot(
@@ -429,6 +477,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
             )  # 先统一构造引用列表。
             citations = citation_result.citations
             rerank_strategy = citation_result.rerank_strategy
+            citation_details = dict(citation_result.details)
             if not citations:  # 没有引用时直接返回无上下文 done 事件。
                 response = self._build_no_context_response(request.question, citations)
                 response_mode = response.mode
@@ -457,6 +506,15 @@ class ChatService:  # 封装问答接口的业务逻辑。
 
             mode = "rag"  # 默认先按 rag 模式流式生成。
             contexts = [citation.snippet for citation in citations]  # 提取上下文列表。
+            prepared_prompt = (
+                self.generation_client.prepare_prompt(
+                    question=effective_question,
+                    contexts=contexts,
+                    memory_text=memory_summary,
+                )
+                if hasattr(self.generation_client, "prepare_prompt")
+                else None
+            )
             yield self._to_sse(  # 首帧先发元数据，前端可立即渲染模式和引用占位。
                 "meta",
                 ChatStreamMetaPayload(
@@ -470,13 +528,16 @@ class ChatService:  # 封装问答接口的业务逻辑。
             answer_parts: list[str] = []  # 累积回答片段，最后拼成完整 answer。
             llm_started_at = perf_counter()
             try:  # 尝试真实流式生成。
-                for delta in self.generation_client.generate_stream(
+                generation_kwargs = dict(
                     question=effective_question,
                     contexts=contexts,
                     memory_text=memory_summary,
                     timeout_seconds=profile.timeout_budget_seconds,
                     model_name=model,
-                ):
+                )
+                if prepared_prompt is not None:
+                    generation_kwargs["prepared_prompt"] = prepared_prompt
+                for delta in self.generation_client.generate_stream(**generation_kwargs):
                     if not delta:
                         continue
                     answer_parts.append(delta)
@@ -497,6 +558,20 @@ class ChatService:  # 封装问答接口的业务逻辑。
                         "context_chars": sum(len(context) for context in contexts),
                         "model": model,
                         "streaming": True,
+                        **(
+                            {
+                                "prompt_context_count": prepared_prompt.prepared_context_count,
+                                "prompt_context_original_count": prepared_prompt.original_context_count,
+                                "prompt_context_deduplicated_count": prepared_prompt.deduplicated_context_count,
+                                "prompt_pretrimmed_context_count": prepared_prompt.pretrimmed_context_count,
+                                "prompt_truncated_context_count": prepared_prompt.truncated_context_count,
+                                "prompt_context_token_estimate": prepared_prompt.context_token_estimate,
+                                "prompt_memory_token_estimate": prepared_prompt.memory_token_estimate,
+                                "prompt_token_estimate": prepared_prompt.prompt_token_estimate,
+                            }
+                            if prepared_prompt is not None
+                            else {}
+                        ),
                     },
                 )
             except LLMGenerationRetryableError as exc:  # 远端临时不可用时切回检索兜底，并保持流式输出形态。
@@ -513,6 +588,20 @@ class ChatService:  # 封装问答接口的业务逻辑。
                         "error_message": str(exc),
                         "model": model,
                         "streaming": True,
+                        **(
+                            {
+                                "prompt_context_count": prepared_prompt.prepared_context_count,
+                                "prompt_context_original_count": prepared_prompt.original_context_count,
+                                "prompt_context_deduplicated_count": prepared_prompt.deduplicated_context_count,
+                                "prompt_pretrimmed_context_count": prepared_prompt.pretrimmed_context_count,
+                                "prompt_truncated_context_count": prepared_prompt.truncated_context_count,
+                                "prompt_context_token_estimate": prepared_prompt.context_token_estimate,
+                                "prompt_memory_token_estimate": prepared_prompt.memory_token_estimate,
+                                "prompt_token_estimate": prepared_prompt.prompt_token_estimate,
+                            }
+                            if prepared_prompt is not None
+                            else {}
+                        ),
                     },
                 )
                 mode = "retrieval_fallback"
@@ -526,6 +615,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     citations = degraded_result.citations
                     rerank_strategy = degraded_result.rerank_strategy
                     downgraded_from = profile.mode
+                    citation_details = dict(degraded_result.details)
                 if not self.system_config_service.get_degrade_controls().retrieval_fallback_enabled:
                     error_message = str(exc)
                     self._append_trace_stage(
@@ -690,7 +780,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 duration_ms=self._elapsed_ms(started_at),
                 downgraded_from=downgraded_from,
                 error_message=error_message,
-                details={"streaming": True, **runtime_details},
+                details={"streaming": True, **citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
                 trace_id=trace_id,
@@ -712,7 +802,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 downgraded_from=downgraded_from,
                 error_message=error_message,
                 model=model,
-                details={"streaming": True, **runtime_details},
+                details={"streaming": True, **citation_details, **runtime_details},
                 rewrite_result=rewrite_result,
             )
             self._record_chat_snapshot(
@@ -730,7 +820,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 answer_text=answer_text,
                 downgraded_from=downgraded_from,
                 error_message=error_message,
-                details={"streaming": True, **runtime_details},
+                details={"streaming": True, **citation_details, **runtime_details},
                 memory_summary=memory_summary,
                 rewrite_result=rewrite_result,
             )
@@ -753,8 +843,9 @@ class ChatService:  # 封装问答接口的业务逻辑。
         trace_stages: list[RequestTraceStage] | None = None,
     ) -> CitationBuildResult:  # 统一执行检索+重排并产出引用列表。
         retrieval_started_at = perf_counter()
+        retrieval_mode = "qdrant"
         try:
-            retrieval_results, _, _ = self.retrieval_service.search_candidates(  # 先取较大的融合候选，供后置 rerank 使用。
+            retrieval_results, retrieval_mode, _ = self.retrieval_service.search_candidates(  # 先取较大的融合候选，供后置 rerank 使用。
                 RetrievalRequest(  # 把问答请求转换成检索请求。
                     query=query_text,
                     top_k=profile.top_k,
@@ -779,6 +870,11 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     details={"document_id": request.document_id, "error_message": str(exc), "query_length": len(query_text)},
                 )
             raise
+        retrieval_details = (
+            self.retrieval_service.build_observability_details(query=query_text, retrieval_mode=retrieval_mode)
+            if hasattr(self.retrieval_service, "build_observability_details")
+            else {"retrieval_mode": retrieval_mode}
+        )
         if trace_stages is not None:
             self._append_trace_stage(
                 trace_stages,
@@ -788,7 +884,11 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 input_size=len(query_text),
                 output_size=len(retrieval_results),
                 cache_hit=False,
-                details={"document_id": request.document_id, "query_length": len(query_text)},
+                details={
+                    "document_id": request.document_id,
+                    "query_length": len(query_text),
+                    **retrieval_details,
+                },
             )
 
         rerank_started_at = perf_counter()
@@ -841,6 +941,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     score=result.score,  # 复制相似度分数。
                     source_path=result.source_path,  # 复制原始文件路径。
                     retrieval_strategy=result.retrieval_strategy,  # 透传召回策略，方便引用和快照解释。
+                    source_scope=result.source_scope,  # 透传部门优先融合来源，便于解释当前引用为什么来自本部门或全局补充。
                     vector_score=result.vector_score,  # 透传原始向量分数。
                     lexical_score=result.lexical_score,  # 透传词项分数。
                     fused_score=result.fused_score,  # 透传最终融合分数。
@@ -855,6 +956,13 @@ class ChatService:  # 封装问答接口的业务逻辑。
             rerank_strategy=rerank_strategy,
             retrieved_count=len(retrieval_results),
             reranked_count=len(citations_source),
+            details={
+                **retrieval_details,
+                "retrieved_count": len(retrieval_results),
+                "rerank_input_count": len(retrieval_results),
+                "rerank_output_count": len(reranked_results),
+                "citation_count": len(citations_source),
+            },
         )
 
     def _build_degraded_citations(
@@ -1299,6 +1407,10 @@ class ChatService:  # 封装问答接口的业务逻辑。
     @staticmethod
     def _to_sse(event: str, payload: dict[str, object]) -> str:  # 把事件和数据编码成标准 SSE 格式。
         return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+    @staticmethod
+    def _to_sse_comment(comment: str) -> str:  # 发送标准 SSE comment，不影响主契约事件类型，只用于提前 flush 首字节。
+        return f": {comment}\n\n"
 
     @staticmethod
     def _build_meta_payload(response: ChatResponse) -> dict[str, object]:  # 从最终响应提取前端流式渲染所需元数据。

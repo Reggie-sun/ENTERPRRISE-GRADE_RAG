@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from .document import DocumentLifecycleStatus, IngestJobStatus
 from .event_log import EventLogCategory, EventLogRecord
 from .health import HealthResponse
+from .rerank_canary import RerankCanarySummary
 from .request_snapshot import RequestSnapshotRecord
 from .request_trace import RequestTraceRecord
 from .system_config import SystemConfigResponse
@@ -103,6 +104,7 @@ class OpsSummaryResponse(BaseModel):
     recent_window: OpsRecentWindowSummary  # 主契约稳定字段：最近窗口统计。
     rerank_usage: OpsRerankUsageSummary  # 主契约稳定字段：rerank 实际流量摘要。
     rerank_decision: OpsRerankDecisionSummary  # 主契约稳定字段：默认策略建议。
+    rerank_canary: RerankCanarySummary  # 诊断字段：rerank canary 样本摘要。
     stuck_ingest_jobs: list[OpsStuckIngestJobSummary] = Field(default_factory=list)  # 诊断字段：卡住的 ingest jobs。
     categories: list[OpsCategorySummary] = Field(default_factory=list)  # 主契约稳定字段：按类别聚合统计。
     recent_failures: list[EventLogRecord] = Field(default_factory=list)  # 主契约稳定字段：最近失败事件简表。

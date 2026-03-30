@@ -1,5 +1,11 @@
 import { AlertTriangle, Clock3, Gauge, RefreshCw, RotateCcw, Route, ServerCog, Workflow } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  PRIMARY_RERANK_CANARY_DECISIONS,
+  getRerankCanaryDecisionCount,
+  getRerankDecisionPresentation,
+} from '@/app/rerankCanaryPresentation';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, StatusPill } from '@/components';
 import {
@@ -132,7 +138,8 @@ function replayResponseContent(response: RequestSnapshotReplayResponse['response
 }
 
 export function OpsPage() {
-  const { profile } = useAuth();
+  const navigate = useNavigate();
+  const { profile, canAccessAdmin } = useAuth();
   const experience = getRoleExperience(profile);
   const scopeSummary = getDepartmentScopeSummary(profile);
   const [status, setStatus] = useState<PanelStatus>('idle');
@@ -179,6 +186,12 @@ export function OpsPage() {
     : summary?.health.reranker.effective_strategy === 'heuristic' && summary?.health.reranker.fallback_enabled
       ? 'fallback active'
       : 'route unavailable';
+  const latestCanaryPresentation = getRerankDecisionPresentation(summary?.rerank_canary.latest_decision, { canAccessAdmin });
+  const rerankCanaryCards = PRIMARY_RERANK_CANARY_DECISIONS.map((decision) => ({
+    decision,
+    count: getRerankCanaryDecisionCount(summary?.rerank_canary, decision),
+    presentation: getRerankDecisionPresentation(decision, { canAccessAdmin }),
+  }));
 
   const triggerReplay = async (snapshotId: string, replayMode: RequestSnapshotReplayMode) => {
     setReplayStatusBySnapshotId((current) => ({ ...current, [snapshotId]: 'loading' }));
@@ -542,6 +555,70 @@ export function OpsPage() {
               </p>
               <p className="m-0 mt-2 leading-relaxed text-ink">
                 {summary?.rerank_decision.message || '-'}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="block text-ink">Rerank Canary 判读</strong>
+                <StatusPill tone={latestCanaryPresentation.tone}>
+                  {summary?.rerank_canary.latest_decision ? latestCanaryPresentation.label : '暂无样本'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-2">sample: {renderNullable(summary?.rerank_canary.sample_size)}</p>
+              <p className="m-0 mt-1">latest sample: {renderNullable(summary?.rerank_canary.latest_sample_id)}</p>
+              <p className="m-0 mt-1">last sample at: {formatLocalTime(summary?.rerank_canary.last_sample_at || null)}</p>
+              <p className="m-0 mt-1">last eligible at: {formatLocalTime(summary?.rerank_canary.last_eligible_at || null)}</p>
+              <p className="m-0 mt-3 text-sm font-semibold text-ink">
+                {summary?.rerank_canary.latest_decision ? latestCanaryPresentation.title : '先到检索页执行一次 rerank compare。'}
+              </p>
+              <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3">
+                <strong className="block text-ink">推荐动作</strong>
+                <p className="m-0 mt-2 leading-relaxed">
+                  {summary?.rerank_canary.latest_decision ? latestCanaryPresentation.recommendedAction : '当前还没有 canary 样本，先补一条真实 compare，再决定是否需要切默认策略。'}
+                </p>
+                {summary?.rerank_canary.latest_message ? (
+                  <p className="m-0 mt-2 leading-relaxed text-ink-soft">
+                    最新样本说明：{summary.rerank_canary.latest_message}
+                  </p>
+                ) : null}
+                {summary?.rerank_canary.latest_decision && latestCanaryPresentation.pageActionLabel && latestCanaryPresentation.pageActionPath ? (
+                  <div className="mt-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => navigate(latestCanaryPresentation.pageActionPath as string)}
+                    >
+                      {latestCanaryPresentation.pageActionLabel}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-4 grid gap-3">
+                {rerankCanaryCards.map((item) => (
+                  <div key={item.decision} className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.84)] p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <strong className="text-ink">{item.presentation.label}</strong>
+                      <StatusPill tone={item.presentation.tone}>{item.count} 条</StatusPill>
+                    </div>
+                    <p className="m-0 mt-2 text-sm font-semibold text-ink">{item.presentation.title}</p>
+                    <p className="m-0 mt-2 leading-relaxed">{item.presentation.summary}</p>
+                    <p className="m-0 mt-2 leading-relaxed text-ink">推荐动作：{item.presentation.recommendedAction}</p>
+                    {item.presentation.pageActionLabel && item.presentation.pageActionPath ? (
+                      <div className="mt-3">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => navigate(item.presentation.pageActionPath as string)}
+                        >
+                          {item.presentation.pageActionLabel}
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+              <p className="m-0 mt-3">
+                not applicable: {renderNullable(summary?.rerank_canary.not_applicable_count)} / other: {renderNullable(summary?.rerank_canary.other_count)}
               </p>
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">

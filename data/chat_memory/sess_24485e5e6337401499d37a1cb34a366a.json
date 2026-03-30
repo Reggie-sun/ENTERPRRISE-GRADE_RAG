@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_24485e5e6337401499d37a1cb34a366a",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-03-30T05:58:27.393877Z",
+  "turns": [
+    {
+      "turn_id": "turn_28c43b83f17a",
+      "asked_at": "2026-03-30T05:58:27.393853Z",
+      "question": "如何判断零件可不可以倒角",
+      "answer": "你无法找到足够的证据来回答这个问题，因为提供的上下文中没有讨论如何判断零件是否可以倒角。上下文主要描述了电焊作业的安全操作规范。",
+      "response_mode": "rag",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "citation_count": 1
+    }
+  ]
+}

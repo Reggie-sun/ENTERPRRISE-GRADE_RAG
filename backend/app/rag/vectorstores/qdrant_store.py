@@ -147,22 +147,14 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         *,
         limit: int,
         document_id: str | None = None,
+        document_ids: list[str] | None = None,
     ) -> list[models.ScoredPoint]:
         if not query_vector or limit <= 0:  # 空向量或非法 limit 不执行检索。
             return []  # 直接返回空结果。
         if not self._collection_exists(self.settings.qdrant_collection):  # 目标 collection 不存在时直接返回空结果。
             return []  # 让上层按“暂无数据”处理，而不是抛 500。
 
-        query_filter = None  # 默认不加过滤，保持全库检索行为。
-        if document_id:  # 传入 document_id 时，只检索目标文档下的 chunk。
-            query_filter = models.Filter(
-                must=[
-                    models.FieldCondition(
-                        key="document_id",
-                        match=models.MatchValue(value=document_id),
-                    )
-                ]
-            )
+        query_filter = self._build_document_filter(document_id=document_id, document_ids=document_ids)  # 统一构造单文档或多文档过滤条件。
 
         response = self.client.query_points(  # 调用 Qdrant 向量检索接口。
             collection_name=self.settings.qdrant_collection,  # 指定检索的 collection。
@@ -178,6 +170,7 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         self,
         *,
         document_id: str | None = None,
+        document_ids: list[str] | None = None,
         batch_size: int = 256,
     ) -> Iterator[models.Record]:
         if batch_size <= 0:  # 非法批大小直接视为空迭代，避免落到 Qdrant 参数错误。
@@ -185,7 +178,7 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         if not self._collection_exists(self.settings.qdrant_collection):  # collection 不存在时直接返回空迭代。
             return
 
-        scroll_filter = self._build_document_filter(document_id)  # 复用统一文档过滤条件，保证 vector / lexical 语义一致。
+        scroll_filter = self._build_document_filter(document_id=document_id, document_ids=document_ids)  # 复用统一文档过滤条件，保证 vector / lexical 语义一致。
         offset: int | str | models.PointId | None = None
         while True:
             records, next_offset = self.client.scroll(
@@ -251,14 +244,28 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
         return collection_name in collection_names  # 返回是否包含目标 collection。
 
     @staticmethod
-    def _build_document_filter(document_id: str | None) -> models.Filter | None:  # 统一构造 document_id 过滤条件。
-        if not document_id:
+    def _build_document_filter(  # 统一构造单文档或多文档 document_id 过滤条件。
+        document_id: str | None = None,
+        document_ids: list[str] | None = None,
+    ) -> models.Filter | None:
+        if document_id:
+            return models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="document_id",
+                        match=models.MatchValue(value=document_id),
+                    )
+                ]
+            )
+
+        normalized_document_ids = [item.strip() for item in document_ids or [] if item and item.strip()]
+        if not normalized_document_ids:
             return None
         return models.Filter(
             must=[
                 models.FieldCondition(
                     key="document_id",
-                    match=models.MatchValue(value=document_id),
+                    match=models.MatchAny(any=normalized_document_ids),
                 )
             ]
         )

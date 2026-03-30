@@ -1,5 +1,7 @@
 import { RefreshCw, Save, SlidersHorizontal, Wrench } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getRerankDecisionPresentation } from '@/app/rerankCanaryPresentation';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, Input, StatusPill } from '@/components';
 import {
@@ -265,6 +267,7 @@ function ModeConfigCard({ description, modeKey, value, disabled, onChange }: Mod
 }
 
 export function AdminPage() {
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const experience = getRoleExperience(profile);
   const scopeSummary = getDepartmentScopeSummary(profile);
@@ -407,45 +410,66 @@ export function AdminPage() {
     }));
   };
 
+  const persistConfig = async (nextRerankerRouting: RerankerRoutingConfig) => {
+    const payload = await updateSystemConfig({
+      query_profiles: profiles,
+      model_routing: modelRouting,
+      reranker_routing: nextRerankerRouting,
+      degrade_controls: degradeControls,
+      retry_controls: retryControls,
+      concurrency_controls: concurrencyControls,
+      prompt_budget: promptBudget,
+    });
+    const [latestHealth, latestOpsSummary] = await Promise.all([
+      getHealth(),
+      getOpsSummary().catch(() => null),
+    ]);
+    setProfiles(cloneProfiles(payload.query_profiles));
+    setSavedProfiles(cloneProfiles(payload.query_profiles));
+    setModelRouting(cloneModelRouting(payload.model_routing));
+    setSavedModelRouting(cloneModelRouting(payload.model_routing));
+    setRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
+    setSavedRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
+    setDegradeControls(cloneDegradeControls(payload.degrade_controls));
+    setSavedDegradeControls(cloneDegradeControls(payload.degrade_controls));
+    setRetryControls(cloneRetryControls(payload.retry_controls));
+    setSavedRetryControls(cloneRetryControls(payload.retry_controls));
+    setConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
+    setSavedConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
+    setPromptBudget(clonePromptBudget(payload.prompt_budget));
+    setSavedPromptBudget(clonePromptBudget(payload.prompt_budget));
+    setUpdatedAt(payload.updated_at);
+    setUpdatedBy(payload.updated_by);
+    setHealth(latestHealth);
+    setOpsSummary(latestOpsSummary);
+  };
+
   const handleSave = async () => {
     setSaveStatus('loading');
     setSaveError('');
     try {
-      const payload = await updateSystemConfig({
-        query_profiles: profiles,
-        model_routing: modelRouting,
-        reranker_routing: rerankerRouting,
-        degrade_controls: degradeControls,
-        retry_controls: retryControls,
-        concurrency_controls: concurrencyControls,
-        prompt_budget: promptBudget,
-      });
-      const [latestHealth, latestOpsSummary] = await Promise.all([
-        getHealth(),
-        getOpsSummary().catch(() => null),
-      ]);
-      setProfiles(cloneProfiles(payload.query_profiles));
-      setSavedProfiles(cloneProfiles(payload.query_profiles));
-      setModelRouting(cloneModelRouting(payload.model_routing));
-      setSavedModelRouting(cloneModelRouting(payload.model_routing));
-      setRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
-      setSavedRerankerRouting(cloneRerankerRouting(payload.reranker_routing));
-      setDegradeControls(cloneDegradeControls(payload.degrade_controls));
-      setSavedDegradeControls(cloneDegradeControls(payload.degrade_controls));
-      setRetryControls(cloneRetryControls(payload.retry_controls));
-      setSavedRetryControls(cloneRetryControls(payload.retry_controls));
-      setConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
-      setSavedConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
-      setPromptBudget(clonePromptBudget(payload.prompt_budget));
-      setSavedPromptBudget(clonePromptBudget(payload.prompt_budget));
-      setUpdatedAt(payload.updated_at);
-      setUpdatedBy(payload.updated_by);
-      setHealth(latestHealth);
-      setOpsSummary(latestOpsSummary);
+      await persistConfig(rerankerRouting);
       setSaveStatus('success');
     } catch (err) {
       setSaveStatus('error');
       setSaveError(formatApiError(err, '系统配置保存'));
+    }
+  };
+
+  const handleApplyDefaultStrategy = async (nextStrategy: 'heuristic' | 'provider') => {
+    setSaveStatus('loading');
+    setSaveError('');
+    try {
+      await persistConfig({
+        ...rerankerRouting,
+        default_strategy: nextStrategy,
+      });
+      setSaveStatus('success');
+    } catch (err) {
+      setSaveStatus('error');
+      setSaveError(
+        formatApiError(err, nextStrategy === 'provider' ? '切换 provider 默认' : '回滚 heuristic 默认'),
+      );
     }
   };
 
@@ -464,6 +488,9 @@ export function AdminPage() {
       : health?.reranker
         ? 'route unavailable'
         : '未加载';
+  const rerankDecisionPresentation = getRerankDecisionPresentation(opsSummary?.rerank_decision.decision, {
+    canAccessAdmin: true,
+  });
 
   return (
     <div className="grid gap-5">
@@ -627,8 +654,15 @@ export function AdminPage() {
               <p className="m-0 mt-2">
                 prompt {promptBudget.max_prompt_tokens} / completion {promptBudget.reserved_completion_tokens} / memory {promptBudget.memory_prompt_tokens}
               </p>
+              <p className="m-0 mt-1">
+                tokenizer: {health?.tokenizer.provider || '未加载'} / {health?.tokenizer.ready ? 'ready' : 'fallback'}
+                {health?.tokenizer.model ? ` / ${health.tokenizer.model}` : ''}
+              </p>
               <p className="m-0 mt-2 leading-relaxed">
                 prompt 预算之外仍会保留一层安全余量，用来吸收本地软估算和上游 tokenizer 之间的偏差。
+              </p>
+              <p className="m-0 mt-2 leading-relaxed">
+                {health?.tokenizer.detail || '刷新后可看到当前 token 预算服务实际走的是 heuristic 还是 transformers tokenizer。'}
               </p>
             </div>
           </Card>
@@ -734,6 +768,49 @@ export function AdminPage() {
               <p className="m-0 mt-2 leading-relaxed">
                 {opsSummary?.rerank_decision.message || '刷新后可看到当前默认策略建议。'}
               </p>
+              <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3">
+                <strong className="block text-ink">推荐动作</strong>
+                <p className="m-0 mt-2 leading-relaxed">
+                  {rerankDecisionPresentation.recommendedAction}
+                </p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {opsSummary?.rerank_decision.decision === 'eligible' && rerankerRouting.default_strategy !== 'provider' ? (
+                  <Button
+                    type="button"
+                    loading={saveStatus === 'loading'}
+                    onClick={() => void handleApplyDefaultStrategy('provider')}
+                  >
+                    切换到 provider 默认
+                  </Button>
+                ) : null}
+                {opsSummary?.rerank_decision.decision === 'rollback_active' && rerankerRouting.default_strategy === 'provider' ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    loading={saveStatus === 'loading'}
+                    onClick={() => void handleApplyDefaultStrategy('heuristic')}
+                  >
+                    回滚到 heuristic 默认
+                  </Button>
+                ) : null}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => navigate('/workspace/retrieval')}
+                >
+                  去检索页复核样本
+                </Button>
+                {rerankDecisionPresentation.pageActionLabel && rerankDecisionPresentation.pageActionPath && rerankDecisionPresentation.pageActionPath !== '/workspace/retrieval' ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => navigate(rerankDecisionPresentation.pageActionPath as string)}
+                  >
+                    {rerankDecisionPresentation.pageActionLabel}
+                  </Button>
+                ) : null}
+              </div>
             </div>
           </Card>
 

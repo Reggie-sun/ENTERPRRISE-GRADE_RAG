@@ -1,0 +1,156 @@
+{
+  "document_id": "doc_20260330023806_abd01111",
+  "file_name": "聊天统计.png",
+  "source_path": "/app/data/uploads/doc_20260330023806_abd01111__document.png",
+  "parser_name": "image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 24,
+  "page_count": 1,
+  "normalized_text": "靠前\n1%\n发送的\n夕消息数\n总计\n消息\n1.473万\n686\n聊天次数\n发送总数\n图片\n破折号\n畅聊之曰\n92\n8月27\n5,959\n生成总数\n年\n出现总数\n2025\n5\n你的 ChatGPT\n年度回顾\n-",
+  "segments": [
+    {
+      "text": "靠前",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.9998742341995239
+    },
+    {
+      "text": "1%",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9593222737312317
+    },
+    {
+      "text": "发送的",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.999466598033905
+    },
+    {
+      "text": "夕消息数",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9438329339027405
+    },
+    {
+      "text": "总计",
+      "page_no": 1,
+      "line_no": 5,
+      "confidence": 0.9999808073043823
+    },
+    {
+      "text": "消息",
+      "page_no": 1,
+      "line_no": 6,
+      "confidence": 0.9999624490737915
+    },
+    {
+      "text": "1.473万",
+      "page_no": 1,
+      "line_no": 7,
+      "confidence": 0.9994725584983826
+    },
+    {
+      "text": "686",
+      "page_no": 1,
+      "line_no": 8,
+      "confidence": 0.999817430973053
+    },
+    {
+      "text": "聊天次数",
+      "page_no": 1,
+      "line_no": 9,
+      "confidence": 0.9998294115066528
+    },
+    {
+      "text": "发送总数",
+      "page_no": 1,
+      "line_no": 10,
+      "confidence": 0.999907374382019
+    },
+    {
+      "text": "图片",
+      "page_no": 1,
+      "line_no": 11,
+      "confidence": 0.9999949932098389
+    },
+    {
+      "text": "破折号",
+      "page_no": 1,
+      "line_no": 12,
+      "confidence": 0.9994322657585144
+    },
+    {
+      "text": "畅聊之曰",
+      "page_no": 1,
+      "line_no": 13,
+      "confidence": 0.9736059904098511
+    },
+    {
+      "text": "92",
+      "page_no": 1,
+      "line_no": 14,
+      "confidence": 0.9991497993469238
+    },
+    {
+      "text": "8月27",
+      "page_no": 1,
+      "line_no": 15,
+      "confidence": 0.9994331002235413
+    },
+    {
+      "text": "5,959",
+      "page_no": 1,
+      "line_no": 16,
+      "confidence": 0.9975911378860474
+    },
+    {
+      "text": "生成总数",
+      "page_no": 1,
+      "line_no": 17,
+      "confidence": 0.9999146461486816
+    },
+    {
+      "text": "年",
+      "page_no": 1,
+      "line_no": 18,
+      "confidence": 0.9992007613182068
+    },
+    {
+      "text": "出现总数",
+      "page_no": 1,
+      "line_no": 19,
+      "confidence": 0.9999897480010986
+    },
+    {
+      "text": "2025",
+      "page_no": 1,
+      "line_no": 20,
+      "confidence": 0.9377368092536926
+    },
+    {
+      "text": "5",
+      "page_no": 1,
+      "line_no": 21,
+      "confidence": 0.3679244816303253
+    },
+    {
+      "text": "你的 ChatGPT",
+      "page_no": 1,
+      "line_no": 22,
+      "confidence": 0.9577900767326355
+    },
+    {
+      "text": "年度回顾",
+      "page_no": 1,
+      "line_no": 23,
+      "confidence": 0.9994984865188599
+    },
+    {
+      "text": "-",
+      "page_no": 1,
+      "line_no": 24,
+      "confidence": 0.21882188320159912
+    }
+  ]
+}

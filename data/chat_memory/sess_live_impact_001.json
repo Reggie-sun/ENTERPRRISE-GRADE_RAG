@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_live_impact_001",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:55:46.997104Z",
+  "turns": [
+    {
+      "turn_id": "turn_36ffa9e8d1fc",
+      "asked_at": "2026-03-30T03:55:44.568435Z",
+      "question": "CPPS是什么？",
+      "answer": "Generation model is unavailable. Returning evidence-based summary:\n1. 慢性盆腔疼痛（症） ” 、“ 盆腔疼痛（症） ” 和 “ CPPS （慢性盆腔疼 痛综合征的英文简写） ” 都是同义词， 指的是上面提到的 所 有症 状 。 传统名 称和诊断类别 用千男性 ·前 列腺炎（ 国立健康研究所 的类别 ） L急 性细菌性前列腺炎 2． 慢性细菌性前列腺炎 3a. CPPS 非细菌性炎 性 33  34 盆腔之痛 3b. CP...\n2. 习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做 四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的 呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分 之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无...",
+      "response_mode": "retrieval_fallback",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_f841a011f1a2",
+      "asked_at": "2026-03-30T03:55:46.997096Z",
+      "question": "会怎么样",
+      "answer": "根据提供的上下文，CPPS（慢性盆腔疼痛综合征）的症状可能会因不同的治疗方法而有所改善。例如，哈里·米勒博士通过心理学疗法使86%的前列腺炎患者的症状得到了显著改善。此外，通过怀斯-安德森疗法，大部分适应症病人的症状也大大减少甚至消失。因此，对于患有CPPS的人来说，症状有可能通过适当的治疗得到缓解。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

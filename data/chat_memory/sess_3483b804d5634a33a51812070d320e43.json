@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_3483b804d5634a33a51812070d320e43",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:31:34.526073Z",
+  "turns": [
+    {
+      "turn_id": "turn_d4c1cba5fff2",
+      "asked_at": "2026-03-30T03:31:23.773626Z",
+      "question": "CPPS和PPS有什么区别？",
+      "answer": "根据提供的信息，慢性前列腺疼痛综合征(CPPS)和前列腺疼痛综合征(PPS)的主要区别在于命名的概括性和准确性。欧洲医学界倾向于使用\"慢性前列腺疼痛综合征(PPS)\"这一说法，因为它比美国医学界的术语\"慢性前列腺炎／慢性盆腔疼痛综合征(CP/CPPS)\"更为概括，避免了将疾病视为以前列腺为中心的错误倾向。然而，两者都带有这种疾病是以前列腺为中心的意味，而实际上缺乏相关证据支持这一点。因此，尽管命名不同，但两者的实际应用和理解上存在一定的相似性，主要区别在于命名的精确性和概括性。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_da34e7bfcca4",
+      "asked_at": "2026-03-30T03:31:34.526029Z",
+      "question": "哪个更常见",
+      "answer": "您不能仅根据提供的上下文确定CPPS和PPS哪个更常见。上下文中没有提供关于这两种情况发生频率的具体数据。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

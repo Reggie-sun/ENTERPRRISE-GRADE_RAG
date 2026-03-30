@@ -1,0 +1,176 @@
+{
+  "snapshot_id": "rsp_abd6be65ef6344b1",
+  "trace_id": "trc_3e6a4c99b3d9414e",
+  "request_id": "req_74e318aabc5b4381",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:19:45.874806Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下cpps给我生成一个表格，给出能下载的docx文件",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 更详细一点\nAssistant: CPPS即慢性盆腔疼痛综合征(Chronic Prostatitis/Pelvic Pain Syndrome)，是一种涉及盆腔区域的长期疼痛状况。这种综合征可以影响男性和女性，并且其症状多种多样，通常包括直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急、排尿困难等。值得注意的是，尽管患者经历显著的疼痛，但许多常规测试的结果可能都在正常范围内，这使得诊断和治疗变得复杂。\n\n书中提出的观点认为，这些症状是由同一个深层次的问题引起的，而不是单一器官的问题。治疗应针对这一根本原因，而非仅仅关注特定器官如前列腺。慢性盆腔疼痛综合征长期以来一直是医学上的一个谜题，尽管已有准确的诊断方法存在多年，但它仍常被误诊为急性或慢性细菌性前列腺炎。此外，自主神经系统，尤其是肾上腺或交感神经系统，在引发炎症过程中扮演重要角色。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps给我生成一个表格，给出能下载的docx文件",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维\n\n它决定这个系统能不能真正进入企业现场，而不只是做一个演示版本。\n\n---\n\n## 5. 关键业务场景架构\n\n### 5.1 场景一：系统使用辅助\n\n员工在 DFMS 页面内直接打开智能助手，系统自动结合当前页面上下文给出解释、操作说明或引导。\n\n```text\n用户进入 DFMS 页面\n   ↓\n打开智能助手\n   ↓\n系统识别当前页面和业务对象\n   ↓\n调用知识与问答能力\n   ↓\n返回解释、建议和引用来源\n```\n\n价值：\n\n- 降低培训成本\n- 降低系统使用门槛\n- 提高日常使用效率\n\n### 5.2 场景二：报警与运维辅助\n\n系统产生报警后，智能助手自动关联相关知识和处理建议，并通过 DFMS 或企业微信触达相关人员。\n\n```text\n设备报警触发\n   ↓\n系统识别报警代码和设备上下文\n   ↓\n自动关联维修知识和历史案例\n   ↓\n生成维修建议\n   ↓\n通过 DFMS 或企业微信推送给工程师\n```\n\n价值：\n\n- 缩短故障处理时间\n- 降低对个别经验人员的依赖\n- 沉淀标准化维修经验\n\n### 5.3 场景三：自然语言数据分析\n\n生产管理人员通过自然语言直接提问，例如设备效率、停机原因、报警趋势等，系统输出结果和图表。\n\n```text\n用户提出业务问题\n   ↓\n系统识别分析意图\n   ↓\n关联生产与运营数据\n   ↓\n生成统计结果和图表\n   ↓\n输出可读结论\n```\n\n价值：\n\n- 降低数据使用门槛\n- 提高管理层获取洞察的速度\n- 推动数据驱动管理\n\n---\n\n## 6. 企业微信接入架构",
+      "score": -4.51953125,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 20.28905203201316,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260328054046_dae2edb7-chunk-0",
+      "document_id": "doc_20260328054046_dae2edb7",
+      "document_name": "docx_embedded_ocr_ui.docx",
+      "snippet": "DOCX正文验证段落",
+      "score": -4.6171875,
+      "source_path": "/app/data/uploads/doc_20260328054046_dae2edb7__docx_embedded_ocr_ui.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5482131,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": -5.421875,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54586554,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维\n\n它决定这个系统能不能真正进入企业现场，而不只是做一个演示版本。\n\n---\n\n## 5. 关键业务场景架构\n\n### 5.1 场景一：系统使用辅助\n\n员工在 DFMS 页面内直接打开智能助手，系统自动结合当前页面上下文给出解释、操作说明或引导。\n\n```text\n用户进入 DFMS 页面\n   ↓\n打开智能助手\n   ↓\n系统识别当前页面和业务对象\n   ↓\n调用知识与问答能力\n   ↓\n返回解释、建议和引用来源\n```\n\n价值：\n\n- 降低培训成本\n- 降低系统使用门槛\n- 提高日常使用效率\n\n### 5.2 场景二：报警与运维辅助\n\n系统产生报警后，智能助手自动关联相关知识和处理建议，并通过 DFMS 或企业微信触达相关人员。\n\n```text\n设备报警触发\n   ↓\n系统识别报警代码和设备上下文\n   ↓\n自动关联维修知识和历史案例\n   ↓\n生成维修建议\n   ↓\n通过 DFMS 或企业微信推送给工程师\n```\n\n价值：\n\n- 缩短故障处理时间\n- 降低对个别经验人员的依赖\n- 沉淀标准化维修经验\n\n### 5.3 场景三：自然语言数据分析\n\n生产管理人员通过自然语言直接提问，例如设备效率、停机原因、报警趋势等，系统输出结果和图表。\n\n```text\n用户提出业务问题\n   ↓\n系统识别分析意图\n   ↓\n关联生产与运营数据\n   ↓\n生成统计结果和图表\n   ↓\n输出可读结论\n```\n\n价值：\n\n- 降低数据使用门槛\n- 提高管理层获取洞察的速度\n- 推动数据驱动管理\n\n---\n\n## 6. 企业微信接入架构",
+      "score": -4.51953125,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 20.28905203201316,
+      "fused_score": 0.015625,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260328054046_dae2edb7-chunk-0",
+      "document_id": "doc_20260328054046_dae2edb7",
+      "document_name": "docx_embedded_ocr_ui.docx",
+      "snippet": "DOCX正文验证段落",
+      "score": -4.6171875,
+      "source_path": "/app/data/uploads/doc_20260328054046_dae2edb7__docx_embedded_ocr_ui.docx",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5482131,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-18",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "from your branches, which is pretty cool.\n然后可能会有一些路径增强或者RNA速度，但具体深入到什么程度就看你自己的了。不过，深入到一定程度，你就能从你的分支中量化这些东西，这挺酷的。\nOkay, so\n好的，那么\nI'll send you a pdf like usual, and then just work on it and reach out to me throughout the week if you have questions, but other than that, do you have anything, anything for me?\n我像往常一样给你发个PDF，然后你就可以开始做了，这周如果有问题随时联系我。除此之外，你还有什么需要我帮忙的吗？\nOkay, so I'll send your pdf over and then you can get started on it, okay.\n好的，我把你的PDF发给你，然后你就可以开始了，行吗？\nAll right, I me anything I goodnna see ya.\n好的，我什么都愿意，我要见你。\nOkay.\n好的。\nSee, the recording has stopped.\n看，录音已经停止了。",
+      "score": -5.421875,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54586554,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "无法找到足够的证据来直接从提供的上下文中生成关于CPPS（慢性盆腔疼痛综合征）的表格并提供一个可下载的DOCX文件链接。提供的上下文主要讨论了技术架构和部署保障层的内容，并没有包含关于CPPS的具体信息以生成所需的表格。因此，不能满足您的请求。",
+    "answer_chars": 122,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

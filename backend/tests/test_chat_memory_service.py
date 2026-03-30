@@ -93,6 +93,18 @@ class _FakeRetrievalService:
             ],
         )
 
+    def search_candidates(
+        self,
+        request: RetrievalRequest,
+        *,
+        auth_context: AuthContext | None = None,
+        profile=None,
+        truncate_to_top_k: bool = True,
+    ):
+        response = self.search(request, auth_context=auth_context)
+        limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(response.results))
+        return response.results[:limit], response.mode, profile
+
 
 class _FakeGenerationClient:
     def __init__(self) -> None:
@@ -179,7 +191,7 @@ def test_chat_service_uses_recent_memory_for_follow_up_question(tmp_path: Path) 
 
     assert first_response.mode == "rag"
     assert second_response.mode == "rag"
-    assert fake_generation_client.last_question == "基于上一轮问题“悖论放松法是什么？”，第二步是什么？"
+    assert fake_generation_client.last_question == "关于悖论放松法，第二步是什么？"
     assert fake_generation_client.last_memory_text is not None
     assert "悖论放松法是什么" in fake_generation_client.last_memory_text
 
@@ -210,3 +222,501 @@ def test_chat_service_rewrites_short_follow_up_question_with_recent_topic(tmp_pa
     assert retrieval_service.queries[0] == "解释一下CPPS"
     assert retrieval_service.queries[1] == "请更详细地解释CPPS。"
     assert fake_generation_client.last_question == "请更详细地解释CPPS。"
+
+
+def test_chat_service_uses_anchor_question_for_multi_turn_short_follow_up(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="解释一下CPPS", session_id="sess_portal_cpps_anchor"),
+        auth_context=auth_context,
+    )
+    chat_service.answer(
+        ChatRequest(question="更详细一点", session_id="sess_portal_cpps_anchor"),
+        auth_context=auth_context,
+    )
+    third_response = chat_service.answer(
+        ChatRequest(question="那第二步呢？", session_id="sess_portal_cpps_anchor"),
+        auth_context=auth_context,
+    )
+
+    assert third_response.mode == "rag"
+    assert retrieval_service.queries[2] == "关于CPPS，第二步是什么？"
+    assert fake_generation_client.last_question == "关于CPPS，第二步是什么？"
+
+
+def test_chat_service_rewrites_detail_follow_up_for_suffix_subject_question(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_suffix"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="更详细一点", session_id="sess_portal_cpps_suffix"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "请更详细地解释CPPS。"
+    assert fake_generation_client.last_question == "请更详细地解释CPPS。"
+
+
+def test_chat_service_rewrites_detail_follow_up_for_process_question(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="E204怎么处理？", session_id="sess_portal_e204_process"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="更详细一点", session_id="sess_portal_e204_process"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "请更详细地说明E204该怎么处理。"
+    assert fake_generation_client.last_question == "请更详细地说明E204该怎么处理。"
+
+
+def test_chat_service_rewrites_meaning_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_meaning"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="这个是什么意思", session_id="sess_portal_cpps_meaning"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS是什么意思？"
+    assert fake_generation_client.last_question == "CPPS是什么意思？"
+
+
+def test_chat_service_rewrites_why_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_why"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="为什么会这样", session_id="sess_portal_cpps_why"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "为什么会出现CPPS？"
+    assert fake_generation_client.last_question == "为什么会出现CPPS？"
+
+
+def test_chat_service_rewrites_how_follow_up_back_to_process_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="E204怎么处理？", session_id="sess_portal_e204_how"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="那怎么处理", session_id="sess_portal_e204_how"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "E204该怎么处理？"
+    assert fake_generation_client.last_question == "E204该怎么处理？"
+
+
+def test_chat_service_rewrites_cause_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_cause"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="这是什么原因", session_id="sess_portal_cpps_cause"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "为什么会出现CPPS？"
+    assert fake_generation_client.last_question == "为什么会出现CPPS？"
+
+
+def test_chat_service_rewrites_prevent_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_prevent"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="那要怎么预防", session_id="sess_portal_cpps_prevent"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "如何预防CPPS？"
+    assert fake_generation_client.last_question == "如何预防CPPS？"
+
+
+def test_chat_service_rewrites_prevent_follow_up_for_process_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="E204怎么处理？", session_id="sess_portal_e204_prevent"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="那要怎么避免", session_id="sess_portal_e204_prevent"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "如何避免E204再次发生？"
+    assert fake_generation_client.last_question == "如何避免E204再次发生？"
+
+
+def test_chat_service_rewrites_impact_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_impact"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="会怎么样", session_id="sess_portal_cpps_impact"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS会怎么样？"
+    assert fake_generation_client.last_question == "CPPS会怎么样？"
+
+
+def test_chat_service_rewrites_impact_detail_follow_up_back_to_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS是什么？", session_id="sess_portal_cpps_impact_detail"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="有什么影响", session_id="sess_portal_cpps_impact_detail"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS有什么影响？"
+    assert fake_generation_client.last_question == "CPPS有什么影响？"
+
+
+def test_chat_service_rewrites_untreated_impact_follow_up_for_process_subject(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="E204怎么处理？", session_id="sess_portal_e204_impact"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="不处理会怎么样", session_id="sess_portal_e204_impact"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "E204不处理会怎么样？"
+    assert fake_generation_client.last_question == "E204不处理会怎么样？"
+
+
+def test_chat_service_rewrites_compare_follow_up_back_to_anchor_question(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_cpps_compare"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="有什么区别", session_id="sess_portal_cpps_compare"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS有什么区别？"
+    assert fake_generation_client.last_question == "CPPS和PPS有什么区别？"
+
+
+def test_chat_service_rewrites_compare_follow_up_with_previous_reference(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="E204和E205有什么区别？", session_id="sess_portal_e204_compare"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="和前面的区别是什么", session_id="sess_portal_e204_compare"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "E204和E205有什么区别？"
+    assert fake_generation_client.last_question == "E204和E205有什么区别？"
+
+
+def test_chat_service_rewrites_compare_follow_up_for_pronoun_pair(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_compare_pronoun"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="那两者呢", session_id="sess_portal_compare_pronoun"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS有什么区别？"
+    assert fake_generation_client.last_question == "CPPS和PPS有什么区别？"
+
+
+def test_chat_service_rewrites_compare_follow_up_for_more_specific_comparison(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_compare_specific"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="哪个更常见", session_id="sess_portal_compare_specific"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS哪个更常见？"
+    assert fake_generation_client.last_question == "CPPS和PPS哪个更常见？"
+
+
+def test_chat_service_rewrites_compare_follow_up_for_two_items_pronoun(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_compare_two_items"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="那两个呢", session_id="sess_portal_compare_two_items"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS有什么区别？"
+    assert fake_generation_client.last_question == "CPPS和PPS有什么区别？"
+
+
+def test_chat_service_rewrites_compare_follow_up_for_which_one_variant(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_compare_which_one"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="哪一个更适合", session_id="sess_portal_compare_which_one"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS哪一个更适合？"
+    assert fake_generation_client.last_question == "CPPS和PPS哪一个更适合？"
+
+
+def test_chat_service_rewrites_compare_follow_up_for_which_kind_variant(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    ensure_data_directories(settings)
+    auth_context = _build_auth_context()
+    memory_service = ChatMemoryService(settings)
+    retrieval_service = _FakeRetrievalService()
+    fake_generation_client = _FakeGenerationClient()
+    chat_service = ChatService(settings, chat_memory_service=memory_service)
+
+    chat_service.retrieval_service = retrieval_service
+    chat_service.generation_client = fake_generation_client  # type: ignore[assignment]
+
+    chat_service.answer(
+        ChatRequest(question="CPPS和PPS有什么区别？", session_id="sess_portal_compare_which_kind"),
+        auth_context=auth_context,
+    )
+    second_response = chat_service.answer(
+        ChatRequest(question="哪种更常见", session_id="sess_portal_compare_which_kind"),
+        auth_context=auth_context,
+    )
+
+    assert second_response.mode == "rag"
+    assert retrieval_service.queries[1] == "CPPS和PPS哪种更常见？"
+    assert fake_generation_client.last_question == "CPPS和PPS哪种更常见？"

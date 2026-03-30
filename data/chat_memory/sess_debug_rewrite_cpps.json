@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_debug_rewrite_cpps",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:11:16.856603Z",
+  "turns": [
+    {
+      "turn_id": "turn_f722b7fcef87",
+      "asked_at": "2026-03-30T03:11:16.856587Z",
+      "question": "这个是什么意思",
+      "answer": "这个问题没有提供足够的背景信息来直接回答“这个是什么意思”。从提供的上下文来看，无法确定具体指的是哪一部分内容或概念。因此，不能找到足够的证据来解释“这个”所指的具体含义。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

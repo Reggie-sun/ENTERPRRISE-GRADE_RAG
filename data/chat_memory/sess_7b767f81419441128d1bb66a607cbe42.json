@@ -1,0 +1,36 @@
+{
+  "session_id": "sess_7b767f81419441128d1bb66a607cbe42",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-03-30T05:57:26.267614Z",
+  "turns": [
+    {
+      "turn_id": "turn_04ee095f70fe",
+      "asked_at": "2026-03-30T05:56:54.256801Z",
+      "question": "说明一下倒角标准及规范",
+      "answer": "你不能找到关于倒角标准及规范的足够证据。提供的上下文中没有提及任何有关倒角的标准或规范。",
+      "response_mode": "rag",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "citation_count": 1
+    },
+    {
+      "turn_id": "turn_fb24de3d4808",
+      "asked_at": "2026-03-30T05:57:19.450589Z",
+      "question": "如何判断零件可不可以倒角",
+      "answer": "你不能找到关于倒角标准及规范的足够证据。提供的上下文中没有提及任何有关倒角的标准或规范。",
+      "response_mode": "rag",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "citation_count": 1
+    },
+    {
+      "turn_id": "turn_c37efb9f73f7",
+      "asked_at": "2026-03-30T05:57:26.267607Z",
+      "question": "如何判断零件可不可以倒角",
+      "answer": "你不能找到关于倒角标准及规范的足够证据。提供的上下文中没有提及任何有关倒角的标准或规范。",
+      "response_mode": "rag",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "citation_count": 1
+    }
+  ]
+}

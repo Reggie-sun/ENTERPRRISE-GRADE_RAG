@@ -76,6 +76,12 @@ class DocumentFilePayload:
     content: bytes | None = None
 
 
+@dataclass(frozen=True)
+class DepartmentPriorityRetrievalScope:
+    department_document_ids: list[str]
+    global_document_ids: list[str]
+
+
 def _dead_letter_error_code(base_error_code: IngestBaseErrorCode) -> str:  # 给基础错误码统一追加 dead_letter 后缀。
     return f"{base_error_code}{DEAD_LETTER_ERROR_SUFFIX}"  # 返回标准化 dead_letter 错误码。
 
@@ -964,6 +970,42 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
             readability[doc_id] = self._can_read_document(record, auth_context)
         return readability
 
+    def build_department_priority_retrieval_scope(
+        self,
+        auth_context: AuthContext | None,
+    ) -> DepartmentPriorityRetrievalScope | None:
+        if auth_context is None:
+            return None
+        if auth_context.role.data_scope == "global":
+            return None
+
+        current_department_id = auth_context.department.department_id
+        department_document_ids: list[str] = []
+        global_document_ids: list[str] = []
+
+        for record in self._list_document_records():
+            if record.status == "deleted":
+                continue
+            if not self._can_read_document(record, auth_context):
+                continue
+
+            record_departments = self._normalize_department_scope(record.department_ids, record.department_id)
+            is_department_match = current_department_id in record_departments if record_departments else False
+            is_global_visible = record.visibility in {"public", "role"} or not record_departments
+            is_cross_department_allowed = (
+                not self.settings.department_query_isolation_enabled and not is_department_match
+            )
+
+            if is_department_match:
+                department_document_ids.append(record.doc_id)
+            if is_global_visible or is_cross_department_allowed:
+                global_document_ids.append(record.doc_id)
+
+        return DepartmentPriorityRetrievalScope(
+            department_document_ids=department_document_ids,
+            global_document_ids=global_document_ids,
+        )
+
     def ensure_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> None:  # 按 doc_id 统一抛出读权限错误。
         record = self._load_document_record(doc_id)
         self._ensure_can_read_document(record, auth_context)
@@ -1024,6 +1066,8 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
     def _ensure_department_filter_allowed(self, department_id: str | None, auth_context: AuthContext | None) -> None:
         if auth_context is None or department_id is None:
             return
+        if not self.settings.department_query_isolation_enabled:
+            return
         if auth_context.role.data_scope == "global":
             return
         if department_id not in auth_context.accessible_department_ids:
@@ -1052,6 +1096,8 @@ class DocumentService:  # 封装文档上传、列表和入库的业务逻辑。
         if record.visibility == "role" and record.role_ids and auth_context.user.role_id not in record.role_ids:
             return False
         if record.visibility == "public":
+            return True
+        if not self.settings.department_query_isolation_enabled:
             return True
         record_departments = self._normalize_department_scope(record.department_ids, record.department_id)
         if not record_departments:  # 兼容旧数据：没有部门字段时默认当前租户内可读。

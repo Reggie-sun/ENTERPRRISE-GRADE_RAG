@@ -5,13 +5,22 @@
 
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';  // 引入图标。
-import { Card, Button, StatusPill, Textarea, Input, ResultCard } from '@/components';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/auth';
+import {
+  RERANK_CANARY_DECISION_FILTERS,
+  getRerankDecisionPresentation,
+  type RerankCanaryDecisionFilter,
+} from '@/app/rerankCanaryPresentation';
+import { Card, Button, StatusPill, Textarea, Input, ResultCard, EvidenceSourceSummary } from '@/components';
 import {
   compareRetrievalRerank,
   formatApiError,
+  getRetrievalRerankCanary,
   getSystemConfig,
   searchDocuments,
   updateSystemConfig,
+  type RerankCanaryListResponse,
   type RetrievalRerankCompareResponse,
   type RetrievalResponse,
   type RetrievedChunk,
@@ -59,6 +68,8 @@ export function RetrievalPanel({
   currentDocId,
   currentJobStatus,
 }: RetrievalPanelProps) {
+  const navigate = useNavigate();
+  const { canAccessAdmin } = useAuth();
   const normalizedDocId = currentDocId?.trim();
 
   // 表单状态。
@@ -72,6 +83,10 @@ export function RetrievalPanel({
   const [comparisonStatus, setComparisonStatus] = useState<PanelStatus>('idle');
   const [comparisonData, setComparisonData] = useState<RetrievalRerankCompareResponse | null>(null);
   const [comparisonError, setComparisonError] = useState<string>('');
+  const [canaryStatus, setCanaryStatus] = useState<PanelStatus>('idle');
+  const [canaryData, setCanaryData] = useState<RerankCanaryListResponse | null>(null);
+  const [canaryError, setCanaryError] = useState<string>('');
+  const [canaryDecisionFilter, setCanaryDecisionFilter] = useState<RerankCanaryDecisionFilter>('all');
   const [strategyActionStatus, setStrategyActionStatus] = useState<PanelStatus>('idle');
   const [strategyActionMessage, setStrategyActionMessage] = useState<string>('');
 
@@ -83,15 +98,55 @@ export function RetrievalPanel({
     setComparisonData(null);
     setComparisonError('');
     setComparisonStatus('idle');
+    setCanaryData(null);
+    setCanaryError('');
+    setCanaryStatus('idle');
     setStrategyActionStatus('idle');
     setStrategyActionMessage('');
   }, [resetSignal]);
+
+  useEffect(() => {
+    void loadRecentCanary();
+  }, [canaryDecisionFilter]);
 
   const buildRequest = () => ({
     query: query.trim(),
     top_k: topK,
     document_id: normalizedDocId || undefined,
   });
+
+  const buildSampleRequest = (sample: NonNullable<RerankCanaryListResponse['items']>[number]) => ({
+    query: sample.query.trim(),
+    top_k: topK,
+    document_id: normalizedDocId || sample.target_id || undefined,
+  });
+
+  const formatLocalTime = (value: string | null | undefined) => {
+    if (!value) {
+      return '-';
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+    return parsed.toLocaleString('zh-CN', { hour12: false });
+  };
+
+  const loadRecentCanary = async () => {
+    setCanaryStatus('loading');
+    setCanaryError('');
+    try {
+      const result = await getRetrievalRerankCanary(
+        8,
+        canaryDecisionFilter === 'all' ? undefined : canaryDecisionFilter,
+      );
+      setCanaryData(result);
+      setCanaryStatus('success');
+    } catch (err) {
+      setCanaryError(formatApiError(err, 'canary 样本加载'));
+      setCanaryStatus('error');
+    }
+  };
 
   // 执行检索。
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,8 +186,30 @@ export function RetrievalPanel({
       const result = await compareRetrievalRerank(buildRequest());
       setComparisonData(result);
       setComparisonStatus('success');
+      await loadRecentCanary();
     } catch (err) {
       setComparisonError(formatApiError(err, '排序策略对比'));
+      setComparisonStatus('error');
+    }
+  };
+
+  const handleLoadSampleQuery = (sample: NonNullable<RerankCanaryListResponse['items']>[number]) => {
+    setQuery(sample.query);
+    setComparisonError('');
+  };
+
+  const handleReplaySampleCompare = async (sample: NonNullable<RerankCanaryListResponse['items']>[number]) => {
+    setQuery(sample.query);
+    setComparisonStatus('loading');
+    setComparisonError('');
+
+    try {
+      const result = await compareRetrievalRerank(buildSampleRequest(sample));
+      setComparisonData(result);
+      setComparisonStatus('success');
+      await loadRecentCanary();
+    } catch (err) {
+      setComparisonError(formatApiError(err, '样本重跑对比'));
       setComparisonStatus('error');
     }
   };
@@ -156,6 +233,7 @@ export function RetrievalPanel({
       });
       const refreshedComparison = await compareRetrievalRerank(buildRequest());
       setComparisonData(refreshedComparison);
+      await loadRecentCanary();
       setStrategyActionStatus('success');
       setStrategyActionMessage(
         nextStrategy === 'provider'
@@ -220,9 +298,24 @@ export function RetrievalPanel({
   const renderChunkCardBody = (item: RetrievedChunk, previewLimit: number) => (
     <>
       {item.text.length > previewLimit ? `${item.text.slice(0, previewLimit)}...` : item.text}
+      <EvidenceSourceSummary
+        retrievalStrategy={item.retrieval_strategy}
+        ocrUsed={item.ocr_used}
+        parserName={item.parser_name}
+        pageNo={item.page_no}
+        ocrConfidence={item.ocr_confidence}
+        qualityScore={item.quality_score}
+      />
       {debugMetrics(item)}
     </>
   );
+
+  const comparisonDecisionPresentation = comparisonData
+    ? getRerankDecisionPresentation(comparisonData.recommendation.decision, { canAccessAdmin })
+    : null;
+  const canaryFilterPresentation = canaryDecisionFilter === 'all'
+    ? null
+    : getRerankDecisionPresentation(canaryDecisionFilter, { canAccessAdmin });
 
   return (
     <Card className="col-span-6 max-md:col-span-12">
@@ -441,18 +534,33 @@ export function RetrievalPanel({
             <div className="rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.8)] p-4">
               <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
                 <strong className="text-ink">默认策略切换建议</strong>
-                <StatusPill tone={comparisonData.recommendation.should_switch_default_strategy ? 'ok' : 'warn'}>
-                  {comparisonData.recommendation.decision}
+                <StatusPill tone={comparisonDecisionPresentation?.tone || 'default'}>
+                  {comparisonDecisionPresentation?.label || comparisonData.recommendation.decision}
                 </StatusPill>
               </div>
+              <p className="m-0 mt-2 text-sm font-semibold text-ink">
+                {comparisonDecisionPresentation?.title || '当前样本已生成判读结论。'}
+              </p>
+              <p className="m-0 mt-2 text-xs uppercase tracking-[0.18em] text-ink-soft">
+                {comparisonData.recommendation.decision}
+              </p>
               <p className="m-0 mt-2 text-sm text-ink-soft leading-relaxed">
-                {comparisonData.recommendation.message}
+                {comparisonDecisionPresentation?.summary || comparisonData.recommendation.message}
+              </p>
+              <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3 text-sm text-ink-soft">
+                <strong className="block text-ink">推荐动作</strong>
+                <p className="m-0 mt-2 leading-relaxed">
+                  {comparisonDecisionPresentation?.recommendedAction || '先结合最新样本再判断是否需要切默认策略。'}
+                </p>
+              </div>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                canary 样本：{comparisonData.canary_sample_id || '未记录'}
               </p>
               <p className="m-0 mt-2 text-sm text-ink-soft">
-                建议操作：{comparisonData.recommendation.should_switch_default_strategy ? '切换到模型排序默认' : '继续保持规则基线默认'}
+                后端说明：{comparisonData.recommendation.message}
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
-                {comparisonData.route_status.default_strategy !== 'provider' && comparisonData.recommendation.should_switch_default_strategy ? (
+                {comparisonData.recommendation.decision === 'eligible' && comparisonData.route_status.default_strategy !== 'provider' && canAccessAdmin ? (
                   <Button
                     type="button"
                     loading={strategyActionStatus === 'loading'}
@@ -461,7 +569,7 @@ export function RetrievalPanel({
                     切换到模型排序默认
                   </Button>
                 ) : null}
-                {comparisonData.route_status.default_strategy === 'provider' ? (
+                {comparisonData.recommendation.decision === 'rollback_active' && comparisonData.route_status.default_strategy === 'provider' && canAccessAdmin ? (
                   <Button
                     type="button"
                     variant="ghost"
@@ -471,7 +579,32 @@ export function RetrievalPanel({
                     恢复为规则基线默认
                   </Button>
                 ) : null}
+                {comparisonData.recommendation.decision === 'hold' ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    loading={comparisonStatus === 'loading'}
+                    onClick={() => void handleCompareRerank()}
+                  >
+                    再跑一次当前 query
+                  </Button>
+                ) : null}
+                {comparisonData.recommendation.decision === 'provider_active' ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    loading={comparisonStatus === 'loading'}
+                    onClick={() => void handleCompareRerank()}
+                  >
+                    刷新当前对比
+                  </Button>
+                ) : null}
               </div>
+              {!canAccessAdmin && (comparisonData.recommendation.decision === 'eligible' || comparisonData.recommendation.decision === 'rollback_active') ? (
+                <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
+                  当前账号没有系统配置写权限；如果样本判读成立，需要系统管理员执行默认策略切换或回滚。
+                </p>
+              ) : null}
               {strategyActionMessage ? (
                 <div className="mt-3">
                   <StatusPill tone={
@@ -595,6 +728,185 @@ export function RetrievalPanel({
                 )}
               </div>
             ) : null}
+
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+                <div>
+                  <h4 className="m-0 text-base font-semibold text-ink">最近 canary 样本</h4>
+                  <p className="m-0 mt-1 text-sm text-ink-soft">
+                    这里只显示最近真实 compare 样本，方便判断 provider/heuristic 的默认策略是否值得切换。
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="inline-flex items-center gap-2 text-sm text-ink-soft">
+                    <span>decision</span>
+                    <select
+                      value={canaryDecisionFilter}
+                      onChange={(e) => setCanaryDecisionFilter(e.target.value as RerankCanaryDecisionFilter)}
+                      className="h-10 rounded-2xl border border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.92)] px-3 text-sm text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                    >
+                      {RERANK_CANARY_DECISION_FILTERS.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {item.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <StatusPill tone={
+                    canaryStatus === 'success'
+                      ? 'ok'
+                      : canaryStatus === 'loading'
+                        ? 'warn'
+                        : canaryStatus === 'error'
+                          ? 'error'
+                          : 'default'
+                  }>
+                    {canaryStatus === 'success'
+                      ? `最近 ${canaryData?.items.length ?? 0} 条`
+                      : canaryStatus === 'loading'
+                        ? '正在加载'
+                        : canaryStatus === 'error'
+                          ? '加载失败'
+                          : '未加载'}
+                  </StatusPill>
+                  <Button type="button" variant="ghost" onClick={() => void loadRecentCanary()} loading={canaryStatus === 'loading'}>
+                    刷新样本
+                  </Button>
+                </div>
+              </div>
+
+              {canaryError ? (
+                <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)]">
+                  <pre className="m-0 whitespace-pre-wrap break-words font-mono text-sm text-ink">{canaryError}</pre>
+                </div>
+              ) : null}
+
+              {!canaryError && canaryStatus === 'success' && !(canaryData?.items.length) ? (
+                <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">
+                  当前筛选下没有 canary 样本。先执行一次 rerank 对比，或切换 decision 筛选再查看。
+                </div>
+              ) : null}
+
+              {canaryFilterPresentation && canaryData?.items.length ? (
+                <div className="rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.8)] p-4">
+                  <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+                    <div>
+                      <strong className="text-ink">当前 decision 筛选说明</strong>
+                      <p className="m-0 mt-2 text-sm font-semibold text-ink">{canaryFilterPresentation.title}</p>
+                    </div>
+                    <StatusPill tone={canaryFilterPresentation.tone}>
+                      {canaryFilterPresentation.label} / {canaryData.items.length} 条
+                    </StatusPill>
+                  </div>
+                  <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
+                    {canaryFilterPresentation.summary}
+                  </p>
+                  <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3 text-sm text-ink-soft">
+                    <strong className="block text-ink">推荐动作</strong>
+                    <p className="m-0 mt-2 leading-relaxed">{canaryFilterPresentation.recommendedAction}</p>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setCanaryDecisionFilter('all')}
+                    >
+                      清除筛选
+                    </Button>
+                    {canaryFilterPresentation.pageActionLabel && canaryFilterPresentation.pageActionPath && canaryFilterPresentation.pageActionPath !== '/workspace/retrieval' ? (
+                      <Button
+                        type="button"
+                        onClick={() => navigate(canaryFilterPresentation.pageActionPath as string)}
+                      >
+                        {canaryFilterPresentation.pageActionLabel}
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {canaryData?.items.map((sample) => {
+                const configuredTopChunkIds = Array.isArray(sample.details.configured_top_chunk_ids)
+                  ? (sample.details.configured_top_chunk_ids as string[])
+                  : [];
+                const heuristicTopChunkIds = Array.isArray(sample.details.heuristic_top_chunk_ids)
+                  ? (sample.details.heuristic_top_chunk_ids as string[])
+                  : [];
+                const providerTopChunkIds = Array.isArray(sample.details.provider_candidate_top_chunk_ids)
+                  ? (sample.details.provider_candidate_top_chunk_ids as string[])
+                  : [];
+                const isLatestCompared = comparisonData?.canary_sample_id === sample.sample_id;
+                const sampleDecisionPresentation = getRerankDecisionPresentation(sample.recommendation.decision, { canAccessAdmin });
+                return (
+                  <div
+                    key={sample.sample_id}
+                    className={`rounded-2xl border p-4 text-sm ${isLatestCompared ? 'border-[rgba(182,70,47,0.38)] bg-[rgba(255,248,245,0.88)]' : 'border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.8)]'}`}
+                  >
+                    <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
+                      <div>
+                        <strong className="text-ink">{sample.sample_id}</strong>
+                        <p className="m-0 mt-1 text-ink-soft">{formatLocalTime(sample.occurred_at)}</p>
+                      </div>
+                      <StatusPill tone={sampleDecisionPresentation.tone}>
+                        {sampleDecisionPresentation.label}
+                      </StatusPill>
+                    </div>
+                    <p className="m-0 mt-3 text-sm font-semibold text-ink">{sampleDecisionPresentation.title}</p>
+                    <p className="m-0 mt-1 text-xs uppercase tracking-[0.18em] text-ink-soft">
+                      {sample.recommendation.decision}
+                    </p>
+                    <p className="m-0 mt-3 text-ink leading-relaxed">{sample.query}</p>
+                    <div className="mt-3 grid gap-1 text-ink-soft">
+                      <p className="m-0">mode: {sample.mode} / candidate {sample.candidate_count} / rerank {sample.rerank_top_n}</p>
+                      <p className="m-0">configured: {sample.configured_provider} / {sample.configured_strategy}</p>
+                      <p className="m-0">effective: {sample.route_status.effective_provider} / {sample.route_status.effective_strategy}</p>
+                      <p className="m-0">provider candidate: {sample.provider_candidate_strategy || '-'}{sample.provider_candidate_error_message ? ` / ${sample.provider_candidate_error_message}` : ''}</p>
+                    </div>
+                    <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3 text-sm text-ink-soft">
+                      <strong className="block text-ink">推荐动作</strong>
+                      <p className="m-0 mt-2 leading-relaxed">{sampleDecisionPresentation.recommendedAction}</p>
+                    </div>
+                    <p className="m-0 mt-3 text-ink-soft leading-relaxed">判读说明：{sample.recommendation.message}</p>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => handleLoadSampleQuery(sample)}
+                      >
+                        载入这条 query
+                      </Button>
+                      <Button
+                        type="button"
+                        loading={comparisonStatus === 'loading'}
+                        onClick={() => void handleReplaySampleCompare(sample)}
+                      >
+                        按样本重跑对比
+                      </Button>
+                      {sampleDecisionPresentation.pageActionLabel && sampleDecisionPresentation.pageActionPath && sampleDecisionPresentation.pageActionPath !== '/workspace/retrieval' ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => navigate(sampleDecisionPresentation.pageActionPath as string)}
+                        >
+                          {sampleDecisionPresentation.pageActionLabel}
+                        </Button>
+                      ) : null}
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-ink-soft">
+                      <span className="inline-flex items-center rounded-full bg-[rgba(23,32,42,0.06)] px-2 py-1">
+                        configured top: {configuredTopChunkIds.slice(0, 3).join(', ') || '-'}
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-[rgba(23,32,42,0.06)] px-2 py-1">
+                        heuristic top: {heuristicTopChunkIds.slice(0, 3).join(', ') || '-'}
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-[rgba(23,32,42,0.06)] px-2 py-1">
+                        provider top: {providerTopChunkIds.slice(0, 3).join(', ') || '-'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </>
         ) : (
           <div className="p-4 rounded-xl border border-dashed border-[rgba(23,32,42,0.14)] bg-[rgba(255,255,255,0.55)] text-sm text-ink-soft">

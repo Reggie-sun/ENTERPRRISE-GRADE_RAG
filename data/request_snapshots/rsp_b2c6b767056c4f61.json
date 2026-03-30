@@ -1,0 +1,173 @@
+{
+  "snapshot_id": "rsp_b2c6b767056c4f61",
+  "trace_id": "trc_79bd03a3eddc42d8",
+  "request_id": "req_a5f2c6cedb8044fa",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:55:46.996776Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "会怎么样",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_live_impact_001",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: CPPS是什么？\nAssistant: Generation model is unavailable. Returning evidence-based summary:\n1. 慢性盆腔疼痛（症） ” 、“ 盆腔疼痛（症） ” 和 “ CPPS （慢性盆腔疼 痛综合征的英文简写） ” 都是同义词， 指的是上面提到的 所 有症 状 。 传统名 称和诊断类别 用千男性 ·前 列腺炎（ 国立健康研究所 的类别 ） L急 性细菌性前列腺炎 2． 慢性细菌性前列腺炎 3a. CPPS 非细菌性炎 性 33  34 盆腔之痛 3b. CP...\n2. 习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做 四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的 呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分 之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无...",
+  "rewrite": {
+    "status": "applied",
+    "original_question": "会怎么样",
+    "rewritten_question": "CPPS会怎么样？",
+    "details": {}
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-470",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "的另 一个特 点是：前列腺排空\n能力最 差的老 鼠前列腺腺叶表现 出更多的炎症 。 这是极少数的尝试记录生\n理和微观变化的行为效应的实验之一。\n米勒博士仅仅使用心理 学疗法就让他86%\n的前列腺炎 患者症状得到改善\n\n慢性盆腔疼痛 相关的 科学研究 367\n19 88 年 ， 哈里 ·米 勒 (Dr. Harry C. Miller) 对 218 名诉称有典型 CPPS\n症状的患者进行了研究。 他对百分之 六十的患者 (1 34 名） 使用了压力控\n制方法并进行了认真仔细的随 访。 单独使用这种心理方法就让 86％ 的患者\n自述病情有了一些或者很大的好转或者甚至被治愈了。 最重要的是， 本组\n患者中完全没有使用到反复的细菌培养、 前列腺按摩、 仪器治 疗或药物，\n而仅仅 只接受 压力控 制疗法。\n在斯坦 福大学进行的皮质醇和CPPS关系的研究\n最近， 我们对 45 名 CPPS 患者和2 0名 正常 同 龄人进行了对比研究。\n我们发现这些 患者明显感 觉到更多的压力和焦虑。 我们还 发现他们早上醒\n来时唾液中的皮质醇含量上升 更快。 然后， 我们跟进了这一现象， 并邀请\n这些病人来实验 室参 加急性 压力 测试。 与正常对照组男 性 相比， 我们的患\n者下午时大脑中肾 上腺产生前体 (ACTH) 的能力受 到压抑， 从而影响 到\n皮质醇的 产生。 也许， CPPS 男性 下午的迟钝化或皮质醇状况表明他们大脑\n的皮质醇产生机制出现了疲劳。\n治疗和 临床研究试验\n美国国 家健康研究所 (NIH) 积极推进对慢性 前列腺炎和慢性 盆腔 疼\n痛综合征的临 床研究。 他们希 望找 到一个满 意 的治疗方式。 治疗方式的进\n步需要有记录的结果 与强有力 的证据。 最好的证据是当 患者服用有效药物\n或者接受 某种治疗方法的同 时， 有随 机分配的类似组 在不知情的情况下接\n受假",
+      "score": -0.08905029296875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54024637,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": -0.393310546875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5065168,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-45",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "四个星 期才有一次。 而这之外的所 有时间里我都\n很正常。 我期望有 一天能完全正常。 最好是： 当 我感觉到病情复发的时候\n不会惊慌， 而是会按照疗法进行 自 我治疗。 我告诉自己不要与引起 我疼痛\n的那些压力 抗争。 每次复发都会在 一天之内结束。 自我治疗非常耗时， 我\n刚开始很担心自己怎么 能把它安插到我巳 经非常繁忙的时间表 里。 但是我\n做到了。 而且我每天下班回到 家的时候都对它非常期待。 我还没有重新开\n\n病人 自 己讲述的故事 13\n始我之前的那些锻炼身体的活动 ， 如背包旅行、 骑自行 车或 普拉提 ， 但我\n肯定有 一天我会的。 知道这一点让我可以忍受 这段休息的时间。 现在我所\n做的锻炼仅 限于走路和做瑜伽。\n我从 所有这一 切中得到的 教训是 ： 我没有很好的处理生活中的压力，\n而我的身体和头脑都不可能承担长 期的压力。 我继续减少 工作中的压力 ，\n并且开始采取措施， 准备重新规划自己的 职业生涯， 做好换工作的准备。\n我现在 巳经可以把我的慢性盆腔疼痛综合征 (C PPS ) 看作上天给 我的一份\n礼物。 如果我没有被迫重新审视 自己的 生活 ， 我可能永远都不会为了身体\n健康而做这些改变。 我永远感谢盆腔疼痛研究中心的工作人员 ， 是他们教\n给了 我从 CPPS中 恢复健康的方法。\n一位男性病人在接受治疗六年后讲述的故事\n六年前我第 一次见到怀斯博士 ， 从那以后我们一直保持着联系。 他对\n盆腔疼痛的治疗研究 太伟大了。 每年我都会给 他发一两次 电子邮 件 ， 了解\n他在这方面的新进展。 在这些邮件中 我会问怀斯博 士是否有新的放松录音。\n这些录音 带是我们之间最好的联系。 放下 手边的一切， 使用他的录音带来\n进行放松是真正的享受 。 虽然我的疼痛巳经早就消失不见， 我还是会时常\n听这些录音带 。 我每做完 一段放松训 练都会向 自",
+      "score": -0.615234375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5420791,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-470",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "的另 一个特 点是：前列腺排空\n能力最 差的老 鼠前列腺腺叶表现 出更多的炎症 。 这是极少数的尝试记录生\n理和微观变化的行为效应的实验之一。\n米勒博士仅仅使用心理 学疗法就让他86%\n的前列腺炎 患者症状得到改善\n\n慢性盆腔疼痛 相关的 科学研究 367\n19 88 年 ， 哈里 ·米 勒 (Dr. Harry C. Miller) 对 218 名诉称有典型 CPPS\n症状的患者进行了研究。 他对百分之 六十的患者 (1 34 名） 使用了压力控\n制方法并进行了认真仔细的随 访。 单独使用这种心理方法就让 86％ 的患者\n自述病情有了一些或者很大的好转或者甚至被治愈了。 最重要的是， 本组\n患者中完全没有使用到反复的细菌培养、 前列腺按摩、 仪器治 疗或药物，\n而仅仅 只接受 压力控 制疗法。\n在斯坦 福大学进行的皮质醇和CPPS关系的研究\n最近， 我们对 45 名 CPPS 患者和2 0名 正常 同 龄人进行了对比研究。\n我们发现这些 患者明显感 觉到更多的压力和焦虑。 我们还 发现他们早上醒\n来时唾液中的皮质醇含量上升 更快。 然后， 我们跟进了这一现象， 并邀请\n这些病人来实验 室参 加急性 压力 测试。 与正常对照组男 性 相比， 我们的患\n者下午时大脑中肾 上腺产生前体 (ACTH) 的能力受 到压抑， 从而影响 到\n皮质醇的 产生。 也许， CPPS 男性 下午的迟钝化或皮质醇状况表明他们大脑\n的皮质醇产生机制出现了疲劳。\n治疗和 临床研究试验\n美国国 家健康研究所 (NIH) 积极推进对慢性 前列腺炎和慢性 盆腔 疼\n痛综合征的临 床研究。 他们希 望找 到一个满 意 的治疗方式。 治疗方式的进\n步需要有记录的结果 与强有力 的证据。 最好的证据是当 患者服用有效药物\n或者接受 某种治疗方法的同 时， 有随 机分配的类似组 在不知情的情况下接\n受假",
+      "score": -0.08905029296875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.54024637,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": -0.393310546875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5065168,
+      "lexical_score": null,
+      "fused_score": 0.015625,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-45",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "四个星 期才有一次。 而这之外的所 有时间里我都\n很正常。 我期望有 一天能完全正常。 最好是： 当 我感觉到病情复发的时候\n不会惊慌， 而是会按照疗法进行 自 我治疗。 我告诉自己不要与引起 我疼痛\n的那些压力 抗争。 每次复发都会在 一天之内结束。 自我治疗非常耗时， 我\n刚开始很担心自己怎么 能把它安插到我巳 经非常繁忙的时间表 里。 但是我\n做到了。 而且我每天下班回到 家的时候都对它非常期待。 我还没有重新开\n\n病人 自 己讲述的故事 13\n始我之前的那些锻炼身体的活动 ， 如背包旅行、 骑自行 车或 普拉提 ， 但我\n肯定有 一天我会的。 知道这一点让我可以忍受 这段休息的时间。 现在我所\n做的锻炼仅 限于走路和做瑜伽。\n我从 所有这一 切中得到的 教训是 ： 我没有很好的处理生活中的压力，\n而我的身体和头脑都不可能承担长 期的压力。 我继续减少 工作中的压力 ，\n并且开始采取措施， 准备重新规划自己的 职业生涯， 做好换工作的准备。\n我现在 巳经可以把我的慢性盆腔疼痛综合征 (C PPS ) 看作上天给 我的一份\n礼物。 如果我没有被迫重新审视 自己的 生活 ， 我可能永远都不会为了身体\n健康而做这些改变。 我永远感谢盆腔疼痛研究中心的工作人员 ， 是他们教\n给了 我从 CPPS中 恢复健康的方法。\n一位男性病人在接受治疗六年后讲述的故事\n六年前我第 一次见到怀斯博士 ， 从那以后我们一直保持着联系。 他对\n盆腔疼痛的治疗研究 太伟大了。 每年我都会给 他发一两次 电子邮 件 ， 了解\n他在这方面的新进展。 在这些邮件中 我会问怀斯博 士是否有新的放松录音。\n这些录音 带是我们之间最好的联系。 放下 手边的一切， 使用他的录音带来\n进行放松是真正的享受 。 虽然我的疼痛巳经早就消失不见， 我还是会时常\n听这些录音带 。 我每做完 一段放松训 练都会向 自",
+      "score": -0.615234375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5420791,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "根据提供的上下文，CPPS（慢性盆腔疼痛综合征）的症状可能会因不同的治疗方法而有所改善。例如，哈里·米勒博士通过心理学疗法使86%的前列腺炎患者的症状得到了显著改善。此外，通过怀斯-安德森疗法，大部分适应症病人的症状也大大减少甚至消失。因此，对于患有CPPS的人来说，症状有可能通过适当的治疗得到缓解。",
+    "answer_chars": 151,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

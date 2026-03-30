@@ -116,6 +116,7 @@ def test_auth_login_returns_bearer_token_and_profile(tmp_path) -> None:
     assert payload["user"]["user_id"] == "user_employee_demo"
     assert payload["department"]["department_id"] == "dept_demo"
     assert payload["accessible_department_ids"] == ["dept_demo"]
+    assert payload["department_query_isolation_enabled"] is True
     assert isinstance(payload["access_token"], str) and payload["access_token"]
 
 
@@ -220,3 +221,32 @@ def test_auth_sys_admin_profile_contains_global_department_scope(tmp_path) -> No
     payload = response.json()
     assert payload["user"]["role_id"] == "sys_admin"
     assert payload["accessible_department_ids"] == ["dept_demo", "dept_secondary"]
+
+
+def test_auth_profile_exposes_query_isolation_toggle(tmp_path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_service = AuthService(
+        Settings(
+            _env_file=None,
+            identity_bootstrap_path=identity_service.settings.identity_bootstrap_path,
+            auth_token_secret="test-auth-secret",
+            auth_token_issuer="test-auth-issuer",
+            auth_token_expire_minutes=60,
+            department_query_isolation_enabled=False,
+        ),
+        identity_service=identity_service,
+    )
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/auth/login",
+            json={"username": "employee.demo", "password": "employee-demo-pass"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["department_query_isolation_enabled"] is False

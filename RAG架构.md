@@ -2780,6 +2780,11 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
 
 - `MAIN_CONTRACT_MATRIX.md`
 
+执行口径补充：
+
+- 具体字段名、分页规范、时间格式、错误 envelope、稳定面/诊断面边界，以 `MAIN_CONTRACT_MATRIX.md` 为唯一快速参考
+- 本文档负责解释分层、来源和约束，不再重复承担所有字段枚举的唯一真源职责
+
 统一字段口径：
 
 - 外部统一主字段使用 `document_id`；当前 `documents / ingest` 响应处于收口过渡期，暂时同时返回 `document_id + doc_id`，其中 `doc_id` 仅用于兼容存量前端，后续逐步退出
@@ -2822,6 +2827,7 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
 - `queue`
 - `metadata_store`
 - `ocr`
+- `tokenizer`
 
 当前嵌套字段继续收口为：
 
@@ -2843,6 +2849,10 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
   `provider / language / enabled / ready / pdf_native_text_min_chars / angle_cls_enabled`
 - `ocr` 当前可继续演进的诊断字段：
   `detail`
+- `tokenizer` 的稳定主契约当前应冻结：
+  `provider / model / ready / trust_remote_code`
+- `tokenizer` 当前可继续演进的诊断字段：
+  `detail / error`
 
 `POST /api/v1/auth/login`
 
@@ -2956,6 +2966,7 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
 - `vector_score`
 - `lexical_score`
 - `fused_score`
+- `source_scope`
 - `ocr_confidence`
 - `quality_score`
 
@@ -4796,7 +4807,33 @@ V1 可以先保守，只做标准化和少量 rewrite，不要一开始把 multi
 
 ## 6. 混合召回
 
-这里是检索的核心，分两路并行：
+这里是检索的核心。当前 `V1` 在企业知识库场景下，已经不是单一路径召回，而是“部门优先、全局补充”的两路召回：
+
+- 路 1：当前用户所在部门的文档召回
+- 路 2：当前用户可见的全局文档补充召回
+
+每一路内部仍然复用当前已有的 hybrid retrieval 结构，也就是“向量召回 + 关键词召回”。
+
+### 6.1 部门召回
+
+部门召回只针对当前用户所在部门可读的文档：
+
+- `department_id == current_user.department_id`
+- 同时仍然满足当前租户、版本、ACL、显式 `document_id` 过滤等主约束
+
+这一路的目标不是做严格隔离，而是把“本部门文档”优先抬到候选前列。
+
+### 6.2 全局可见补充召回
+
+全局可见补充召回只查当前用户可读、但不要求属于当前部门的文档：
+
+- `visibility in {public, role}`
+- 或没有部门范围的文档
+- 或当前系统配置允许跨部门读取时的可读文档
+
+这一路的目标是补齐全局知识，而不是覆盖部门优先策略。
+
+### 6.3 每一路内部的 hybrid retrieval
 
 **向量召回**
 
@@ -4829,12 +4866,17 @@ V1 可以先保守，只做标准化和少量 rewrite，不要一开始把 multi
 
 ## 7. 融合与去重
 
-把两路结果合并：
+当前会先完成“每一路内部的 vector + lexical 融合”，再做“部门路 + 全局路”的候选融合。
+
+融合规则：
 
 - 按 chunk_id 去重
-    
-- 用 RRF 融合排序
-    
+- 如果同一 chunk 在两路都出现，保留更高分，并合并来源标记
+- 最终排序保证：
+  - 部门路命中的结果优先
+  - 全局路结果作为补充
+- 结果可带可选诊断字段：
+  `source_scope = department | global | both`
 - 保留候选 topn = 20
     
 

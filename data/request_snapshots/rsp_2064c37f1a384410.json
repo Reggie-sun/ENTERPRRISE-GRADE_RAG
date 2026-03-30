@@ -1,0 +1,174 @@
+{
+  "snapshot_id": "rsp_2064c37f1a384410",
+  "trace_id": "trc_1fcb36c01d7540f6",
+  "request_id": "req_e995b635562b4fc2",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:23:42.687820Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "那要怎么预防",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_491bb58de9c74ee6a06493659053ca4b",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: CPPS是什么？\nAssistant: CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频，尿急，排尿踌躇不畅等。书中提出的观点是这些症状与头痛有相似之处，只是疼痛部位在盆腔而已。",
+  "rewrite": {
+    "status": "applied",
+    "original_question": "那要怎么预防",
+    "rewritten_question": "如何预防CPPS？",
+    "details": {}
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": -0.84375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5572295,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": -2.3046875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52213645,
+      "lexical_score": 5.3752988796862065,
+      "fused_score": 0.029418126757516764
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-470",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "的另 一个特 点是：前列腺排空\n能力最 差的老 鼠前列腺腺叶表现 出更多的炎症 。 这是极少数的尝试记录生\n理和微观变化的行为效应的实验之一。\n米勒博士仅仅使用心理 学疗法就让他86%\n的前列腺炎 患者症状得到改善\n\n慢性盆腔疼痛 相关的 科学研究 367\n19 88 年 ， 哈里 ·米 勒 (Dr. Harry C. Miller) 对 218 名诉称有典型 CPPS\n症状的患者进行了研究。 他对百分之 六十的患者 (1 34 名） 使用了压力控\n制方法并进行了认真仔细的随 访。 单独使用这种心理方法就让 86％ 的患者\n自述病情有了一些或者很大的好转或者甚至被治愈了。 最重要的是， 本组\n患者中完全没有使用到反复的细菌培养、 前列腺按摩、 仪器治 疗或药物，\n而仅仅 只接受 压力控 制疗法。\n在斯坦 福大学进行的皮质醇和CPPS关系的研究\n最近， 我们对 45 名 CPPS 患者和2 0名 正常 同 龄人进行了对比研究。\n我们发现这些 患者明显感 觉到更多的压力和焦虑。 我们还 发现他们早上醒\n来时唾液中的皮质醇含量上升 更快。 然后， 我们跟进了这一现象， 并邀请\n这些病人来实验 室参 加急性 压力 测试。 与正常对照组男 性 相比， 我们的患\n者下午时大脑中肾 上腺产生前体 (ACTH) 的能力受 到压抑， 从而影响 到\n皮质醇的 产生。 也许， CPPS 男性 下午的迟钝化或皮质醇状况表明他们大脑\n的皮质醇产生机制出现了疲劳。\n治疗和 临床研究试验\n美国国 家健康研究所 (NIH) 积极推进对慢性 前列腺炎和慢性 盆腔 疼\n痛综合征的临 床研究。 他们希 望找 到一个满 意 的治疗方式。 治疗方式的进\n步需要有记录的结果 与强有力 的证据。 最好的证据是当 患者服用有效药物\n或者接受 某种治疗方法的同 时， 有随 机分配的类似组 在不知情的情况下接\n受假",
+      "score": -2.6015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5611705,
+      "lexical_score": 5.905178037726759,
+      "fused_score": 0.031544957774465976
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这 些\n症状 被统称为男女慢性盆腔疼痛综合征 (CPPS) ， 症状 表现或单一或多样，\n一般包括直肠、 生殖器或腹部不适或疼痛 、 坐下时不 适或疼痛加剧、 性\n行为时或 之后不适或 疼痛、 尿频、 尿急、 排尿踌躇不 畅等。 在过 去， 这\n些症状 被赋予了许多不同 的名称。\n怀斯－安德森疗法对大部分的适症病人有帮助\n名称的不同 导致了 对于这些病症的致病原因 众说纷纭的 现象。 大多数\n情况下， 医生几乎找不 出有 任何身体上的问 题导致这些症状 ， 大多数或甚\n至所 有的 测试结果 都在正 常范围内。 在本书中 我们将证明 ， 这些症状 都 是\n由同 一个问 题引起 ， 而看 似五花八门的 各种症状 其实只是同 一个深 层次问\n题的 不同表现形 式。 我们研发的 怀斯 － 安德森疗 法不是治标 ， 而是治本。\n正如我们所发表的学术论文中所表明 的那样， 在完 整接受我们的治疗 法培\n训后， 绝大部分适症病人的症状 都大大减少甚至 消失了。\n在这本 书 里我们所使用到的术语\n“\n盆腔之痛\n”\n、“ 男女慢性盆腔疼痛综\n合征\n”\n、\n“\n慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急",
+      "score": -0.84375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5572295,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": -2.3046875,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.52213645,
+      "lexical_score": 5.3752988796862065,
+      "fused_score": 0.029418126757516764,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-470",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "的另 一个特 点是：前列腺排空\n能力最 差的老 鼠前列腺腺叶表现 出更多的炎症 。 这是极少数的尝试记录生\n理和微观变化的行为效应的实验之一。\n米勒博士仅仅使用心理 学疗法就让他86%\n的前列腺炎 患者症状得到改善\n\n慢性盆腔疼痛 相关的 科学研究 367\n19 88 年 ， 哈里 ·米 勒 (Dr. Harry C. Miller) 对 218 名诉称有典型 CPPS\n症状的患者进行了研究。 他对百分之 六十的患者 (1 34 名） 使用了压力控\n制方法并进行了认真仔细的随 访。 单独使用这种心理方法就让 86％ 的患者\n自述病情有了一些或者很大的好转或者甚至被治愈了。 最重要的是， 本组\n患者中完全没有使用到反复的细菌培养、 前列腺按摩、 仪器治 疗或药物，\n而仅仅 只接受 压力控 制疗法。\n在斯坦 福大学进行的皮质醇和CPPS关系的研究\n最近， 我们对 45 名 CPPS 患者和2 0名 正常 同 龄人进行了对比研究。\n我们发现这些 患者明显感 觉到更多的压力和焦虑。 我们还 发现他们早上醒\n来时唾液中的皮质醇含量上升 更快。 然后， 我们跟进了这一现象， 并邀请\n这些病人来实验 室参 加急性 压力 测试。 与正常对照组男 性 相比， 我们的患\n者下午时大脑中肾 上腺产生前体 (ACTH) 的能力受 到压抑， 从而影响 到\n皮质醇的 产生。 也许， CPPS 男性 下午的迟钝化或皮质醇状况表明他们大脑\n的皮质醇产生机制出现了疲劳。\n治疗和 临床研究试验\n美国国 家健康研究所 (NIH) 积极推进对慢性 前列腺炎和慢性 盆腔 疼\n痛综合征的临 床研究。 他们希 望找 到一个满 意 的治疗方式。 治疗方式的进\n步需要有记录的结果 与强有力 的证据。 最好的证据是当 患者服用有效药物\n或者接受 某种治疗方法的同 时， 有随 机分配的类似组 在不知情的情况下接\n受假",
+      "score": -2.6015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5611705,
+      "lexical_score": 5.905178037726759,
+      "fused_score": 0.031544957774465976,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "无法直接从提供的上下文中找到关于如何预防CPPS的具体建议。但是，根据提供的信息可以推断出一些间接的预防措施。例如，由于心理因素在CPPS的发生中扮演重要角色，因此管理好压力水平可能是预防的一种方式。此外，保持良好的生活习惯，比如规律运动和健康饮食，也可能有助于预防CPPS。具体预防措施最好咨询专业医疗人员获取详细指导。",
+    "answer_chars": 161,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

@@ -36,9 +36,14 @@ export function getDepartmentScopeSummary(profile: AuthProfileResponse | null | 
 
   const departmentName = profile.department.department_name;
   const departmentCount = profile.accessible_department_ids.length;
+  const queryIsolationEnabled = profile.department_query_isolation_enabled ?? true;
 
   if (profile.user.role_id === 'sys_admin') {
     return `当前可跨部门查看资料，主部门为 ${departmentName}，已授权 ${departmentCount} 个部门。`;
+  }
+
+  if (!queryIsolationEnabled) {
+    return `当前问答、检索和资料阅读已放开部门查询隔离；你的主部门仍是 ${departmentName}，写入和管理边界保持原部门限制。`;
   }
 
   return `当前仅在 ${departmentName} 范围内查看和使用已授权内容。`;
@@ -48,16 +53,20 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
   const roleId = profile?.user.role_id || 'employee';
   const roleLabel = resolveRoleLabel(roleId);
   const departmentName = profile?.department.department_name || '当前部门';
+  const queryIsolationEnabled = profile?.department_query_isolation_enabled ?? true;
 
   switch (roleId) {
     case 'department_admin':
       return {
         roleLabel,
-        portalTitle: `先服务 ${departmentName} 团队，再处理本部门知识维护。`,
+        portalTitle: queryIsolationEnabled
+          ? `先服务 ${departmentName} 团队，再处理本部门知识维护。`
+          : `先跨部门服务，再处理 ${departmentName} 的知识维护。`,
         portalDescription:
           '门户聚焦日常知识服务，管理中心承接本部门资料维护、服务质量检查和标准流程管理，让业务入口与管理入口各自清晰。',
-        portalHeaderNote:
-          '你当前既可以在门户里直接生成和查看 SOP，也可以进入管理中心维护本部门知识资产。',
+        portalHeaderNote: queryIsolationEnabled
+          ? '你当前既可以在门户里直接生成和查看 SOP，也可以进入管理中心维护本部门知识资产。'
+          : '你当前可跨部门查询资料、问答和 SOP；进入管理中心后仍只维护本部门知识资产。',
         homeFocusTitle: '当前更适合从这三类动作开始',
         homeFocusPoints: [
           '快速回答本部门同事常见问题，减少重复解释。',
@@ -70,12 +79,13 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
           '新同事入岗前应该优先阅读哪些资料？',
         ],
         myCapabilityItems: [
-          '查看并使用本部门已授权的知识资料和 SOP。',
+          queryIsolationEnabled ? '查看并使用本部门已授权的知识资料和 SOP。' : '可跨部门查看资料、SOP 和问答结果，但管理边界仍限制在本部门。',
           '进入管理中心维护本部门资料、问答效果和标准流程。',
           '不能跨部门管理其他团队的资料与配置。',
         ],
-        libraryScopeDescription:
-          '资料中心会优先展示你所在部门可访问的资料，适合先确认最近更新和常用内容。',
+        libraryScopeDescription: queryIsolationEnabled
+          ? '资料中心会优先展示你所在部门可访问的资料，适合先确认最近更新和常用内容。'
+          : '资料中心当前会展示全公司可读资料，适合跨部门浏览后再回到本部门做维护。',
         sopScopeDescription:
           'SOP 中心既能基于当前文档直接生成草稿，也会聚合本部门可见的标准流程，适合一边生成一边查标准操作说明。',
         workspaceTitle: '本部门管理中心',
@@ -122,11 +132,14 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
     default:
       return {
         roleLabel,
-        portalTitle: `先在 ${departmentName} 范围内提问、查 SOP、看资料。`,
+        portalTitle: queryIsolationEnabled
+          ? `先在 ${departmentName} 范围内提问、查 SOP、看资料。`
+          : '先跨部门提问、查 SOP、看资料，再回到当前岗位使用。',
         portalDescription:
           '门户只保留日常工作真正需要的功能，让你更快找到答案、查看资料并使用标准流程服务。',
-        portalHeaderNote:
-          '你当前使用的是员工视角，系统会自动按部门过滤资料、问答结果和 SOP 内容，并支持直接基于文档生成流程草稿。',
+        portalHeaderNote: queryIsolationEnabled
+          ? '你当前使用的是员工视角，系统会自动按部门过滤资料、问答结果和 SOP 内容，并支持直接基于文档生成流程草稿。'
+          : '你当前使用的是员工视角，系统已放开问答、检索和资料阅读的部门查询隔离，但不会开放跨部门管理能力。',
         homeFocusTitle: '当前更适合从这三类动作开始',
         homeFocusPoints: [
           '直接提问，快速获取带来源依据的回答。',
@@ -140,11 +153,12 @@ export function getRoleExperience(profile: AuthProfileResponse | null | undefine
         ],
         myCapabilityItems: [
           '智能问答、SOP 生成、SOP 查看和知识资料浏览。',
-          '系统会自动限制到你当前部门的已授权内容。',
+          queryIsolationEnabled ? '系统会自动限制到你当前部门的已授权内容。' : '系统当前允许跨部门查询和阅读资料，但不会开放管理中心、写入和配置能力。',
           '不会看到管理中心、全局配置和跨部门管理入口。',
         ],
-        libraryScopeDescription:
-          '资料中心只展示你当前部门已授权的资料，适合先通过标题、分类和预览确认是否需要下载。',
+        libraryScopeDescription: queryIsolationEnabled
+          ? '资料中心只展示你当前部门已授权的资料，适合先通过标题、分类和预览确认是否需要下载。'
+          : '资料中心当前会展示跨部门可读资料，适合先检索定位，再按文件名和页码回看原文。',
         sopScopeDescription:
           'SOP 中心优先用于直接生成或查找标准流程，不需要先理解后台处理过程。',
         workspaceTitle: '平台管理中心',

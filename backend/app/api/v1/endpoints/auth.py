@@ -41,6 +41,7 @@ def get_current_user(
         role=auth_context.role,
         department=auth_context.department,
         accessible_department_ids=auth_context.accessible_department_ids,
+        department_query_isolation_enabled=auth_context.department_query_isolation_enabled,
     )
 
 

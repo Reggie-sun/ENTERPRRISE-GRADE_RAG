@@ -1,0 +1,48 @@
+{
+  "document_id": "doc_20260330055115_5847f42f",
+  "file_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+  "source_path": "/app/data/uploads/doc_20260330055115_5847f42f__WI-SJ-043_A1.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 6,
+  "page_count": 1,
+  "normalized_text": "WELLLIH\n伟立机器人\n\n-\n5\n\n二\n1",
+  "segments": [
+    {
+      "text": "WELLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.7709583640098572
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9999231100082397
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.48827236890792847
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.04121687263250351
+    },
+    {
+      "text": "二",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.18255428969860077
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.39406031370162964
+    }
+  ]
+}

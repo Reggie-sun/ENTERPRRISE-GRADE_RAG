@@ -5,6 +5,7 @@ from ..rag.rerankers.client import RerankerClient
 from ..rag.ocr.client import OCRClient
 from ..schemas.health import HealthResponse
 from .system_config_service import SystemConfigService
+from .token_budget_service import TokenBudgetService
 
 
 class HealthService:
@@ -20,6 +21,7 @@ class HealthService:
     def get_snapshot(self) -> HealthResponse:
         settings = self.settings
         reranker_status = RerankerClient(settings, system_config_service=self.system_config_service).get_runtime_status()
+        tokenizer_status = TokenBudgetService(settings).get_runtime_info(model_name=get_llm_model(settings))
         return HealthResponse(
             status="ok",
             app_name=settings.app_name,
@@ -68,6 +70,14 @@ class HealthService:
                 "dsn_configured": bool(get_postgres_metadata_dsn(settings)),
             },
             ocr=OCRClient(settings).get_runtime_status(),
+            tokenizer={
+                "provider": tokenizer_status["provider"],
+                "model": tokenizer_status["model"],
+                "ready": tokenizer_status["ready"],
+                "trust_remote_code": settings.tokenizer_trust_remote_code,
+                "detail": tokenizer_status["detail"],
+                "error": tokenizer_status["error"],
+            },
         )
 
 

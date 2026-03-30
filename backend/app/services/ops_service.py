@@ -25,6 +25,7 @@ from .event_log_service import EventLogService
 from .health_service import HealthService
 from .request_snapshot_service import RequestSnapshotService
 from .request_trace_service import RequestTraceService
+from .rerank_canary_service import RerankCanaryService
 from .runtime_gate_service import RuntimeGateService, get_runtime_gate_service
 from .system_config_service import SystemConfigService
 
@@ -40,6 +41,7 @@ class OpsService:
         event_log_service: EventLogService | None = None,
         request_trace_service: RequestTraceService | None = None,
         request_snapshot_service: RequestSnapshotService | None = None,
+        rerank_canary_service: RerankCanaryService | None = None,
         system_config_service: SystemConfigService | None = None,
         runtime_gate_service: RuntimeGateService | None = None,
         document_service: DocumentService | None = None,
@@ -51,6 +53,7 @@ class OpsService:
         self.event_log_service = event_log_service or EventLogService(self.settings)
         self.request_trace_service = request_trace_service or RequestTraceService(self.settings)
         self.request_snapshot_service = request_snapshot_service or RequestSnapshotService(self.settings)
+        self.rerank_canary_service = rerank_canary_service or RerankCanaryService(self.settings)
         self.system_config_service = system_config_service or SystemConfigService(self.settings)
         self.document_service = document_service or DocumentService(self.settings, event_log_service=self.event_log_service)
         self.runtime_gate_service = runtime_gate_service or (
@@ -80,6 +83,7 @@ class OpsService:
                 health_reranker=health.reranker,
                 usage=rerank_usage,
             ),
+            rerank_canary=self.rerank_canary_service.summarize(auth_context=auth_context, limit=self.recent_window_size),
             stuck_ingest_jobs=self.document_service.list_stuck_ingest_jobs(auth_context=auth_context, limit=5),
             categories=self._build_category_summaries(records),
             recent_failures=[record for record in records if record.outcome == "failed"][:5],

@@ -1,0 +1,173 @@
+{
+  "snapshot_id": "rsp_b4f10dc75bdf482d",
+  "trace_id": "trc_5884ec6466eb4fd0",
+  "request_id": "req_c6df238fd8804b49",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T03:30:47.869121Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "哪个更常见",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_live_rewrite_compare_specific",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: CPPS和PPS有什么区别？\nAssistant: 根据提供的信息，慢性前列腺疼痛综合征(CPPS)和前列腺疼痛综合征(PPS)的主要区别在于命名的概括性和疾病的中心定位。欧洲医学界倾向于使用\"慢性前列腺疼痛综合征(PPS)\"这一说法，因为它比美国医学界的术语\"慢性前列腺炎／慢性盆腔疼痛综合征(CP/CPPS)\"更为概括。然而，两者都带有这种疾病是以前列腺为中心的意味，而实际上缺乏相关证据支持这一点。因此，尽管命名不同，但两者都指的是盆腔区域持续不断的不适或疼痛，并且细菌培养呈阴性。",
+  "rewrite": {
+    "status": "applied",
+    "original_question": "哪个更常见",
+    "rewritten_question": "CPPS和PPS哪个更常见？",
+    "details": {}
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-451",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "当 它确实是的时候 ， 治\n疗这种真正的细菌性前 列腺炎也比较容易 。慢 性前列腺炎是一种不正确的\n叫法 ； 我们处理的是 一 类变化的疼痛性疾病， 有多元化的症状 ， 但是没有\n客观的指标。\n该疾病通常不会出 现以前列腺为中心的症状 ， 患者疼痛的部位位于肚\n跻以下到大腿中段以上的位置。 欧洲的医学界提倡\n“\n慢性前列腺疼痛综合\n征( PPS) \" 这种说法，它比美国医学 界的术语\n“\n慢性前列腺炎 ／ 慢性盆腔\n疼痛综合征的 (C P/ CPPS) \" 更概括 一些。 不过，它们都 带有这种疾病是\n以前列腺为中心的意味， 而这正是我们应该避免的 ， 因为缺乏相关 证据证\n明这一点。 这种诊断还 会鼓励医生使用抗生素作为标准 治疗方法， 而抗 生\n素在这种情况下明显 缺乏有效性。\n根据定义 ， 前列腺痛综合征是指在盆腔 区域持续不断的不适或 疼痛，\n细菌培养呈 阴性 ， 前列腺样本中有明显或不明显数量的白细 胞。 而此处前\n列腺样本 是指精液样本 、挤 出的前列腺分泌物或前列腺按摩后的尿 液。\n前列腺中是否存在炎症 ， 在对男性盆腔疼痛和功能\n障碍进行有效治疗的指导中几乎没有任何帮助\n患者前列腺中是否存在显著的白 细胞数量没有任何诊断和治疗上的优\n势区别 。 需要注意的是， 以作者的经验来看， 前列腺没有炎症 的男性似乎\n平均遭受 更大 程度更长时间的盆腔疼痛。 我们认为， 慢性睾丸疼痛和所谓\n的阴部 神 经卡压症 都应包括在慢性盆腔疼痛综合征 (CPPS) 这个范围内。 女\n性盆腔疼痛， 尤其 是间质性膀胱炎疼痛类型， 应该归入一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经",
+      "score": 0.67626953125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 13.09661765153323,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": -0.66015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5254124,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-457",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "士修改后也可以用来评估女 性症状得分 情况。 另 一种类型的 CPPS 症状问\n卷 斯坦福盆腔疼痛症状评分 (P PSS) 表对我们也很有用， 虽然在科学\n研究中通常不会提到它。 PPSS 扩展了疼痛的解 剖 位置， 将每 一个位置的疼\n痛强度进行了 分级 (0 -4 +)；它还包括了泌尿 系统症状， 并模仿国际前列腺\n症状评分 (I PSS) ，将 病人的性功能障碍作为一个单独的部 分进行评分。 我\n们的团 队在分析 CPPS 疗法的治疗结果时两种调查问卷都会使用。\n内科 医生的检查\n当内 科医 生检查病人时， 他们通常只注意盆腔 内的器官 ； 他们 会进行\n直肠或 阴道检查， 并对子宫 、 卵巢 、 直肠、 前列腺、 膀胱和 睾丸 做触诊 ，\n但是他们通常会忽略支 撑这些器官 的肌肉、 筋膜以及韧带。\n我们的责任是在 检查中找出病人的经历， 并试图把它与我们在任何器\n官或盆腔肌肉中发现的任何可能的异常关联起来。 这不是一个简单的任务。\n大多数慢性盆腔疼痛患者身上没有可以很容易被检测到的典型的标准的结\n果。 但是， 一些基本 的泌尿 系统的检查应该要做， 这包括 详细的下半身神\n经系统检查、 尿常规、 血清 PSA(SO 岁以上男性）。\n\n慢性盆腔疼痛 相关的 科学研究 359\n我们经过仔细考 量过的观 点是 ： 在对慢性盆腔疼痛患者进\n行检查 时有必要将盆底肌 肉和韧带的全面检查包括进去\n我们在斯坦福 大学所做的检查，和大部 分泌尿科医生所做的一样， 包\n括前列腺微生物和炎性白 细胞的检查。 这要求患者在检查之前先排少量尿\n液， 然后在显 微镜下把这个样本和按摩 前列腺后排出的 尿 液样本 做比较。\n我们会对盆腔 肌肉进行触诊， 寻找实际的激痛点以及不适的区域， 特别是\n前列腺周围部位。 然后我们再来对前 列腺本身进行触诊： 我们会确定其 坚\n实度， 感觉它是不",
+      "score": -1.2099609375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5245678,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-451",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "当 它确实是的时候 ， 治\n疗这种真正的细菌性前 列腺炎也比较容易 。慢 性前列腺炎是一种不正确的\n叫法 ； 我们处理的是 一 类变化的疼痛性疾病， 有多元化的症状 ， 但是没有\n客观的指标。\n该疾病通常不会出 现以前列腺为中心的症状 ， 患者疼痛的部位位于肚\n跻以下到大腿中段以上的位置。 欧洲的医学界提倡\n“\n慢性前列腺疼痛综合\n征( PPS) \" 这种说法，它比美国医学 界的术语\n“\n慢性前列腺炎 ／ 慢性盆腔\n疼痛综合征的 (C P/ CPPS) \" 更概括 一些。 不过，它们都 带有这种疾病是\n以前列腺为中心的意味， 而这正是我们应该避免的 ， 因为缺乏相关 证据证\n明这一点。 这种诊断还 会鼓励医生使用抗生素作为标准 治疗方法， 而抗 生\n素在这种情况下明显 缺乏有效性。\n根据定义 ， 前列腺痛综合征是指在盆腔 区域持续不断的不适或 疼痛，\n细菌培养呈 阴性 ， 前列腺样本中有明显或不明显数量的白细 胞。 而此处前\n列腺样本 是指精液样本 、挤 出的前列腺分泌物或前列腺按摩后的尿 液。\n前列腺中是否存在炎症 ， 在对男性盆腔疼痛和功能\n障碍进行有效治疗的指导中几乎没有任何帮助\n患者前列腺中是否存在显著的白 细胞数量没有任何诊断和治疗上的优\n势区别 。 需要注意的是， 以作者的经验来看， 前列腺没有炎症 的男性似乎\n平均遭受 更大 程度更长时间的盆腔疼痛。 我们认为， 慢性睾丸疼痛和所谓\n的阴部 神 经卡压症 都应包括在慢性盆腔疼痛综合征 (CPPS) 这个范围内。 女\n性盆腔疼痛， 尤其 是间质性膀胱炎疼痛类型， 应该归入一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经",
+      "score": 0.67626953125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": null,
+      "lexical_score": 13.09661765153323,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状炎性 前列腺炎\n· 睾丸痛或附睾炎\n·痉 挛性肛门疼痛\n用千 女性\n·尿 道综 合征\n·外 阴痛（外 阴前 庭炎）\n男性 女性通用\n·间 质性膀胱炎\n·肛 提肌综合征\n·阴 部神经卡压 综合征\n不同名称 的共同特点\n这本 书 的核心 概念是：上 述 的不同的病症其实有一 个共同的 病因， 因\n此它 们中的 大部分也就有 一个通用 的有 效治疗方法。 身心之间的 紧密\n联系在发病和治疗的过程中都起 了很大 作用 。\n多年以来， 慢性盆腔疼痛综合征巳经 成为医学界的一 个谜。 拿非细菌\n性前列腺炎 来说， 虽然准确简单 的诊 断方法巳 经问世多年， 它却仍然经常\n被混 淆为急性或慢性细菌性前列腺炎 。 与此同时， 医生们往往把自 己不了\n解或者不 知道如 何 治疗的盆 腔 疾病一股脑全部诊 断为非细菌性前列腺炎 ，\n就因 为它 占了前列腺炎病例的 大多数。 最新的 医疗 仪器测量结果表 明， 从\n前医 生的 肉眼诊断 一直都没能解释这些疾病所 带来 的痛苦程度。\n医生经常 告诉慢性盆腔疼痛综合征的患\n者说他们找不出任何问题来\n\n定义和类别 35\n我们在本书中提出的观点是 ： 这些症状都和头痛有相似之处， 只是疼\n痛的部位在盆腔 而巳。 因此， ＜＜ 盆腔之痛〉〉就成为了这本书的名字 （本书\n英文书名直译为\n“\n盆腔中的头痛\n＂\n，译 者注）。 书名的另 一个含义是这些疾\n病和头痛",
+      "score": -0.66015625,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5254124,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-457",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "士修改后也可以用来评估女 性症状得分 情况。 另 一种类型的 CPPS 症状问\n卷 斯坦福盆腔疼痛症状评分 (P PSS) 表对我们也很有用， 虽然在科学\n研究中通常不会提到它。 PPSS 扩展了疼痛的解 剖 位置， 将每 一个位置的疼\n痛强度进行了 分级 (0 -4 +)；它还包括了泌尿 系统症状， 并模仿国际前列腺\n症状评分 (I PSS) ，将 病人的性功能障碍作为一个单独的部 分进行评分。 我\n们的团 队在分析 CPPS 疗法的治疗结果时两种调查问卷都会使用。\n内科 医生的检查\n当内 科医 生检查病人时， 他们通常只注意盆腔 内的器官 ； 他们 会进行\n直肠或 阴道检查， 并对子宫 、 卵巢 、 直肠、 前列腺、 膀胱和 睾丸 做触诊 ，\n但是他们通常会忽略支 撑这些器官 的肌肉、 筋膜以及韧带。\n我们的责任是在 检查中找出病人的经历， 并试图把它与我们在任何器\n官或盆腔肌肉中发现的任何可能的异常关联起来。 这不是一个简单的任务。\n大多数慢性盆腔疼痛患者身上没有可以很容易被检测到的典型的标准的结\n果。 但是， 一些基本 的泌尿 系统的检查应该要做， 这包括 详细的下半身神\n经系统检查、 尿常规、 血清 PSA(SO 岁以上男性）。\n\n慢性盆腔疼痛 相关的 科学研究 359\n我们经过仔细考 量过的观 点是 ： 在对慢性盆腔疼痛患者进\n行检查 时有必要将盆底肌 肉和韧带的全面检查包括进去\n我们在斯坦福 大学所做的检查，和大部 分泌尿科医生所做的一样， 包\n括前列腺微生物和炎性白 细胞的检查。 这要求患者在检查之前先排少量尿\n液， 然后在显 微镜下把这个样本和按摩 前列腺后排出的 尿 液样本 做比较。\n我们会对盆腔 肌肉进行触诊， 寻找实际的激痛点以及不适的区域， 特别是\n前列腺周围部位。 然后我们再来对前 列腺本身进行触诊： 我们会确定其 坚\n实度， 感觉它是不",
+      "score": -1.2099609375,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5245678,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "无法仅从提供的上下文中得出CPPS和PPS哪个更常见的结论。需要更多具体数据或研究结果来判断哪个更为普遍。",
+    "answer_chars": 53,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_live_rewrite_prevent",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:24:00.844538Z",
+  "turns": [
+    {
+      "turn_id": "turn_5571e1ef92d7",
+      "asked_at": "2026-03-30T03:23:58.572751Z",
+      "question": "CPPS是什么？",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部不适或疼痛、坐下时不适或疼痛加剧、性行为时或之后不适或疼痛、尿频、尿急、排尿踌躇不畅等。书中提出的观点是这些症状与头痛有相似之处，只是疼痛部位在盆腔而已。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_cfe0d0181910",
+      "asked_at": "2026-03-30T03:24:00.844514Z",
+      "question": "那要怎么预防",
+      "answer": "根据提供的上下文，没有直接提及如何预防CPPS的具体措施。然而，上下文中提到了CPPS的症状与心理因素密切相关，并且通过心理学疗法可以显著改善患者的症状。因此，虽然没有明确的预防措施，但可以推测减轻生活和工作中的压力，保持良好的心理健康可能是预防CPPS的一种方式。为了获得更具体的预防建议，建议咨询医疗专业人士。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

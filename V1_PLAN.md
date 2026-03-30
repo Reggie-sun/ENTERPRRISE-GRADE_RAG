@@ -94,13 +94,15 @@
 - citations 返回
 - 前端基础上传 / 检索 / 问答联调
 - 在线主检索当前是：
-  `query -> embedding -> Qdrant vector recall + lexical recall -> weighted RRF fusion -> results`
+  `query -> department recall + global visible recall -> per-route Qdrant vector recall + lexical recall -> weighted RRF fusion -> candidate fusion -> results`
 - 问答和 SOP 上层链路当前再接：
-  `retrieval -> heuristic rerank -> LLM`
+  `retrieval -> rerank(provider|heuristic) -> LLM`
 - 当前已经具备轻量 lexical retriever、BM25-like 关键词召回、`vector_only` fallback，以及 `retrieval_strategy / vector_score / lexical_score / fused_score`
+- 当前企业知识库默认检索已经支持“本部门优先、全局补充”的两路召回，并在融合后保留可选诊断字段：
+  `source_scope = department | global | both`
 - 当前 hybrid fusion 已支持规则式 dynamic branch weighting，默认关闭，保留 fixed fallback
 - 当前 `heuristic rerank` 里的 token overlap 仍只是重排信号，不是第一阶段关键词召回
-- 但当前主链路还不支持扫描件 / 图片 OCR，也还没有正式的模型级 `rerank` 服务
+- 当前主链路已经支持图片文件 OCR、扫描 PDF / 图片型 PDF OCR fallback、`DOCX` 嵌图 OCR，以及 openai-compatible 模型级 `rerank` provider + `heuristic` fallback；剩余问题主要在默认路由收口与样本校准
 
 所以接下来的计划，不应该从“零开始搭系统”写，而应该从“基于已跑通链路逐步扩功能”写。
 
@@ -694,6 +696,8 @@
   图片文件 OCR、扫描 PDF / 图片型 PDF OCR fallback、OCR artifact 落盘、OCR metadata 进入 chunk / retrieval / citation / snapshot
 - `2026-03-28` 新增：
   `DOCX` 内嵌图片 OCR 已进入异步入库主链路，支持“正文 + 嵌图 OCR”混合入库
+- `2026-03-30` 新增：
+  企业知识库默认检索已切到“部门召回 + 全局可见补充召回 -> 融合”的统一入口实现
 - 模型级 `rerank` 代码路径已具备 openai-compatible provider + `heuristic` fallback
 
 已完成：
@@ -705,14 +709,17 @@
 - OCR artifact 落盘
 - OCR metadata 进入 chunk / retrieval / citation / snapshot
 - hybrid retrieval 主干
+- 部门优先的“两路召回 + 融合”
 - `lexical_top_k` 配置化
 - OCR quality-aware heuristic rerank
+- OCR 低质量 chunk 最小治理
+- OCR 结果前端解释性增强
 
 剩余缺口：
 
-- 普通 PDF 中“局部图片”精细 OCR，而不是仅整页 fallback
-- OCR 质量阈值与低质量 chunk 的治理策略
-- OCR 结果在前端的解释性增强
+- 普通 PDF 中“页内局部图片/区域级”精细 OCR，而不是当前按页 fallback
+- OCR 质量阈值与低质量 chunk 的真实样本校准
+- 部门优先“两路召回 + 融合”的真实 query 样本校准与权重微调
 - 模型级 `rerank` 进入生产默认路径前的收益验证、路由收口与配置回归
 
 低耦合要求：
@@ -720,14 +727,15 @@
 - OCR 继续只进入异步入库链路：
   `上传 -> document/job -> parse/native_extract -> ocr -> chunk -> embedding -> index`
 - hybrid retrieval 与模型级 `rerank` 继续只进入在线检索链路
+- 部门召回、全局可见补充召回与 route fusion 继续只收口在统一 `RetrievalService`
 - 不为 OCR 文档单独维护第二套 chunk 索引
 - `heuristic` 继续保留为统一降级路径
 
 下一步：
 
-1. 做模型级 `rerank` 生产化验证与默认路由收口
-2. 再做 OCR 质量阈值、低质量 chunk 治理与前端解释性
-3. 最后再考虑普通 PDF 的局部图片精细 OCR
+1. 先做模型级 `rerank` 生产化验证，并结合两路召回样本完成默认路由收口
+2. 再做 OCR 质量阈值和部门优先检索的真实样本校准
+3. 最后再考虑普通 PDF 的页内局部图片精细 OCR
 
 ### 6.5 `v0.5.0` SOP 文档直生与轻交付
 
@@ -926,13 +934,15 @@
   `stuck_ingest_jobs / recent_traces / recent_snapshots`
 - `health` 字段分层：
   稳定主契约优先冻结：
-  顶层 `status / app_name / environment / vector_store / llm / embedding / reranker / queue / metadata_store / ocr`
+  顶层 `status / app_name / environment / vector_store / llm / embedding / reranker / queue / metadata_store / ocr / tokenizer`
   其中 `reranker` 当前优先冻结：
   `provider / base_url / model / default_strategy / timeout_seconds / failure_cooldown_seconds / effective_provider / effective_model / effective_strategy / fallback_enabled / lock_active / cooldown_remaining_seconds / ready`
   `ocr` 当前优先冻结：
   `provider / language / enabled / ready / pdf_native_text_min_chars / angle_cls_enabled`
+  `tokenizer` 当前优先冻结：
+  `provider / model / ready / trust_remote_code`
   当前诊断字段先不冻结为强承诺：
-  `reranker.lock_source / reranker.detail / ocr.detail`
+  `reranker.lock_source / reranker.detail / ocr.detail / tokenizer.detail / tokenizer.error`
 - `system-config` 字段分层：
   顶层稳定主契约优先冻结：
   `query_profiles / model_routing / reranker_routing / degrade_controls / retry_controls / concurrency_controls / prompt_budget / updated_at / updated_by`
@@ -981,6 +991,11 @@
 当前契约矩阵已单独收口到：
 
 - `MAIN_CONTRACT_MATRIX.md`
+
+执行口径补充：
+
+- 字段命名、分页、时间、错误 envelope、稳定面 vs 诊断面边界，以 `MAIN_CONTRACT_MATRIX.md` 为准
+- `V1_PLAN.md` 负责说明为什么冻结、冻结到哪一层、何时允许继续演进
 
 验收标准：
 
@@ -1960,8 +1975,9 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 原因：
 
 - 当前在线主检索已经是：
-  `query -> embedding -> Qdrant vector recall + lexical recall -> weighted RRF fusion`
+  `query -> department recall + global visible recall -> per-route Qdrant vector recall + lexical recall -> weighted RRF fusion -> candidate fusion`
 - 当前代码已经具备轻量 lexical retriever、BM25-like 关键词召回、`vector_only` fallback
+- 当前企业知识库默认检索已经支持“本部门优先、全局补充”的双路召回，并在 rerank 前完成统一融合
 - 当前 `heuristic rerank` 里的 token overlap 仍只能重排已有候选，不能替代第一阶段关键词召回
 - `document_id` 过滤、问答、SOP 生成已经复用统一检索入口，继续做验证与治理也适合在入口层统一收口，不必分别侵入多个业务服务
 
@@ -1983,8 +1999,12 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 
 - 保持统一的在线检索策略：
   `vector_only | hybrid`
+- 企业知识库默认检索保持统一入口：
+  `department recall + global visible recall -> fusion -> rerank`
 - 保持 lexical retriever、hybrid fusion、`vector_only` fallback 都只收口在统一检索入口层
 - `document_id` 过滤在两条召回分支上都语义一致
+- 两路召回融合后的结果允许带可选诊断字段：
+  `source_scope = department | global | both`
 - 规则式 dynamic weighting 默认关闭，不破坏现有 fixed fallback 行为
 - 日志里能看到：
   `query_type / vector_weight / lexical_weight`
@@ -2004,15 +2024,18 @@ V1 后半段至少有 4 类迁移，不能等到上线时再想：
 低耦合要求：
 
 - hybrid retrieval 只放在在线链路：
-  `query -> vector recall + lexical recall -> fusion -> rerank -> llm`
+  `query -> department/global route recall -> per-route vector recall + lexical recall -> fusion -> rerank -> llm`
 - 关键词索引优先复用当前 chunk 文本和元数据构建轻量副本
 - 问答和 SOP 生成只消费统一检索结果，不自行再补一层关键词匹配
 - 配置入口统一复用当前 `Settings + SystemConfigService + QueryProfileService`
 - dynamic weighting 只放在 fusion 层，不污染 lexical retriever，也不把 branch 融合职责丢给 rerank
+- 两路召回只允许在统一检索入口内展开，不能在 `ChatService` / `SopGenerationService` 再各自拼一套部门优先逻辑
 
 验收标准：
 
 - 对专有名词、设备名、料号、工序名类查询，hybrid 检索结果优于当前 vector-only 基线
+- 当前用户所在部门的命中结果优先出现，全局可见结果作为补充，而不是严格只查本部门
+- 同一 chunk 被两路都召回时，结果去重后仍能通过 `source_scope` 解释来源
 - `document_id` 限定下，hybrid 不会串文档
 - 关键词分支不可用时，系统自动退回 vector-only，不影响主流程可用性
 - 问答与 SOP 生成拿到同一批 fusion 后证据

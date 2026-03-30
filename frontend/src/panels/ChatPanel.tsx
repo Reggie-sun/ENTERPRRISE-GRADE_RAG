@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { MessageSquare } from 'lucide-react';  // 引入图标。
-import { Card, Button, StatusPill, Textarea, Input, ResultBox, ResultCard } from '@/components';
+import { Card, Button, StatusPill, Textarea, Input, ResultBox, ResultCard, EvidenceSourceSummary } from '@/components';
 import {
   askQuestionStream,
   formatApiError,
@@ -238,6 +238,14 @@ export function ChatPanel({ resetSignal, currentDocumentName, currentDocId, curr
               ]}
             >
               {item.snippet.length > 300 ? `${item.snippet.slice(0, 300)}...` : item.snippet}
+              <EvidenceSourceSummary
+                retrievalStrategy={item.retrieval_strategy}
+                ocrUsed={item.ocr_used}
+                parserName={item.parser_name}
+                pageNo={item.page_no}
+                ocrConfidence={item.ocr_confidence}
+                qualityScore={item.quality_score}
+              />
             </ResultCard>
           ))}
         </div>

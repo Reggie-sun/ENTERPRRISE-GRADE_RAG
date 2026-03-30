@@ -122,15 +122,13 @@ def test_llm_generation_client_supports_deepseek_provider_alias(tmp_path: Path, 
 
     def fake_generate_with_openai(
         *,
-        question: str,
-        contexts: list[str],
-        memory_text: str | None = None,
+        prepared_prompt,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:
-        captured["question"] = question
-        captured["contexts"] = contexts
-        captured["memory_text"] = memory_text
+        captured["prompt"] = prepared_prompt.prompt
+        captured["contexts"] = prepared_prompt.prepared_contexts
+        captured["memory_text"] = prepared_prompt.prepared_memory
         captured["model_name"] = model_name
         return "deepseek-ok"
 
@@ -139,7 +137,7 @@ def test_llm_generation_client_supports_deepseek_provider_alias(tmp_path: Path, 
     result = client.generate(question="q", contexts=["context"], model_name="deepseek-chat")
 
     assert result == "deepseek-ok"
-    assert captured["question"] == "q"
+    assert "Question: q" in captured["prompt"]
     assert captured["contexts"] == ["context"]
     assert captured["memory_text"] is None
     assert captured["model_name"] == "deepseek-chat"
@@ -183,6 +181,93 @@ def test_llm_generation_client_trims_prompt_to_budget(tmp_path: Path) -> None:
     assert client._estimate_token_count(prompt) <= settings.llm_max_prompt_tokens
     assert "[Context 1]" in prompt
     assert "甲" in prompt
+
+
+def test_llm_generation_client_spreads_budget_across_multiple_contexts(tmp_path: Path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        llm_provider="openai",
+        llm_base_url="http://example.com/v1",
+        llm_model="test-model",
+        llm_max_prompt_tokens=320,
+        llm_reserved_completion_tokens=64,
+    )
+    client = LLMGenerationClient(settings, system_config_service=SystemConfigService(settings))
+
+    prompt = client._build_prompt(
+        question="解释一下巡检步骤",
+        contexts=[
+            "甲" * 280,
+            "乙" * 280,
+        ],
+    )
+
+    assert client._estimate_token_count(prompt) <= settings.llm_max_prompt_tokens
+    assert "[Context 1]" in prompt
+    assert "[Context 2]" in prompt
+    assert "甲" in prompt
+    assert "乙" in prompt
+
+
+def test_llm_generation_client_prepares_prompt_diagnostics(tmp_path: Path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        llm_provider="openai",
+        llm_base_url="http://example.com/v1",
+        llm_model="test-model",
+        llm_max_prompt_tokens=320,
+        llm_reserved_completion_tokens=64,
+    )
+    client = LLMGenerationClient(settings, system_config_service=SystemConfigService(settings))
+
+    prepared = client.prepare_prompt(
+        question="解释一下巡检步骤",
+        contexts=[
+            "甲" * 280,
+            "乙" * 280,
+        ],
+        memory_text="[Recent Turn 1]\nUser: 上一步是什么？\nAssistant: 先检查传感器。",
+    )
+
+    assert prepared.original_context_count == 2
+    assert prepared.deduplicated_context_count == 2
+    assert prepared.pretrimmed_context_count >= 1
+    assert prepared.prepared_context_count == 2
+    assert prepared.truncated_context_count >= 1
+    assert prepared.context_token_estimate > 0
+    assert prepared.memory_token_estimate > 0
+    assert prepared.prompt_token_estimate <= 320
+    assert "[Context 1]" in prepared.prompt
+    assert "[Context 2]" in prepared.prompt
+
+
+def test_llm_generation_client_deduplicates_duplicate_contexts_before_prompt(tmp_path: Path) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        llm_provider="openai",
+        llm_base_url="http://example.com/v1",
+        llm_model="test-model",
+        llm_max_prompt_tokens=320,
+        llm_reserved_completion_tokens=64,
+    )
+    client = LLMGenerationClient(settings, system_config_service=SystemConfigService(settings))
+
+    prepared = client.prepare_prompt(
+        question="解释一下巡检步骤",
+        contexts=[
+            "步骤一：检查监控面板。",
+            "步骤一：检查监控面板。",
+            "步骤二：确认传感器在线。",
+        ],
+    )
+
+    assert prepared.original_context_count == 3
+    assert prepared.deduplicated_context_count == 2
+    assert prepared.prepared_context_count == 2
+    assert prepared.prompt.count("[Context") == 2
 
 
 def test_llm_generation_client_includes_recent_memory_in_prompt(tmp_path: Path) -> None:

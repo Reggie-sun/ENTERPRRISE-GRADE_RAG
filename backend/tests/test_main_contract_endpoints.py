@@ -69,7 +69,7 @@ def test_health_and_auth_contract_shapes(tmp_path: Path) -> None:
     health_payload = health_response.json()
     _assert_key_set(
         health_payload,
-        {"status", "app_name", "environment", "vector_store", "llm", "embedding", "reranker", "queue", "metadata_store", "ocr"},
+        {"status", "app_name", "environment", "vector_store", "llm", "embedding", "reranker", "queue", "metadata_store", "ocr", "tokenizer"},
     )
     _assert_key_set(health_payload["vector_store"], {"provider", "url", "collection"})
     _assert_key_set(health_payload["llm"], {"provider", "base_url", "model"})
@@ -103,6 +103,10 @@ def test_health_and_auth_contract_shapes(tmp_path: Path) -> None:
     _assert_contains_keys(
         health_payload["ocr"],
         {"provider", "language", "enabled", "ready", "pdf_native_text_min_chars", "angle_cls_enabled"},
+    )
+    _assert_contains_keys(
+        health_payload["tokenizer"],
+        {"provider", "model", "ready", "trust_remote_code"},
     )
 
     assert login_response.status_code == 200
@@ -557,7 +561,7 @@ def test_system_config_logs_and_ops_contract_shapes(tmp_path: Path) -> None:
         {"tenant_id", "user_id", "username", "role_id", "department_id"},
     )
 
-    ops_client, _event_log_service, _request_trace_service, _request_snapshot_service = build_ops_client(tmp_path)
+    ops_client, _event_log_service, _request_trace_service, _request_snapshot_service, _rerank_canary_service = build_ops_client(tmp_path)
     try:
         sys_admin_headers = _login_headers(ops_client, username="sys.admin", password="sys-admin-pass")
         ops_response = ops_client.get("/api/v1/ops/summary", headers=sys_admin_headers)

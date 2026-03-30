@@ -59,14 +59,20 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
             )
         raise OCRUnavailableError(f"Unsupported OCR provider: {self.settings.ocr_provider}")
 
-    def extract_pdf_text(self, *, source_path: Path, filename: str) -> OCRExtractionResult:  # 对 PDF 执行 OCR fallback。
+    def extract_pdf_text(
+        self,
+        *,
+        source_path: Path,
+        filename: str,
+        page_numbers: list[int] | None = None,
+    ) -> OCRExtractionResult:  # 对 PDF 执行 OCR fallback；允许仅对部分页做选择性 OCR。
         provider = self.settings.ocr_provider.lower().strip()
         if provider == "disabled":
             raise OCRUnavailableError("OCR provider is disabled for PDF fallback.")
         if provider == "mock":
             return self._extract_with_mock(source_path=source_path, filename=filename, parser_name="pdf_ocr_mock")
         if provider == "paddleocr":
-            return self._extract_pdf_text_with_paddle(source_path)
+            return self._extract_pdf_text_with_paddle(source_path, page_numbers=page_numbers)
         raise OCRUnavailableError(f"Unsupported OCR provider: {self.settings.ocr_provider}")
 
     def extract_docx_embedded_image_text(
@@ -149,7 +155,12 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
         results = list(ocr.predict(str(source_path)))
         return self._flatten_paddle_results(results, page_no=page_no)
 
-    def _extract_pdf_text_with_paddle(self, source_path: Path) -> OCRExtractionResult:  # 把 PDF 每页渲染成图片后交给 PaddleOCR。
+    def _extract_pdf_text_with_paddle(
+        self,
+        source_path: Path,
+        *,
+        page_numbers: list[int] | None = None,
+    ) -> OCRExtractionResult:  # 把 PDF 每页渲染成图片后交给 PaddleOCR；允许只处理指定页码。
         try:
             import fitz  # type: ignore[import-not-found]
         except ImportError as exc:
@@ -158,9 +169,12 @@ class OCRClient:  # 封装 OCR provider 的最小统一入口。
         page_texts: list[str] = []
         segments: list[OCRTextSegment] = []
         failed_pages: list[int] = []
+        target_pages = set(page_numbers or [])
         with TemporaryDirectory(prefix="ocr_pdf_") as temp_dir:
             with fitz.open(str(source_path)) as pdf:
                 for page_index, page in enumerate(pdf, start=1):
+                    if target_pages and page_index not in target_pages:
+                        continue
                     image_path = Path(temp_dir) / f"page_{page_index}.png"
                     try:
                         pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)

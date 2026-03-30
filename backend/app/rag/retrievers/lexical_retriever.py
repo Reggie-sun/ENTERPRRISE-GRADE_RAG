@@ -88,6 +88,7 @@ class QdrantLexicalRetriever:
         *,
         limit: int,
         document_id: str | None = None,
+        document_ids: list[str] | None = None,
     ) -> list[LexicalMatch]:
         normalized_query = query.strip()
         if not normalized_query or limit <= 0:
@@ -112,7 +113,12 @@ class QdrantLexicalRetriever:
         matched_records: list[tuple[object, Counter[str], int, Counter[str], int]] = []
 
         try:
-            for record in self.vector_store.scroll_records(document_id=document_id, batch_size=self._SCROLL_BATCH_SIZE):
+            scroll_kwargs: dict[str, object] = {"batch_size": self._SCROLL_BATCH_SIZE}
+            if document_id is not None:
+                scroll_kwargs["document_id"] = document_id
+            if document_ids is not None:
+                scroll_kwargs["document_ids"] = document_ids
+            for record in self.vector_store.scroll_records(**scroll_kwargs):
                 payload = dict(record.payload or {})
                 text = str(payload.get("text") or "")
                 tokenized_text = self._tokenize(text)

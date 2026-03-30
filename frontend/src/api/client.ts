@@ -40,6 +40,7 @@ import type {
   DocumentPreviewResponse,
   DocumentRebuildResponse,
   IngestJobStatusResponse,
+  RerankCanaryListResponse,
   RetrievalRerankCompareResponse,
   RetrievalRequest,
   RetrievalResponse,
@@ -856,6 +857,15 @@ export async function compareRetrievalRerank(req: RetrievalRequest): Promise<Ret
     method: 'POST',
     body: JSON.stringify(req),
   });
+}
+
+export async function getRetrievalRerankCanary(limit = 8, decision?: string): Promise<RerankCanaryListResponse> {
+  const params = new URLSearchParams();
+  params.set('limit', String(limit));
+  if (decision?.trim()) {
+    params.set('decision', decision.trim());
+  }
+  return request<RerankCanaryListResponse>(`/retrieval/rerank-canary?${params.toString()}`);
 }
 
 // ========== 问答 API ==========

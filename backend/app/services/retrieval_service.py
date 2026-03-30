@@ -20,8 +20,9 @@ from ..schemas.retrieval import (  # 导入检索请求、响应和结果模型�
     RerankComparisonResult,
     RerankComparisonSummary,
 )
-from .document_service import DocumentService  # 导入文档服务，复用统一的文档读权限判断。
+from .document_service import DepartmentPriorityRetrievalScope, DocumentService  # 导入文档服务，复用统一的文档读权限判断与部门优先作用域。
 from .query_profile_service import QueryProfileService
+from .rerank_canary_service import RerankCanaryService
 from .retrieval_query_router import HybridBranchWeights, RetrievalQueryRouter
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,9 @@ class _RetrievalCandidate:
     score: float
     vector_score: float | None = None
     lexical_score: float | None = None
+    source_scope: str | None = None
+    department_hit: bool = False
+    global_hit: bool = False
 
 
 class RetrievalService:  # 封装文档检索接口的业务逻辑。
@@ -41,6 +45,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         settings: Settings | None = None,
         document_service: DocumentService | None = None,
         query_profile_service: QueryProfileService | None = None,
+        rerank_canary_service: RerankCanaryService | None = None,
         lexical_retriever: QdrantLexicalRetriever | None = None,
         query_router: RetrievalQueryRouter | None = None,
     ) -> None:  # 初始化检索服务。
@@ -52,6 +57,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.query_profile_service = query_profile_service or QueryProfileService(self.settings)  # 统一解析 fast/accurate 档位，避免参数散落在检索服务里。
         self.system_config_service = self.query_profile_service.system_config_service  # 复用统一系统配置服务，保证检索和 rerank 读取的是同一份配置。
         self.reranker_client = RerankerClient(self.settings, system_config_service=self.system_config_service)  # 为 rerank 对比验证复用统一客户端。
+        self.rerank_canary_service = rerank_canary_service or RerankCanaryService(self.settings)  # compare 结果沉淀为 canary 样本，供 ops/策略决策复盘。
         self.query_router = query_router or RetrievalQueryRouter(self.settings)  # 查询分类与 hybrid 动态权重策略统一收口到独立模块。
 
     def search(self, request: RetrievalRequest, *, auth_context: AuthContext | None = None) -> RetrievalResponse:  # 执行检索并返回结果。
@@ -91,18 +97,27 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             search_limit = min(max(search_limit * 2, profile.top_k), 200)  # 单文档检索继续保留更大的安全余量，同时兼容内部显式 candidate_top_k。
 
         query_vector = self.embedding_client.embed_texts([request.query])[0]  # 先对查询文本生成 embedding 向量。
-        scored_points = self.vector_store.search(  # 用查询向量在 Qdrant 中检索候选 chunk。
-            query_vector,
-            limit=search_limit,
+        if self._should_use_department_priority_routes(
+            auth_context=auth_context,
             document_id=normalized_document_id,
-        )
-        candidates, retrieval_mode, branch_weights = self._collect_candidates(
-            query=request.query,
-            vector_points=scored_points,
-            profile=profile,
-            limit=search_limit,
-            document_id=normalized_document_id,
-        )
+        ) and hasattr(self.document_service, "build_department_priority_retrieval_scope"):
+            retrieval_scope = self.document_service.build_department_priority_retrieval_scope(auth_context)
+            candidates, retrieval_mode, branch_weights = self._collect_department_priority_candidates(
+                query=request.query,
+                query_vector=query_vector,
+                profile=profile,
+                limit=search_limit,
+                scope=retrieval_scope,
+            )
+        else:
+            candidates, retrieval_mode, branch_weights = self._collect_scoped_candidates(
+                query=request.query,
+                query_vector=query_vector,
+                profile=profile,
+                limit=search_limit,
+                document_id=normalized_document_id,
+            )
+        candidates = self._apply_ocr_quality_governance(candidates)
         results: list[RetrievedChunk] = []  # 初始化检索结果列表。
         readability_cache: dict[str, bool] = {}  # 同一次检索里缓存按文档判断结果，避免重复读 metadata。
         if auth_context is not None:
@@ -134,6 +149,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 score=output_score,  # 返回对外相关度分数；hybrid 模式下归一化到更易解释的范围。
                 source_path=str(payload.get("source_path") or ""),  # 返回原始文档路径，缺失时返回空字符串。
                 retrieval_strategy=retrieval_mode,  # 返回召回策略，便于 trace/snapshot/调试解释为什么命中。
+                source_scope=candidate.source_scope,  # 返回部门优先融合后的来源范围，便于解释“本部门优先 / 全局补充”。
                 vector_score=candidate.vector_score,  # 返回原始向量分数。
                 lexical_score=candidate.lexical_score,  # 返回词项分数；纯向量召回时为空。
                 fused_score=raw_score,  # 返回最终融合原始分数，便于调试真实排序依据。
@@ -267,7 +283,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             provider_candidate_summary=provider_candidate_summary,
             rerank_top_n=safe_top_n,
         )
-        return RetrievalRerankCompareResponse(
+        response_payload = RetrievalRerankCompareResponse(
             query=request.query,
             mode=response.mode,
             candidate_count=len(response.results),
@@ -293,6 +309,34 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             provider_candidate_summary=provider_candidate_summary,
             recommendation=recommendation,
         )
+        canary_sample = self.rerank_canary_service.record_compare_sample(
+            query=request.query,
+            mode=response.mode,
+            target_id=request.document_id.strip() if request.document_id else None,
+            auth_context=auth_context,
+            response=response_payload,
+        )
+        return response_payload.model_copy(update={"canary_sample_id": canary_sample.sample_id})
+
+    def build_observability_details(self, *, query: str, retrieval_mode: str) -> dict[str, object]:
+        details: dict[str, object] = {"retrieval_mode": retrieval_mode}
+        if retrieval_mode != "hybrid":
+            return details
+
+        branch_weights = self.query_router.resolve_branch_weights(query)
+        details.update(
+            {
+                "query_type": branch_weights.query_type,
+                "vector_weight": branch_weights.vector_weight,
+                "lexical_weight": branch_weights.lexical_weight,
+                "dynamic_weighting_enabled": branch_weights.dynamic_enabled,
+            }
+        )
+        if branch_weights.exact_signals > 0:
+            details["exact_signals"] = branch_weights.exact_signals
+        if branch_weights.semantic_signals > 0:
+            details["semantic_signals"] = branch_weights.semantic_signals
+        return details
 
     def _build_route_status(self) -> RetrievalRerankRouteStatus:
         status = self.reranker_client.get_runtime_status()
@@ -320,6 +364,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         profile: QueryProfile,
         limit: int,
         document_id: str | None,
+        document_ids: list[str] | None = None,
     ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
         vector_candidates = [self._candidate_from_vector_point(point) for point in vector_points]
         if self._normalized_retrieval_strategy() != "hybrid":
@@ -341,11 +386,15 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             supplemental_bigram_weight=self.settings.retrieval_lexical_supplemental_bigram_weight,
         )
         try:
-            lexical_matches = lexical_retriever.search(
-                query,
-                limit=min(profile.lexical_top_k, limit),
-                document_id=document_id,
-            )
+            lexical_search_kwargs: dict[str, object] = {
+                "query": query,
+                "limit": min(profile.lexical_top_k, limit),
+            }
+            if document_id is not None:
+                lexical_search_kwargs["document_id"] = document_id
+            if document_ids is not None:
+                lexical_search_kwargs["document_ids"] = document_ids
+            lexical_matches = lexical_retriever.search(**lexical_search_kwargs)
         except RuntimeError:
             logger.warning("hybrid retrieval fallback_to=qdrant reason=lexical_error")
             return vector_candidates, "qdrant", None
@@ -357,6 +406,126 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             "hybrid",
             branch_weights,
         )
+
+    def _collect_scoped_candidates(
+        self,
+        *,
+        query: str,
+        query_vector: list[float],
+        profile: QueryProfile,
+        limit: int,
+        document_id: str | None = None,
+        document_ids: list[str] | None = None,
+    ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
+        if document_ids is not None and not document_ids:
+            return [], "qdrant", None
+        vector_points = self._search_vector_points(
+            query_vector=query_vector,
+            limit=limit,
+            document_id=document_id,
+            document_ids=document_ids,
+        )
+        return self._collect_candidates(
+            query=query,
+            vector_points=vector_points,
+            profile=profile,
+            limit=limit,
+            document_id=document_id,
+            document_ids=document_ids,
+        )
+
+    def _collect_department_priority_candidates(
+        self,
+        *,
+        query: str,
+        query_vector: list[float],
+        profile: QueryProfile,
+        limit: int,
+        scope: DepartmentPriorityRetrievalScope | None,
+    ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
+        if scope is None:
+            return self._collect_scoped_candidates(
+                query=query,
+                query_vector=query_vector,
+                profile=profile,
+                limit=limit,
+            )
+
+        department_limit = limit
+        global_limit = min(limit, max(profile.top_k, max(limit // 2, 1)))
+
+        department_candidates, department_mode, department_branch_weights = self._collect_scoped_candidates(
+            query=query,
+            query_vector=query_vector,
+            profile=profile,
+            limit=department_limit,
+            document_ids=scope.department_document_ids,
+        )
+        global_candidates, global_mode, global_branch_weights = self._collect_scoped_candidates(
+            query=query,
+            query_vector=query_vector,
+            profile=profile,
+            limit=global_limit,
+            document_ids=scope.global_document_ids,
+        )
+
+        self._mark_candidates_source_scope(department_candidates, source_scope="department")
+        self._mark_candidates_source_scope(global_candidates, source_scope="global")
+
+        retrieval_mode = "hybrid" if "hybrid" in {department_mode, global_mode} else "qdrant"
+        branch_weights = department_branch_weights or global_branch_weights
+        fused_candidates = self._fuse_scope_candidates(
+            department_candidates=department_candidates,
+            global_candidates=global_candidates,
+            limit=limit,
+        )
+        return fused_candidates, retrieval_mode, branch_weights
+
+    def _apply_ocr_quality_governance(
+        self,
+        candidates: list[_RetrievalCandidate],
+    ) -> list[_RetrievalCandidate]:
+        if not self.settings.ocr_low_quality_filter_enabled or not candidates:
+            return candidates
+
+        kept_candidates: list[_RetrievalCandidate] = []
+        filtered_count = 0
+        for candidate in candidates:
+            if self._is_low_quality_ocr_candidate(candidate):
+                filtered_count += 1
+                continue
+            kept_candidates.append(candidate)
+
+        if filtered_count <= 0:
+            return candidates
+        if not kept_candidates:  # 不让 OCR 质量治理把结果完全打空；极端情况下保留原始候选供后续链路继续工作。
+            logger.info(
+                "ocr quality governance skipped reason=all_candidates_low_quality filtered_count=%d threshold=%.3f",
+                filtered_count,
+                self.settings.ocr_low_quality_min_score,
+            )
+            return candidates
+
+        logger.info(
+            "ocr quality governance filtered_count=%d kept_count=%d threshold=%.3f",
+            filtered_count,
+            len(kept_candidates),
+            self.settings.ocr_low_quality_min_score,
+        )
+        return kept_candidates
+
+    def _is_low_quality_ocr_candidate(self, candidate: _RetrievalCandidate) -> bool:
+        payload = candidate.payload
+        if not bool(payload.get("ocr_used") or False):
+            return False
+        quality_score = payload.get("quality_score")
+        if quality_score is None:
+            return False
+        try:
+            normalized_quality = float(quality_score)
+        except (TypeError, ValueError):
+            return False
+        return normalized_quality < self.settings.ocr_low_quality_min_score
 
     def _fuse_candidates(
         self,
@@ -413,6 +582,54 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         )
         return ranked_candidates[:limit]
 
+    def _fuse_scope_candidates(
+        self,
+        *,
+        department_candidates: list[_RetrievalCandidate],
+        global_candidates: list[_RetrievalCandidate],
+        limit: int,
+    ) -> list[_RetrievalCandidate]:
+        if limit <= 0:
+            return []
+
+        fused_candidates: dict[str, _RetrievalCandidate] = {}
+        for candidate in [*department_candidates, *global_candidates]:
+            fused = fused_candidates.get(candidate.candidate_id)
+            if fused is None:
+                fused_candidates[candidate.candidate_id] = _RetrievalCandidate(
+                    candidate_id=candidate.candidate_id,
+                    payload=dict(candidate.payload),
+                    score=candidate.score,
+                    vector_score=candidate.vector_score,
+                    lexical_score=candidate.lexical_score,
+                    source_scope=candidate.source_scope,
+                    department_hit=candidate.department_hit,
+                    global_hit=candidate.global_hit,
+                )
+                continue
+
+            if candidate.score > fused.score:
+                fused.payload = dict(candidate.payload)
+                fused.score = candidate.score
+            fused.vector_score = self._max_optional_score(fused.vector_score, candidate.vector_score)
+            fused.lexical_score = self._max_optional_score(fused.lexical_score, candidate.lexical_score)
+            fused.department_hit = fused.department_hit or candidate.department_hit
+            fused.global_hit = fused.global_hit or candidate.global_hit
+            fused.source_scope = self._resolve_source_scope(fused)
+
+        ranked_candidates = sorted(
+            fused_candidates.values(),
+            key=lambda item: (
+                int(item.department_hit),
+                item.score,
+                int(item.department_hit and item.global_hit),
+                item.lexical_score if item.lexical_score is not None else -1.0,
+                item.vector_score if item.vector_score is not None else -1.0,
+            ),
+            reverse=True,
+        )
+        return ranked_candidates[:limit]
+
     @staticmethod
     def _candidate_from_vector_point(point: object) -> _RetrievalCandidate:
         payload = dict(getattr(point, "payload", None) or {})
@@ -424,6 +641,60 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             score=vector_score,
             vector_score=vector_score,
         )
+
+    @staticmethod
+    def _mark_candidates_source_scope(candidates: list[_RetrievalCandidate], *, source_scope: str) -> None:
+        for candidate in candidates:
+            candidate.source_scope = source_scope
+            if source_scope == "department":
+                candidate.department_hit = True
+            elif source_scope == "global":
+                candidate.global_hit = True
+
+    @staticmethod
+    def _resolve_source_scope(candidate: _RetrievalCandidate) -> str | None:
+        if candidate.department_hit and candidate.global_hit:
+            return "both"
+        if candidate.department_hit:
+            return "department"
+        if candidate.global_hit:
+            return "global"
+        return candidate.source_scope
+
+    @staticmethod
+    def _max_optional_score(left: float | None, right: float | None) -> float | None:
+        if left is None:
+            return right
+        if right is None:
+            return left
+        return max(left, right)
+
+    @staticmethod
+    def _should_use_department_priority_routes(
+        *,
+        auth_context: AuthContext | None,
+        document_id: str | None,
+    ) -> bool:
+        if document_id is not None:
+            return False
+        if auth_context is None:
+            return False
+        return auth_context.role.data_scope != "global"
+
+    def _search_vector_points(
+        self,
+        *,
+        query_vector: list[float],
+        limit: int,
+        document_id: str | None = None,
+        document_ids: list[str] | None = None,
+    ) -> list[object]:
+        search_kwargs: dict[str, object] = {"limit": limit}
+        if document_id is not None:
+            search_kwargs["document_id"] = document_id
+        if document_ids is not None:
+            search_kwargs["document_ids"] = document_ids
+        return self.vector_store.search(query_vector, **search_kwargs)
 
     def _normalized_retrieval_strategy(self) -> str:
         normalized = self.settings.retrieval_strategy_default.strip().lower()

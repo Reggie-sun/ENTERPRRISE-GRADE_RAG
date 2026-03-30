@@ -15,6 +15,8 @@ import pytest  # 导入 pytest，方便写参数化测试。
 import backend.app.services.asset_store as asset_store_module  # 导入资产存储模块，便于在测试里替换 PostgreSQL 资产后端。
 from backend.app.main import app  # 导入应用实例，测试时直接对这个 app 发请求。
 from backend.app.core.config import Settings, ensure_data_directories  # 导入配置对象和目录初始化函数。
+from backend.app.rag.ocr.client import OCRExtractionResult, OCRTextSegment
+from backend.app.rag.parsers.document_parser import ParsedDocument
 from backend.app.rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 存储，验证远程模式客户端参数。
 from backend.app.schemas.document import DocumentRecord, IngestJobRecord  # 导入文档和任务元数据结构，用于 metadata store 测试桩。
 from backend.app.services.document_service import (  # 导入上传服务、依赖注入函数和上传分块读取配置。
@@ -389,6 +391,70 @@ def test_run_ingest_job_marks_partial_failed_when_pdf_ocr_fallback_is_unavailabl
     assert "short note" in parsed_text
     assert ingestion_result.ocr_artifact_path is None
     assert not (settings.ocr_artifact_dir / "doc_mock_ocr_pdf.json").exists()
+
+
+def test_run_ingest_job_applies_pdf_page_level_ocr_only_to_low_text_pages(tmp_path: Path, monkeypatch) -> None:
+    settings = build_test_settings(tmp_path, ocr_provider="mock", ocr_pdf_native_text_min_chars=20)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    source_path = settings.upload_dir / "mixed_pages.pdf"
+    source_path.write_bytes(build_minimal_pdf_bytes("placeholder"))
+    native_page_texts = [
+        "第一页原生文本足够完整，包含巡检步骤和报警说明。",
+        "x",
+    ]
+
+    monkeypatch.setattr(
+        service.ingestion_service.parser,
+        "extract_pdf_page_texts",
+        lambda _path: native_page_texts,
+    )
+    monkeypatch.setattr(
+        service.ingestion_service.parser,
+        "parse",
+        lambda source_path, document_id, filename, allow_empty=False: ParsedDocument(
+            document_id=document_id,
+            filename=filename,
+            parser_name="pdf_text",
+            text="\n\n".join(native_page_texts),
+        ),
+    )
+
+    captured_page_numbers: list[int] = []
+
+    def fake_extract_pdf_text(*, source_path, filename, page_numbers=None):
+        del source_path, filename
+        captured_page_numbers.extend(page_numbers or [])
+        return OCRExtractionResult(
+            parser_name="pdf_ocr_mock",
+            text="第二页 OCR 补全文本：压力传感器检查",
+            segments=[
+                OCRTextSegment(
+                    text="第二页 OCR 补全文本：压力传感器检查",
+                    page_no=2,
+                    line_no=1,
+                    confidence=0.96,
+                )
+            ],
+        )
+
+    monkeypatch.setattr(service.ingestion_service.ocr_client, "extract_pdf_text", fake_extract_pdf_text)
+
+    ingestion_result = service.ingestion_service.ingest_document(
+        document_id="doc_pdf_page_ocr",
+        filename="mixed_pages.pdf",
+        source_path=source_path,
+    )
+
+    assert captured_page_numbers == [2]
+    assert ingestion_result.final_status == "completed"
+    parsed_text = Path(ingestion_result.parsed_path).read_text(encoding="utf-8")
+    assert "第一页原生文本足够完整" in parsed_text
+    assert "第二页 OCR 补全文本：压力传感器检查" in parsed_text
+    chunk_payload = json.loads(Path(ingestion_result.chunk_path).read_text(encoding="utf-8"))
+    assert any(item["ocr_used"] is True for item in chunk_payload)
+    assert any(item["page_no"] == 2 for item in chunk_payload if item["ocr_used"] is True)
 
 
 def test_upload_document_returns_ocr_artifact_path_for_mock_image_documents(tmp_path: Path) -> None:  # 同步上传图片时应返回 OCR artifact 路径，便于后续排障。

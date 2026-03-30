@@ -1,0 +1,12 @@
+{"query":"E1103报警","expected_query_type":"exact","expected_vector_weight":0.3,"expected_lexical_weight":0.7,"note":"故障码类精确检索"}
+{"query":"PLC_A01错误","expected_query_type":"exact","expected_vector_weight":0.3,"expected_lexical_weight":0.7,"note":"英文数字混排故障码"}
+{"query":"Qwen2.5-32B","expected_query_type":"exact","expected_vector_weight":0.3,"expected_lexical_weight":0.7,"note":"模型版本号"}
+{"query":"SOP-1024","expected_query_type":"exact","expected_vector_weight":0.3,"expected_lexical_weight":0.7,"note":"编号类术语"}
+{"query":"为什么设备夜班频繁停机","expected_query_type":"semantic","expected_vector_weight":0.7,"expected_lexical_weight":0.3,"note":"完整自然语言问句"}
+{"query":"设备夜班频繁停机原因","expected_query_type":"semantic","expected_vector_weight":0.7,"expected_lexical_weight":0.3,"note":"原因分析类语义检索"}
+{"query":"交接流程为什么容易漏项","expected_query_type":"semantic","expected_vector_weight":0.7,"expected_lexical_weight":0.3,"note":"经验总结类自然语言问题"}
+{"query":"SOP-1024夜班停机原因","expected_query_type":"mixed","expected_vector_weight":0.5,"expected_lexical_weight":0.5,"note":"编号+自然语言混合"}
+{"query":"主轴报警E102怎么处理","expected_query_type":"mixed","expected_vector_weight":0.5,"expected_lexical_weight":0.5,"note":"故障码+处理问句混合"}
+{"query":"Qwen2.5-32B 模型为什么回答慢","expected_query_type":"mixed","expected_vector_weight":0.5,"expected_lexical_weight":0.5,"note":"模型名+性能问题混合"}
+{"query":"接口 eth0 up 后还是丢包怎么排查","expected_query_type":"mixed","expected_vector_weight":0.5,"expected_lexical_weight":0.5,"note":"接口名+排查问句混合"}
+{"query":"v2.3.1 升级失败原因","expected_query_type":"mixed","expected_vector_weight":0.5,"expected_lexical_weight":0.5,"note":"版本号+原因分析混合"}

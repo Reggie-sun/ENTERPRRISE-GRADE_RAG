@@ -108,6 +108,14 @@ export interface HealthResponse {
     angle_cls_enabled: boolean;  // PaddleOCR 是否启用 angle cls。
     detail: string | null;  // OCR 运行状态说明。
   };
+  tokenizer: {
+    provider: string;  // token 预算服务 provider。
+    model: string;  // 对应 tokenizer 目标模型名。
+    ready: boolean;  // tokenizer 预算服务是否 ready。
+    trust_remote_code: boolean;  // 是否允许 remote code。
+    detail: string | null;  // tokenizer 运行状态说明。
+    error: string | null;  // tokenizer 初始化/探活错误。
+  };
 }
 
 // ========== 认证相关 ==========
@@ -147,6 +155,7 @@ export interface AuthProfileResponse {
   role: RoleDefinition;
   department: DepartmentRecord;
   accessible_department_ids: string[];
+  department_query_isolation_enabled?: boolean;
 }
 
 /** 登录请求 */
@@ -489,6 +498,21 @@ export interface OpsRerankDecisionSummary {
   should_rollback_to_heuristic: boolean;
 }
 
+export interface OpsRerankCanarySummary {
+  sample_size: number;
+  eligible_count: number;
+  hold_count: number;
+  provider_active_count: number;
+  rollback_active_count: number;
+  not_applicable_count: number;
+  other_count: number;
+  latest_sample_id: string | null;
+  latest_decision: string | null;
+  latest_message: string | null;
+  last_sample_at: string | null;
+  last_eligible_at: string | null;
+}
+
 export interface OpsCategorySummary {
   category: EventLogCategory;
   total: number;
@@ -539,6 +563,7 @@ export interface OpsSummaryResponse {
   recent_window: OpsRecentWindowSummary;
   rerank_usage: OpsRerankUsageSummary;
   rerank_decision: OpsRerankDecisionSummary;
+  rerank_canary: OpsRerankCanarySummary;
   stuck_ingest_jobs: OpsStuckIngestJobSummary[];
   categories: OpsCategorySummary[];
   recent_failures: EventLogRecord[];
@@ -563,6 +588,11 @@ export interface SopGenerationCitation {
   vector_score: number | null;
   lexical_score: number | null;
   fused_score: number | null;
+  ocr_used?: boolean;
+  parser_name?: string | null;
+  page_no?: number | null;
+  ocr_confidence?: number | null;
+  quality_score?: number | null;
 }
 
 export interface SopGenerateByScenarioRequest {
@@ -982,6 +1012,34 @@ export interface RetrievalRerankCompareResponse {
   summary: RerankComparisonSummary;  // 两条结果的差异摘要。
   provider_candidate_summary: RerankComparisonSummary | null;  // provider 候选与 heuristic 的差异摘要。
   recommendation: RerankPromotionRecommendation;  // 当前是否适合把默认策略切到 provider。
+  canary_sample_id: string | null;  // 本次 compare 持久化后的 canary 样本 ID。
+}
+
+export interface RerankCanarySampleRecord {
+  sample_id: string;  // canary 样本唯一标识。
+  occurred_at: string;  // 生成时间。
+  actor: EventLogActor;  // 当前样本对应的操作人。
+  query: string;  // 当时参与 compare 的查询。
+  mode: string;  // 当时的查询档位。
+  target_id: string | null;  // 文档或目标对象标识。
+  candidate_count: number;  // 进入 compare 的候选数。
+  rerank_top_n: number;  // 实际参与 rerank 的 top_n。
+  route_status: RetrievalRerankRouteStatus;  // 生成样本时的默认路由实时状态。
+  configured_provider: string;  // 样本当时的配置 provider。
+  configured_strategy: string;  // 样本当时的默认策略。
+  configured_error_message: string | null;  // 样本当时默认路由错误。
+  heuristic_strategy: string;  // heuristic 基线策略。
+  provider_candidate_strategy: string | null;  // provider 候选策略。
+  provider_candidate_error_message: string | null;  // provider 候选错误。
+  summary: RerankComparisonSummary;  // 默认路由与 heuristic 的差异摘要。
+  provider_candidate_summary: RerankComparisonSummary | null;  // provider 候选与 heuristic 的差异摘要。
+  recommendation: RerankPromotionRecommendation;  // 当时生成的切换建议。
+  details: Record<string, unknown>;  // 诊断详情，例如 top chunk ids。
+}
+
+export interface RerankCanaryListResponse {
+  limit: number;  // 当前请求的返回上限。
+  items: RerankCanarySampleRecord[];  // 最近 canary 样本列表。
 }
 
 // ========== 问答相关 ==========
@@ -1007,6 +1065,11 @@ export interface Citation {
   vector_score: number | null;  // 原始向量召回分数。
   lexical_score: number | null;  // 原始词项召回分数。
   fused_score: number | null;  // 当前引用最终融合分数。
+  ocr_used?: boolean;  // 当前引用是否来自 OCR 参与的解析链路。
+  parser_name?: string | null;  // 当前引用的解析器名称。
+  page_no?: number | null;  // OCR 命中页码。
+  ocr_confidence?: number | null;  // OCR 置信度摘要。
+  quality_score?: number | null;  // OCR/解析质量分。
 }
 
 /** 问答响应 */

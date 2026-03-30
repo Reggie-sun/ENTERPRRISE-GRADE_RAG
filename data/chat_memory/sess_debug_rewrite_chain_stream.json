@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_debug_rewrite_chain_stream",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:12:39.485429Z",
+  "turns": [
+    {
+      "turn_id": "turn_a6fda609aab9",
+      "asked_at": "2026-03-30T03:12:37.670815Z",
+      "question": "CPPS是什么？",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频、尿急、排尿踌躇不畅等。书中提出的观点是这些症状与头痛有相似之处，只是疼痛部位在盆腔而已。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_ac8e27ddbb95",
+      "asked_at": "2026-03-30T03:12:39.485420Z",
+      "question": "这个是什么意思",
+      "answer": "CPPS是Chronic Pelvic Pain Syndrome的缩写，指的是慢性盆腔疼痛综合征，表现为盆腔区域持续不断的不适或疼痛。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

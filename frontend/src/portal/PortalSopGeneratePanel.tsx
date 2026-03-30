@@ -1,7 +1,7 @@
 import { Download, LibraryBig, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { getDepartmentScopeSummary, useAuth } from '@/auth';
-import { Button, Card, Input, StatusPill, StreamProgressSummary, Textarea, type StreamProgressMetrics } from '@/components';
+import { Button, Card, Input, StatusPill, StreamProgressSummary, Textarea, type StreamProgressMetrics, EvidenceSourceSummary } from '@/components';
 import { UploadPanel } from '@/panels';
 import {
   downloadSopDraftFile,
@@ -661,6 +661,14 @@ export function PortalSopGeneratePanel() {
                     资料编号：{item.document_id} / 片段编号：{item.chunk_id}
                   </p>
                   <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">{item.snippet}</p>
+                  <EvidenceSourceSummary
+                    retrievalStrategy={item.retrieval_strategy}
+                    ocrUsed={item.ocr_used}
+                    parserName={item.parser_name}
+                    pageNo={item.page_no}
+                    ocrConfidence={item.ocr_confidence}
+                    qualityScore={item.quality_score}
+                  />
                   <p className="m-0 mt-3 text-xs text-ink-soft break-all">{item.source_path}</p>
                 </article>
               ))}

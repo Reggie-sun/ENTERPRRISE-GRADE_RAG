@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 from fastapi import HTTPException
 
-from backend.app.core.config import Settings
+from backend.app.core.config import Settings, ensure_data_directories
 from backend.app.rag.generators.client import LLMGenerationRetryableError
 from backend.app.schemas.retrieval import RetrievalResponse, RetrievedChunk
 from backend.app.schemas.sop_generation import (
@@ -17,6 +17,8 @@ from backend.app.schemas.system_config import SystemConfigUpdateRequest
 from backend.app.services.auth_service import AuthService
 from backend.app.services.identity_service import IdentityService
 from backend.app.services.query_profile_service import QueryProfileService
+from backend.app.services.request_snapshot_service import RequestSnapshotService
+from backend.app.services.retrieval_service import RetrievalService
 from backend.app.services.sop_generation_service import SopGenerationService
 from backend.app.services.system_config_service import SystemConfigService
 
@@ -276,6 +278,15 @@ class _FakeDocumentService:
             preview_file_url=None,
         )
 
+    def is_document_readable(self, doc_id: str, auth_context=None) -> bool:
+        if auth_context is None:
+            return True
+        department_id = self.department_map.get(doc_id)
+        return department_id is None or department_id in getattr(auth_context, "accessible_department_ids", [])
+
+    def get_document_readability_map(self, doc_ids: list[str], auth_context=None) -> dict[str, bool]:
+        return {doc_id: self.is_document_readable(doc_id, auth_context=auth_context) for doc_id in doc_ids}
+
 
 def test_sop_generation_service_generates_scenario_draft_for_department_admin(tmp_path: Path) -> None:
     identity_service = _build_identity_service(tmp_path)
@@ -376,6 +387,139 @@ def test_sop_generation_service_defaults_to_accurate_profile_when_request_omits_
     assert retrieval_service.last_request.candidate_top_k == 32
     assert response.generation_mode == "rag"
     assert len(response.citations) == 5
+
+
+def test_sop_generation_service_reranks_full_candidate_pool_before_truncating_citations(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.admin",
+        password="digitalization-admin-pass",
+    )
+    retrieval_service = _FakeRetrievalService(
+        [
+            RetrievedChunk(
+                chunk_id=f"chunk_{index}",
+                document_id="doc_digitalization",
+                document_name="数字化巡检手册",
+                text=f"巡检步骤 {index}：先检查任务调度服务、数据库连接和系统日志。",
+                score=0.95 - index * 0.01,
+                source_path="/tmp/digitalization.txt",
+            )
+            for index in range(10)
+        ]
+    )
+    reranker_client = _RecordingRerankerClient()
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=retrieval_service,
+        document_service=_FakeDocumentService({"doc_digitalization": "dept_digitalization"}),
+        reranker_client=reranker_client,
+        generation_client=_FakeGenerationClient(answer="这是准确档 SOP 草稿。"),
+    )
+
+    response = service.generate_from_document(
+        request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
+        auth_context=auth_context,
+    )
+
+    assert reranker_client.calls == [
+        {
+            "query": "数字化部 doc_digitalization SOP 操作步骤 异常处理 注意事项 标准流程",
+            "candidate_count": 10,
+            "top_n": 10,
+            "chunk_ids": [f"chunk_{index}" for index in range(10)],
+        }
+    ]
+    assert len(response.citations) == 5
+    assert [item.chunk_id for item in response.citations] == ["chunk_9", "chunk_8", "chunk_7", "chunk_6", "chunk_5"]
+
+
+def test_sop_generation_service_persists_hybrid_retrieval_observability_to_snapshot(tmp_path: Path) -> None:
+    settings = Settings(
+        _env_file=None,
+        data_dir=tmp_path / "data",
+        upload_dir=tmp_path / "data" / "uploads",
+        parsed_dir=tmp_path / "data" / "parsed",
+        chunk_dir=tmp_path / "data" / "chunks",
+        document_dir=tmp_path / "data" / "documents",
+        job_dir=tmp_path / "data" / "jobs",
+        event_log_dir=tmp_path / "data" / "event_logs",
+        request_trace_dir=tmp_path / "data" / "request_traces",
+        request_snapshot_dir=tmp_path / "data" / "request_snapshots",
+        system_config_path=tmp_path / "data" / "system_config.json",
+        llm_provider="mock",
+        embedding_provider="mock",
+        reranker_provider="heuristic",
+        retrieval_dynamic_weighting_enabled=True,
+        qdrant_url=str(tmp_path / "qdrant_db"),
+    )
+    ensure_data_directories(settings)
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.admin",
+        password="digitalization-admin-pass",
+    )
+    document_service = _FakeDocumentService({"doc_digitalization": "dept_digitalization"})
+    retrieval_service = RetrievalService(settings, document_service=document_service)
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, *, limit, document_id=None: [
+            SimpleNamespace(
+                id=f"point-{index}",
+                score=0.95 - index * 0.01,
+                payload={
+                    "chunk_id": f"chunk-{index}",
+                    "document_id": "doc_digitalization",
+                    "document_name": "数字化巡检手册",
+                    "text": f"PLC_A01 recovery step {index}",
+                    "source_path": "/tmp/digitalization.txt",
+                },
+            )
+            for index in range(6)
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(
+        search=lambda query, *, limit, document_id=None: [
+            SimpleNamespace(
+                point_id="point-0",
+                score=4.2,
+                payload={
+                    "chunk_id": "chunk-0",
+                    "document_id": "doc_digitalization",
+                    "document_name": "数字化巡检手册",
+                    "text": "PLC_A01 exact recovery step",
+                    "source_path": "/tmp/digitalization.txt",
+                },
+            )
+        ]
+    )
+    request_snapshot_service = RequestSnapshotService(settings)
+    service = SopGenerationService(
+        settings,
+        identity_service=identity_service,
+        retrieval_service=retrieval_service,
+        document_service=document_service,
+        request_snapshot_service=request_snapshot_service,
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(answer="这是准确档 SOP 草稿。"),
+    )
+
+    response = service.generate_from_document(
+        request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
+        auth_context=auth_context,
+    )
+
+    assert len(response.citations) == 5
+    snapshot_record = request_snapshot_service.repository.list_records(limit=1)[0]
+    assert snapshot_record.details["retrieval_mode"] == "hybrid"
+    assert snapshot_record.details["query_type"] == "mixed"
+    assert snapshot_record.details["vector_weight"] == pytest.approx(0.5)
+    assert snapshot_record.details["lexical_weight"] == pytest.approx(0.5)
+    assert snapshot_record.details["rerank_input_count"] == 6
+    assert snapshot_record.details["citation_count"] == 5
 
 
 def test_sop_generation_service_uses_fallback_when_llm_retryable(tmp_path: Path) -> None:
@@ -823,6 +967,7 @@ def test_sop_generation_service_propagates_ocr_metadata_to_citations(tmp_path: P
                     score=0.96,
                     source_path="/tmp/digitalization.png",
                     retrieval_strategy="hybrid",
+                    source_scope="department",
                     vector_score=0.91,
                     lexical_score=1.4,
                     fused_score=0.96,
@@ -845,6 +990,7 @@ def test_sop_generation_service_propagates_ocr_metadata_to_citations(tmp_path: P
     )
 
     assert response.citations[0].ocr_used is True
+    assert response.citations[0].source_scope == "department"
     assert response.citations[0].parser_name == "docx_embedded_image_ocr_paddle"
     assert response.citations[0].page_no == 2
     assert response.citations[0].ocr_confidence == 0.94

@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_c7139571618b4f8793e93ae1a2c07880",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T03:56:35.488358Z",
+  "turns": [
+    {
+      "turn_id": "turn_9f2fe0d5a58f",
+      "asked_at": "2026-03-30T03:56:14.892356Z",
+      "question": "CPPS是什么？",
+      "answer": "CPPS（Chronic Pelvic Pain Syndrome）指的是慢性盆腔疼痛综合征，这是一种影响男性和女性的疾病，表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频、尿急、排尿踌躇不畅等。书中提出的观点认为，这些症状与头痛有相似之处，只是疼痛发生在盆腔区域。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_6f21d1e96bc7",
+      "asked_at": "2026-03-30T03:56:35.488350Z",
+      "question": "会怎么样",
+      "answer": "根据提供的上下文，CPPS（慢性盆腔疼痛综合征）是一种影响男性和女性的疾病，主要表现为盆腔区域持续不断的不适或疼痛。症状可能包括直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频、尿急、排尿踌躇不畅等。研究表明，心理因素如压力和焦虑对CPPS的症状有很大影响。通过压力控制方法和其他心理疗法，许多患者的症状得到了显著改善。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

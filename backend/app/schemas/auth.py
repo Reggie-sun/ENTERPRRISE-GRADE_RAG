@@ -109,6 +109,7 @@ class AuthProfileResponse(BaseModel):  # 当前用户的最小权限上下文。
     role: RoleDefinition
     department: DepartmentRecord
     accessible_department_ids: list[str] = Field(default_factory=list)
+    department_query_isolation_enabled: bool = True  # 读链路是否仍按部门隔离；前端据此调整门户范围文案，不改变稳定字段骨架。
 
 
 class LoginResponse(AuthProfileResponse):  # 登录成功响应。

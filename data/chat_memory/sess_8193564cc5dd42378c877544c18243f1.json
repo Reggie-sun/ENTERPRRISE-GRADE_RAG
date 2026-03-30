@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_8193564cc5dd42378c877544c18243f1",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-30T02:52:30.179691Z",
+  "turns": [
+    {
+      "turn_id": "turn_0ff6c34cf77a",
+      "asked_at": "2026-03-30T02:51:38.068234Z",
+      "question": "E204 怎么处理",
+      "answer": "你提供的上下文中没有关于如何处理 E204 的信息。因此，无法直接从这些内容中得出 E204 的处理方法。请提供更具体的关于 E204 的描述或错误代码含义。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_173d7753c2cd",
+      "asked_at": "2026-03-30T02:52:30.179674Z",
+      "question": "STEP4CHECKTEMPERATURE97531 是什么内容",
+      "answer": "STEP4CHECKTEMPERATURE97531 这个内容出现在 Context 1 中，但是并没有明确解释其具体内容。根据上下文推测，这可能是指某个步骤或者指令，与检查温度有关，但具体细节未被提供。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

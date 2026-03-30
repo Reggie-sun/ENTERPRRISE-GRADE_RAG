@@ -94,6 +94,10 @@ class _FakeRetrievalService:
     def search(self, request, *, auth_context=None):
         return RetrievalResponse(query=request.query, top_k=request.top_k or 0, mode="fake", results=self.results)
 
+    def search_candidates(self, request, *, auth_context=None, profile=None, truncate_to_top_k=True):
+        limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(self.results))
+        return self.results[:limit], "fake", profile
+
 
 class _FakeGenerationClient:
     def generate(
