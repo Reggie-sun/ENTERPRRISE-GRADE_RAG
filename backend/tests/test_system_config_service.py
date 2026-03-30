@@ -11,6 +11,7 @@ from backend.app.schemas.system_config import (
     ConcurrencyControlsConfig,
     DegradeControlsConfig,
     ModelRoutingConfig,
+    PromptBudgetConfig,
     QueryModeConfig,
     QueryProfilesConfig,
     RerankerRoutingConfig,
@@ -84,6 +85,9 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
     assert payload.concurrency_controls.accurate_max_inflight == 6
     assert payload.concurrency_controls.sop_generation_max_inflight == 3
     assert payload.concurrency_controls.per_user_online_max_inflight == 3
+    assert payload.prompt_budget.max_prompt_tokens == 2200
+    assert payload.prompt_budget.reserved_completion_tokens == 512
+    assert payload.prompt_budget.memory_prompt_tokens == 360
     assert payload.updated_at is None
     assert payload.updated_by is None
 
@@ -141,6 +145,11 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
                 acquire_timeout_ms=1200,
                 busy_retry_after_seconds=9,
             ),
+            prompt_budget=PromptBudgetConfig(
+                max_prompt_tokens=2400,
+                reserved_completion_tokens=640,
+                memory_prompt_tokens=320,
+            ),
         ),
         auth_context=_build_auth_context(),
     )
@@ -163,6 +172,9 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert reloaded.concurrency_controls.fast_max_inflight == 30
     assert reloaded.concurrency_controls.per_user_online_max_inflight == 3
     assert reloaded.concurrency_controls.acquire_timeout_ms == 1200
+    assert reloaded.prompt_budget.max_prompt_tokens == 2400
+    assert reloaded.prompt_budget.reserved_completion_tokens == 640
+    assert reloaded.prompt_budget.memory_prompt_tokens == 320
     assert fast_profile.top_k == 6
     assert fast_profile.candidate_top_k == 18
     assert fast_profile.lexical_top_k == 12
@@ -222,6 +234,7 @@ def test_system_config_service_validates_query_profile_relationships(tmp_path: P
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -266,6 +279,7 @@ def test_system_config_service_validates_lexical_top_k_relationships(tmp_path: P
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -290,6 +304,7 @@ def test_system_config_service_rejects_empty_model_route(tmp_path: Path) -> None
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -317,6 +332,7 @@ def test_system_config_service_validates_concurrency_relationships(tmp_path: Pat
                     acquire_timeout_ms=800,
                     busy_retry_after_seconds=5,
                 ),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -344,6 +360,7 @@ def test_system_config_service_validates_per_user_concurrency_relationships(tmp_
                     acquire_timeout_ms=800,
                     busy_retry_after_seconds=5,
                 ),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
@@ -370,9 +387,35 @@ def test_system_config_service_rejects_provider_default_strategy_when_provider_i
                 degrade_controls=DegradeControlsConfig(),
                 retry_controls=RetryControlsConfig(),
                 concurrency_controls=ConcurrencyControlsConfig(),
+                prompt_budget=PromptBudgetConfig(),
             ),
             auth_context=_build_auth_context(),
         )
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "reranker_routing.default_strategy must be heuristic when provider is heuristic."
+
+
+def test_system_config_service_validates_prompt_budget_relationships(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    with pytest.raises(HTTPException) as exc_info:
+        service.update_config(
+            SystemConfigUpdateRequest(
+                query_profiles=service.get_config(auth_context=_build_auth_context()).query_profiles,
+                model_routing=service.get_config(auth_context=_build_auth_context()).model_routing,
+                reranker_routing=service.get_config(auth_context=_build_auth_context()).reranker_routing,
+                degrade_controls=DegradeControlsConfig(),
+                retry_controls=RetryControlsConfig(),
+                concurrency_controls=ConcurrencyControlsConfig(),
+                prompt_budget=PromptBudgetConfig(
+                    max_prompt_tokens=512,
+                    reserved_completion_tokens=256,
+                    memory_prompt_tokens=512,
+                ),
+            ),
+            auth_context=_build_auth_context(),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.detail == "prompt_budget.memory_prompt_tokens must be smaller than prompt_budget.max_prompt_tokens."

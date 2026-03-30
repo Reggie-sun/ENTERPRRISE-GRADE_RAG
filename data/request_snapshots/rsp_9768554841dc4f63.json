@@ -1,0 +1,152 @@
+{
+  "snapshot_id": "rsp_9768554841dc4f63",
+  "trace_id": "trc_f98cf349145d4ec5",
+  "request_id": "req_01f5ccf692734b33",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T00:01:01.207133Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_department_admin_demo",
+    "username": "department.admin.demo",
+    "role_id": "department_admin",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": -3.041015625,
+      "source_path": "/app/data/uploads/doc_20260326054237_2605c799__sop_document_flow_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.58434737,
+      "lexical_score": 21.004433376159326,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+      "document_id": "doc_20260326065846_b619236e",
+      "document_name": "portal_sop_employee_smoke.txt",
+      "snippet": "数字化部系统巡检SOP测试文档\n\n巡检前检查监控面板和服务状态。\n发现异常后先记录时间、现象、影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": -3.796875,
+      "source_path": "/app/data/uploads/doc_20260326065846_b619236e__portal_sop_employee_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5411695,
+      "lexical_score": 21.575636007419938,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+      "document_id": "doc_20260326063420_0ae34377",
+      "document_name": "sop_mode_toggle_smoke.txt",
+      "snippet": "数字化部 SOP 档位切换烟测文档。\n步骤一：检查任务调度服务。\n步骤二：核对数据库连接与消息队列。\n步骤三：处理完成后更新值班记录。",
+      "score": -3.806640625,
+      "source_path": "/app/data/uploads/doc_20260326063420_0ae34377__sop_mode_toggle_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.55166686,
+      "lexical_score": 21.762783700862208,
+      "fused_score": 0.03252247488101534
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": -3.041015625,
+      "source_path": "/app/data/uploads/doc_20260326054237_2605c799__sop_document_flow_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.58434737,
+      "lexical_score": 21.004433376159326,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+      "document_id": "doc_20260326065846_b619236e",
+      "document_name": "portal_sop_employee_smoke.txt",
+      "snippet": "数字化部系统巡检SOP测试文档\n\n巡检前检查监控面板和服务状态。\n发现异常后先记录时间、现象、影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": -3.796875,
+      "source_path": "/app/data/uploads/doc_20260326065846_b619236e__portal_sop_employee_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.5411695,
+      "lexical_score": 21.575636007419938,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+      "document_id": "doc_20260326063420_0ae34377",
+      "document_name": "sop_mode_toggle_smoke.txt",
+      "snippet": "数字化部 SOP 档位切换烟测文档。\n步骤一：检查任务调度服务。\n步骤二：核对数据库连接与消息队列。\n步骤三：处理完成后更新值班记录。",
+      "score": -3.806640625,
+      "source_path": "/app/data/uploads/doc_20260326063420_0ae34377__sop_mode_toggle_smoke.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.55166686,
+      "lexical_score": 21.762783700862208,
+      "fused_score": 0.03252247488101534
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "根据提供的上下文，可以确定的是数字化部更新了以下SOP或处理资料：\n\n1. 数字化部 SOP 生成烟测文档（Context 1）\n2. 数字化部系统巡检SOP测试文档（Context 2）\n3. 数字化部 SOP 档位切换烟测文档（Context 3）\n\n这些文档涉及的任务包括但不限于巡检前的准备工作、异常情况下的记录及报告流程、以及处理后的记录更新等。",
+    "answer_chars": 178,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_department_admin_demo"
+  }
+}

@@ -24,15 +24,15 @@ class RetrievedChunk(BaseModel):  # 定义单条检索结果的结构。
     text: str  # chunk 文本内容。
     score: float  # 对外相关度分数；hybrid 模式下为归一化后的融合分，便于展示和后续轻量重排。
     source_path: str  # 原始文档路径。
-    retrieval_strategy: str | None = None  # 当前结果的召回策略，例如 qdrant / hybrid / document_preview。
-    vector_score: float | None = None  # 原始向量召回分数。
-    lexical_score: float | None = None  # 关键词召回分数；纯向量召回时为空。
-    fused_score: float | None = None  # hybrid 原始融合分数；当前主要用于调试真实排序依据。
-    ocr_used: bool = False  # 当前结果是否来自 OCR 参与的解析链路。
-    parser_name: str | None = None  # 当前结果的解析器名称。
-    page_no: int | None = None  # OCR 可可靠定位时返回页码。
-    ocr_confidence: float | None = None  # OCR 置信度摘要，供前端和后续排序策略复用。
-    quality_score: float | None = None  # 通用质量分，当前优先复用 OCR 置信度。
+    retrieval_strategy: str | None = None  # 主契约稳定解释字段：当前结果的召回策略，例如 qdrant / hybrid / document_preview。
+    vector_score: float | None = None  # 诊断字段：原始向量召回分数，后续允许继续演进。
+    lexical_score: float | None = None  # 诊断字段：关键词召回分数；纯向量召回时为空。
+    fused_score: float | None = None  # 诊断字段：hybrid 原始融合分数，主要服务排障和 compare。
+    ocr_used: bool = False  # 主契约稳定解释字段：当前结果是否来自 OCR 参与的解析链路。
+    parser_name: str | None = None  # 主契约稳定解释字段：当前结果的解析器名称。
+    page_no: int | None = None  # 主契约稳定解释字段：OCR 可可靠定位时返回页码。
+    ocr_confidence: float | None = None  # 诊断字段：OCR 置信度摘要，供调试和后续排序策略复用。
+    quality_score: float | None = None  # 诊断字段：通用质量分，当前优先复用 OCR 置信度。
 
 
 class RetrievalResponse(BaseModel):  # 定义检索接口的响应结构。

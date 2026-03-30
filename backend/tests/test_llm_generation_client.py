@@ -35,6 +35,7 @@ def test_llm_generation_client_retries_when_enabled(tmp_path: Path, monkeypatch:
                 }
             ),
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_auth_context(),
     )
@@ -80,6 +81,7 @@ def test_llm_generation_client_skips_retry_when_disabled(tmp_path: Path, monkeyp
                 }
             ),
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_auth_context(),
     )
@@ -238,3 +240,62 @@ def test_llm_generation_client_sets_max_tokens_for_openai_payload(tmp_path: Path
 
     assert result == "ok"
     assert captured["payload"]["max_tokens"] == 321
+
+
+def test_llm_generation_client_prefers_system_config_prompt_budget_over_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = Settings(
+        _env_file=None,
+        system_config_path=tmp_path / "data" / "system_config.json",
+        llm_provider="openai",
+        llm_base_url="http://example.com/v1",
+        llm_model="test-model",
+        llm_max_prompt_tokens=3000,
+        llm_reserved_completion_tokens=900,
+        chat_memory_max_prompt_tokens=700,
+    )
+    system_config_service = SystemConfigService(settings)
+    current_config = system_config_service.get_config(auth_context=_build_auth_context())
+    system_config_service.update_config(
+        SystemConfigUpdateRequest(
+            query_profiles=current_config.query_profiles,
+            model_routing=current_config.model_routing,
+            reranker_routing=current_config.reranker_routing,
+            degrade_controls=current_config.degrade_controls,
+            retry_controls=current_config.retry_controls,
+            concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget.model_copy(
+                update={
+                    "max_prompt_tokens": 512,
+                    "reserved_completion_tokens": 222,
+                    "memory_prompt_tokens": 96,
+                }
+            ),
+        ),
+        auth_context=_build_auth_context(),
+    )
+    client = LLMGenerationClient(settings, system_config_service=system_config_service)
+    captured: dict[str, object] = {}
+
+    class DummyResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return {"choices": [{"message": {"content": "ok"}}]}
+
+    def fake_post(url: str, *, json: dict[str, object], headers: dict[str, str], timeout: float, trust_env: bool):
+        captured["payload"] = json
+        return DummyResponse()
+
+    monkeypatch.setattr("backend.app.rag.generators.client.httpx.post", fake_post)
+
+    prompt = client._build_prompt(
+        question="解释一下悖论放松法",
+        contexts=["甲" * 400, "乙" * 400],
+        memory_text="[Recent Turn 1]\nUser: 上一轮说了什么？\nAssistant: 这里是一段需要被压缩的历史回答。" * 4,
+    )
+    result = client.generate(question="q", contexts=["context"])
+
+    assert result == "ok"
+    assert client._estimate_token_count(prompt) <= 512
+    assert captured["payload"]["max_tokens"] == 222

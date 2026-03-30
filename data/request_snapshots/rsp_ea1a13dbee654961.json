@@ -1,0 +1,152 @@
+{
+  "snapshot_id": "rsp_ea1a13dbee654961",
+  "trace_id": "trc_b995e63236a64c1d",
+  "request_id": "req_b5ed59bec14048c0",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-30T00:14:25.560769Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "不同部门最近更新了哪些关键知识资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: CPPS即慢性盆腔疼痛综合征(Chronic Prostatitis/Pelvic Pain Syndrome)，是一种涉及盆腔区域的长期疼痛状况。这种综合征可以影响男性和女性，并且其症状多种多样，通常包括直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急、排尿困难等。值得注意的是，尽管患者经历显著的疼痛，但许多常规测试的结果可能都在正常范围内，这使得诊断和治疗变得复杂。书中提出的观点认为，这些症状是由同一个深层次的问题引起的，而不是单一器官的问题，治疗应针对这一根本原因。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "不同部门最近更新了哪些关键知识资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n- 敏感数据不越权访问\n- 所有关键操作可追踪\n- 关键链路可监控、可告警、可回溯\n\n这意味着系统从一开始就不是“实验型 AI 工具”，而是按企业级应用方式建设。\n\n---\n\n## 9. 分阶段建设路线\n\n为了控制风险、加快落地，建议按阶段推进。\n\n### 第一阶段：智能助手基础版\n\n重点建设：\n\n- DFMS 内嵌入口\n- 基础知识问答\n- 文档知识库\n- 基础权限控制\n\n目标：\n\n- 先把“从文档到回答”的闭环做通\n\n### 第二阶段：运维辅助版\n\n重点建设：\n\n- 报警联动\n- 维修建议\n- 企业微信消息推送\n- 工单辅助\n\n目标：\n\n- 先在高价值场景里体现效率收益\n\n### 第三阶段：数据分析版\n\n重点建设：\n\n- 自然语言查数\n- 图表与统计分析\n- 多轮分析交互\n\n目标：\n\n- 让管理层和业务人员真正用起来\n\n### 第四阶段：产品化与复制推广\n\n重点建设：\n\n- 标准交付方案\n- 私有化 / 混合云交付模板\n- 运维体系\n- 商业化包装\n\n目标：\n\n- 形成可复制的行业解决方案\n\n---\n\n## 10. 项目价值总结\n\n从管理视角看，这个项目的核心价值可以概括为四点：\n\n### 10.1 对业务\n\n- 提高现场使用效率\n- 缩短故障处理时间\n- 提高数据使用效率\n\n### 10.2 对管理\n\n- 沉淀知识资产\n- 减少对个人经验的依赖\n-",
+      "score": 0.9760624679979518,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4816549,
+      "lexical_score": 18.366989912314608,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.9485294117647058,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4674266,
+      "lexical_score": 22.37326760832423,
+      "fused_score": 0.031099324975891997
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-13",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "要的不只是生物学方面，而是你在评估的任何时候。\nHigh dimensional data, right, sometimes we don't have labels, and clustering is very important.\n高维数据，对吧，有时候我们没有标签，聚类非常重要。\nSo now you know, away from biology, you've learned, you know how to take a big matrix. You've learned how to reduce it. Um, you've learned how to pull the most meaningful information out of that matrix. You've learned how to cluster that information, um.\n所以现在你知道了，除了生物学之外，你已经学会了，你知道了如何获取一个大矩阵。你已经学会了如何缩小它。嗯，你已经学会了如何从这个矩阵中提取最有意义的信息。你已经学会了如何将这些信息聚类，嗯。\nYou've learned how to embed it into a nonlinear space, and you've learned how to evaluate the clusters based on their vector expressions, right? So this can be used, you know, away from biology. You can use this in any high dimensional data, right? Where you might not have labels. So.",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.48349583,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n- 敏感数据不越权访问\n- 所有关键操作可追踪\n- 关键链路可监控、可告警、可回溯\n\n这意味着系统从一开始就不是“实验型 AI 工具”，而是按企业级应用方式建设。\n\n---\n\n## 9. 分阶段建设路线\n\n为了控制风险、加快落地，建议按阶段推进。\n\n### 第一阶段：智能助手基础版\n\n重点建设：\n\n- DFMS 内嵌入口\n- 基础知识问答\n- 文档知识库\n- 基础权限控制\n\n目标：\n\n- 先把“从文档到回答”的闭环做通\n\n### 第二阶段：运维辅助版\n\n重点建设：\n\n- 报警联动\n- 维修建议\n- 企业微信消息推送\n- 工单辅助\n\n目标：\n\n- 先在高价值场景里体现效率收益\n\n### 第三阶段：数据分析版\n\n重点建设：\n\n- 自然语言查数\n- 图表与统计分析\n- 多轮分析交互\n\n目标：\n\n- 让管理层和业务人员真正用起来\n\n### 第四阶段：产品化与复制推广\n\n重点建设：\n\n- 标准交付方案\n- 私有化 / 混合云交付模板\n- 运维体系\n- 商业化包装\n\n目标：\n\n- 形成可复制的行业解决方案\n\n---\n\n## 10. 项目价值总结\n\n从管理视角看，这个项目的核心价值可以概括为四点：\n\n### 10.1 对业务\n\n- 提高现场使用效率\n- 缩短故障处理时间\n- 提高数据使用效率\n\n### 10.2 对管理\n\n- 沉淀知识资产\n- 减少对个人经验的依赖\n-",
+      "score": 0.9760624679979518,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4816549,
+      "lexical_score": 18.366989912314608,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": 0.9485294117647058,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.4674266,
+      "lexical_score": 22.37326760832423,
+      "fused_score": 0.031099324975891997
+    },
+    {
+      "chunk_id": "doc_20260325071124_17f09733-chunk-13",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "要的不只是生物学方面，而是你在评估的任何时候。\nHigh dimensional data, right, sometimes we don't have labels, and clustering is very important.\n高维数据，对吧，有时候我们没有标签，聚类非常重要。\nSo now you know, away from biology, you've learned, you know how to take a big matrix. You've learned how to reduce it. Um, you've learned how to pull the most meaningful information out of that matrix. You've learned how to cluster that information, um.\n所以现在你知道了，除了生物学之外，你已经学会了，你知道了如何获取一个大矩阵。你已经学会了如何缩小它。嗯，你已经学会了如何从这个矩阵中提取最有意义的信息。你已经学会了如何将这些信息聚类，嗯。\nYou've learned how to embed it into a nonlinear space, and you've learned how to evaluate the clusters based on their vector expressions, right? So this can be used, you know, away from biology. You can use this in any high dimensional data, right? Where you might not have labels. So.",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "vector_score": 0.48349583,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "无法找到足够的证据来回答这个问题。提供的上下文没有提及不同部门更新的关键知识资料。",
+    "answer_chars": 41,
+    "citation_count": 3,
+    "rerank_strategy": "heuristic",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

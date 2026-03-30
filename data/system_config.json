@@ -45,6 +45,11 @@
     "acquire_timeout_ms": 800,
     "busy_retry_after_seconds": 5
   },
-  "updated_at": "2026-03-28T08:55:38.073299Z",
+  "prompt_budget": {
+    "max_prompt_tokens": 2300,
+    "reserved_completion_tokens": 512,
+    "memory_prompt_tokens": 360
+  },
+  "updated_at": "2026-03-28T09:22:56.993740Z",
   "updated_by": "user_sys_admin_demo"
 }

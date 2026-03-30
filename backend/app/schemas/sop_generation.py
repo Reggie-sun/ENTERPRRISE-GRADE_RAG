@@ -15,10 +15,15 @@ class SopGenerationCitation(BaseModel):
     snippet: str
     score: float  # 对外相关度分数；hybrid 模式下为归一化后的融合分。
     source_path: str
-    retrieval_strategy: str | None = None
-    vector_score: float | None = None
-    lexical_score: float | None = None
-    fused_score: float | None = None  # 原始融合排序分数。
+    retrieval_strategy: str | None = None  # 主契约稳定解释字段：当前引用的召回策略。
+    vector_score: float | None = None  # 诊断字段：原始向量召回分数。
+    lexical_score: float | None = None  # 诊断字段：原始词项召回分数。
+    fused_score: float | None = None  # 诊断字段：原始融合排序分数。
+    ocr_used: bool = False  # 主契约稳定解释字段：当前引用是否来自 OCR 参与的解析链路。
+    parser_name: str | None = None  # 主契约稳定解释字段：当前引用的解析器名称。
+    page_no: int | None = None  # 主契约稳定解释字段：OCR 可可靠定位时返回页码。
+    ocr_confidence: float | None = None  # 诊断字段：OCR 置信度摘要。
+    quality_score: float | None = None  # 诊断字段：通用质量分。
 
 
 class SopGenerationRequestBase(BaseModel):

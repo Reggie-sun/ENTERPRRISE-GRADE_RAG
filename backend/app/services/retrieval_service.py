@@ -55,11 +55,31 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.query_router = query_router or RetrievalQueryRouter(self.settings)  # 查询分类与 hybrid 动态权重策略统一收口到独立模块。
 
     def search(self, request: RetrievalRequest, *, auth_context: AuthContext | None = None) -> RetrievalResponse:  # 执行检索并返回结果。
-        profile = self.query_profile_service.resolve(
+        results, retrieval_mode, profile = self.search_candidates(
+            request,
+            auth_context=auth_context,
+            truncate_to_top_k=True,
+        )
+        return RetrievalResponse(  # 组装最终检索响应。
+            query=request.query,  # 返回原始查询文本。
+            top_k=profile.top_k,  # 返回实际生效的 top_k。
+            mode=retrieval_mode,  # 返回当前实际检索模式，便于前端和调试区分 qdrant / hybrid。
+            results=results,  # 返回构造好的结果列表。
+        )
+
+    def search_candidates(
+        self,
+        request: RetrievalRequest,
+        *,
+        auth_context: AuthContext | None = None,
+        profile: QueryProfile | None = None,
+        truncate_to_top_k: bool = True,
+    ) -> tuple[list[RetrievedChunk], str, QueryProfile]:
+        profile = profile or self.query_profile_service.resolve(
             purpose="retrieval",
             requested_mode=request.mode,
             requested_top_k=request.top_k,
-        )  # 先把 mode/top_k 展开为统一查询档位配置。
+        )  # 先把 mode/top_k 展开为统一查询档位配置；内部调用可复用上层已解析档位。
         normalized_document_id = request.document_id.strip() if request.document_id else None  # 统一清洗 document_id，避免前后空白导致过滤失效。
         if normalized_document_id and auth_context is not None and not self.document_service.is_document_readable(normalized_document_id, auth_context):
             raise HTTPException(
@@ -90,6 +110,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 [str(candidate.payload.get("document_id") or "") for candidate in candidates],
                 auth_context,
             )
+
+        result_limit = profile.top_k if truncate_to_top_k else None
 
         for candidate in candidates:  # 遍历最终候选结果，统一兼容纯向量与 hybrid 模式。
             payload = candidate.payload  # 读取 payload，空值在融合前已经归一成空字典。
@@ -124,15 +146,10 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
                 continue
             results.append(item)  # 命中过滤条件后才加入返回列表。
-            if len(results) >= profile.top_k:  # 达到请求上限后提前结束，避免无意义遍历。
+            if result_limit is not None and len(results) >= result_limit:  # 对外检索保留 top_k，内部链路可显式拿到更大的融合候选。
                 break
 
-        return RetrievalResponse(  # 组装最终检索响应。
-            query=request.query,  # 返回原始查询文本。
-            top_k=profile.top_k,  # 返回实际生效的 top_k。
-            mode=retrieval_mode,  # 返回当前实际检索模式，便于前端和调试区分 qdrant / hybrid。
-            results=results,  # 返回构造好的结果列表。
-        )
+        return results, retrieval_mode, profile
 
     def compare_rerank(
         self,

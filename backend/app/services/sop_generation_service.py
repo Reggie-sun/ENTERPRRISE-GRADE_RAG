@@ -920,7 +920,7 @@ class SopGenerationService:
         document_id: str | None,
         auth_context: AuthContext,
     ) -> SopCitationBuildResult:
-        retrieval_result = self.retrieval_service.search(
+        retrieval_results, _, _ = self.retrieval_service.search_candidates(
             RetrievalRequest(
                 query=search_query,
                 top_k=profile.top_k,
@@ -929,9 +929,11 @@ class SopGenerationService:
                 document_id=document_id,
             ),
             auth_context=auth_context,
+            profile=profile,
+            truncate_to_top_k=False,
         )
         filtered_results = self._filter_results_by_department(
-            retrieval_result.results,
+            retrieval_results,
             target_department_id=target_department_id,
             auth_context=auth_context,
         )
@@ -943,7 +945,9 @@ class SopGenerationService:
             candidates=filtered_results,
             profile=profile,
             reranker_client=self.reranker_client,
+            top_n=len(filtered_results),
         )
+        citations_source = reranked_results[: min(profile.rerank_top_n, len(reranked_results))]
 
         return SopCitationBuildResult(
             citations=[
@@ -958,8 +962,13 @@ class SopGenerationService:
                     vector_score=item.vector_score,
                     lexical_score=item.lexical_score,
                     fused_score=item.fused_score,
+                    ocr_used=item.ocr_used,
+                    parser_name=item.parser_name,
+                    page_no=item.page_no,
+                    ocr_confidence=item.ocr_confidence,
+                    quality_score=item.quality_score,
                 )
-                for item in reranked_results
+                for item in citations_source
             ],
             rerank_strategy=rerank_strategy,
         )
@@ -1052,6 +1061,8 @@ class SopGenerationService:
                     score=1.0 - (index * 0.01),
                     source_path=preview.preview_file_url or f"document-preview://{document_id}",
                     retrieval_strategy="document_preview",
+                    ocr_used=False,
+                    parser_name="document_preview",
                 )
             )
         return citations

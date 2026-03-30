@@ -34,6 +34,12 @@ class _FakeRetrievalService:
         self.last_request = request
         return RetrievalResponse(query=request.query, top_k=request.top_k or 0, mode="fake", results=self.results)
 
+    def search_candidates(self, request, *, auth_context=None, profile=None, truncate_to_top_k=True):
+        self.last_request = request
+        limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(self.results))
+        results = self.results[:limit]
+        return results, "fake", profile
+
 
 class _FakeGenerationClient:
     def __init__(self) -> None:
@@ -45,12 +51,29 @@ class _FakeGenerationClient:
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:
         self.last_timeout_seconds = timeout_seconds
         self.last_model_name = model_name
         return "基于证据生成的回答"
+
+
+class _RecordingRerankerClient:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def rerank(self, *, query: str, candidates: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
+        self.calls.append(
+            {
+                "query": query,
+                "candidate_count": len(candidates),
+                "top_n": top_n,
+                "chunk_ids": [candidate.chunk_id for candidate in candidates],
+            }
+        )
+        return list(reversed(candidates))[:top_n]
 
 
 def test_query_profile_service_resolves_fast_and_accurate_defaults() -> None:
@@ -116,6 +139,7 @@ def test_query_profile_service_uses_heuristic_rerank_when_provider_is_unavailabl
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_sys_admin_context(),
     )
@@ -156,6 +180,7 @@ def test_query_profile_service_reports_heuristic_when_default_strategy_is_pinned
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_sys_admin_context(),
     )
@@ -201,6 +226,7 @@ def test_query_profile_service_disables_fallbacks_when_system_config_turns_them_
             ),
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_sys_admin_context(),
     )
@@ -239,6 +265,31 @@ def test_chat_service_defaults_to_fast_profile_when_request_omits_mode_and_top_k
     assert fake_generation.last_model_name == "mock"
     assert response.mode == "rag"
     assert len(response.citations) == 3
+
+
+def test_chat_service_reranks_full_candidate_pool_before_truncating_citations() -> None:
+    fake_retrieval = _FakeRetrievalService(_build_chunks())
+    fake_generation = _FakeGenerationClient()
+    fake_reranker = _RecordingRerankerClient()
+    chat_service = ChatService(Settings(_env_file=None))
+    chat_service.retrieval_service = fake_retrieval
+    chat_service.reranker_client = fake_reranker
+    chat_service.generation_client = fake_generation
+
+    response = chat_service.answer(ChatRequest(question="数字化部巡检怎么做？"), auth_context=None)
+
+    assert fake_retrieval.last_request.top_k == 5
+    assert fake_retrieval.last_request.candidate_top_k == 10
+    assert fake_reranker.calls == [
+        {
+            "query": "数字化部巡检怎么做？",
+            "candidate_count": 10,
+            "top_n": 10,
+            "chunk_ids": [f"chunk_{index}" for index in range(10)],
+        }
+    ]
+    assert len(response.citations) == 3
+    assert [citation.chunk_id for citation in response.citations] == ["chunk_9", "chunk_8", "chunk_7"]
 
 
 def _build_sys_admin_context():

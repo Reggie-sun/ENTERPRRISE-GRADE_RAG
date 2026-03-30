@@ -152,6 +152,7 @@ export function RetrievalPanel({
         degrade_controls: configPayload.degrade_controls,
         retry_controls: configPayload.retry_controls,
         concurrency_controls: configPayload.concurrency_controls,
+        prompt_budget: configPayload.prompt_budget,
       });
       const refreshedComparison = await compareRetrievalRerank(buildRequest());
       setComparisonData(refreshedComparison);
@@ -182,6 +183,46 @@ export function RetrievalPanel({
     success: 'ok',
     error: 'error',
   };
+
+  const scoreMeta = (item: RetrievedChunk) => [
+    { label: '相关度', value: item.score.toFixed(4) },
+    { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
+  ];
+
+  const debugMetrics = (item: RetrievedChunk) => {
+    const metrics = [
+      { label: '融合原始分', value: item.fused_score },
+      { label: '向量分', value: item.vector_score },
+      { label: '词法分', value: item.lexical_score },
+    ].filter((metric) => metric.value !== null && metric.value !== undefined);
+
+    if (metrics.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mt-3 border-t border-[rgba(23,32,42,0.08)] pt-3">
+        <p className="m-0 text-[11px] font-medium uppercase tracking-[0.18em] text-ink-soft">Debug</p>
+        <div className="mt-2 flex flex-wrap gap-2 text-xs text-ink-soft">
+          {metrics.map((metric) => (
+            <span
+              key={metric.label}
+              className="inline-flex items-center rounded-full bg-[rgba(23,32,42,0.06)] px-2 py-1"
+            >
+              {metric.label} {(metric.value as number).toFixed(4)}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderChunkCardBody = (item: RetrievedChunk, previewLimit: number) => (
+    <>
+      {item.text.length > previewLimit ? `${item.text.slice(0, previewLimit)}...` : item.text}
+      {debugMetrics(item)}
+    </>
+  );
 
   return (
     <Card className="col-span-6 max-md:col-span-12">
@@ -272,12 +313,9 @@ export function RetrievalPanel({
               key={item.chunk_id}
               title={item.document_name}
               index={index}
-              meta={[
-                { label: '分数', value: item.score.toFixed(4) },
-                { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
-              ]}
+              meta={scoreMeta(item)}
             >
-              {item.text.length > 300 ? `${item.text.slice(0, 300)}...` : item.text}
+              {renderChunkCardBody(item, 300)}
             </ResultCard>
           ))
         )}
@@ -484,14 +522,11 @@ export function RetrievalPanel({
                 ) : comparisonData.configured.results.map((item, index) => (
                   <ResultCard
                     key={`configured-${item.chunk_id}`}
-                      title={item.document_name}
-                      index={index}
-                      meta={[
-                        { label: '分数', value: item.score.toFixed(4) },
-                        { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
-                      ]}
-                    >
-                    {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                    title={item.document_name}
+                    index={index}
+                    meta={scoreMeta(item)}
+                  >
+                    {renderChunkCardBody(item, 220)}
                   </ResultCard>
                 ))}
               </div>
@@ -508,14 +543,11 @@ export function RetrievalPanel({
                 ) : comparisonData.heuristic.results.map((item, index) => (
                   <ResultCard
                     key={`heuristic-${item.chunk_id}`}
-                      title={item.document_name}
-                      index={index}
-                      meta={[
-                        { label: '分数', value: item.score.toFixed(4) },
-                        { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
-                      ]}
-                    >
-                    {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                    title={item.document_name}
+                    index={index}
+                    meta={scoreMeta(item)}
+                  >
+                    {renderChunkCardBody(item, 220)}
                   </ResultCard>
                 ))}
               </div>
@@ -554,12 +586,9 @@ export function RetrievalPanel({
                         key={`provider-candidate-${item.chunk_id}`}
                         title={item.document_name}
                         index={index}
-                        meta={[
-                          { label: '分数', value: item.score.toFixed(4) },
-                          { label: '片段', value: item.chunk_id.slice(0, 12) + '...' },
-                        ]}
+                        meta={scoreMeta(item)}
                       >
-                        {item.text.length > 220 ? `${item.text.slice(0, 220)}...` : item.text}
+                        {renderChunkCardBody(item, 220)}
                       </ResultCard>
                     ))}
                   </div>

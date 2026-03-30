@@ -61,8 +61,10 @@ class QueryProfileService:
         candidates: list[RetrievedChunk],
         profile: QueryProfile,
         reranker_client: RerankerClient,
+        top_n: int | None = None,
     ) -> tuple[list[RetrievedChunk], str]:
-        safe_top_n = min(profile.rerank_top_n, len(candidates))
+        requested_top_n = profile.rerank_top_n if top_n is None else top_n
+        safe_top_n = min(requested_top_n, len(candidates))
         if safe_top_n <= 0:
             return [], "skipped"
         effective_strategy = self._resolve_effective_rerank_strategy(reranker_client)

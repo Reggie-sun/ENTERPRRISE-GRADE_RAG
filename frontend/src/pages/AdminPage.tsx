@@ -13,6 +13,7 @@ import {
   type HealthResponse,
   type ModelRoutingConfig,
   type OpsSummaryResponse,
+  type PromptBudgetConfig,
   updateSystemConfig,
   type QueryModeConfig,
   type QueryProfilesConfig,
@@ -112,6 +113,18 @@ function buildEmptyConcurrencyControls(): ConcurrencyControlsConfig {
 
 function cloneConcurrencyControls(concurrencyControls: ConcurrencyControlsConfig): ConcurrencyControlsConfig {
   return { ...concurrencyControls };
+}
+
+function buildEmptyPromptBudget(): PromptBudgetConfig {
+  return {
+    max_prompt_tokens: 2200,
+    reserved_completion_tokens: 512,
+    memory_prompt_tokens: 360,
+  };
+}
+
+function clonePromptBudget(promptBudget: PromptBudgetConfig): PromptBudgetConfig {
+  return { ...promptBudget };
 }
 
 function normalizeNumber(value: string, fallback: number): number {
@@ -273,6 +286,8 @@ export function AdminPage() {
   const [savedRetryControls, setSavedRetryControls] = useState<RetryControlsConfig>(buildEmptyRetryControls());
   const [concurrencyControls, setConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
   const [savedConcurrencyControls, setSavedConcurrencyControls] = useState<ConcurrencyControlsConfig>(buildEmptyConcurrencyControls());
+  const [promptBudget, setPromptBudget] = useState<PromptBudgetConfig>(buildEmptyPromptBudget());
+  const [savedPromptBudget, setSavedPromptBudget] = useState<PromptBudgetConfig>(buildEmptyPromptBudget());
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [opsSummary, setOpsSummary] = useState<OpsSummaryResponse | null>(null);
@@ -301,6 +316,8 @@ export function AdminPage() {
         setSavedRetryControls(cloneRetryControls(configPayload.retry_controls));
         setConcurrencyControls(cloneConcurrencyControls(configPayload.concurrency_controls));
         setSavedConcurrencyControls(cloneConcurrencyControls(configPayload.concurrency_controls));
+        setPromptBudget(clonePromptBudget(configPayload.prompt_budget));
+        setSavedPromptBudget(clonePromptBudget(configPayload.prompt_budget));
         setUpdatedAt(configPayload.updated_at);
         setUpdatedBy(configPayload.updated_by);
         setUsers(bootstrapPayload.users);
@@ -326,8 +343,9 @@ export function AdminPage() {
       || JSON.stringify(degradeControls) !== JSON.stringify(savedDegradeControls)
       || JSON.stringify(retryControls) !== JSON.stringify(savedRetryControls)
       || JSON.stringify(concurrencyControls) !== JSON.stringify(savedConcurrencyControls)
+      || JSON.stringify(promptBudget) !== JSON.stringify(savedPromptBudget)
     ),
-    [profiles, savedProfiles, modelRouting, savedModelRouting, rerankerRouting, savedRerankerRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls, concurrencyControls, savedConcurrencyControls],
+    [profiles, savedProfiles, modelRouting, savedModelRouting, rerankerRouting, savedRerankerRouting, degradeControls, savedDegradeControls, retryControls, savedRetryControls, concurrencyControls, savedConcurrencyControls, promptBudget, savedPromptBudget],
   );
 
   const updatedByLabel = useMemo(() => {
@@ -382,6 +400,13 @@ export function AdminPage() {
     }));
   };
 
+  const updatePromptBudget = (field: keyof PromptBudgetConfig, value: number) => {
+    setPromptBudget((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
   const handleSave = async () => {
     setSaveStatus('loading');
     setSaveError('');
@@ -393,6 +418,7 @@ export function AdminPage() {
         degrade_controls: degradeControls,
         retry_controls: retryControls,
         concurrency_controls: concurrencyControls,
+        prompt_budget: promptBudget,
       });
       const [latestHealth, latestOpsSummary] = await Promise.all([
         getHealth(),
@@ -410,6 +436,8 @@ export function AdminPage() {
       setSavedRetryControls(cloneRetryControls(payload.retry_controls));
       setConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
       setSavedConcurrencyControls(cloneConcurrencyControls(payload.concurrency_controls));
+      setPromptBudget(clonePromptBudget(payload.prompt_budget));
+      setSavedPromptBudget(clonePromptBudget(payload.prompt_budget));
       setUpdatedAt(payload.updated_at);
       setUpdatedBy(payload.updated_by);
       setHealth(latestHealth);
@@ -448,7 +476,7 @@ export function AdminPage() {
             管理后台先承接系统运行配置，把模型路由、降级和重试收口到一处。
           </h2>
           <p className="m-0 mt-3 max-w-[64ch] text-base leading-relaxed text-ink-soft">
-            这页现在能直接控制查询档位、关键词召回上限、模型路由、rerank 默认路由、降级开关和 LLM 重试策略，不需要改代码重发版。
+            这页现在能直接控制查询档位、上下文预算、模型路由、rerank 默认路由、降级开关和 LLM 重试策略，不需要改代码重发版。
           </p>
         </HeroCard>
 
@@ -525,7 +553,7 @@ export function AdminPage() {
           />
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-3">
+        <div className="mt-5 grid gap-5 xl:grid-cols-4">
           <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
             <div>
               <h3 className="m-0 text-xl font-semibold text-ink">模型路由</h3>
@@ -552,6 +580,56 @@ export function AdminPage() {
                 disabled={status === 'loading' || saveStatus === 'loading'}
                 onChange={(event) => updateModelRoutingField('sop_generation_model', event.target.value)}
               />
+            </div>
+          </Card>
+
+          <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">上下文预算</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                收口 prompt 软预算、回答预留 token 和轻记忆预算，避免准确档上下文塞满后只说半句。
+              </p>
+            </div>
+            <div className="mt-4 grid gap-3">
+              <Input
+                label="max_prompt_tokens"
+                type="number"
+                min={256}
+                max={32000}
+                step="64"
+                value={String(promptBudget.max_prompt_tokens)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updatePromptBudget('max_prompt_tokens', normalizeNumber(event.target.value, promptBudget.max_prompt_tokens))}
+              />
+              <Input
+                label="reserved_completion_tokens"
+                type="number"
+                min={64}
+                max={8192}
+                step="32"
+                value={String(promptBudget.reserved_completion_tokens)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updatePromptBudget('reserved_completion_tokens', normalizeNumber(event.target.value, promptBudget.reserved_completion_tokens))}
+              />
+              <Input
+                label="memory_prompt_tokens"
+                type="number"
+                min={64}
+                max={4096}
+                step="32"
+                value={String(promptBudget.memory_prompt_tokens)}
+                disabled={status === 'loading' || saveStatus === 'loading'}
+                onChange={(event) => updatePromptBudget('memory_prompt_tokens', normalizeNumber(event.target.value, promptBudget.memory_prompt_tokens))}
+              />
+            </div>
+            <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.72)] px-4 py-4 text-sm text-ink-soft">
+              <strong className="block text-ink">当前口径</strong>
+              <p className="m-0 mt-2">
+                prompt {promptBudget.max_prompt_tokens} / completion {promptBudget.reserved_completion_tokens} / memory {promptBudget.memory_prompt_tokens}
+              </p>
+              <p className="m-0 mt-2 leading-relaxed">
+                prompt 预算之外仍会保留一层安全余量，用来吸收本地软估算和上游 tokenizer 之间的偏差。
+              </p>
             </div>
           </Card>
 

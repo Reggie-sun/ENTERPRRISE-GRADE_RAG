@@ -442,6 +442,7 @@ def test_ops_summary_returns_runtime_snapshot_for_sys_admin(tmp_path: Path) -> N
     assert payload["rerank_decision"]["should_promote_to_provider"] is False
     assert payload["rerank_decision"]["should_rollback_to_heuristic"] is False
     assert payload["config"]["model_routing"]["fast_model"] == "Qwen/Test-7B"
+    assert payload["config"]["prompt_budget"]["max_prompt_tokens"] == 2200
     assert payload["recent_failures"][0]["event_id"] == "evt_chat_2"
     assert payload["recent_degraded"][0]["event_id"] == "evt_chat_2"
     assert payload["recent_traces"][0]["trace_id"] == "trc_chat_2"

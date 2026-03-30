@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import AliasChoices, BaseModel, Field  # 导入 Pydantic 基类、字段约束和别名工具。
 
 from .query_profile import QueryMode
@@ -24,10 +26,15 @@ class Citation(BaseModel):  # 定义回答里每条引用片段的结构。
     snippet: str  # 当前引用片段的文本内容。
     score: float  # 当前片段的对外相关度分数；hybrid 模式下为归一化后的融合分。
     source_path: str  # 当前片段原始文件的路径。
-    retrieval_strategy: str | None = None  # 当前引用的召回策略。
-    vector_score: float | None = None  # 原始向量召回分数。
-    lexical_score: float | None = None  # 原始词项召回分数。
-    fused_score: float | None = None  # 当前引用的原始融合排序分数。
+    retrieval_strategy: str | None = None  # 主契约稳定解释字段：当前引用的召回策略。
+    vector_score: float | None = None  # 诊断字段：原始向量召回分数。
+    lexical_score: float | None = None  # 诊断字段：原始词项召回分数。
+    fused_score: float | None = None  # 诊断字段：当前引用的原始融合排序分数。
+    ocr_used: bool = False  # 主契约稳定解释字段：当前引用是否来自 OCR 参与的解析链路。
+    parser_name: str | None = None  # 主契约稳定解释字段：当前引用的解析器名称。
+    page_no: int | None = None  # 主契约稳定解释字段：OCR 可可靠定位时返回页码。
+    ocr_confidence: float | None = None  # 诊断字段：OCR 置信度摘要。
+    quality_score: float | None = None  # 诊断字段：通用质量分，当前优先复用 OCR 置信度。
 
 
 class ChatResponse(BaseModel):  # 定义问答接口的响应体结构。
@@ -36,3 +43,24 @@ class ChatResponse(BaseModel):  # 定义问答接口的响应体结构。
     mode: str  # 当前回答模式，例如 rag / retrieval_fallback / no_context。
     model: str  # 当前使用的生成模型名称。
     citations: list[Citation]  # 回答中附带的引用片段列表。
+
+
+class ChatStreamMetaPayload(BaseModel):
+    question: str
+    mode: str
+    model: str
+    citations: list[Citation]
+
+
+class ChatStreamDeltaPayload(BaseModel):
+    delta: str
+
+
+ChatStreamErrorCode = Literal["busy", "llm_retryable", "llm_fatal", "unexpected_error"]
+
+
+class ChatStreamErrorPayload(BaseModel):
+    code: ChatStreamErrorCode
+    message: str
+    retryable: bool = False
+    retry_after_seconds: int | None = None

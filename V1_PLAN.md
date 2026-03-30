@@ -856,6 +856,140 @@
 3. 然后做企业微信消息接入与通讯录同步
 4. 最后把日志、配置、会话和外部身份映射逐步迁到数据库真源
 
+### 6.7 `v0.6.x` 当前主契约收口
+
+目标：
+
+- 在继续扩企业微信、数据库真源、metrics/exporter 之前，先把当前 V1 已经对外可见的主契约冻结下来
+- 防止后续继续加功能时，把 `documents / retrieval / chat / sops / system-config / logs / ops` 的字段语义再次打散
+
+为什么现在做：
+
+- `v0.4.5` 的 OCR / hybrid retrieval 主干已落地，问答和 SOP 生成已经依赖新的 metadata 字段
+- `v0.5` 的员工端 SOP 直生主路径已通，再继续改字段会直接影响前端主流程
+- `v0.6A` 的 logs / config / ops / trace / snapshot / gate 已经有页面和接口，再往下继续做企业微信和数据库迁移时，必须先分清“主契约”和“诊断面”
+
+需要冻结的主契约面：
+
+- 身份与健康：
+  `GET /api/v1/health`
+  `POST /api/v1/auth/login`
+  `GET /api/v1/auth/me`
+- 文档与入库：
+  `POST /api/v1/documents`
+  `POST /api/v1/documents/batch`
+  `GET /api/v1/documents`
+  `GET /api/v1/documents/{doc_id}`
+  `GET /api/v1/ingest/jobs/{job_id}`
+- 检索与问答：
+  `POST /api/v1/retrieval/search`
+  `POST /api/v1/chat/ask`
+  `POST /api/v1/chat/ask/stream`
+- SOP 主路径：
+  `POST /api/v1/sops/generate/document`
+  `POST /api/v1/sops/export`
+  `GET /api/v1/sops`
+  `GET /api/v1/sops/{sop_id}`
+- 运行治理：
+  `GET /api/v1/system-config`
+  `PUT /api/v1/system-config`
+  `GET /api/v1/logs`
+  `GET /api/v1/ops/summary`
+
+冻结的统一字段口径：
+
+- ID 口径：
+  `document_id` 为外部统一主字段；当前 `documents / ingest` 响应处于收口过渡期，暂时同时返回 `document_id + doc_id`，其中 `doc_id` 仅用于兼容存量前端，后续逐步退出
+- 模式口径：
+  `mode` 只使用 `fast / accurate`
+- rerank 口径：
+  `provider / default_strategy / effective_strategy / model / fallback / cooldown`
+- OCR 主路径口径：
+  `ocr_used / parser_name / page_no / ocr_confidence / quality_score`
+  在 `retrieval results`、`chat citations`、`SOP citations` 三条主链路上保持一致
+- 检索 / 引用字段分层：
+  稳定主契约优先冻结：
+  `chunk_id / document_id / document_name / text|snippet / score / source_path / retrieval_strategy / ocr_used / parser_name / page_no`
+  当前诊断字段先不冻结为强承诺：
+  `vector_score / lexical_score / fused_score / ocr_confidence / quality_score`
+- `logs` 字段分层：
+  稳定主契约优先冻结：
+  `event_id / category / action / outcome / occurred_at / actor / target_id / mode / rerank_strategy / rerank_provider / duration_ms / downgraded_from`
+  当前诊断字段先不冻结为强承诺：
+  `target_type / top_k / candidate_top_k / rerank_top_n / rerank_model / timeout_flag / details`
+- `ops/summary` 字段分层：
+  稳定主契约优先冻结：
+  `checked_at / health / queue / runtime_gate / recent_window / rerank_usage / rerank_decision / categories / recent_failures / recent_degraded / config`
+  其中 `rerank_usage` 当前优先冻结计数类字段，`last_provider_at / last_heuristic_at` 先保留为诊断字段
+  `categories` 当前优先冻结计数字段，`last_event_at / last_failed_at` 先保留为诊断字段
+  当前诊断字段先不冻结为强承诺：
+  `stuck_ingest_jobs / recent_traces / recent_snapshots`
+- `health` 字段分层：
+  稳定主契约优先冻结：
+  顶层 `status / app_name / environment / vector_store / llm / embedding / reranker / queue / metadata_store / ocr`
+  其中 `reranker` 当前优先冻结：
+  `provider / base_url / model / default_strategy / timeout_seconds / failure_cooldown_seconds / effective_provider / effective_model / effective_strategy / fallback_enabled / lock_active / cooldown_remaining_seconds / ready`
+  `ocr` 当前优先冻结：
+  `provider / language / enabled / ready / pdf_native_text_min_chars / angle_cls_enabled`
+  当前诊断字段先不冻结为强承诺：
+  `reranker.lock_source / reranker.detail / ocr.detail`
+- `system-config` 字段分层：
+  顶层稳定主契约优先冻结：
+  `query_profiles / model_routing / reranker_routing / degrade_controls / retry_controls / concurrency_controls / prompt_budget / updated_at / updated_by`
+  组内字段当前也按稳定主契约冻结，不再允许静默漂移
+- 文档与任务状态：
+  文档主状态和 ingest/job 状态分离，不混用
+- 分页口径：
+  统一使用 `total / page / page_size / items`
+- 时间字段：
+  统一使用 ISO 8601 datetime
+- 错误语义：
+  主业务接口优先返回稳定的 HTTP 状态 + 结构化错误描述，不让页面依赖临时拼出来的 detail 文本
+  当前冻结口径为：
+  保留兼容字段 `detail`
+  并统一补 `error.code / error.message / error.status_code`
+  其中请求校验错误继续保留 FastAPI 风格的 `detail[]` 明细列表，不另造一套自定义结构
+- `chat/ask/stream` 事件口径：
+  冻结 `meta / answer_delta / done / error` 四类事件
+  其中 `error` 事件统一使用：
+  `code / message / retryable / retry_after_seconds`
+
+明确不冻结的诊断面：
+
+- `POST /api/v1/retrieval/rerank-compare`
+- `GET /api/v1/traces`
+- `GET /api/v1/request-snapshots`
+- request replay
+- OCR artifact JSON 明细
+- 各类 debug / trace / snapshot 扩展字段
+
+这些接口当前仍可继续演进，但必须明确标成：
+“当前可用的内部诊断面，不作为 V1 对外稳定契约承诺”。
+
+执行顺序：
+
+1. 先把契约冻结原则写进：
+   `RAG架构.md`
+   `V1_PLAN.md`
+   `.codex/skills/auto-feature-smoke-test/SKILL.md`
+2. 再按当前代码现实补一份主契约清单：
+   路径、请求体、响应体、状态码、字段语义
+3. 然后给冻结的主契约补 contract 回归：
+   最少覆盖 `documents / retrieval / chat / sops / system-config / logs / ops`
+4. 最后再继续企业微信、数据库真源迁移和更正式 metrics/exporter
+
+当前契约矩阵已单独收口到：
+
+- `MAIN_CONTRACT_MATRIX.md`
+
+验收标准：
+
+- `RAG架构.md` 能明确区分：
+  主契约冻结面 vs 诊断面
+- `V1_PLAN.md` 不再把契约收口写成“以后再说”，而是明确为当前优先动作
+- smoke skill 默认围绕冻结主契约做验证，不把 `traces / request-snapshots / rerank-compare` 误当成稳定接口
+- 后续新增功能如果要改主契约，必须在计划和架构里显式记录，而不是静默漂移
+
 ---
 
 ## 7. 当前版本与需求文档的对应关系

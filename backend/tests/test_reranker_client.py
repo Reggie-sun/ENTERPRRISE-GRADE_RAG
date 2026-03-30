@@ -101,6 +101,7 @@ class _FakeGenerationClient:
         *,
         question: str,
         contexts: list[str],
+        memory_text: str | None = None,
         timeout_seconds: float | None = None,
         model_name: str | None = None,
     ) -> str:
@@ -128,6 +129,7 @@ def _persist_openai_reranker_route(system_config_service: SystemConfigService) -
             degrade_controls=DegradeControlsConfig(),
             retry_controls=RetryControlsConfig(),
             concurrency_controls=ConcurrencyControlsConfig(),
+            prompt_budget=system_config_service.get_config(auth_context=_build_auth_context()).prompt_budget,
         ),
         auth_context=_build_auth_context(),
     )
@@ -349,6 +351,7 @@ def test_reranker_client_pins_default_route_to_heuristic_by_policy(
             degrade_controls=current.degrade_controls,
             retry_controls=current.retry_controls,
             concurrency_controls=current.concurrency_controls,
+            prompt_budget=current.prompt_budget,
         ),
         auth_context=_build_auth_context(),
     )

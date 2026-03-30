@@ -21,6 +21,47 @@ For `/home/reggie/vscode_folder/Enterprise-grade_RAG`, follow [V1_PLAN.md](/home
 - Do not let smoke-test fixes turn into architecture rewrites, platform swaps, or roadmap expansion that conflicts with `V1_PLAN.md`.
 - When reporting results or next steps, frame them against the active plan stage. If a request conflicts with `V1_PLAN.md`, call that out explicitly instead of silently drifting scope.
 
+## Contract alignment
+
+For `/home/reggie/vscode_folder/Enterprise-grade_RAG`, default to validating against the current frozen V1 **main contract surfaces**, not every internal diagnostic endpoint.
+
+Treat these as the primary contract faces unless the user explicitly asks for a different surface:
+
+- `health / auth`
+- `documents / ingest jobs`
+- `retrieval/search`
+- `chat/ask` and `chat/ask/stream`
+- `sops` mainline routes
+- `system-config`
+- `logs`
+- `ops/summary`
+
+When you need the concrete nested-field contract for this repository, prefer checking:
+
+- [MAIN_CONTRACT_MATRIX.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/MAIN_CONTRACT_MATRIX.md)
+
+Use `V1_PLAN.md` and `RAG架构.md` for rationale and scope, but treat `MAIN_CONTRACT_MATRIX.md` as the quickest reference for stable-vs-diagnostic field boundaries.
+
+Treat these as **diagnostic surfaces**, useful for debugging but not default stability targets:
+
+- `retrieval/rerank-compare`
+- `traces`
+- `request-snapshots`
+- replay endpoints
+- OCR artifact file details
+
+When a change touches a frozen contract surface:
+
+- verify the expected status code
+- verify the key top-level fields that the main UI or external callers depend on
+- when the path returns an error, verify both the legacy-compatible `detail` field and the structured `error.code / error.message / error.status_code` envelope
+- call out explicitly if the contract changed, instead of treating it as an invisible implementation detail
+
+When a change only touches a diagnostic surface:
+
+- keep the smoke test focused on the changed debug path
+- do not widen the validation to claim the main contract changed unless it actually did
+
 ## Required validation
 
 - If the change affects an API or backend behavior, run one targeted verification against the affected endpoint or the smallest relevant automated test.

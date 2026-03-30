@@ -12,6 +12,7 @@ from ..schemas.system_config import (
     ConcurrencyControlsConfig,
     DegradeControlsConfig,
     ModelRoutingConfig,
+    PromptBudgetConfig,
     QueryModeConfig,
     QueryProfilesConfig,
     RerankerRoutingConfig,
@@ -50,6 +51,7 @@ class SystemConfigService:
         self._validate_reranker_routing(payload.reranker_routing)
         self._validate_retry_controls(payload.retry_controls)
         self._validate_concurrency_controls(payload.concurrency_controls)
+        self._validate_prompt_budget(payload.prompt_budget)
         record = SystemConfigResponse(
             query_profiles=payload.query_profiles,
             model_routing=payload.model_routing,
@@ -57,6 +59,7 @@ class SystemConfigService:
             degrade_controls=payload.degrade_controls,
             retry_controls=payload.retry_controls,
             concurrency_controls=payload.concurrency_controls,
+            prompt_budget=payload.prompt_budget,
             updated_at=datetime.now(timezone.utc),
             updated_by=auth_context.user.user_id,
         )
@@ -83,6 +86,9 @@ class SystemConfigService:
 
     def get_concurrency_controls(self) -> ConcurrencyControlsConfig:
         return self._load_config().concurrency_controls
+
+    def get_prompt_budget(self) -> PromptBudgetConfig:
+        return self._load_config().prompt_budget
 
     def get_llm_model_for_request(self, *, purpose: QueryPurpose, mode: QueryMode) -> str:
         config = self.get_model_routing()
@@ -139,6 +145,11 @@ class SystemConfigService:
                 per_user_online_max_inflight=self.settings.concurrency_per_user_online_max_inflight,
                 acquire_timeout_ms=self.settings.concurrency_acquire_timeout_ms,
                 busy_retry_after_seconds=self.settings.concurrency_busy_retry_after_seconds,
+            ),
+            prompt_budget=PromptBudgetConfig(
+                max_prompt_tokens=self.settings.llm_max_prompt_tokens,
+                reserved_completion_tokens=self.settings.llm_reserved_completion_tokens,
+                memory_prompt_tokens=self.settings.chat_memory_max_prompt_tokens,
             ),
         )
 
@@ -229,6 +240,19 @@ class SystemConfigService:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="per_user_online_max_inflight cannot be greater than fast_max_inflight.",
+            )
+
+    @staticmethod
+    def _validate_prompt_budget(prompt_budget: PromptBudgetConfig) -> None:
+        if prompt_budget.memory_prompt_tokens >= prompt_budget.max_prompt_tokens:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="prompt_budget.memory_prompt_tokens must be smaller than prompt_budget.max_prompt_tokens.",
+            )
+        if prompt_budget.max_prompt_tokens <= 0 or prompt_budget.reserved_completion_tokens <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="prompt_budget values must be greater than zero.",
             )
 
     @staticmethod

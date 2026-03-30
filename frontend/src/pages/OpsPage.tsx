@@ -564,6 +564,8 @@ export function OpsPage() {
               <p className="m-0 mt-1">sop: {summary?.config.model_routing.sop_generation_model || '-'}</p>
               <p className="m-0 mt-1">rerank provider: {summary?.config.reranker_routing.provider || '-'}</p>
               <p className="m-0 mt-1">rerank model: {summary?.config.reranker_routing.model || '-'}</p>
+              <p className="m-0 mt-1">prompt budget: {summary?.config.prompt_budget.max_prompt_tokens ?? '-'} / completion reserve: {summary?.config.prompt_budget.reserved_completion_tokens ?? '-'}</p>
+              <p className="m-0 mt-1">memory budget: {summary?.config.prompt_budget.memory_prompt_tokens ?? '-'}</p>
             </div>
             <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm text-ink-soft">
               <strong className="block text-ink">降级与重试</strong>

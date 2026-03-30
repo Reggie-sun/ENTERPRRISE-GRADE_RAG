@@ -425,6 +425,7 @@ export interface SystemConfigResponse {
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
   concurrency_controls: ConcurrencyControlsConfig;
+  prompt_budget: PromptBudgetConfig;
   updated_at: string | null;
   updated_by: string | null;
 }
@@ -436,6 +437,13 @@ export interface SystemConfigUpdateRequest {
   degrade_controls: DegradeControlsConfig;
   retry_controls: RetryControlsConfig;
   concurrency_controls: ConcurrencyControlsConfig;
+  prompt_budget: PromptBudgetConfig;
+}
+
+export interface PromptBudgetConfig {
+  max_prompt_tokens: number;
+  reserved_completion_tokens: number;
+  memory_prompt_tokens: number;
 }
 
 // ========== 运行态汇总相关 ==========

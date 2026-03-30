@@ -2734,34 +2734,141 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
 
 ## 11. 核心 API 合同
 
-如果没有 API 合同，前后端和外部系统对接就会持续扯皮。V1 至少冻结以下接口。
+如果没有 API 合同，前后端、企业微信入口和后续数据库真源迁移就会持续扯皮。基于当前代码现实，V1 不再冻结“所有接口”，而是只先冻结**主业务契约面**；诊断面继续允许演进。
 
-### 11.1 文档入库接口
+### 11.0 V1 契约冻结原则
+
+主契约冻结面：
+
+- 身份与健康：
+  `GET /api/v1/health`
+  `POST /api/v1/auth/login`
+  `GET /api/v1/auth/me`
+- 文档与入库：
+  `POST /api/v1/documents`
+  `POST /api/v1/documents/batch`
+  `GET /api/v1/documents`
+  `GET /api/v1/documents/{doc_id}`
+  `GET /api/v1/ingest/jobs/{job_id}`
+- 检索与问答：
+  `POST /api/v1/retrieval/search`
+  `POST /api/v1/chat/ask`
+  `POST /api/v1/chat/ask/stream`
+- SOP 主路径：
+  `GET /api/v1/sops`
+  `GET /api/v1/sops/{sop_id}`
+  `POST /api/v1/sops/generate/document`
+  `POST /api/v1/sops/export`
+- 运行治理：
+  `GET /api/v1/system-config`
+  `PUT /api/v1/system-config`
+  `GET /api/v1/logs`
+  `GET /api/v1/ops/summary`
+
+暂不冻结的诊断面：
+
+- `POST /api/v1/retrieval/rerank-compare`
+- `GET /api/v1/traces`
+- `GET /api/v1/request-snapshots`
+- request replay
+- OCR artifact JSON 明细
+- 各类 debug / trace / snapshot 扩展字段
+
+也就是说，V1 先保证“主链路稳定可对接”，而不是把所有内部排障接口都承诺成长期不变。
+
+当前主契约矩阵已单独整理在：
+
+- `MAIN_CONTRACT_MATRIX.md`
+
+统一字段口径：
+
+- 外部统一主字段使用 `document_id`；当前 `documents / ingest` 响应处于收口过渡期，暂时同时返回 `document_id + doc_id`，其中 `doc_id` 仅用于兼容存量前端，后续逐步退出
+- `mode` 只冻结 `fast / accurate`
+- 文档主状态和 ingest/job 状态分离，不混用
+- 分页统一使用 `total / page / page_size / items`
+- 时间字段统一使用 ISO 8601 datetime
+- rerank 相关统一使用：
+  `provider / default_strategy / effective_strategy / model / fallback / cooldown`
+- OCR 主路径相关统一使用：
+  `ocr_used / parser_name / page_no / ocr_confidence / quality_score`
+  并要求在 `retrieval / chat citations / SOP citations` 三条主链路上保持同一份字段语义
+- 错误响应统一使用兼容 envelope：
+  保留 `detail`
+  同时补 `error.code / error.message / error.status_code`
+  其中 422 请求校验错误继续保留 `detail[]` 明细列表
+- `POST /api/v1/chat/ask/stream` 统一使用 SSE 主契约：
+  `meta / answer_delta / done / error`
+  其中 `error` 事件固定为：
+  `code / message / retryable / retry_after_seconds`
+
+### 11.1 健康与身份契约
+
+`GET /api/v1/health`
+
+用途：
+
+- 对前端、部署和运行态页提供最小健康检查
+- 返回当前 LLM / Embedding / Reranker / OCR 的 ready 状态和关键运行配置
+
+主字段建议冻结：
+
+- `status`
+- `app_name`
+- `environment`
+- `vector_store`
+- `llm`
+- `embedding`
+- `reranker`
+- `queue`
+- `metadata_store`
+- `ocr`
+
+当前嵌套字段继续收口为：
+
+- `vector_store`：
+  `provider / url / collection`
+- `llm`：
+  `provider / base_url / model`
+- `embedding`：
+  `provider / base_url / model`
+- `reranker` 的稳定主契约当前应冻结：
+  `provider / base_url / model / default_strategy / timeout_seconds / failure_cooldown_seconds / effective_provider / effective_model / effective_strategy / fallback_enabled / lock_active / cooldown_remaining_seconds / ready`
+- `reranker` 当前可继续演进的诊断字段：
+  `lock_source / detail`
+- `queue`：
+  `provider / broker_url / result_backend / ingest_queue`
+- `metadata_store`：
+  `provider / postgres_enabled / dsn_configured`
+- `ocr` 的稳定主契约当前应冻结：
+  `provider / language / enabled / ready / pdf_native_text_min_chars / angle_cls_enabled`
+- `ocr` 当前可继续演进的诊断字段：
+  `detail`
+
+`POST /api/v1/auth/login`
+
+用途：
+
+- 最小用户名密码登录
+- 返回 bearer token 和当前权限上下文
+
+`GET /api/v1/auth/me`
+
+用途：
+
+- 返回当前登录用户的最小权限上下文
+- 作为 portal / workspace 路由和权限边界的统一来源
+
+### 11.2 文档与入库契约
 
 `POST /api/v1/documents`
 
 用途：
 
-- 上传文档
-    
+- 上传单文档
 - 创建 ingest job
-    
-- 立即返回，不同步等待 OCR / embedding / index 完成
-    
+- 立即返回，不同步等待 OCR / chunk / embedding / indexing 完成
 
-请求体建议：
-
-```json
-{
-  "tenant_id": "wl",
-  "department_ids": ["after_sales"],
-  "visibility": "department",
-  "tags": ["manual", "alarm"],
-  "source_system": "dfms"
-}
-```
-
-响应体建议：
+响应体当前应冻结：
 
 ```json
 {
@@ -2771,182 +2878,289 @@ X2 型号设备额定电压为 110V，最大功耗为 1200W，防护等级为 IP
 }
 ```
 
-### 11.2 文档状态接口
-
 `GET /api/v1/documents/{doc_id}`
 
-用途：
-
-- 查询文档元信息
-    
-- 查询当前版本、索引状态、失败原因
-    
-
-响应建议包含：
+当前应冻结：
 
 - `doc_id`
-    
 - `file_name`
-    
 - `status`
-    
+- `ingest_status`
 - `current_version`
-    
 - `latest_job_id`
-    
+- `department_id`
+- `category_id`
+- `uploaded_by`
 - `created_at`
-    
 - `updated_at`
-    
-
-### 11.3 入库任务状态接口
 
 `GET /api/v1/ingest/jobs/{job_id}`
 
-用途：
+当前应冻结：
 
-- 查询 parse / ocr / chunk / embedding / indexing 的阶段进度
-    
+- `job_id`
+- `doc_id`
+- `status`
+- `stage`
+- `progress`
+- `retry_count`
+- `manual_retry_allowed`
+- `error_code`
+- `error_message`
+- `created_at`
+- `updated_at`
 
-响应体建议：
+### 11.3 检索契约
 
-```json
-{
-  "job_id": "job_20260313_001",
-  "doc_id": "doc_20260313_001",
-  "status": "embedding",
-  "progress": 62,
-  "stage": "embedding",
-  "message": "embedding 31/50 chunks",
-  "error": null
-}
-```
-
-### 11.4 检索接口
-
-`POST /api/v1/search`
+`POST /api/v1/retrieval/search`
 
 用途：
 
 - 只做检索，不做答案生成
-    
-- 便于调试 recall、rerank 和引用链路
-    
+- 作为 recall / OCR metadata / rerank 前证据验证的统一入口
 
-请求体建议：
+请求体当前应冻结：
 
 ```json
 {
   "query": "报警E102怎么处理",
-  "top_k": 10,
-  "doc_only": true,
-  "allow_web": false,
-  "filters": {
-    "tags": ["alarm"]
-  }
+  "mode": "fast",
+  "top_k": 5,
+  "candidate_top_k": 10,
+  "document_id": "doc_xxx"
 }
 ```
 
-响应体建议：
+响应体当前应冻结：
 
-```json
-{
-  "request_id": "req_001",
-  "retrieval_mode": "hybrid",
-  "results": [
-    {
-      "chunk_id": "chunk_001",
-      "doc_id": "doc_20260313_001",
-      "page": 12,
-      "score": 0.92,
-      "rerank_score": 0.97,
-      "snippet": "E102 一般由冷却回路异常触发..."
-    }
-  ]
-}
-```
+- `query`
+- `top_k`
+- `mode`
+- `results[]`
 
-### 11.5 问答接口
+每条 result 的稳定主契约当前应冻结：
 
-`POST /api/v1/ask`
+- `chunk_id`
+- `document_id`
+- `document_name`
+- `text`
+- `score`
+- `source_path`
+- `retrieval_strategy`
+- `ocr_used`
+- `parser_name`
+- `page_no`
+
+每条 result 当前可继续演进的诊断字段：
+
+- `vector_score`
+- `lexical_score`
+- `fused_score`
+- `ocr_confidence`
+- `quality_score`
+
+### 11.4 问答契约
+
+`POST /api/v1/chat/ask`
 
 用途：
 
-- 标准 RAG 问答接口
-    
-- 默认走异步，避免长时阻塞
-    
+- 标准同步 RAG 问答
+- 复用 query profile、memory、rewrite、retrieval、rerank 和 LLM 生成
 
-请求体建议：
+`POST /api/v1/chat/ask/stream`
 
-```json
-{
-  "query": "报警E102怎么处理",
-  "session_id": "sess_001",
-  "doc_only": true,
-  "allow_web": false
-}
-```
+用途：
 
-响应体建议：
+- 标准 SSE 流式问答
+- 当前 portal / workspace 问答页都依赖这条流式契约
+
+请求体当前应冻结：
 
 ```json
 {
-  "task_id": "task_001",
-  "status": "queued"
+  "question": "报警E102怎么处理",
+  "mode": "fast",
+  "session_id": "sess_xxx",
+  "document_id": "doc_xxx"
 }
 ```
 
-### 11.6 问答结果接口
+同步响应体当前应冻结：
 
-`GET /api/v1/answers/{task_id}`
+- `question`
+- `answer`
+- `mode`
+- `model`
+- `citations[]`
 
-响应体建议：
+每条 citation 的稳定主契约当前应冻结：
 
-```json
-{
-  "task_id": "task_001",
-  "status": "completed",
-  "request_id": "req_001",
-  "degraded": false,
-  "answer": "建议先检查主轴冷却回路和传感器状态。",
-  "citations": [
-    {
-      "doc_id": "doc_20260313_001",
-      "page": 12,
-      "chunk_id": "chunk_001"
-    }
-  ],
-  "timings": {
-    "retrieval_ms": 86,
-    "rerank_ms": 31,
-    "generation_ms": 1240,
-    "total_ms": 1398
-  }
-}
-```
+- `chunk_id`
+- `document_id`
+- `document_name`
+- `snippet`
+- `score`
+- `source_path`
+- `retrieval_strategy`
+- `ocr_used`
+- `parser_name`
+- `page_no`
 
-### 11.7 管理接口
+每条 citation 当前可继续演进的诊断字段：
 
-V1 至少保留以下后台接口，且必须鉴权：
+- `vector_score`
+- `lexical_score`
+- `fused_score`
+- `ocr_confidence`
+- `quality_score`
 
-- `POST /api/v1/admin/index/rebuild`
-    
-- `POST /api/v1/admin/index/swap`
-    
-- `POST /api/v1/admin/documents/{doc_id}/reingest`
-    
-- `DELETE /api/v1/admin/documents/{doc_id}`
-    
-- `GET /api/v1/admin/metrics/summary`
-    
-- `GET /api/v1/admin/review/chunks?status=draft`
-    
-- `POST /api/v1/admin/review/chunks/{chunk_id}/approve`
-    
-- `POST /api/v1/admin/review/chunks/{chunk_id}/revise`
-    
-- `POST /api/v1/admin/review/chunks/{chunk_id}/reject`
+### 11.5 SOP 主路径契约
+
+`GET /api/v1/sops`
+
+用途：
+
+- 员工端 SOP 列表与后台列表的统一主入口
+
+`POST /api/v1/sops/generate/document`
+
+用途：
+
+- 员工端主路径：
+  `上传或选中文档 -> 生成 SOP 草稿`
+
+当前响应体应冻结：
+
+- `snapshot_id`
+- `request_mode`
+- `generation_mode`
+- `title`
+- `department_id`
+- `department_name`
+- `process_name`
+- `scenario_name`
+- `topic`
+- `content`
+- `model`
+- `citations[]`
+
+每条 citation 的稳定主契约当前应冻结：
+
+- `chunk_id`
+- `document_id`
+- `document_name`
+- `snippet`
+- `score`
+- `source_path`
+- `retrieval_strategy`
+- `ocr_used`
+- `parser_name`
+- `page_no`
+
+每条 citation 当前可继续演进的诊断字段：
+
+- `vector_score`
+- `lexical_score`
+- `fused_score`
+- `ocr_confidence`
+- `quality_score`
+
+`POST /api/v1/sops/export`
+
+用途：
+
+- 未保存草稿直接导出
+- 当前支持 `docx / pdf`
+
+### 11.6 运行治理契约
+
+`GET /api/v1/system-config`
+`PUT /api/v1/system-config`
+
+当前应冻结的配置分组：
+
+- `query_profiles`
+- `model_routing`
+- `reranker_routing`
+- `degrade_controls`
+- `retry_controls`
+- `concurrency_controls`
+- `prompt_budget`
+
+当前组内字段也一并冻结：
+
+- `query_profiles.fast|accurate`：
+  `top_k_default / candidate_multiplier / lexical_top_k / rerank_top_n / timeout_budget_seconds`
+- `model_routing`：
+  `fast_model / accurate_model / sop_generation_model`
+- `reranker_routing`：
+  `provider / default_strategy / model / timeout_seconds / failure_cooldown_seconds`
+- `degrade_controls`：
+  `rerank_fallback_enabled / accurate_to_fast_fallback_enabled / retrieval_fallback_enabled`
+- `retry_controls`：
+  `llm_retry_enabled / llm_retry_max_attempts / llm_retry_backoff_ms`
+- `concurrency_controls`：
+  `fast_max_inflight / accurate_max_inflight / sop_generation_max_inflight / per_user_online_max_inflight / acquire_timeout_ms / busy_retry_after_seconds`
+- `prompt_budget`：
+  `max_prompt_tokens / reserved_completion_tokens / memory_prompt_tokens`
+- 更新信息：
+  `updated_at / updated_by`
+
+`GET /api/v1/logs`
+
+当前应冻结：
+
+- `items`
+- `total`
+- `page`
+- `page_size`
+- 每条日志的稳定主契约当前应冻结：
+  `event_id / category / action / outcome / occurred_at / actor / target_id / mode / rerank_strategy / rerank_provider / duration_ms / downgraded_from`
+- 每条日志当前可继续演进的诊断字段：
+  `target_type / top_k / candidate_top_k / rerank_top_n / rerank_model / timeout_flag / details`
+
+`GET /api/v1/ops/summary`
+
+当前应冻结：
+
+- `checked_at`
+- `health`
+- `queue`
+- `runtime_gate`
+- `recent_window`
+- `rerank_usage`
+- `rerank_decision`
+- `categories`
+- `recent_failures`
+- `recent_degraded`
+- `config`
+- `rerank_usage` 当前优先冻结计数类字段；
+  `last_provider_at / last_heuristic_at` 继续保留为诊断字段
+- `categories` 当前优先冻结计数类字段；
+  `last_event_at / last_failed_at` 继续保留为诊断字段
+
+当前仍保留为诊断面的 `ops` 扩展块：
+
+- `stuck_ingest_jobs`
+- `recent_traces`
+- `recent_snapshots`
+
+### 11.7 诊断面约束
+
+下面这些接口当前可以继续演进，但必须在文档和代码里明确标成“诊断面”，不能让前端主流程或外部系统默认依赖它们：
+
+- `POST /api/v1/retrieval/rerank-compare`
+- `GET /api/v1/traces`
+- `GET /api/v1/request-snapshots`
+- replay 能力
+- OCR artifact 文件结构
+
+原则：
+
+- 主业务页面和外部系统默认只依赖 11.1 ~ 11.6
+- 诊断页、ops 页、内部排障工具可以依赖 11.7
+- 若 11.7 将来要升级成稳定契约，必须先进入 `V1_PLAN` 的契约收口清单
     
 
 ## 12. 统一数据模型

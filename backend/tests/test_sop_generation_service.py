@@ -154,10 +154,32 @@ class _FakeRetrievalService:
         self.last_request = request
         return RetrievalResponse(query=request.query, top_k=request.top_k, mode="fake", results=self.results)
 
+    def search_candidates(self, request, *, auth_context=None, profile=None, truncate_to_top_k=True):
+        self.last_request = request
+        limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(self.results))
+        results = self.results[:limit]
+        return results, "fake", profile
+
 
 class _FakeRerankerClient:
     def rerank(self, *, query: str, candidates: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
         return candidates[:top_n]
+
+
+class _RecordingRerankerClient:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def rerank(self, *, query: str, candidates: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
+        self.calls.append(
+            {
+                "query": query,
+                "candidate_count": len(candidates),
+                "top_n": top_n,
+                "chunk_ids": [candidate.chunk_id for candidate in candidates],
+            }
+        )
+        return list(reversed(candidates))[:top_n]
 
 
 class _FakeGenerationClient:
@@ -419,6 +441,7 @@ def test_sop_generation_service_respects_retrieval_fallback_toggle(tmp_path: Pat
             ),
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=admin_context,
     )
@@ -572,6 +595,7 @@ def test_sop_generation_service_uses_configured_sop_model_route(tmp_path: Path) 
             degrade_controls=current_config.degrade_controls,
             retry_controls=current_config.retry_controls,
             concurrency_controls=current_config.concurrency_controls,
+            prompt_budget=current_config.prompt_budget,
         ),
         auth_context=_build_auth_context(identity_service, username="sys.admin", password="sys-admin-pass"),
     )
@@ -745,6 +769,8 @@ def test_sop_generation_service_uses_document_preview_fallback_when_retrieval_re
     assert len(response.citations) == 3
     assert response.citations[0].chunk_id == "doc_digitalization-preview-0"
     assert "巡检前检查监控面板和服务状态" in response.citations[0].snippet
+    assert response.citations[0].parser_name == "document_preview"
+    assert response.citations[0].ocr_used is False
 
 
 def test_sop_generation_service_still_rejects_document_generation_when_preview_is_empty(tmp_path: Path) -> None:
@@ -775,6 +801,54 @@ def test_sop_generation_service_still_rejects_document_generation_when_preview_i
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "No relevant evidence was retrieved for SOP generation."
+
+
+def test_sop_generation_service_propagates_ocr_metadata_to_citations(tmp_path: Path) -> None:
+    identity_service = _build_identity_service(tmp_path)
+    auth_context = _build_auth_context(
+        identity_service,
+        username="digitalization.employee",
+        password="digitalization-employee-pass",
+    )
+    service = SopGenerationService(
+        Settings(_env_file=None),
+        identity_service=identity_service,
+        retrieval_service=_FakeRetrievalService(
+            [
+                RetrievedChunk(
+                    chunk_id="chunk_ocr_001",
+                    document_id="doc_digitalization",
+                    document_name="数字化巡检图片.png",
+                    text="STEP2：检查传感器连接状态并记录温度读数。",
+                    score=0.96,
+                    source_path="/tmp/digitalization.png",
+                    retrieval_strategy="hybrid",
+                    vector_score=0.91,
+                    lexical_score=1.4,
+                    fused_score=0.96,
+                    ocr_used=True,
+                    parser_name="docx_embedded_image_ocr_paddle",
+                    page_no=2,
+                    ocr_confidence=0.94,
+                    quality_score=0.94,
+                )
+            ]
+        ),
+        document_service=_FakeDocumentService({"doc_digitalization": "dept_digitalization"}),
+        reranker_client=_FakeRerankerClient(),
+        generation_client=_FakeGenerationClient(answer="基于 OCR 证据生成的 SOP 草稿。"),
+    )
+
+    response = service.generate_from_document(
+        request=SopGenerateByDocumentRequest(document_id="doc_digitalization"),
+        auth_context=auth_context,
+    )
+
+    assert response.citations[0].ocr_used is True
+    assert response.citations[0].parser_name == "docx_embedded_image_ocr_paddle"
+    assert response.citations[0].page_no == 2
+    assert response.citations[0].ocr_confidence == 0.94
+    assert response.citations[0].quality_score == 0.94
 
 
 def test_sop_generation_service_returns_429_when_runtime_gate_is_busy(tmp_path: Path) -> None:

@@ -69,6 +69,9 @@ def test_get_system_config_endpoint_returns_defaults_for_sys_admin(tmp_path: Pat
     assert payload["concurrency_controls"]["fast_max_inflight"] == 24
     assert payload["concurrency_controls"]["accurate_max_inflight"] == 6
     assert payload["concurrency_controls"]["per_user_online_max_inflight"] == 3
+    assert payload["prompt_budget"]["max_prompt_tokens"] == 2200
+    assert payload["prompt_budget"]["reserved_completion_tokens"] == 512
+    assert payload["prompt_budget"]["memory_prompt_tokens"] == 360
 
 
 def test_get_system_config_endpoint_rejects_department_admin(tmp_path: Path) -> None:
@@ -139,6 +142,11 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
                     "acquire_timeout_ms": 1200,
                     "busy_retry_after_seconds": 9,
                 },
+                "prompt_budget": {
+                    "max_prompt_tokens": 2400,
+                    "reserved_completion_tokens": 640,
+                    "memory_prompt_tokens": 320,
+                },
             },
         )
         follow_up = client.get("/api/v1/system-config", headers=headers)
@@ -161,6 +169,9 @@ def test_update_system_config_endpoint_persists_config(tmp_path: Path) -> None:
     assert follow_up.json()["concurrency_controls"]["fast_max_inflight"] == 30
     assert follow_up.json()["concurrency_controls"]["per_user_online_max_inflight"] == 3
     assert follow_up.json()["concurrency_controls"]["busy_retry_after_seconds"] == 9
+    assert follow_up.json()["prompt_budget"]["max_prompt_tokens"] == 2400
+    assert follow_up.json()["prompt_budget"]["reserved_completion_tokens"] == 640
+    assert follow_up.json()["prompt_budget"]["memory_prompt_tokens"] == 320
 
 
 def test_update_system_config_endpoint_validates_profile_relationships(tmp_path: Path) -> None:
@@ -217,6 +228,11 @@ def test_update_system_config_endpoint_validates_profile_relationships(tmp_path:
                     "per_user_online_max_inflight": 3,
                     "acquire_timeout_ms": 800,
                     "busy_retry_after_seconds": 5,
+                },
+                "prompt_budget": {
+                    "max_prompt_tokens": 2200,
+                    "reserved_completion_tokens": 512,
+                    "memory_prompt_tokens": 360,
                 },
             },
         )
@@ -281,6 +297,11 @@ def test_update_system_config_endpoint_rejects_provider_default_strategy_when_pr
                     "per_user_online_max_inflight": 3,
                     "acquire_timeout_ms": 800,
                     "busy_retry_after_seconds": 5,
+                },
+                "prompt_budget": {
+                    "max_prompt_tokens": 2200,
+                    "reserved_completion_tokens": 512,
+                    "memory_prompt_tokens": 360,
                 },
             },
         )

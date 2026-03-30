@@ -889,9 +889,22 @@
           // 创建 meta 区域。
           const meta = createElement("div", "meta", null);
 
-          // 分数标签。
-          const tag1 = createElement("span", "tag", `分数 ${item.score.toFixed(4)}`);
+          // 相关度标签。
+          const tag1 = createElement("span", "tag", `相关度 ${item.score.toFixed(4)}`);
           meta.appendChild(tag1);
+
+          if (item.fused_score !== null && item.fused_score !== undefined) {
+            const fusedTag = createElement("span", "tag", `融合原始分 ${Number(item.fused_score).toFixed(4)}`);
+            meta.appendChild(fusedTag);
+          }
+          if (item.vector_score !== null && item.vector_score !== undefined) {
+            const vectorTag = createElement("span", "tag", `向量分 ${Number(item.vector_score).toFixed(4)}`);
+            meta.appendChild(vectorTag);
+          }
+          if (item.lexical_score !== null && item.lexical_score !== undefined) {
+            const lexicalTag = createElement("span", "tag", `词法分 ${Number(item.lexical_score).toFixed(4)}`);
+            meta.appendChild(lexicalTag);
+          }
 
           // chunk_id 标签。
           const tag2 = createElement("span", "tag", null);
@@ -972,8 +985,8 @@
           // 创建 meta 区域。
           const meta = createElement("div", "meta", null);
 
-          // 分数标签。
-          const tag1 = createElement("span", "tag", `分数 ${item.score.toFixed(4)}`);
+          // 相关度标签。
+          const tag1 = createElement("span", "tag", `相关度 ${item.score.toFixed(4)}`);
           meta.appendChild(tag1);
 
           // chunk_id 标签。
