@@ -50,7 +50,7 @@ from ..worker.celery_app import dispatch_ingest_job
 
 SUPPORTED_UPLOAD_SUFFIXES = SUPPORTED_PARSE_SUFFIXES  # 当前允许上传的扩展名与可解析扩展名保持一致
 TEXT_PREVIEW_SUFFIXES = {".txt", ".md", ".markdown"}
-PARSED_TEXT_PREVIEW_SUFFIXES = {".docx"}
+PARSED_TEXT_PREVIEW_SUFFIXES = {".docx", ".csv", ".html", ".json", ".xlsx", ".pptx", ".xls"}
 PDF_PREVIEW_SUFFIXES = {".pdf"}
 SUPPORTED_PREVIEW_SUFFIXES = TEXT_PREVIEW_SUFFIXES | PARSED_TEXT_PREVIEW_SUFFIXES | PDF_PREVIEW_SUFFIXES
 TEXT_PREVIEW_MAX_CHARS = 12_000
@@ -59,6 +59,12 @@ TEXT_PREVIEW_CONTENT_TYPE_BY_SUFFIX = {
     ".md": "text/markdown; charset=utf-8",
     ".markdown": "text/markdown; charset=utf-8",
     ".docx": "text/plain; charset=utf-8",
+    ".csv": "text/plain; charset=utf-8",
+    ".html": "text/plain; charset=utf-8",
+    ".json": "text/plain; charset=utf-8",
+    ".xlsx": "text/plain; charset=utf-8",
+    ".pptx": "text/plain; charset=utf-8",
+    ".xls": "text/plain; charset=utf-8",
 }
 DOCUMENT_CONTENT_TYPE_BY_SUFFIX = {
     ".txt": "text/plain; charset=utf-8",
@@ -66,6 +72,12 @@ DOCUMENT_CONTENT_TYPE_BY_SUFFIX = {
     ".markdown": "text/markdown; charset=utf-8",
     ".pdf": "application/pdf",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".csv": "text/csv; charset=utf-8",
+    ".html": "text/html; charset=utf-8",
+    ".json": "application/json",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".xls": "application/vnd.ms-excel",
 }
 PROCESSING_JOB_STATUSES = {"parsing", "ocr_processing", "chunking", "embedding", "indexing"}
 IN_FLIGHT_JOB_STATUSES = {"pending", "uploaded", "queued"} | PROCESSING_JOB_STATUSES

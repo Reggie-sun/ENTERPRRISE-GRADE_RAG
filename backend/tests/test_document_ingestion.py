@@ -1591,7 +1591,7 @@ def test_run_ingest_job_marks_missing_storage_path_as_runtime_failure(tmp_path: 
 
     assert result.status == "dead_letter"
     assert result.error_code == "INGEST_RUNTIME_ERROR_DEAD_LETTER"
-    assert "No such file or directory" in (result.error_message or "")
+    assert "Source file not found" in (result.error_message or "")
 
 
 def test_create_document_allows_same_filename_with_different_content(tmp_path: Path) -> None:  # 测试仅按 file_hash 去重，不会误伤同名不同内容的文档。
@@ -2501,3 +2501,160 @@ def test_list_documents_uses_batch_job_status_lookup_with_metadata_store(tmp_pat
         "doc_1": "completed",
         "doc_2": "dead_letter",
     }
+
+
+# ── 新格式集成测试 ──────────────────────────────────────────────────────────
+
+
+def _build_minimal_xlsx_bytes() -> bytes:
+    """构造最小可解析 xlsx，用于集成测试。"""
+    from xml.etree import ElementTree as ET
+    from zipfile import ZIP_DEFLATED, ZipFile
+
+    ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    content_types_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        '</Types>'
+    )
+    root_rels_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+        '</Relationships>'
+    )
+    workbook_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<workbook xmlns="{ns}">'
+        f'<sheets><sheet name="Data" sheetId="1" r:id="rId1" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/></sheets>'
+        '</workbook>'
+    )
+    workbook_rels_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
+        '</Relationships>'
+    )
+    shared_strings_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<sst xmlns="{ns}" count="4" uniqueCount="4">'
+        f'<si><t>Item</t></si>'
+        f'<si><t>Qty</t></si>'
+        f'<si><t>Widget</t></si>'
+        f'<si><t>100</t></si>'
+        f'</sst>'
+    )
+    sheet_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<worksheet xmlns="{ns}">'
+        f'<sheetData>'
+        f'<row><c t="s"><v>0</v></c><c t="s"><v>1</v></c></row>'
+        f'<row><c t="s"><v>2</v></c><c t="s"><v>3</v></c></row>'
+        f'</sheetData>'
+        f'</worksheet>'
+    )
+    buf = BytesIO()
+    with ZipFile(buf, "w", compression=ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types_xml)
+        archive.writestr("_rels/.rels", root_rels_xml)
+        archive.writestr("xl/workbook.xml", workbook_xml)
+        archive.writestr("xl/_rels/workbook.xml.rels", workbook_rels_xml)
+        archive.writestr("xl/sharedStrings.xml", shared_strings_xml)
+        archive.writestr("xl/worksheets/sheet1.xml", sheet_xml)
+    return buf.getvalue()
+
+
+def test_create_document_supports_json_ingestion_and_text_preview(tmp_path: Path) -> None:  # JSON 文件应能完成入库，并以文本方式预览。
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    json_content = json.dumps({"project": "Enterprise RAG", "version": "1.0", "features": ["upload", "search"]}, ensure_ascii=False)
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={
+                "file": (
+                    "config.json",
+                    json_content.encode("utf-8"),
+                    "application/json",
+                )
+            },
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        ingest_status = service.run_ingest_job(payload["job_id"])
+        preview_response = client.get(f"/api/v1/documents/{payload['doc_id']}/preview")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert payload["status"] == "queued"
+    assert payload["doc_id"].startswith("doc_")
+    assert payload["job_id"].startswith("job_")
+    assert ingest_status.status == "completed"
+    parsed_path = settings.parsed_dir / f"{payload['doc_id']}.txt"
+    chunk_path = settings.chunk_dir / f"{payload['doc_id']}.json"
+    assert parsed_path.exists()
+    assert chunk_path.exists()
+    assert "project: Enterprise RAG" in parsed_path.read_text(encoding="utf-8")
+    assert "features[0]: upload" in parsed_path.read_text(encoding="utf-8")
+
+    assert preview_response.status_code == 200
+    preview_payload = preview_response.json()
+    assert preview_payload["preview_type"] == "text"
+    assert preview_payload["content_type"].startswith("text/plain")
+    assert "Enterprise RAG" in (preview_payload["text_content"] or "")
+
+
+def test_create_document_supports_xlsx_ingestion_and_text_preview(tmp_path: Path) -> None:  # XLSX 文件应能完成入库，并以文本方式预览。
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+    xlsx_bytes = _build_minimal_xlsx_bytes()
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={
+                "file": (
+                    "inventory.xlsx",
+                    xlsx_bytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
+            },
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        ingest_status = service.run_ingest_job(payload["job_id"])
+        preview_response = client.get(f"/api/v1/documents/{payload['doc_id']}/preview")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert payload["status"] == "queued"
+    assert payload["doc_id"].startswith("doc_")
+    assert ingest_status.status == "completed"
+    parsed_path = settings.parsed_dir / f"{payload['doc_id']}.txt"
+    chunk_path = settings.chunk_dir / f"{payload['doc_id']}.json"
+    assert parsed_path.exists()
+    assert chunk_path.exists()
+    assert "[Sheet] Data" in parsed_path.read_text(encoding="utf-8")
+    assert "Widget" in parsed_path.read_text(encoding="utf-8")
+
+    assert preview_response.status_code == 200
+    preview_payload = preview_response.json()
+    assert preview_payload["preview_type"] == "text"
+    assert preview_payload["content_type"].startswith("text/plain")
+    assert "Widget" in (preview_payload["text_content"] or "")
