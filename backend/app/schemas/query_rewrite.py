@@ -1,3 +1,4 @@
+"""查询改写结果模型。定义改写状态和改写后的查询结构。"""
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field

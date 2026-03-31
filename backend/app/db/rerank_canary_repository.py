@@ -1,3 +1,4 @@
+"""重排序金丝雀数据仓库。管理 rerank 对比样本的持久化存储。"""
 import threading
 from abc import ABC, abstractmethod
 from pathlib import Path

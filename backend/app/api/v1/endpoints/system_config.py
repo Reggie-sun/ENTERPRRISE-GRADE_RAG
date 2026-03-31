@@ -1,3 +1,4 @@
+"""系统配置接口模块。提供查询和更新系统运行时配置的能力。"""
 from fastapi import APIRouter, Depends
 
 from ....schemas.auth import AuthContext

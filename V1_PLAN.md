@@ -997,11 +997,51 @@
 - 字段命名、分页、时间、错误 envelope、稳定面 vs 诊断面边界，以 `MAIN_CONTRACT_MATRIX.md` 为准
 - `V1_PLAN.md` 负责说明为什么冻结、冻结到哪一层、何时允许继续演进
 
+契约冻结约束规则：
+
+以下规则适用于 `MAIN_CONTRACT_MATRIX.md` 中列出的所有已冻结稳定字段。任何改动必须先同步 `V1_PLAN.md`、`RAG架构.md` 和 `backend/tests/test_main_contract_endpoints.py`。
+
+1. 已冻结接口范围
+
+   以下接口属于 V1 已冻结主契约，字段语义不允许静默变更：
+
+   - 身份与健康：`GET /api/v1/health`、`POST /api/v1/auth/login`、`GET /api/v1/auth/me`
+   - 文档与入库：`POST /api/v1/documents`、`POST /api/v1/documents/batch`、`GET /api/v1/documents`、`GET /api/v1/documents/{doc_id}`、`GET /api/v1/ingest/jobs/{job_id}`
+   - 检索与问答：`POST /api/v1/retrieval/search`、`POST /api/v1/chat/ask`、`POST /api/v1/chat/ask/stream`
+   - SOP 主路径：`POST /api/v1/sops/generate/document`、`POST /api/v1/sops/export`、`GET /api/v1/sops`、`GET /api/v1/sops/{sop_id}`、`GET /api/v1/sops/{sop_id}/preview`
+   - 运行治理：`GET /api/v1/system-config`、`PUT /api/v1/system-config`、`GET /api/v1/logs`、`GET /api/v1/ops/summary`
+
+2. 诊断面接口（暂不冻结）
+
+   以下接口当前视为诊断面，可用但不作为 V1 主契约承诺，允许继续演进：
+
+   - `POST /api/v1/retrieval/rerank-compare`
+   - `GET /api/v1/traces`
+   - `GET /api/v1/request-snapshots`
+   - request replay endpoints
+   - OCR artifact JSON 结构
+   - `ops.rerank_canary`
+
+   如果这些路径未来要升级成稳定契约，先改 `V1_PLAN.md` 和 `RAG架构.md`，再补主契约回归。
+
+3. 稳定字段变更约束
+
+   - 禁止改名：`MAIN_CONTRACT_MATRIX.md` 中列出的稳定字段名称不允许变更
+   - 禁止删除：已冻结的稳定字段不允许从响应中移除
+   - 只允许新增可选字段：可以在现有对象上新增可选字段，但不得改变已有字段的类型、语义或默认值
+   - 新增可选字段不要求前端立即适配，但不得破坏现有前端消费逻辑
+
+4. 冲突解决口径
+
+   - 如发现 `V1_PLAN.md` 与 `MAIN_CONTRACT_MATRIX.md` 有冲突，以 `MAIN_CONTRACT_MATRIX.md` 为准
+   - `V1_PLAN.md` 负责说明为什么冻结、冻结到哪一层、何时允许继续演进
+   - `MAIN_CONTRACT_MATRIX.md` 负责记录具体的稳定字段清单和诊断字段清单
+
 验收标准：
 
 - `RAG架构.md` 能明确区分：
   主契约冻结面 vs 诊断面
-- `V1_PLAN.md` 不再把契约收口写成“以后再说”，而是明确为当前优先动作
+- `V1_PLAN.md` 不再把契约收口写成”以后再说”，而是明确为当前优先动作
 - smoke skill 默认围绕冻结主契约做验证，不把 `traces / request-snapshots / rerank-compare` 误当成稳定接口
 - 后续新增功能如果要改主契约，必须在计划和架构里显式记录，而不是静默漂移
 

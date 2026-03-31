@@ -1,3 +1,4 @@
+"""向量嵌入客户端，支持 mock 和真实 embedding provider。"""
 import hashlib  # 导入哈希库，用于 mock embedding 的伪随机向量生成。
 import math  # 导入数学库，用于向量归一化。
 

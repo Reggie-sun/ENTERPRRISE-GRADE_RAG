@@ -1,3 +1,4 @@
+"""系统配置数据仓库。管理系统运行时配置的持久化存储。"""
 import json
 import threading
 from abc import ABC, abstractmethod

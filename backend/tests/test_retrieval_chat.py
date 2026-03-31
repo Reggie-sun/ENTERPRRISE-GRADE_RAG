@@ -104,7 +104,7 @@ class _FakeRetrievalService:
     def search(self, request, *, auth_context=None):
         return RetrievalResponse(query=request.query, top_k=request.top_k or 0, mode="fake", results=self.results)
 
-    def search_candidates(self, request, *, auth_context=None, profile=None, truncate_to_top_k=True):
+    def search_candidates(self, request, *, auth_context=None, profile=None, truncate_to_top_k=True, diagnostic=None):
         limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(self.results))
         results = self.results[:limit]
         return results, "fake", profile
@@ -1564,6 +1564,9 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
                 "doc_b": False,
             }
 
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return self.get_document_readability_map(doc_ids, auth_context)
+
     retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     retrieval_service.vector_store = SimpleNamespace(
@@ -1624,6 +1627,9 @@ def test_retrieval_service_department_priority_dual_route_fuses_department_and_g
             return True
 
         def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
     retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())

@@ -287,6 +287,9 @@ class _FakeDocumentService:
     def get_document_readability_map(self, doc_ids: list[str], auth_context=None) -> dict[str, bool]:
         return {doc_id: self.is_document_readable(doc_id, auth_context=auth_context) for doc_id in doc_ids}
 
+    def get_document_retrievability_map(self, doc_ids: list[str], auth_context=None) -> dict[str, bool]:
+        return self.get_document_readability_map(doc_ids, auth_context=auth_context)
+
 
 def test_sop_generation_service_generates_scenario_draft_for_department_admin(tmp_path: Path) -> None:
     identity_service = _build_identity_service(tmp_path)

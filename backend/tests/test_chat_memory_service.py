@@ -100,6 +100,7 @@ class _FakeRetrievalService:
         auth_context: AuthContext | None = None,
         profile=None,
         truncate_to_top_k: bool = True,
+        diagnostic: dict | None = None,
     ):
         response = self.search(request, auth_context=auth_context)
         limit = request.top_k if truncate_to_top_k else (request.candidate_top_k or len(response.results))

@@ -1,3 +1,4 @@
+"""Ingest 任务接口模块——提供按 job_id 查询摄取状态与手动触发执行的端点。"""
 from fastapi import APIRouter, Depends  # 导入路由对象和依赖注入工具。
 
 from ....schemas.document import IngestJobStatusResponse  # 导入 ingest job 状态响应模型。

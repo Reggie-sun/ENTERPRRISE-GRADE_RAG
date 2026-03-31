@@ -98,6 +98,7 @@
 - `role`
 - `department`
 - `accessible_department_ids`
+- `department_query_isolation_enabled`
 
 ### `GET /api/v1/auth/me`
 
@@ -106,6 +107,7 @@
 - `role`
 - `department`
 - `accessible_department_ids`
+- `department_query_isolation_enabled`
 
 ---
 

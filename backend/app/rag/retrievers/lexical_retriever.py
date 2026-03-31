@@ -1,3 +1,8 @@
+"""词法检索器，基于 Qdrant 全文索引实现关键词召回。
+
+通过 scroll 遍历 collection 中的 payload，对 query 和文档文本做 BM25 评分，
+支持中英文混合分词（jieba/pkuseg），并自动生成补充 bigram token 提升中文召回效果。
+"""
 from collections import Counter
 from dataclasses import dataclass
 from functools import lru_cache
@@ -14,6 +19,7 @@ DEFAULT_CHINESE_TOKENIZER_MODE = "jieba_search"
 
 @dataclass(frozen=True)
 class LexicalMatch:
+    """词法检索命中文档，包含 Qdrant point ID、payload 和 BM25 得分。"""
     point_id: str
     payload: dict[str, object]
     score: float
@@ -21,12 +27,14 @@ class LexicalMatch:
 
 @dataclass(frozen=True)
 class _TokenizedText:
+    """分词结果：primary_tokens 为主分词，supplemental_tokens 为补充 bigram token。"""
     primary_tokens: list[str]
     supplemental_tokens: list[str]
 
 
 @lru_cache(maxsize=4)
 def _load_chinese_segmenter(mode: str) -> Callable[[str], list[str]] | None:
+    """按配置加载中文分词器，支持 jieba（search/precise）和 pkuseg，bigram_only 时返回 None。"""
     normalized_mode = mode.strip().lower() or DEFAULT_CHINESE_TOKENIZER_MODE
     if normalized_mode == "bigram_only":
         return None
@@ -59,6 +67,12 @@ def _load_chinese_segmenter(mode: str) -> Callable[[str], list[str]] | None:
 
 
 class QdrantLexicalRetriever:
+    """基于 BM25 的词法检索器，通过 scroll 遍历 Qdrant payload 并计算相关性得分。
+
+    支持中英文混合分词，自动为中文文本生成补充 bigram token，
+    并可按 document_id 或 document_ids 过滤检索范围。
+    """
+
     _SCROLL_BATCH_SIZE = 256
 
     def __init__(
@@ -71,6 +85,16 @@ class QdrantLexicalRetriever:
         chinese_tokenizer_mode: str = DEFAULT_CHINESE_TOKENIZER_MODE,
         supplemental_bigram_weight: float = SUPPLEMENTAL_BIGRAM_WEIGHT,
     ) -> None:
+        """初始化词法检索器。
+
+        Args:
+            vector_store: QdrantVectorStore 实例，用于 scroll 遍历 payload。
+            k1: BM25 参数 k1，控制词频饱和速度。
+            b: BM25 参数 b，控制文档长度归一化强度。
+            chinese_segmenter: 可选的自定义中文分词函数。
+            chinese_tokenizer_mode: 中文分词模式（jieba_search / jieba_precise / pkuseg / bigram_only）。
+            supplemental_bigram_weight: 补充 bigram 得分的权重系数。
+        """
         self.vector_store = vector_store
         self.k1 = k1
         self.b = b
@@ -90,6 +114,7 @@ class QdrantLexicalRetriever:
         document_id: str | None = None,
         document_ids: list[str] | None = None,
     ) -> list[LexicalMatch]:
+        """执行词法检索：scroll 遍历 payload，计算 BM25 得分并返回排名靠前的命中文档。"""
         normalized_query = query.strip()
         if not normalized_query or limit <= 0:
             return []
@@ -224,6 +249,7 @@ class QdrantLexicalRetriever:
         doc_length: int,
         average_doc_length: float,
     ) -> float:
+        """标准 BM25 评分：基于词频、逆文档频率和文档长度归一化计算单条文档的相关性得分。"""
         score = 0.0
         normalization = 1 - self.b + self.b * (doc_length / max(average_doc_length, 1.0))
         for token, query_term_frequency in query_counter.items():
@@ -238,17 +264,20 @@ class QdrantLexicalRetriever:
 
     @staticmethod
     def _fallback_tokens(text: str) -> list[str]:
+        """兜底分词：当中文分词器不可用时，退回到字符级 bigram。"""
         if len(text) <= 1:
             return [text] if text else []
         return [text[index : index + 2] for index in range(len(text) - 1)]
 
     @staticmethod
     def _supplemental_bigram_tokens(text: str) -> list[str]:
+        """生成补充 bigram token，用于增强中文关键词的召回信号。"""
         if len(text) <= 1:
             return []
         return [text[index : index + 2] for index in range(len(text) - 1)]
 
     def _tokenize(self, text: str) -> _TokenizedText:
+        """对文本进行分词：英文按空格分词，中文按配置的分词器分词并生成补充 bigram。"""
         primary_tokens: list[str] = []
         supplemental_tokens: list[str] = []
         for raw_token in TOKEN_PATTERN.findall(text.lower()):
@@ -264,6 +293,7 @@ class QdrantLexicalRetriever:
         return _TokenizedText(primary_tokens=primary_tokens, supplemental_tokens=supplemental_tokens)
 
     def _segment_chinese(self, text: str) -> list[str]:
+        """对中文文本调用分词器，失败时返回空列表。"""
         if not text:
             return []
         if self.chinese_segmenter is None:

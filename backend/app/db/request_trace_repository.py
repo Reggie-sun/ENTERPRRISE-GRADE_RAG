@@ -1,3 +1,4 @@
+"""请求追踪数据仓库。管理请求追踪记录的持久化存储。"""
 from datetime import date
 import threading
 from abc import ABC, abstractmethod

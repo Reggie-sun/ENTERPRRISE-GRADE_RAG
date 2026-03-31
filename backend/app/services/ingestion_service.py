@@ -1,3 +1,12 @@
+"""文档入库服务模块。
+
+封装文档从原始文件到向量索引的完整入库链路：
+解析(PDF/DOCX/TXT/图片) → OCR fallback → 文本分块 → 向量嵌入 → Qdrant 写入。
+
+核心类:
+    DocumentIngestionService — 文档入库服务，支持原生解析和 OCR 补充链路。
+"""
+
 import json  # 导入 json，用来落盘 chunk 结果文件。
 from dataclasses import asdict, dataclass  # 导入 dataclass 以及把 dataclass 转成字典的工具。
 from pathlib import Path  # 导入 Path，方便处理文件路径。

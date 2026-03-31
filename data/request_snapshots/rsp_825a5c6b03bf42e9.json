@@ -1,0 +1,165 @@
+{
+  "snapshot_id": "rsp_825a5c6b03bf42e9",
+  "trace_id": "trc_sop_3fdd140d25da49af",
+  "request_id": "req_sop_d93962b0b4414b09",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T02:10:56.528509Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260331021041_adff1740",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_production_technology",
+    "document_id": "doc_20260331021041_adff1740",
+    "title_hint": "电机齿轮安装SOP SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260331021041_adff1740 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设备中并开启加热；\n\n（设定时间1小时，温度250°）\n\n取出零件必须佩戴防烫手套；\n\n【注】：上岗必须经过培训遵守操作规范；\n\n内容\n\n将减速机轴端涂上润滑油一圈；\n\n方键放入键槽内，再把斜齿轮套入减速机上；\n\n3.减速机装配到横向梁上\n\n减速机平整摆放在工作台面上（凸轴朝上）；\n\n方键扣入减速机凹槽处并套入横行斜齿轮、垫片；\n\n紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n内容\n\n减速机平整摆放在工作台面上（凸轴朝上）；\n\n横行减速机法兰（沉头孔向内）套入减速机；\n\n紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n4.齿轮间隙调节与检测\n\n螺丝对角固定此时为预锁紧；\n\n齿轮与齿条的间隙调节完成后，再锁紧，紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致\n\n内容\n\n通过图中两颗螺丝来调节齿轮与齿条的间隙，检测方法详看下方步骤；",
+      "score": 3.833984375,
+      "source_path": "/app/data/uploads/doc_20260331021041_adff1740__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7855847,
+      "lexical_score": 4.858574882208516,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "齿条的间隙调节完成后，再锁紧，紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致\n\n内容\n\n通过图中两颗螺丝来调节齿轮与齿条的间隙，检测方法详看下方步骤；齿轮与齿条的间隙控制在0.15mm-0.3mm以内即可；\n\n调节完成后，将减速机固定螺丝锁紧，紧固扭矩详见《WI-SJ-005》\n\n注意：用压铅法检查齿轮合间隙时，铅丝直径不宜超过隙的 3倍，铅丝的长度不应小于 5个齿距，沿齿宽方向应均匀放置至少2根铅丝（图中为方法演示）。\n\n5.电机安装\n\n内容\n\n拔出堵头，此时请确认夹紧螺栓处于松弛状态；\n\n将电机输出轴放入减速机输入孔内\n\n内容\n\n紧固扭矩详见《WI-SJ-005》；\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n盖上堵头，将减速机上的夹紧螺栓锁紧，紧固扭矩详见《WI-SJ-005》；\n\n内容\n\n装配完成后，全程来回运行移动顺畅且声音匀称即可(无异响);\n\n检查所有螺丝是否锁紧，所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n\n-\n\n-\n\n国",
+      "score": 1.224609375,
+      "source_path": "/app/data/uploads/doc_20260331021041_adff1740__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.61879504,
+      "lexical_score": 2.3253816114344166,
+      "fused_score": 0.03225806451612903
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设备中并开启加热；\n\n（设定时间1小时，温度250°）\n\n取出零件必须佩戴防烫手套；\n\n【注】：上岗必须经过培训遵守操作规范；\n\n内容\n\n将减速机轴端涂上润滑油一圈；\n\n方键放入键槽内，再把斜齿轮套入减速机上；\n\n3.减速机装配到横向梁上\n\n减速机平整摆放在工作台面上（凸轴朝上）；\n\n方键扣入减速机凹槽处并套入横行斜齿轮、垫片；\n\n紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n内容\n\n减速机平整摆放在工作台面上（凸轴朝上）；\n\n横行减速机法兰（沉头孔向内）套入减速机；\n\n紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n4.齿轮间隙调节与检测\n\n螺丝对角固定此时为预锁紧；\n\n齿轮与齿条的间隙调节完成后，再锁紧，紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致\n\n内容\n\n通过图中两颗螺丝来调节齿轮与齿条的间隙，检测方法详看下方步骤；",
+      "score": 3.833984375,
+      "source_path": "/app/data/uploads/doc_20260331021041_adff1740__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7855847,
+      "lexical_score": 4.858574882208516,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "齿条的间隙调节完成后，再锁紧，紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致\n\n内容\n\n通过图中两颗螺丝来调节齿轮与齿条的间隙，检测方法详看下方步骤；齿轮与齿条的间隙控制在0.15mm-0.3mm以内即可；\n\n调节完成后，将减速机固定螺丝锁紧，紧固扭矩详见《WI-SJ-005》\n\n注意：用压铅法检查齿轮合间隙时，铅丝直径不宜超过隙的 3倍，铅丝的长度不应小于 5个齿距，沿齿宽方向应均匀放置至少2根铅丝（图中为方法演示）。\n\n5.电机安装\n\n内容\n\n拔出堵头，此时请确认夹紧螺栓处于松弛状态；\n\n将电机输出轴放入减速机输入孔内\n\n内容\n\n紧固扭矩详见《WI-SJ-005》；\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n盖上堵头，将减速机上的夹紧螺栓锁紧，紧固扭矩详见《WI-SJ-005》；\n\n内容\n\n装配完成后，全程来回运行移动顺畅且声音匀称即可(无异响);\n\n检查所有螺丝是否锁紧，所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n\n-\n\n-\n\n国",
+      "score": 1.224609375,
+      "source_path": "/app/data/uploads/doc_20260331021041_adff1740__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.61879504,
+      "lexical_score": 2.3253816114344166,
+      "fused_score": 0.03225806451612903,
+      "ocr_used": true,
+      "parser_name": "docx_embedded_image_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": 0.5594,
+      "quality_score": 0.5594
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "```markdown\n# 电机齿轮安装SOP SOP 草稿\n\n## 部门：生产技术部\n\n## 来源文档：电机齿轮安装SOP.docx\n\n## 工序：未指定工序\n\n## 场景：未指定场景\n\n## 目的：\n\n确保电机齿轮安装过程中的质量与安全，保证设备正常运行。\n\n## 适用范围：\n\n适用于生产技术部所有涉及电机齿轮安装的操作人员。\n\n## 前置检查：\n\n1. 准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n2. 检查外观表面无磕碰、变形、刮伤等不良现象；\n3. 检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n## 操作步骤：\n\n1. 斜齿轮加温：\n   - 将斜齿轮放入烘箱设备中...",
+    "answer_chars": 741,
+    "citation_count": 2,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "电机齿轮安装SOP SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 2,
+    "document_id": "doc_20260331021041_adff1740",
+    "department_id": "dept_production_technology",
+    "department_name": "生产技术部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "电机齿轮安装SOP",
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 2,
+    "rerank_input_count": 2,
+    "rerank_output_count": 2,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

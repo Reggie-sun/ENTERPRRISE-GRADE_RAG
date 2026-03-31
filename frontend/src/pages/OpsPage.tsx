@@ -2,6 +2,11 @@ import { AlertTriangle, Clock3, Gauge, RefreshCw, RotateCcw, Route, ServerCog, W
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  formatAgeSeconds,
+  formatLocalTime,
+  renderNullable,
+} from '@/app/formatting';
+import {
   PRIMARY_RERANK_CANARY_DECISIONS,
   getRerankCanaryDecisionCount,
   getRerankDecisionPresentation,
@@ -21,41 +26,6 @@ import {
 } from '@/api';
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
-
-function formatLocalTime(value: string | null): string {
-  if (!value) {
-    return '-';
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-  return parsed.toLocaleString('zh-CN', { hour12: false });
-}
-
-function renderNullable(value: string | number | null | undefined): string {
-  if (value === null || value === undefined || value === '') {
-    return '-';
-  }
-  return String(value);
-}
-
-function formatAgeSeconds(value: number | null | undefined): string {
-  if (value === null || value === undefined) {
-    return '-';
-  }
-  if (value < 60) {
-    return `${value}s`;
-  }
-  const minutes = Math.floor(value / 60);
-  const seconds = value % 60;
-  if (minutes < 60) {
-    return `${minutes}m ${seconds}s`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const remainMinutes = minutes % 60;
-  return `${hours}h ${remainMinutes}m`;
-}
 
 function rerankDecisionTone(decision: string | null | undefined): 'ok' | 'warn' | 'error' | 'default' {
   switch (decision) {

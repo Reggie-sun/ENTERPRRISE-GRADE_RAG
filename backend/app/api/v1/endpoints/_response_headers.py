@@ -1,3 +1,4 @@
+"""响应头构建工具。生成 Content-Disposition 等标准响应头。"""
 import re
 from pathlib import Path
 from urllib.parse import quote

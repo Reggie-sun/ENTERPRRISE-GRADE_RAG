@@ -1,0 +1,54 @@
+{
+  "document_id": "doc_20260331021041_adff1740",
+  "file_name": "电机齿轮安装SOP.docx",
+  "source_path": "/app/data/uploads/doc_20260331021041_adff1740__SOP.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 7,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n\n-\n\n-\n\n国",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.49890246987342834
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.08515457063913345
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.1914319097995758
+    },
+    {
+      "text": "国",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.32846465706825256
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+"""请求快照模型。定义请求快照的结构，用于可复现能力。"""
 from datetime import date, datetime
 from typing import Any, Literal
 

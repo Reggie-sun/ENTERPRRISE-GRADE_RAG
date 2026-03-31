@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_2e2a9e72ed5a4bbf9452634711e1aae6",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-03-31T02:06:53.805613Z",
+  "turns": [
+    {
+      "turn_id": "turn_6635d910233e",
+      "asked_at": "2026-03-31T02:06:53.805537Z",
+      "question": "解释一下cpps",
+      "answer": "你提供的上下文中没有关于\"cpps\"的解释或定义，因此无法给出解释。请提供更具体的信息或者上下文。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

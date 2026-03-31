@@ -1,3 +1,4 @@
+"""请求快照数据仓库。管理请求快照的持久化存储。"""
 from datetime import date
 import threading
 from abc import ABC, abstractmethod

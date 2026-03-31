@@ -1,3 +1,4 @@
+"""健康检查服务模块。检测各依赖组件（Qdrant、数据库等）的可用性状态。"""
 from functools import lru_cache
 
 from ..core.config import Settings, get_llm_base_url, get_llm_model, get_postgres_metadata_dsn, get_settings

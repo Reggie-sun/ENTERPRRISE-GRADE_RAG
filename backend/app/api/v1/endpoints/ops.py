@@ -1,3 +1,5 @@
+"""运维运营接口模块。提供系统汇总、卡住任务检测和修复能力，用于 Ops 页面和运营决策。"""
+
 from fastapi import APIRouter, Depends
 
 from ....schemas.auth import AuthContext

@@ -1,3 +1,4 @@
+"""运行时并发门控服务模块。基于通道和用户粒度限制并发请求数量。"""
 from dataclasses import dataclass
 from functools import lru_cache
 from threading import Condition

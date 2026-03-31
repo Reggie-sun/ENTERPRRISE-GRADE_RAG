@@ -1,3 +1,4 @@
+"""请求快照接口模块。提供请求快照查询和回放能力。"""
 from fastapi import APIRouter, Depends, Path, Query
 
 from ....schemas.auth import AuthContext

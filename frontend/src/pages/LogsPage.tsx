@@ -1,5 +1,6 @@
 import { Clock3, Filter, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { formatLocalTime, renderNullable } from '@/app/formatting';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, Input, StatusPill } from '@/components';
 import {
@@ -13,21 +14,6 @@ import {
 } from '@/api';
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
-
-function formatLocalTime(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-  return parsed.toLocaleString('zh-CN', { hour12: false });
-}
-
-function renderNullable(value: string | number | null | undefined): string {
-  if (value === null || value === undefined || value === '') {
-    return '-';
-  }
-  return String(value);
-}
 
 export function LogsPage() {
   const { profile } = useAuth();

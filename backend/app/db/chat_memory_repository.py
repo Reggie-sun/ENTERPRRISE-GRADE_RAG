@@ -1,3 +1,4 @@
+"""对话记忆数据仓库。管理会话上下文的持久化存储。"""
 import threading
 from abc import ABC, abstractmethod
 from pathlib import Path

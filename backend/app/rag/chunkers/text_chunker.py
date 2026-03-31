@@ -1,3 +1,8 @@
+"""文本分块器，按固定字符大小切分文档。
+
+支持可配置的 chunk 大小、重叠长度和最小有效长度，
+并尽量在自然边界（段落、句子、标点）处切分，保持语义完整性。
+"""
 from dataclasses import dataclass  # 导入 dataclass，用于定义轻量级 chunk 数据结构。
 
 

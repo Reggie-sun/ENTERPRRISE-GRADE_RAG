@@ -1,3 +1,9 @@
+"""文档解析器，支持 PDF/DOCX/TXT/Markdown 等格式。
+
+将不同格式的文档统一解析为纯文本输出，
+PDF 使用 pypdf 提取、DOCX 通过解压 XML 抽取正文、
+TXT/Markdown 直接读取，解析后统一做换行和空白归一化处理。
+"""
 from dataclasses import dataclass  # 导入 dataclass，用于定义解析结果结构。
 from pathlib import Path, PurePosixPath  # 导入 Path，方便处理文件路径。
 from xml.etree import ElementTree  # 导入 XML 解析器，用于提取 DOCX 里的正文文本。

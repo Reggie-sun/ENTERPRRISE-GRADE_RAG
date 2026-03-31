@@ -1,10 +1,9 @@
 /**
- * 检索面板组件
- * 用于测试文档检索功能
+ * 检索面板 — 支持文档检索与 rerank compare
  */
 
 import { useEffect, useState } from 'react';
-import { Search } from 'lucide-react';  // 引入图标。
+import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth';
 import {

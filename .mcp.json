@@ -29,6 +29,22 @@
         "/home/reggie/vscode_folder/Enterprise-grade_RAG"
       ],
       "cwd": "/home/reggie/vscode_folder/MCP/mcp-server-codegraph"
+    },
+    "4_5v_mcp": {
+      "command": "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-streamable-http-mcp.sh"
+    },
+    "next-ai-draw-io": {
+      "command": "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-next-ai-drawio-mcp.sh"
+    },
+    "qdrant": {
+      "command": "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-qdrant-mcp.sh"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT_TOKEN}"
+      }
     }
   }
 }

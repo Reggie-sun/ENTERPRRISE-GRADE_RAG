@@ -1,3 +1,4 @@
+"""SOP 版本管理服务模块。处理 SOP 的版本创建、查询和回滚。"""
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path

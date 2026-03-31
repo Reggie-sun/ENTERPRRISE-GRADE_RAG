@@ -1,3 +1,4 @@
+"""查询档位服务模块。根据请求模式和系统配置解析查询参数（top_k、候选量、超时预算等）。"""
 from functools import lru_cache
 
 from ..core.config import Settings, get_settings

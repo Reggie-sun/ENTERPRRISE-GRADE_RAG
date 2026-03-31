@@ -1,3 +1,4 @@
+"""事件日志数据仓库。管理审计日志的持久化存储和查询。"""
 from datetime import date
 import threading
 from abc import ABC, abstractmethod

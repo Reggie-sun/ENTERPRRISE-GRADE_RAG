@@ -1,3 +1,9 @@
+"""Qdrant 向量存储，封装向量写入和相似度搜索。
+
+支持本地磁盘、内存和远程 HTTP 三种 Qdrant 部署模式，
+提供文档级 upsert/delete/count/search/scroll 等操作，
+并通过客户端缓存和线程锁避免重复创建连接。
+"""
 from collections.abc import Iterator
 from pathlib import Path  # 导入 Path，用于统一本地路径配置的缓存 key。
 import threading  # 导入线程锁，避免多线程并发创建客户端时产生竞态。

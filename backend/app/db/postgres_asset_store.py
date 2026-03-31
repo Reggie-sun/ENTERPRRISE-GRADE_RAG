@@ -1,3 +1,4 @@
+"""PostgreSQL 资产存储实现。将二进制文件存储到数据库。"""
 from __future__ import annotations
 
 from typing import Any

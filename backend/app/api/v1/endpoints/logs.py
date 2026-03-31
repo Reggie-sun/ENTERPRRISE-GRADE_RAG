@@ -1,3 +1,5 @@
+"""事件日志查询接口模块。提供日志列表和筛选能力，用于审计和排障。"""
+
 from datetime import date
 
 from fastapi import APIRouter, Depends, Query

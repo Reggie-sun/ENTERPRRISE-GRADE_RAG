@@ -1,3 +1,4 @@
+"""检索接口模块——提供文档向量检索、rerank 对比及 rerank 金丝雀诊断端点。"""
 from fastapi import APIRouter, Depends, HTTPException, Query, status  # 导入路由对象和依赖注入工具。
 
 from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让检索与文档列表共用部门范围。

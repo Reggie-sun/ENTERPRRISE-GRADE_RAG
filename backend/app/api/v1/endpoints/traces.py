@@ -1,3 +1,4 @@
+"""请求追踪接口模块。提供请求阶段追踪查询能力。"""
 from fastapi import APIRouter, Depends, Query
 
 from ....schemas.auth import AuthContext

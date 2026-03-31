@@ -1,3 +1,4 @@
+"""请求追踪服务模块。记录每个请求的阶段性耗时和状态，用于性能分析和重放。"""
 from datetime import datetime, timezone
 from functools import lru_cache
 

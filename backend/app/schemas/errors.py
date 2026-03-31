@@ -1,3 +1,4 @@
+"""统一错误响应模型。定义标准化的错误信封(ErrorEnvelope)结构。"""
 from typing import Any
 
 from pydantic import BaseModel

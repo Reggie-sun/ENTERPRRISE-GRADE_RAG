@@ -1,3 +1,4 @@
+"""PostgreSQL 元数据存储实现。管理文档元信息的持久化存储和查询。"""
 from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit

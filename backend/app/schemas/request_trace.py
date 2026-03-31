@@ -1,3 +1,4 @@
+"""请求追踪模型。定义请求阶段追踪的结构。"""
 from datetime import date, datetime
 from typing import Any, Literal
 

@@ -1,3 +1,4 @@
+"""对话记忆数据模型。定义会话上下文的结构。"""
 from datetime import datetime
 
 from pydantic import BaseModel, Field

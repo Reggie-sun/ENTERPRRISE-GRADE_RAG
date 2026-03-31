@@ -1,3 +1,4 @@
+"""系统配置服务模块。提供运行时可调的查询档位、重排序路由和降级控制等配置。"""
 from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Any

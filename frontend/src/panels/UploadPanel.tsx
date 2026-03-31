@@ -1,6 +1,5 @@
 /**
- * 文档上传面板组件
- * 支持单文件/批量文件创建入库任务并轮询任务状态
+ * 文档上传面板 — 单文件/批量创建入库任务并轮询状态
  */
 
 import { useEffect, useRef, useState } from 'react';

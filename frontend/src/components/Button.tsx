@@ -1,14 +1,9 @@
-/**
- * 按钮组件
- * 提供主要按钮和次要按钮两种样式
- */
-
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;  // 按钮内容。
-  variant?: 'primary' | 'ghost';  // 按钮样式变体。
-  loading?: boolean;  // 是否处于加载状态。
+  children: ReactNode;
+  variant?: 'primary' | 'ghost';
+  loading?: boolean;
 }
 
 export function Button({
@@ -19,7 +14,6 @@ export function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  // 基础样式。
   const baseStyles = `
     border-0
     rounded-full
@@ -31,7 +25,6 @@ export function Button({
     disabled:opacity-70
   `;
 
-  // 根据变体选择样式。
   const variantStyles = variant === 'primary'
     ? `
         bg-gradient-to-br from-accent to-[#d16837]

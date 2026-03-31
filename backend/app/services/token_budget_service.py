@@ -1,3 +1,4 @@
+"""Token 预算服务模块。计算 Prompt 组装时的 Token 用量，确保不超出模型上下文窗口。"""
 from __future__ import annotations
 
 import math

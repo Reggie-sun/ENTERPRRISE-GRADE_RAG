@@ -1,3 +1,5 @@
+"""健康检查接口模块。提供 /health 紻性探针，用于监控系统判断服务是否正常运行。"""
+
 from fastapi import APIRouter, Depends  # 导入 FastAPI 的路由对象，用来声明接口。
 
 from ....schemas.health import HealthResponse  # 导入健康检查响应模型，固定接口合同字段。

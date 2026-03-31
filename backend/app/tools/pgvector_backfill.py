@@ -1,3 +1,5 @@
+"""Pgvector 向量回填工具。将文件系统中的向量数据批量迁移到 PostgreSQL pgvector 扩展。"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

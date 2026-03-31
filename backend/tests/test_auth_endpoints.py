@@ -250,3 +250,69 @@ def test_auth_profile_exposes_query_isolation_toggle(tmp_path) -> None:
 
     assert response.status_code == 200
     assert response.json()["department_query_isolation_enabled"] is False
+
+
+def test_auth_revoke_is_per_process(tmp_path) -> None:
+    """v0.3 已知行为：两个 AuthService 实例之间吊销不共享。
+    V1.1 迁移到 Redis 后此测试需改为验证共享语义。"""
+    identity_service, auth_service_a = _build_auth_service(tmp_path)
+    _, auth_service_b = _build_auth_service(tmp_path)
+
+    user = identity_service.get_auth_user("user_employee_demo")
+    token, _ = auth_service_a.issue_access_token(user)
+
+    auth_service_a.revoke_token(
+        auth_service_a._decode_token(token).jti
+    )
+
+    # 实例 A 应拒绝
+    import pytest
+
+    with pytest.raises(Exception):  # HTTPException
+        auth_service_a.build_auth_context(token)
+
+    # 实例 B 仍接受（内存不共享）
+    context = auth_service_b.build_auth_context(token)
+    assert context.user.user_id == "user_employee_demo"
+
+
+def test_auth_token_format_is_base64_hmac(tmp_path) -> None:
+    """v0.3 已知行为：token 使用自定义 base64(payload).base64(hmac) 格式。
+    V1.1 迁移到标准 JWT 后此测试需更新。"""
+    identity_service, auth_service = _build_auth_service(tmp_path)
+    user = identity_service.get_auth_user("user_employee_demo")
+    token, _ = auth_service.issue_access_token(user)
+
+    parts = token.split(".")
+    assert len(parts) == 2, "Token should have exactly two dot-separated parts"
+
+    import base64
+
+    # 第一段应是合法 base64 编码的 JSON
+    padding = "=" * (-len(parts[0]) % 4)
+    payload_bytes = base64.urlsafe_b64decode(parts[0] + padding)
+    payload_json = __import__("json").loads(payload_bytes)
+    assert "sub" in payload_json
+    assert "jti" in payload_json
+    assert "exp" in payload_json
+
+    # 第二段应是合法 base64 编码的签名
+    sig_padding = "=" * (-len(parts[1]) % 4)
+    base64.urlsafe_b64decode(parts[1] + sig_padding)  # 不抛异常即可
+
+
+def test_auth_tampered_signature_rejected(tmp_path) -> None:
+    """篡改 token 签名应被拒绝。"""
+    identity_service, auth_service = _build_auth_service(tmp_path)
+    user = identity_service.get_auth_user("user_employee_demo")
+    token, _ = auth_service.issue_access_token(user)
+
+    # 篡改签名字节（翻转最后一个 base64 字符）
+    payload_part, sig_part = token.split(".", 1)
+    tampered_sig = sig_part[:-1] + ("A" if sig_part[-1] != "A" else "B")
+    tampered_token = f"{payload_part}.{tampered_sig}"
+
+    import pytest
+
+    with pytest.raises(Exception):  # HTTPException: Token signature is invalid
+        auth_service.build_auth_context(tampered_token)

@@ -483,3 +483,47 @@ def test_query_scope_disable_does_not_widen_write_boundaries(authz_env_no_query_
 
     assert forbidden_department_response.status_code == 403
     assert forbidden_department_response.json()["detail"] == "Employees can only create documents in their accessible departments."
+
+
+# ---------------------------------------------------------------------------
+# Retrieval-scoped retrievability tests (department priority + supplemental)
+# ---------------------------------------------------------------------------
+
+
+def test_build_department_priority_scope_includes_cross_department_docs_in_supplemental(authz_env) -> None:
+    """Non-global employee retrieval scope should include same-tenant cross-department docs in supplemental pool."""
+    client, document_service = authz_env
+    sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
+
+    own_doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="after_sales_guide.txt",
+        content="After-sales alarm E102 troubleshooting guide.",
+        department_id="dept_after_sales",
+    )
+    other_doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="assembly_guide.txt",
+        content="Assembly line calibration procedure for E102.",
+        department_id="dept_assembly",
+    )
+
+    # Build auth_context for the employee via login + token decode
+    login_response = client.post("/api/v1/auth/login", json={"username": "employee.demo", "password": "employee-demo-pass"})
+    assert login_response.status_code == 200
+    token = login_response.json()["access_token"]
+
+    from backend.app.services.identity_service import IdentityService
+    identity_service_factory = client.app.dependency_overrides[get_identity_service]
+    identity_service: IdentityService = identity_service_factory()
+    auth_service = AuthService(document_service.settings, identity_service=identity_service)
+    auth_context = auth_service.build_auth_context(token)
+
+    scope = document_service.build_department_priority_retrieval_scope(auth_context)
+
+    assert scope is not None
+    assert own_doc_id in scope.department_document_ids, "Own-department doc must be in department pool"
+    # Cross-department doc should be in the supplemental (global) pool
+    assert other_doc_id in scope.global_document_ids, "Cross-department doc must be in supplemental pool"

@@ -1,3 +1,4 @@
+"""身份认证与授权接口模块——提供登录、注销、当前用户信息及身份目录查询。"""
 from fastapi import APIRouter, Depends
 
 from ....schemas.auth import (

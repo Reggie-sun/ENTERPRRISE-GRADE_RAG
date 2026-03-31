@@ -1,3 +1,4 @@
+"""重排序金丝雀服务模块。收集和查询 rerank 对比验证样本，用于策略决策复盘。"""
 from __future__ import annotations
 
 from datetime import datetime, timezone

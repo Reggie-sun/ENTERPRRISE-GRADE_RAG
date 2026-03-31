@@ -1,3 +1,4 @@
+"""对话记忆服务模块。管理多轮对话上下文的存储和检索。"""
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -1,3 +1,4 @@
+"""问答接口模块——提供标准问答与 SSE 流式问答端点。"""
 from fastapi import APIRouter, Depends  # 导入路由对象和依赖注入工具。
 from fastapi.responses import StreamingResponse  # 导入流式响应类型。
 

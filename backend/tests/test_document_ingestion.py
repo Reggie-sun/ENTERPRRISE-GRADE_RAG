@@ -780,6 +780,9 @@ def test_create_document_reuses_completed_duplicate_without_requeue(tmp_path: Pa
         completed_doc_record.status = "active"
         service._save_document_record(completed_doc_record)
 
+        # 模拟真实 eager 完成后产物仍在的场景：写入 parsed 文件，使 completed 分支判定产物存在、直接复用。
+        (settings.parsed_dir / f"{doc_id}.txt").write_text("parsed content", encoding="utf-8")
+
         second_create = client.post(
             "/api/v1/documents",
             data={"tenant_id": "wl", "created_by": "bob"},

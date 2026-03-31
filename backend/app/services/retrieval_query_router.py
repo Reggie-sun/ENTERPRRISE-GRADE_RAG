@@ -1,11 +1,23 @@
+"""
+检索查询路由器 —— 根据用户查询内容自动判断查询类型（精确/语义/混合），
+并为混合检索分配 vector 与 lexical 的权重比例。
+
+核心流程:
+  1. classify()       — 对查询文本做 token 分析与信号打分，输出查询分类
+  2. resolve_branch_weights() — 根据分类结果查表获取对应的向量/词法权重
+  3. fixed_branch_weights()   — 当动态权重关闭时，返回固定权重兜底
+"""
+
 from dataclasses import dataclass
 import re
 from typing import Literal
 
 from ..core.config import Settings, get_settings
 
+# 查询类型枚举：fixed(固定权重) / exact(精确匹配优先) / semantic(语义优先) / mixed(混合)
 HybridQueryType = Literal["fixed", "exact", "semantic", "mixed"]
 
+# 匹配连续英数串（含常见技术符号）或连续中文字符，用于把查询拆成 token
 _TOKEN_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:/-]*|[\u4e00-\u9fff]+")
 _CODE_LIKE_TOKEN_PATTERN = re.compile(
     r"(?ix)"

@@ -1,3 +1,4 @@
+"""v1 版本总路由——将各 endpoint 子模块统一挂载到 /api/v1 前缀下。"""
 from fastapi import APIRouter  # 导入 FastAPI 路由对象。
 
 from .endpoints import auth, chat, documents, health, ingest, logs, ops, request_snapshots, retrieval, sops, system_config, traces  # 导入 v1 版本下的所有接口模块。

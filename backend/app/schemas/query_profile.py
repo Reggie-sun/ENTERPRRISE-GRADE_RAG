@@ -1,3 +1,4 @@
+"""查询档位配置模型。定义 fast/accurate 模式的参数结构。"""
 from typing import Literal
 
 from pydantic import BaseModel, Field

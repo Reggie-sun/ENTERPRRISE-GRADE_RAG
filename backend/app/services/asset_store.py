@@ -1,3 +1,4 @@
+"""资产存储服务模块。管理上传文件的持久化和物化，支持文件系统和数据库后端。"""
 from __future__ import annotations
 
 from contextlib import contextmanager

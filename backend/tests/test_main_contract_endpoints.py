@@ -112,13 +112,13 @@ def test_health_and_auth_contract_shapes(tmp_path: Path) -> None:
     assert login_response.status_code == 200
     _assert_key_set(
         login_response.json(),
-        {"access_token", "token_type", "expires_in_seconds", "user", "role", "department", "accessible_department_ids"},
+        {"access_token", "token_type", "expires_in_seconds", "user", "role", "department", "accessible_department_ids", "department_query_isolation_enabled"},
     )
 
     assert me_response.status_code == 200
     _assert_key_set(
         me_response.json(),
-        {"user", "role", "department", "accessible_department_ids"},
+        {"user", "role", "department", "accessible_department_ids", "department_query_isolation_enabled"},
     )
 
 

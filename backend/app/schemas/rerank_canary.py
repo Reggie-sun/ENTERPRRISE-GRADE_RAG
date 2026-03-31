@@ -1,3 +1,4 @@
+"""重排序金丝雀样本模型。定义 rerank 对比验证样本的结构。"""
 from datetime import datetime
 from typing import Any
 

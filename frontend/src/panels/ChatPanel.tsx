@@ -1,10 +1,9 @@
 /**
- * 问答面板组件
- * 用于测试带引用的 RAG 问答功能
+ * 问答面板 — 支持带引用的 RAG 问答
  */
 
 import { useEffect, useState } from 'react';
-import { MessageSquare } from 'lucide-react';  // 引入图标。
+import { MessageSquare } from 'lucide-react';
 import { Card, Button, StatusPill, Textarea, Input, ResultBox, ResultCard, EvidenceSourceSummary } from '@/components';
 import {
   askQuestionStream,

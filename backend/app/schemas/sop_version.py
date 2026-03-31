@@ -1,3 +1,4 @@
+"""SOP 版本模型。定义 SOP 版本的元数据结构。"""
 from datetime import datetime
 
 from pydantic import BaseModel, Field

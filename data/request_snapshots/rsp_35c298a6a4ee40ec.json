@@ -1,0 +1,75 @@
+{
+  "snapshot_id": "rsp_35c298a6a4ee40ec",
+  "trace_id": "trc_f89b4c9b263e4b27",
+  "request_id": "req_027be5aa9ba74e40",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "failed",
+  "occurred_at": "2026-03-31T02:08:44.286204Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下cpps",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: 无法找到足够的证据来解释CPPS，因为提供的上下文信息与此主题无关。\n\n[Recent Turn 2]\nUser: 解释一下cpps\nAssistant: CPPS (Chronic Prostatitis/Pelvic Pain Syndrome)，即慢性前列腺炎/盆腔疼痛综合征，是一种复杂的病症，主要特征为持续性的盆腔区域疼痛，可能伴有排尿困难等症状。值得注意的是，尽管名为“前列腺炎”，但该状况通常并非由细菌感染引起，因此抗生素治疗可能无效。CPPS的具体成因尚未完全明了，但普遍认为是由多种因素共同作用所致，包括肌肉紧张、神经系统敏感度增加以及心理因素等。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "timed out"
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

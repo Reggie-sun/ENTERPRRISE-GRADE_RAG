@@ -1,3 +1,18 @@
+"""问答服务模块。
+
+封装完整 RAG 问答链路：查询改写 → 检索 → 重排序 → LLM 生成/流式生成 → 引用构建。
+同时负责对话记忆管理、请求追踪、快照记录和运行时并发控制。
+
+核心类:
+    ChatService — 问答服务，提供同步回答（answer）和 SSE 流式回答（stream_answer_sse）。
+
+关键流程:
+    1. 查询改写：短追问通过 QueryRewriteService 补全上下文
+    2. 检索+重排：通过 RetrievalService + RerankerClient 获取引用
+    3. LLM 生成：调用 LLMGenerationClient 生成最终回答
+    4. 降级兜底：LLM 不可用时自动切换到 retrieval_fallback 模式
+"""
+
 import json  # 导入 json，用于序列化 SSE 事件数据。
 from dataclasses import dataclass, field
 from time import perf_counter
@@ -844,6 +859,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
     ) -> CitationBuildResult:  # 统一执行检索+重排并产出引用列表。
         retrieval_started_at = perf_counter()
         retrieval_mode = "qdrant"
+        _retrieval_diagnostic: dict[str, object] = {}  # 收集检索诊断信息，仅在 trace 启用时合并。
         try:
             retrieval_results, retrieval_mode, _ = self.retrieval_service.search_candidates(  # 先取较大的融合候选，供后置 rerank 使用。
                 RetrievalRequest(  # 把问答请求转换成检索请求。
@@ -856,6 +872,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 auth_context=auth_context,
                 profile=profile,
                 truncate_to_top_k=False,
+                diagnostic=_retrieval_diagnostic,
             )
         except Exception as exc:
             if trace_stages is not None:
@@ -888,6 +905,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
                     "document_id": request.document_id,
                     "query_length": len(query_text),
                     **retrieval_details,
+                    **({"diagnostic": _retrieval_diagnostic} if _retrieval_diagnostic else {}),
                 },
             )
 

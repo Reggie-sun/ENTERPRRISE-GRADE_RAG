@@ -1,3 +1,4 @@
+"""文档管理接口模块——提供文档上传、列表、详情、预览、下载、删除及向量重建等 CRUD 端点。"""
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status  # 导入上传接口需要的 FastAPI 组件。
 from fastapi.responses import FileResponse, Response  # 导入文件流响应和字节响应，兼容本地路径与数据库二进制存储。
 

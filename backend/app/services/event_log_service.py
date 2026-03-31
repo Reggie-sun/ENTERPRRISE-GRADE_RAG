@@ -1,3 +1,4 @@
+"""事件日志服务模块。记录和查询系统操作日志，用于审计和排障。"""
 from datetime import datetime, timezone
 from functools import lru_cache
 from uuid import uuid4
