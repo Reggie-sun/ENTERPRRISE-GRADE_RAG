@@ -147,6 +147,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 profile=profile,
                 limit=search_limit,
                 scope=retrieval_scope,
+                truncate_to_top_k=truncate_to_top_k,
             )
         else:
             candidates, retrieval_mode, branch_weights = self._collect_scoped_candidates(
@@ -538,11 +539,20 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         profile: QueryProfile,
         limit: int,
         scope: DepartmentPriorityRetrievalScope | None,
+        truncate_to_top_k: bool = True,
     ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
-        """部门优先候选收集：在本部门文档范围内优先召回，全局范围作为补充。
+        """部门优先分阶段候选收集：先查本部门，不足时才补充同租户其他部门文档。
 
-        功能：分别对本部门文档和全局文档执行候选收集，标记来源范围后融合排序。
-        输入：查询文本、查询向量、查询档位、召回上限、部门优先作用域。
+        阶段一：只在 department_document_ids 范围内检索。
+        阶段二：仅当本部门有效结果数不足时，才查 supplemental pool（global_document_ids）。
+        融合排序：本部门结果优先，补充结果在后。
+
+        "有效结果数"近似为：本部门候选经过 OCR 质量治理后的数量。
+        这个近似的前提是：在部门优先路径里，retrievability 过滤不会大量打掉结果
+        （因为 _can_retrieve_document 只检查租户边界 + role visibility，
+        不做部门隔离过滤）。
+
+        输入：查询文本、查询向量、查询档位、召回上限、部门优先作用域、是否截断到 top_k。
         输出：(融合后候选列表, 检索模式, 分支权重) 三元组。
         """
         if scope is None:
@@ -553,27 +563,51 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 limit=limit,
             )
 
-        department_limit = limit
-        # 全局召回量不超过 limit，但至少保证 top_k 或 limit/2，避免全局补充过少
-        global_limit = min(limit, max(profile.top_k, max(limit // 2, 1)))
-
+        # --- Stage 1: department route only ---
         department_candidates, department_mode, department_branch_weights = self._collect_scoped_candidates(
             query=query,
             query_vector=query_vector,
             profile=profile,
-            limit=department_limit,
+            limit=limit,
             document_ids=scope.department_document_ids,
         )
+        self._mark_candidates_source_scope(department_candidates, source_scope="department")
+
+        # Apply OCR quality governance to department candidates to get effective count
+        department_after_ocr, _ocr_filtered = self._apply_ocr_quality_governance(department_candidates)
+        department_effective_count = len(department_after_ocr)
+
+        required = self._required_primary_results(profile, truncate_to_top_k)
+
+        if department_effective_count >= required:
+            # Department has sufficient results — skip supplemental route entirely
+            logger.info(
+                "staged_retrieval stage=department_only department_effective=%d required=%d supplemental=skipped",
+                department_effective_count,
+                required,
+            )
+            return department_candidates, department_mode, department_branch_weights
+
+        # --- Stage 2: supplemental route ---
+        remaining_needed = required - department_effective_count
+        # Allow moderate headroom for supplemental recall to account for post-filter attrition
+        supplemental_limit = min(limit, max(remaining_needed + required, 1))
+
         global_candidates, global_mode, global_branch_weights = self._collect_scoped_candidates(
             query=query,
             query_vector=query_vector,
             profile=profile,
-            limit=global_limit,
+            limit=supplemental_limit,
             document_ids=scope.global_document_ids,
         )
-
-        self._mark_candidates_source_scope(department_candidates, source_scope="department")
         self._mark_candidates_source_scope(global_candidates, source_scope="global")
+
+        logger.info(
+            "staged_retrieval stage=supplemental department_effective=%d required=%d supplemental_recall=%d",
+            department_effective_count,
+            required,
+            len(global_candidates),
+        )
 
         retrieval_mode = "hybrid" if "hybrid" in {department_mode, global_mode} else "qdrant"
         branch_weights = department_branch_weights or global_branch_weights
@@ -583,6 +617,18 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             limit=limit,
         )
         return fused_candidates, retrieval_mode, branch_weights
+
+    @staticmethod
+    def _required_primary_results(profile: QueryProfile, truncate_to_top_k: bool) -> int:
+        """Calculate the minimum number of primary (department) results needed.
+
+        When truncate_to_top_k=True (retrieval/search endpoint), use profile.top_k.
+        When truncate_to_top_k=False (chat/SOP shared pipeline), use profile.rerank_top_n,
+        because those callers need sufficient candidates for rerank/citation.
+        """
+        if truncate_to_top_k:
+            return profile.top_k
+        return profile.rerank_top_n
 
     def _apply_ocr_quality_governance(
         self,

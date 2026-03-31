@@ -1,0 +1,1008 @@
+{
+  "document_id": "doc_20260331062308_21e15fba",
+  "file_name": "400W绝对值A+C装配SOP.docx",
+  "source_path": "/app/data/uploads/doc_20260331062308_21e15fba__400W_A_C_SOP.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 166,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\nEOLLLH\n\n2\nC\n\na\n②\n润滑油脂\n（美孚力士EPO)\n\n②\n中\n①\n③\n\n广\n\n2\n0\n0\n\n②\n润滑油脂\n（美孚力士EPO）\n\nS\n\nF丽\n\n人\n\n?\n5\n2\n\n2\n6\nO\nO\n5\nO\n0\n③\n6\n\n(1）\n2\n\n锂基脂\n( Longtime PDoo)\n\n4\n\nY\n2\n?\n?\n\n②\n③\n\n0\n\n锂基脂\n(Longtime PD00)\n\n2Q9\n\n3\n\n1\n3\n\n润滑油脂\n(美孚力士EPO)\n\n@\n\n1\n\n√\n\nR\n九\n\n0\n-\nD\n0\na\n2\n3\nQ\n:\nC\n6\n3\n0\nG\n②\n\n2\n\n③\n\nECLLLH\n\n①\n\n锂基脂\n( Longtime PD00)\n\n锂基脂\n(Longtime PD00)\n\n②\n2\n@\n0\n锂基脂\n（Longtime PD00)\n\n4\n0\n000\n6\n0\n/\nO\n6\n1\n8\n0\n000\n0\nO\n\n国\n国\n金\n白\n□\n\nQ\n2\n\nQ\n\n②\nG\n品\n\n😜\n•\n😊\nO\no\nO\nO\n0\nO\nφ\nの\nの\nO\n•\nO\n\nO\n]\n0\nO\nO\nO\nの\nO\nの\no\n\nQ\n\nLLLLH\n\nERLLLH\n\nT\n\n1\nJ\n\n皮带调节螺\n丝\n\n锂基脂\n( Longtime PD00)\n\n4\n\n③\n④\n5\n8\n5\n1）\n\n②\n2\n。\n\nQ\nC\nR\n\n-\nの\nC",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "EOLLLH",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.5621212124824524
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.9870496392250061
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.4148510694503784
+    },
+    {
+      "text": "a",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.13022224605083466
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.836492121219635
+    },
+    {
+      "text": "润滑油脂",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.9897739887237549
+    },
+    {
+      "text": "（美孚力士EPO)",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.9078165888786316
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.8667184114456177
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.5608800053596497
+    },
+    {
+      "text": "①",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.9028082489967346
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.9420785903930664
+    },
+    {
+      "text": "广",
+      "page_no": null,
+      "line_no": 15,
+      "confidence": 0.18386945128440857
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 16,
+      "confidence": 0.6053723096847534
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 17,
+      "confidence": 0.9487947821617126
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 18,
+      "confidence": 0.9788666367530823
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 19,
+      "confidence": 0.9528266787528992
+    },
+    {
+      "text": "润滑油脂",
+      "page_no": null,
+      "line_no": 20,
+      "confidence": 0.9815613627433777
+    },
+    {
+      "text": "（美孚力士EPO）",
+      "page_no": null,
+      "line_no": 21,
+      "confidence": 0.9514382481575012
+    },
+    {
+      "text": "S",
+      "page_no": null,
+      "line_no": 22,
+      "confidence": 0.08590204268693924
+    },
+    {
+      "text": "F丽",
+      "page_no": null,
+      "line_no": 23,
+      "confidence": 0.17504242062568665
+    },
+    {
+      "text": "人",
+      "page_no": null,
+      "line_no": 24,
+      "confidence": 0.08618110418319702
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 25,
+      "confidence": 0.11932404339313507
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 26,
+      "confidence": 0.09748814254999161
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 27,
+      "confidence": 0.4547227919101715
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 28,
+      "confidence": 0.9984487295150757
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 29,
+      "confidence": 0.997366726398468
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 30,
+      "confidence": 0.20741689205169678
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 31,
+      "confidence": 0.2968890070915222
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 32,
+      "confidence": 0.9784205555915833
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 33,
+      "confidence": 0.6259846687316895
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 34,
+      "confidence": 0.6158086061477661
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 35,
+      "confidence": 0.5654609799385071
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 36,
+      "confidence": 0.9992363452911377
+    },
+    {
+      "text": "(1）",
+      "page_no": null,
+      "line_no": 37,
+      "confidence": 0.6347017288208008
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 38,
+      "confidence": 0.3147814869880676
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 39,
+      "confidence": 0.9855782389640808
+    },
+    {
+      "text": "( Longtime PDoo)",
+      "page_no": null,
+      "line_no": 40,
+      "confidence": 0.9674620628356934
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 41,
+      "confidence": 0.43568646907806396
+    },
+    {
+      "text": "Y",
+      "page_no": null,
+      "line_no": 42,
+      "confidence": 0.0956946462392807
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 43,
+      "confidence": 0.10656321048736572
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 44,
+      "confidence": 0.12713012099266052
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 45,
+      "confidence": 0.15142382681369781
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 46,
+      "confidence": 0.9467372298240662
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 47,
+      "confidence": 0.9371485710144043
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 48,
+      "confidence": 0.502701997756958
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 49,
+      "confidence": 0.999589741230011
+    },
+    {
+      "text": "(Longtime PD00)",
+      "page_no": null,
+      "line_no": 50,
+      "confidence": 0.9542282223701477
+    },
+    {
+      "text": "2Q9",
+      "page_no": null,
+      "line_no": 51,
+      "confidence": 0.5229077339172363
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 52,
+      "confidence": 0.9614895582199097
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 53,
+      "confidence": 0.9973115921020508
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 54,
+      "confidence": 0.9979400038719177
+    },
+    {
+      "text": "润滑油脂",
+      "page_no": null,
+      "line_no": 55,
+      "confidence": 0.9956703782081604
+    },
+    {
+      "text": "(美孚力士EPO)",
+      "page_no": null,
+      "line_no": 56,
+      "confidence": 0.9361898899078369
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 57,
+      "confidence": 0.14257819950580597
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 58,
+      "confidence": 0.20034603774547577
+    },
+    {
+      "text": "√",
+      "page_no": null,
+      "line_no": 59,
+      "confidence": 0.5407875180244446
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 60,
+      "confidence": 0.06393063068389893
+    },
+    {
+      "text": "九",
+      "page_no": null,
+      "line_no": 61,
+      "confidence": 0.25994873046875
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 62,
+      "confidence": 0.040518101304769516
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 63,
+      "confidence": 0.1967903971672058
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 64,
+      "confidence": 0.13039197027683258
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 65,
+      "confidence": 0.3261130154132843
+    },
+    {
+      "text": "a",
+      "page_no": null,
+      "line_no": 66,
+      "confidence": 0.25254982709884644
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 67,
+      "confidence": 0.07002997398376465
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 68,
+      "confidence": 0.9985912442207336
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 69,
+      "confidence": 0.28754711151123047
+    },
+    {
+      "text": ":",
+      "page_no": null,
+      "line_no": 70,
+      "confidence": 0.4847305417060852
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 71,
+      "confidence": 0.2111562192440033
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 72,
+      "confidence": 0.21553707122802734
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 73,
+      "confidence": 0.16689687967300415
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 74,
+      "confidence": 0.220469132065773
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 75,
+      "confidence": 0.2011396288871765
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 76,
+      "confidence": 0.9610053300857544
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 77,
+      "confidence": 0.7697891592979431
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 78,
+      "confidence": 0.562876284122467
+    },
+    {
+      "text": "ECLLLH",
+      "page_no": null,
+      "line_no": 79,
+      "confidence": 0.6980419158935547
+    },
+    {
+      "text": "①",
+      "page_no": null,
+      "line_no": 80,
+      "confidence": 0.9939024448394775
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 81,
+      "confidence": 0.9996376037597656
+    },
+    {
+      "text": "( Longtime PD00)",
+      "page_no": null,
+      "line_no": 82,
+      "confidence": 0.9470822811126709
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 83,
+      "confidence": 0.999163806438446
+    },
+    {
+      "text": "(Longtime PD00)",
+      "page_no": null,
+      "line_no": 84,
+      "confidence": 0.9845189452171326
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 85,
+      "confidence": 0.18216705322265625
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 86,
+      "confidence": 0.18040809035301208
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 87,
+      "confidence": 0.22779591381549835
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 88,
+      "confidence": 0.301588237285614
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 89,
+      "confidence": 0.9885742664337158
+    },
+    {
+      "text": "（Longtime PD00)",
+      "page_no": null,
+      "line_no": 90,
+      "confidence": 0.9416287541389465
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 91,
+      "confidence": 0.8898832201957703
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 92,
+      "confidence": 0.26691827178001404
+    },
+    {
+      "text": "000",
+      "page_no": null,
+      "line_no": 93,
+      "confidence": 0.6284952759742737
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 94,
+      "confidence": 0.6078245639801025
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 95,
+      "confidence": 0.3053971529006958
+    },
+    {
+      "text": "/",
+      "page_no": null,
+      "line_no": 96,
+      "confidence": 0.8722394108772278
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 97,
+      "confidence": 0.3728160858154297
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 98,
+      "confidence": 0.09746358543634415
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 99,
+      "confidence": 0.12346777319908142
+    },
+    {
+      "text": "8",
+      "page_no": null,
+      "line_no": 100,
+      "confidence": 0.06640801578760147
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 101,
+      "confidence": 0.4552003741264343
+    },
+    {
+      "text": "000",
+      "page_no": null,
+      "line_no": 102,
+      "confidence": 0.5303428173065186
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 103,
+      "confidence": 0.49220284819602966
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 104,
+      "confidence": 0.572053074836731
+    },
+    {
+      "text": "国",
+      "page_no": null,
+      "line_no": 105,
+      "confidence": 0.48256373405456543
+    },
+    {
+      "text": "国",
+      "page_no": null,
+      "line_no": 106,
+      "confidence": 0.23021699488162994
+    },
+    {
+      "text": "金",
+      "page_no": null,
+      "line_no": 107,
+      "confidence": 0.20632299780845642
+    },
+    {
+      "text": "白",
+      "page_no": null,
+      "line_no": 108,
+      "confidence": 0.25241151452064514
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 109,
+      "confidence": 0.15207539498806
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 110,
+      "confidence": 0.27079373598098755
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 111,
+      "confidence": 0.09431327879428864
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 112,
+      "confidence": 0.20980869233608246
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 113,
+      "confidence": 0.7277440428733826
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 114,
+      "confidence": 0.15585386753082275
+    },
+    {
+      "text": "品",
+      "page_no": null,
+      "line_no": 115,
+      "confidence": 0.09466368705034256
+    },
+    {
+      "text": "😜",
+      "page_no": null,
+      "line_no": 116,
+      "confidence": 0.19029600918293
+    },
+    {
+      "text": "•",
+      "page_no": null,
+      "line_no": 117,
+      "confidence": 0.6590180993080139
+    },
+    {
+      "text": "😊",
+      "page_no": null,
+      "line_no": 118,
+      "confidence": 0.49004900455474854
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 119,
+      "confidence": 0.582271158695221
+    },
+    {
+      "text": "o",
+      "page_no": null,
+      "line_no": 120,
+      "confidence": 0.7281026244163513
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 121,
+      "confidence": 0.6082294583320618
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 122,
+      "confidence": 0.6342887878417969
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 123,
+      "confidence": 0.4658540189266205
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 124,
+      "confidence": 0.6624471545219421
+    },
+    {
+      "text": "φ",
+      "page_no": null,
+      "line_no": 125,
+      "confidence": 0.7005335688591003
+    },
+    {
+      "text": "の",
+      "page_no": null,
+      "line_no": 126,
+      "confidence": 0.9366615414619446
+    },
+    {
+      "text": "の",
+      "page_no": null,
+      "line_no": 127,
+      "confidence": 0.4713256061077118
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 128,
+      "confidence": 0.6846811771392822
+    },
+    {
+      "text": "•",
+      "page_no": null,
+      "line_no": 129,
+      "confidence": 0.808415949344635
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 130,
+      "confidence": 0.5787107348442078
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 131,
+      "confidence": 0.48673200607299805
+    },
+    {
+      "text": "]",
+      "page_no": null,
+      "line_no": 132,
+      "confidence": 0.674099862575531
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 133,
+      "confidence": 0.3922513425350189
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 134,
+      "confidence": 0.5188007950782776
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 135,
+      "confidence": 0.48913446068763733
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 136,
+      "confidence": 0.621005654335022
+    },
+    {
+      "text": "の",
+      "page_no": null,
+      "line_no": 137,
+      "confidence": 0.5416719913482666
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 138,
+      "confidence": 0.7495167255401611
+    },
+    {
+      "text": "の",
+      "page_no": null,
+      "line_no": 139,
+      "confidence": 0.3629598021507263
+    },
+    {
+      "text": "o",
+      "page_no": null,
+      "line_no": 140,
+      "confidence": 0.3559037446975708
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 141,
+      "confidence": 0.06963422894477844
+    },
+    {
+      "text": "LLLLH",
+      "page_no": null,
+      "line_no": 142,
+      "confidence": 0.5986725091934204
+    },
+    {
+      "text": "ERLLLH",
+      "page_no": null,
+      "line_no": 143,
+      "confidence": 0.5519997477531433
+    },
+    {
+      "text": "T",
+      "page_no": null,
+      "line_no": 144,
+      "confidence": 0.06026650220155716
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 145,
+      "confidence": 0.1580432802438736
+    },
+    {
+      "text": "J",
+      "page_no": null,
+      "line_no": 146,
+      "confidence": 0.5786531567573547
+    },
+    {
+      "text": "皮带调节螺",
+      "page_no": null,
+      "line_no": 147,
+      "confidence": 0.99793940782547
+    },
+    {
+      "text": "丝",
+      "page_no": null,
+      "line_no": 148,
+      "confidence": 0.9997774958610535
+    },
+    {
+      "text": "锂基脂",
+      "page_no": null,
+      "line_no": 149,
+      "confidence": 0.6165453195571899
+    },
+    {
+      "text": "( Longtime PD00)",
+      "page_no": null,
+      "line_no": 150,
+      "confidence": 0.9424758553504944
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 151,
+      "confidence": 0.2144494354724884
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 152,
+      "confidence": 0.6374804973602295
+    },
+    {
+      "text": "④",
+      "page_no": null,
+      "line_no": 153,
+      "confidence": 0.7741155028343201
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 154,
+      "confidence": 0.5112433433532715
+    },
+    {
+      "text": "8",
+      "page_no": null,
+      "line_no": 155,
+      "confidence": 0.9936309456825256
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 156,
+      "confidence": 0.9204919338226318
+    },
+    {
+      "text": "1）",
+      "page_no": null,
+      "line_no": 157,
+      "confidence": 0.7333025932312012
+    },
+    {
+      "text": "②",
+      "page_no": null,
+      "line_no": 158,
+      "confidence": 0.6593538522720337
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 159,
+      "confidence": 0.11662489920854568
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 160,
+      "confidence": 0.37886518239974976
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 161,
+      "confidence": 0.5334773063659668
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 162,
+      "confidence": 0.9718043208122253
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 163,
+      "confidence": 0.16734515130519867
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 164,
+      "confidence": 0.19200630486011505
+    },
+    {
+      "text": "の",
+      "page_no": null,
+      "line_no": 165,
+      "confidence": 0.8003435730934143
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 166,
+      "confidence": 0.642075777053833
+    }
+  ]
+}

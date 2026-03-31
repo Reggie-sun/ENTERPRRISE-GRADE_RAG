@@ -1,0 +1,63 @@
+{
+  "session_id": "sess_b447737da64a483da9bf7052fe3f65be",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-03-31T09:21:45.928047Z",
+  "turns": [
+    {
+      "turn_id": "turn_cb69713008d0",
+      "asked_at": "2026-03-31T09:08:40.046723Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS即慢性盆腔疼痛综合征(Chronic Prostatitis/Pelvic Pain Syndrome)，是一种涉及盆腔区域的长期疼痛状况。这种综合征可以影响男性和女性，表现为盆腔区域的不适或疼痛，包括直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急等症状。值得注意的是，尽管患者表现出明显的症状，但常规的身体检查和测试结果通常都在正常范围内，难以找到明确的生理异常作为病因。因此，CPPS的成因复杂，可能涉及到多种因素，包括但不限于解剖结构的问题、神经系统的问题等。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_10b5278ad608",
+      "asked_at": "2026-03-31T09:08:52.178139Z",
+      "question": "更详细一点",
+      "answer": "CPPS，即慢性盆腔疼痛综合征（Chronic Prostatitis/Pelvic Pain Syndrome），是一种长期存在的盆腔区域疼痛状况。这种综合征可影响男性和女性，主要症状包括盆腔区域的不适或疼痛，具体表现为直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急等症状。\n\n值得注意的是，尽管患者表现出明显的症状，但常规的身体检查和测试结果通常都在正常范围内，难以找到明确的生理异常作为病因。因此，CPPS的成因复杂，可能涉及到多种因素，包括但不限于解剖结构的问题、神经系统的问题等。此外，疼痛感知可能不仅仅局限于某个特定器官，也可能与支持这些器官的肌肉、筋膜和韧带相关。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_60e801b488c2",
+      "asked_at": "2026-03-31T09:14:53.845262Z",
+      "question": "不同部门最近更新了哪些关键知识资料？",
+      "answer": "无法从提供的上下文中找到关于不同部门最近更新的关键知识资料的信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_f296f8bd8a4e",
+      "asked_at": "2026-03-31T09:21:31.898901Z",
+      "question": "跨部门常见问题有哪些可以沉淀成统一回答？",
+      "answer": "跨部门常见问题可以通过以下方式来沉淀成统一回答：\n\n- 将各部门遇到的重复性问题进行收集和整理。\n- 对这些问题进行分类，比如按照报警处理、工单处理、数据分析等方面进行划分。\n- 制定标准答案，确保每个问题都有一个权威且准确的回答。\n- 将这些标准答案存储于知识库中，供智能助手调用。\n- 定期更新知识库内容，确保信息的时效性和准确性。\n\n例如，在DFMS系统中，当系统出现报警时，可以直接给出建议摘要；在工单详情中显示处理建议和知识来源；在数据分析方面，用户可以通过自然语言直接提问，系统返回结果、图表和结论。这些都可以作为跨部门常见问题的标准答案进行沉淀。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_a1db68c137b3",
+      "asked_at": "2026-03-31T09:21:40.669503Z",
+      "question": "不同部门最近更新了哪些关键知识资料？",
+      "answer": "无法从提供的上下文中找到关于不同部门最近更新的关键知识资料的信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_9acfee3810b8",
+      "asked_at": "2026-03-31T09:21:45.928025Z",
+      "question": "当前知识库里哪些 SOP 最适合作为统一标准入口？",
+      "answer": "无法从提供的上下文中找到关于当前知识库里哪些SOP最适合作为统一标准入口的具体信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

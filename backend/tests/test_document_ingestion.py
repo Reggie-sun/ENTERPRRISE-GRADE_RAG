@@ -1284,6 +1284,115 @@ def test_create_document_rejects_file_larger_than_limit(tmp_path: Path) -> None:
     assert "Maximum allowed size is 8 bytes" in detail  # 错误信息应包含当前上限。
 
 
+def test_create_documents_batch_fails_fast_for_invalid_office_container(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents/batch",
+            data={"tenant_id": "wl"},
+            files=[
+                (
+                    "files",
+                    (
+                        "valid.docx",
+                        build_minimal_docx_bytes("batch office upload"),
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    ),
+                ),
+                (
+                    "files",
+                    (
+                        "broken.pptx",
+                        b"not-a-valid-zip-container",
+                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                    ),
+                ),
+            ],
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["total"] == 2
+    assert payload["queued"] == 1
+    assert payload["failed"] == 1
+
+    item_by_name = {item["file_name"]: item for item in payload["items"]}
+    assert item_by_name["valid.docx"]["status"] == "queued"
+    assert item_by_name["valid.docx"]["doc_id"].startswith("doc_")
+    assert item_by_name["valid.docx"]["job_id"].startswith("job_")
+
+    assert item_by_name["broken.pptx"]["status"] == "failed"
+    assert item_by_name["broken.pptx"]["http_status"] == 400
+    assert item_by_name["broken.pptx"]["error_message"] == "Invalid PPTX container for 'broken.pptx'."
+
+    assert len(list(settings.document_dir.glob("*.json"))) == 1
+    assert len(list(settings.job_dir.glob("*.json"))) == 1
+
+
+def test_create_document_rejects_invalid_pdf_content_before_queueing(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("broken.pdf", b"not-a-real-pdf", "application/pdf")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Invalid PDF content for 'broken.pdf': missing PDF file signature (%PDF-); "
+        "source file may be mislabeled, encrypted, or corrupted."
+    )
+    assert list(settings.document_dir.glob("*.json")) == []
+    assert list(settings.job_dir.glob("*.json")) == []
+
+
+def test_create_document_accepts_legacy_doc_when_libreoffice_binary_is_resolved(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    monkeypatch.setattr("backend.app.services.document_service.find_libreoffice_binary", lambda: "/usr/bin/soffice")
+    monkeypatch.setattr(
+        "backend.app.services.document_service.dispatch_ingest_job",
+        lambda *args, **kwargs: None,
+    )
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("legacy.doc", b"fake-doc-binary", "application/msword")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["status"] == "queued"
+    assert payload["doc_id"].startswith("doc_")
+    assert payload["job_id"].startswith("job_")
+
+
 def test_get_ingest_job_status_after_create_document(tmp_path: Path) -> None:  # 测试创建文档后可通过 ingest job 接口查询任务状态。
     settings = build_test_settings(tmp_path)  # 构造测试配置。
     ensure_data_directories(settings)  # 创建测试目录。
@@ -1487,6 +1596,62 @@ def test_create_document_requeues_duplicate_with_fresh_upload_when_legacy_source
 
     assert run_result.status == "completed"
     assert service.ingestion_service.vector_store.has_document_points(first_payload["doc_id"]) is True
+
+
+def test_create_document_reuses_existing_duplicate_source_without_rewriting_when_asset_still_exists(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path, task_always_eager=False)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+    original_save_upload = service.asset_store.save_upload
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    client = TestClient(app)
+
+    try:
+        first_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "alice"},
+            files={"file": ("origin.txt", b"same-content", "text/plain")},
+        )
+        assert first_response.status_code == 201
+        first_payload = first_response.json()
+        first_job = service._load_job_record(first_payload["job_id"])
+        first_document = service._load_document_record(first_payload["doc_id"])
+        original_storage_path = first_document.storage_path
+
+        service._update_job_record(
+            first_job,
+            status="completed",
+            stage="completed",
+            progress=100,
+        )
+        first_document.status = "active"
+        service._save_document_record(first_document)
+        (settings.parsed_dir / f"{first_payload['doc_id']}.txt").write_text("parsed content", encoding="utf-8")
+
+        def fail_on_rewrite(**kwargs: object) -> str:
+            raise PermissionError(f"unexpected rewrite attempt: {kwargs}")
+
+        service.asset_store.save_upload = fail_on_rewrite  # type: ignore[assignment]
+        second_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl", "created_by": "bob"},
+            files={"file": ("renamed.txt", b"same-content", "text/plain")},
+        )
+    finally:
+        service.asset_store.save_upload = original_save_upload  # type: ignore[assignment]
+        app.dependency_overrides.clear()
+
+    assert second_response.status_code == 201
+    second_payload = second_response.json()
+    assert second_payload["status"] == "completed"
+    assert second_payload["doc_id"] == first_payload["doc_id"]
+    assert second_payload["job_id"] == first_payload["job_id"]
+
+    refreshed_document = service._load_document_record(first_payload["doc_id"])
+    assert refreshed_document.file_name == "renamed.txt"
+    assert refreshed_document.uploaded_by == "bob"
+    assert refreshed_document.storage_path == original_storage_path
 
 
 def test_run_ingest_job_remaps_legacy_storage_path_to_current_upload_dir(tmp_path: Path) -> None:  # 历史元数据里的宿主机绝对路径在容器里失效时，应自动映射到当前 upload_dir。

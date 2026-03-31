@@ -1,0 +1,185 @@
+{
+  "snapshot_id": "rsp_0a21917e37044794",
+  "trace_id": "trc_12e3d4b9f6fa41f1",
+  "request_id": "req_d75e30c188a44944",
+  "category": "chat",
+  "action": "answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T09:11:53.365359Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "更详细一点",
+    "top_k": null,
+    "mode": null,
+    "session_id": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "更详细一点",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325071124_ee93399d-chunk-7",
+      "document_id": "doc_20260325071124_ee93399d",
+      "document_name": "zoom12.txt",
+      "snippet": "不，好的。\nSo then let's talk a little bit about.\n那我们来聊聊吧。\nNext week.\n下周。\nHow, how is this learning rate for you, are you is it too slow, just write too fast?\n这个学习速度对你来说怎么样？是不是太慢了，就是写得太快了？\nOkay, so we're doing good, we're on a good learning pace.\n好的，我们做得不错，学习进度也很快。\nAll right.\n好吧。\nOkay, so\n好吧，所以\nIf the learning is working for you.\n如果学习对你有用。\nThen what we're going to do next week is we're going to move into clustering and trajectory and pseudo time analysis, there's going to be a little more.\n那么我们下周要做的就是进入聚类、轨迹和伪时间分析，还会有更多内容。\nA little more in depth, a little more intensive on what you need to learn.\n再深入一点，把你需要学的东西再深入一点。\nSo basically what we're going to do is we're going to pick out clusters and we're going to subcluster those clusters, so for instance.\n所以基本上我们要做的就是挑选出集群，然后对这些集群进行细分，例如。\nIn your",
+      "score": 0.0721435546875,
+      "source_path": "/app/data/uploads/doc_20260325071124_ee93399d__zoom12.txt",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 8.614635593144712,
+      "fused_score": 0.015384615384615385
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢\n\n4.10 刀具管理系统技术要求逐条响应说明\n\n我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：\n\n4.10.1 基础要求\n\n（1）显示语言：系统默认为中文显示。\n\n我方响应：完全满足。我方刀具管理系统默认显示语言为中文，界面简洁直观、通俗易懂，适配国内操作人员使用习惯，同时支持多语言切换（可选英文），可根据现场需求灵活调整，确保操作便捷性。【附图1：系统中文界面示意图，标注中文菜单、中文操作提示等核心区域】\n\n（2）系统权限：使用用户密码方式登录，设置登录权限和查询权限。\n\n我方响应：完全满足。系统采用用户密码加密登录模式，支持精细化权限管控，可根据岗位需求（管理员、工艺员、配刀员、库管员等）分别设置登录权限、操作权限及查询权限，权限分配灵活可配置，可限制不同用户对数据的查看、编辑、导出等操作，保障系统数据安全，防止误操作和数据泄露。【附图2：系统权限设置界面示意图，标注权限分配、密码登录入口等】\n\n（3）软件采用 B/S 架构或 C/S 架构；\n\n我方响应：完全满足。我方刀具管理系统采用B/S架构设计（可根据现场需求兼容C/S架构），无需在客户端安装专用软件，通过浏览器即可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理",
+      "score": -2.578125,
+      "source_path": "/app/data/uploads/doc_20260326071937_37f67e8c__document.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.54027617,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-16",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "呼吸法， 这种\n呼吸法可以在悖论放松法开始时使用。 还有很重要的 一点是 ： 我们发布的\n这个平装版本 的价格明显降低。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士 ， 美国外科医师协会会员\n2003 年9月\nxix\n\n第三版前言\n我们的书继续受 到众多慢性盆腔疼痛患者的热情欢迎。 我们也不断收\n到来 自世界 各地的信件 ， 信中满是读者对本书给 他们带来的新 的希望 的感\n激之情。\n第三版是意义重要的一版， 因为我们把我们的理疗方案进行了详尽的\n文字描述和图 片演示。 我们也更新了文献综 述部 分， 补充了关于盆腔疼痛\n的最新研究情况。 我们还单独列出了 一个章节 ， 讨论我们认为造成 慢性盆\n腔疼痛以及其它疾病包括痔 疮、 肛裂 和便秘的共 同起因 ， 以及使用怀斯 －\n安德森 疗法来解决这些问题的可 能性。 最后， 这一版本 还对生物反馈疗法\n进行了更详尽的讨论 ， 也对悖论放松法的技巧进行了更详细的解释。\n出第二版的时候 ， 我们开始在加州 针对盆腔疼痛患者提供 六天 （ 一共\n三十小时） 的诊所强化治疗 ， 为他们进行悖论 放松法治疗和物理治疗。 这\n种治疗模式巳 经被证明是我们使用过的模式中最有效的一种。 我们还新开\n通了一个网站 ： www.pelvicpainhelp.com。网 站上 面有关于我们工作的各方\n面内容的丰富信息。 我们比以往任何时候都更 热衷于我们 的工作 ， 医学界\n对我们的关注度也 逐渐升温。\n我们最近提交了 一篇新的文章给 一家医学期刊。 这篇文章介绍了我们\n在一百位男性患者身上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ，",
+      "score": -2.58203125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 12.821949551892565,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260325071124_ee93399d-chunk-7",
+      "document_id": "doc_20260325071124_ee93399d",
+      "document_name": "zoom12.txt",
+      "snippet": "不，好的。\nSo then let's talk a little bit about.\n那我们来聊聊吧。\nNext week.\n下周。\nHow, how is this learning rate for you, are you is it too slow, just write too fast?\n这个学习速度对你来说怎么样？是不是太慢了，就是写得太快了？\nOkay, so we're doing good, we're on a good learning pace.\n好的，我们做得不错，学习进度也很快。\nAll right.\n好吧。\nOkay, so\n好吧，所以\nIf the learning is working for you.\n如果学习对你有用。\nThen what we're going to do next week is we're going to move into clustering and trajectory and pseudo time analysis, there's going to be a little more.\n那么我们下周要做的就是进入聚类、轨迹和伪时间分析，还会有更多内容。\nA little more in depth, a little more intensive on what you need to learn.\n再深入一点，把你需要学的东西再深入一点。\nSo basically what we're going to do is we're going to pick out clusters and we're going to subcluster those clusters, so for instance.\n所以基本上我们要做的就是挑选出集群，然后对这些集群进行细分，例如。\nIn your",
+      "score": 0.0721435546875,
+      "source_path": "/app/data/uploads/doc_20260325071124_ee93399d__zoom12.txt",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 8.614635593144712,
+      "fused_score": 0.015384615384615385,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "系统要求我做了部分，请黄部长这边根据招标文件要求结合我写的，逐条核对修改，并配上图文说明，或者有说明的加上匹配的图片、匹配的参数截图等，根据我们软件的资料和这里的描述修改。务必明天中午前给我，谢谢\n\n4.10 刀具管理系统技术要求逐条响应说明\n\n我方所供刀具管理系统完全满足并优于招标文件4.10章节所有技术要求，系统运行稳定、功能完善、操作便捷，可无缝对接各类外部设备，适配配刀室及车间刀具全生命周期管理需求，具体逐条响应如下：\n\n4.10.1 基础要求\n\n（1）显示语言：系统默认为中文显示。\n\n我方响应：完全满足。我方刀具管理系统默认显示语言为中文，界面简洁直观、通俗易懂，适配国内操作人员使用习惯，同时支持多语言切换（可选英文），可根据现场需求灵活调整，确保操作便捷性。【附图1：系统中文界面示意图，标注中文菜单、中文操作提示等核心区域】\n\n（2）系统权限：使用用户密码方式登录，设置登录权限和查询权限。\n\n我方响应：完全满足。系统采用用户密码加密登录模式，支持精细化权限管控，可根据岗位需求（管理员、工艺员、配刀员、库管员等）分别设置登录权限、操作权限及查询权限，权限分配灵活可配置，可限制不同用户对数据的查看、编辑、导出等操作，保障系统数据安全，防止误操作和数据泄露。【附图2：系统权限设置界面示意图，标注权限分配、密码登录入口等】\n\n（3）软件采用 B/S 架构或 C/S 架构；\n\n我方响应：完全满足。我方刀具管理系统采用B/S架构设计（可根据现场需求兼容C/S架构），无需在客户端安装专用软件，通过浏览器即可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理",
+      "score": -2.578125,
+      "source_path": "/app/data/uploads/doc_20260326071937_37f67e8c__document.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.54027617,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-16",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "呼吸法， 这种\n呼吸法可以在悖论放松法开始时使用。 还有很重要的 一点是 ： 我们发布的\n这个平装版本 的价格明显降低。\n大卫 · 怀斯博士\n罗德尼 · 安德森 医学博士 ， 美国外科医师协会会员\n2003 年9月\nxix\n\n第三版前言\n我们的书继续受 到众多慢性盆腔疼痛患者的热情欢迎。 我们也不断收\n到来 自世界 各地的信件 ， 信中满是读者对本书给 他们带来的新 的希望 的感\n激之情。\n第三版是意义重要的一版， 因为我们把我们的理疗方案进行了详尽的\n文字描述和图 片演示。 我们也更新了文献综 述部 分， 补充了关于盆腔疼痛\n的最新研究情况。 我们还单独列出了 一个章节 ， 讨论我们认为造成 慢性盆\n腔疼痛以及其它疾病包括痔 疮、 肛裂 和便秘的共 同起因 ， 以及使用怀斯 －\n安德森 疗法来解决这些问题的可 能性。 最后， 这一版本 还对生物反馈疗法\n进行了更详尽的讨论 ， 也对悖论放松法的技巧进行了更详细的解释。\n出第二版的时候 ， 我们开始在加州 针对盆腔疼痛患者提供 六天 （ 一共\n三十小时） 的诊所强化治疗 ， 为他们进行悖论 放松法治疗和物理治疗。 这\n种治疗模式巳 经被证明是我们使用过的模式中最有效的一种。 我们还新开\n通了一个网站 ： www.pelvicpainhelp.com。网 站上 面有关于我们工作的各方\n面内容的丰富信息。 我们比以往任何时候都更 热衷于我们 的工作 ， 医学界\n对我们的关注度也 逐渐升温。\n我们最近提交了 一篇新的文章给 一家医学期刊。 这篇文章介绍了我们\n在一百位男性患者身上使用我们的方法所获得的经验和成果。 由于 该杂志\n的相关规定， 我们不能随 意 在这个时候公布 这些信息。 不过我们可以说的\n是 ， 结果很令人满意 。 我们期待能尽快公开这些信息。\n大卫 · 怀斯博士\n罗德尼 ·安 德森 医学博士 ，",
+      "score": -2.58203125,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 12.821949551892565,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "关于悖论放松法的技巧进行了更详细的解释。这意味着在之前的版本基础上，对于悖论放松法的具体操作步骤和技术细节有了更加详尽的阐述和指导。",
+    "answer_chars": 66,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 9,
+    "rerank_input_count": 9,
+    "rerank_output_count": 9,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

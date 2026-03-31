@@ -1,0 +1,126 @@
+{
+  "document_id": "doc_20260331072109_83df27cb",
+  "file_name": "直线导轨装配SOP.docx",
+  "source_path": "/app/data/uploads/doc_20260331072109_83df27cb__SOP.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 19,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n•\n\n滑块\n假轨\n滑轨\n。\n0\n\n大理石\n调平工装2\n调平工装1\n杠杆百分表\n\nD\n0\n0\nT\n\n区",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.20315803587436676
+    },
+    {
+      "text": "•",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.31059181690216064
+    },
+    {
+      "text": "滑块",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.9851884841918945
+    },
+    {
+      "text": "假轨",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.9826351404190063
+    },
+    {
+      "text": "滑轨",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.9689980745315552
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.585172176361084
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.6324897408485413
+    },
+    {
+      "text": "大理石",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.9995535016059875
+    },
+    {
+      "text": "调平工装2",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.9987592697143555
+    },
+    {
+      "text": "调平工装1",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.9989815950393677
+    },
+    {
+      "text": "杠杆百分表",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.9981233477592468
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 15,
+      "confidence": 0.09790463745594025
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 16,
+      "confidence": 0.3118453025817871
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 17,
+      "confidence": 0.26025423407554626
+    },
+    {
+      "text": "T",
+      "page_no": null,
+      "line_no": 18,
+      "confidence": 0.7460491061210632
+    },
+    {
+      "text": "区",
+      "page_no": null,
+      "line_no": 19,
+      "confidence": 0.24222297966480255
+    }
+  ]
+}

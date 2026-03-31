@@ -3,25 +3,61 @@
   "user_id": "user_roster_10565",
   "username": "10565",
   "department_id": "dept_production_technology",
-  "updated_at": "2026-03-31T02:51:42.431339Z",
+  "updated_at": "2026-03-31T07:51:10.056554Z",
   "turns": [
     {
-      "turn_id": "turn_c05c5b9a4515",
-      "asked_at": "2026-03-31T02:51:35.624511Z",
+      "turn_id": "turn_bedc0dd66761",
+      "asked_at": "2026-03-31T07:43:26.039669Z",
       "question": "解释一下cpps",
-      "answer": "您提供的上下文中没有关于\"cpps\"的解释或相关信息。请提供更详细的背景信息或者确认\"cpps\"的具体含义以便于我能更好地帮助您。",
+      "answer": "您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_a698efe43eca",
+      "asked_at": "2026-03-31T07:47:11.474627Z",
+      "question": "解释一下cpps",
+      "answer": "您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_80a7ba130011",
+      "asked_at": "2026-03-31T07:50:31.438651Z",
+      "question": "本部门最近更新了哪些 SOP 或处理资料？",
+      "answer": "您提供的上下文中没有关于“SOP”或处理资料的最近更新的信息。请提供更多的背景信息以便更好地解答您的问题。",
       "response_mode": "rag",
       "document_id": null,
       "citation_count": 3
     },
     {
-      "turn_id": "turn_e78bba04bc4c",
-      "asked_at": "2026-03-31T02:51:42.431296Z",
-      "question": "解释一下cpps",
-      "answer": "CPPS是慢性盆腔疼痛综合征(Chronic Pelvic Pain Syndrome)的英文缩写。它指的是男性和女性出现的盆腔区域疼痛、不适或功能障碍的症状。这些症状可能单独出现或同时存在，通常包括直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急等症状。在过去的诊断中，由于对病因的理解不同，这些症状曾被赋予多种不同的名称。然而，近年来的研究表明，尽管症状表现多样，但它们可能源于同一个深层次的问题。",
+      "turn_id": "turn_a1c7162c419c",
+      "asked_at": "2026-03-31T07:50:48.076271Z",
+      "question": "生产技术部遇到系统、流程或设备异常时，标准处理流程是什么？",
+      "answer": "您提供的上下文中没有关于生产技术部遇到系统、流程或设备异常时的标准处理流程的具体描述。请提供更多的背景信息以便更好地解答您的问题。",
       "response_mode": "rag",
       "document_id": null,
-      "citation_count": 5
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_60d28cc366a0",
+      "asked_at": "2026-03-31T07:50:55.379195Z",
+      "question": "生产技术部遇到系统、流程或设备异常时，标准处理流程是什么？",
+      "answer": "您提供的上下文中没有关于生产技术部遇到系统、流程或设备异常时的标准处理流程的具体描述。请提供更多的背景信息以便更好地解答您的问题。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    },
+    {
+      "turn_id": "turn_5a844edceda0",
+      "asked_at": "2026-03-31T07:51:10.056517Z",
+      "question": "新同事入岗前应该优先阅读哪些资料？",
+      "answer": "您提供的上下文中没有明确指出新同事入岗前应该优先阅读哪些资料。建议新同事入岗前阅读相关的操作手册、安全规范以及装配作业指导书等，以确保能够安全、高效地开展工作。如果有具体的部门或岗位相关资料，请参考该部门或岗位提供的具体指南。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
     }
   ]
 }

@@ -26,7 +26,7 @@ interface PortalDocumentCenterProps {
   recordSource: RecentDocumentSource;
 }
 
-const PREVIEWABLE_SUFFIXES = new Set(['.txt', '.md', '.markdown', '.docx', '.pdf']);
+const PREVIEWABLE_SUFFIXES = new Set(['.txt', '.md', '.markdown', '.doc', '.docx', '.pdf']);
 
 function toLocalTime(isoText: string): string {
   const value = new Date(isoText);

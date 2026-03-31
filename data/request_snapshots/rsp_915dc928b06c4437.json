@@ -1,0 +1,186 @@
+{
+  "snapshot_id": "rsp_915dc928b06c4437",
+  "trace_id": "trc_32dde6fb8ffa4fea",
+  "request_id": "req_8c532ce200634803",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T07:51:10.055437Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "新同事入岗前应该优先阅读哪些资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 2]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 您提供的上下文中没有关于“SOP”或处理资料的最近更新的信息。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 3]\nUser: 生产技术部遇到系统、流程或设备异常时，标准处理流程是什么？\nAssistant: 您提供的上下文中没有关于生产技术部遇到系统、流程或设备异常时的标准处理流程的具体描述。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 4]\nUser: 生产技术部遇到系统、流程或设备异常时，标准处理流程是什么？\nAssistant: 您提供的上下文中没有关于生产技术部遇到系统、流程或设备异常时的标准处理流程的具体描述。请提供更多的背景信息以便更好地解答您的问题。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "新同事入岗前应该优先阅读哪些资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+      "snippet": "电焊作业安全操作规范\t文件编号\tWI-SC-009\n版本号\tA/0\n页次\t2\n生效日期\t2022-05-06\n1.目的\n用于在电焊作业过程中，规范安全作业行为，增强安全意识。\n2.适用范围\n公司所有电焊作业涉及场景。\n3.操作说明\n3.1、参加焊接作业的所有人员，要经安全技术培训、考试合格，取得特种作业合格证。\n3.2、电焊机开机前，必须检查电焊机电线绝缘层、插头是否完好，如发现破损，不得使用。\n3.3、按作业性质的特殊要求。全套使用个体安全防护装备。\n3.4、执行防止触电、包扎、火灾、坠落及灼伤的安全措施。\n3.5、工作场所要保持适当通风，排除有害气体及烟尘。\n3.6、在工作开始前检查工作区域，要确认在5m范围内及其下方不会因火花飞溅接触到易燃物品。如不能保证时，必须设监护人。\n3.7、确保工作区域附近，紧急情况下能拿到适当的灭火器。\n3.8、焊线、地线禁止与钢丝、铁丝等金属绳接触，不得用金属绳或者其他机电设备代替零线，所有地线接头应连接牢固。\n3.9、消除焊渣时，应配戴护目镜及面罩以防铁渣飞溅伤人。\n3.10、钍钨极要放置在密闭铅盒内，磨削钍钨极，必须戴手套、口罩、将粉尘及时清理。\n3.11、工作结束后，必须切断电源或关闭气阀，收完工具及焊线或软管，清理现场，检查工作场所周围，确认无起火危险后方可离开。\n编制\t李双田\t校对\t审核\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-05-06\t全文\tALL\t新编制",
+      "score": -6.3359375,
+      "source_path": "/app/data/uploads/doc_20260330055115_2056c1bf__WI-SC-009.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4783171,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -7.1328125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.48465875,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-42",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": ".. ................................ ................................ ................................ ................................ ............  - 75 -\n综 述 （总 装 ） ................................ ................................ ................................ ................................ ................................ ................................ ................................ ..........................  - 76 -\n主 手 臂 部 品 安 装  ................................ ................................ ................................ ................................ ................................ ................................ ....",
+      "score": -7.421875,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4728371,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+      "snippet": "电焊作业安全操作规范\t文件编号\tWI-SC-009\n版本号\tA/0\n页次\t2\n生效日期\t2022-05-06\n1.目的\n用于在电焊作业过程中，规范安全作业行为，增强安全意识。\n2.适用范围\n公司所有电焊作业涉及场景。\n3.操作说明\n3.1、参加焊接作业的所有人员，要经安全技术培训、考试合格，取得特种作业合格证。\n3.2、电焊机开机前，必须检查电焊机电线绝缘层、插头是否完好，如发现破损，不得使用。\n3.3、按作业性质的特殊要求。全套使用个体安全防护装备。\n3.4、执行防止触电、包扎、火灾、坠落及灼伤的安全措施。\n3.5、工作场所要保持适当通风，排除有害气体及烟尘。\n3.6、在工作开始前检查工作区域，要确认在5m范围内及其下方不会因火花飞溅接触到易燃物品。如不能保证时，必须设监护人。\n3.7、确保工作区域附近，紧急情况下能拿到适当的灭火器。\n3.8、焊线、地线禁止与钢丝、铁丝等金属绳接触，不得用金属绳或者其他机电设备代替零线，所有地线接头应连接牢固。\n3.9、消除焊渣时，应配戴护目镜及面罩以防铁渣飞溅伤人。\n3.10、钍钨极要放置在密闭铅盒内，磨削钍钨极，必须戴手套、口罩、将粉尘及时清理。\n3.11、工作结束后，必须切断电源或关闭气阀，收完工具及焊线或软管，清理现场，检查工作场所周围，确认无起火危险后方可离开。\n编制\t李双田\t校对\t审核\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-05-06\t全文\tALL\t新编制",
+      "score": -6.3359375,
+      "source_path": "/app/data/uploads/doc_20260330055115_2056c1bf__WI-SC-009.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4783171,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -7.1328125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.48465875,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-42",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": ".. ................................ ................................ ................................ ................................ ............  - 75 -\n综 述 （总 装 ） ................................ ................................ ................................ ................................ ................................ ................................ ................................ ..........................  - 76 -\n主 手 臂 部 品 安 装  ................................ ................................ ................................ ................................ ................................ ................................ ....",
+      "score": -7.421875,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4728371,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "您提供的上下文中没有明确指出新同事入岗前应该优先阅读哪些资料。建议新同事入岗前阅读相关的操作手册、安全规范以及装配作业指导书等，以确保能够安全、高效地开展工作。如果有具体的部门或岗位相关资料，请参考该部门或岗位提供的具体指南。",
+    "answer_chars": 113,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 8,
+    "rerank_input_count": 8,
+    "rerank_output_count": 8,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

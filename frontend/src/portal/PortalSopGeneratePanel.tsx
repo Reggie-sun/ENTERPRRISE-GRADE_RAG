@@ -390,6 +390,7 @@ export function PortalSopGeneratePanel() {
           setGenerateStatus('idle');
           setGenerateMessage('');
           setDownloadMessage('');
+          setTitleHint(`${stripExtension(fileName)} SOP 草稿`);
           setDraft(createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
           setStreamProgress(createEmptyStreamProgress());
         }}
@@ -399,12 +400,12 @@ export function PortalSopGeneratePanel() {
         onJobStatusChange={(job) => {
           setLatestJob(job);
         }}
-        onUploadFailed={() => {
+        onUploadFailed={(message) => {
           setCurrentDocumentName('');
           setCurrentDocId('');
           setLatestJob(null);
           setGenerateStatus('error');
-          setGenerateMessage('来源文档上传或入库失败，请修复后重试。');
+          setGenerateMessage(message || '来源文档上传或入库失败，请修复后重试。');
           setStreamProgress(createEmptyStreamProgress());
         }}
       />

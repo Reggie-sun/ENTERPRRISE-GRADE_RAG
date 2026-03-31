@@ -1,0 +1,75 @@
+{
+  "snapshot_id": "rsp_738859213b1846fe",
+  "trace_id": "trc_d8e6282d73db4695",
+  "request_id": "req_cee9eb591d8d4378",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "failed",
+  "occurred_at": "2026-03-31T07:41:27.840133Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下cpps",
+    "top_k": null,
+    "mode": "accurate",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 无法从提供的上下文中直接获取最近更新的SOP或处理资料的信息。不过，可以确认的是上下文提到了一些关于摇臂钻床安全操作的具体规范，这些规范可能属于更新后的SOP的一部分。具体更新信息需要参照实际的SOP文档或通知。\n\n[Recent Turn 2]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "Embedding request to OpenAI-compatible server failed: timed out"
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_accurate",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

@@ -590,15 +590,16 @@ export function SopPage() {
           setDownloadMessage('');
           setSaveStatus('idle');
           setSaveMessage('');
+          setTitleHint(`${stripExtension(fileName)} SOP 草稿`);
           setDraft(createEmptyDraft(fallbackDepartmentId, fallbackDepartmentName));
           setStreamProgress(createEmptyStreamProgress());
         }}
         onUploadCreated={handleUploadCreated}
         onJobStatusChange={handleJobStatusChange}
-        onUploadFailed={() => {
+        onUploadFailed={(message) => {
           handleUploadFailed();
           setGenerateStatus('error');
-          setGenerateMessage('来源文档上传或入库失败，请修复后重试。');
+          setGenerateMessage(message || '来源文档上传或入库失败，请修复后重试。');
           setStreamProgress(createEmptyStreamProgress());
         }}
       />

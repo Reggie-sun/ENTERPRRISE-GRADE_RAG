@@ -1,0 +1,126 @@
+{
+  "document_id": "doc_20260331072823_8e064218",
+  "file_name": "易格斯长行程拖链安装手册.pdf",
+  "source_path": "/app/data/uploads/doc_20260331072823_8e064218__document.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 19,
+  "page_count": 2,
+  "normalized_text": "uouuod'sne\n\n拖链系统安装指导手册\n拖链\n导向槽\n1\nMM\n固定端电缆余量\n移动端电缆余量\n导向槽基座\n导向槽\n2\n拖链\n移动端\nC\n导向槽基座\n固定端\n移动端\n2\n3",
+  "segments": [
+    {
+      "text": "uouuod'sne",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.6285507082939148
+    },
+    {
+      "text": "拖链系统安装指导手册",
+      "page_no": 2,
+      "line_no": 1,
+      "confidence": 0.9985955357551575
+    },
+    {
+      "text": "拖链",
+      "page_no": 2,
+      "line_no": 2,
+      "confidence": 0.999528169631958
+    },
+    {
+      "text": "导向槽",
+      "page_no": 2,
+      "line_no": 3,
+      "confidence": 0.9996469020843506
+    },
+    {
+      "text": "1",
+      "page_no": 2,
+      "line_no": 4,
+      "confidence": 0.277301549911499
+    },
+    {
+      "text": "MM",
+      "page_no": 2,
+      "line_no": 5,
+      "confidence": 0.16973412036895752
+    },
+    {
+      "text": "固定端电缆余量",
+      "page_no": 2,
+      "line_no": 6,
+      "confidence": 0.9992651343345642
+    },
+    {
+      "text": "移动端电缆余量",
+      "page_no": 2,
+      "line_no": 7,
+      "confidence": 0.99808269739151
+    },
+    {
+      "text": "导向槽基座",
+      "page_no": 2,
+      "line_no": 8,
+      "confidence": 0.9996949434280396
+    },
+    {
+      "text": "导向槽",
+      "page_no": 2,
+      "line_no": 9,
+      "confidence": 0.9998030662536621
+    },
+    {
+      "text": "2",
+      "page_no": 2,
+      "line_no": 10,
+      "confidence": 0.09917113929986954
+    },
+    {
+      "text": "拖链",
+      "page_no": 2,
+      "line_no": 11,
+      "confidence": 0.9996547698974609
+    },
+    {
+      "text": "移动端",
+      "page_no": 2,
+      "line_no": 12,
+      "confidence": 0.9998373985290527
+    },
+    {
+      "text": "C",
+      "page_no": 2,
+      "line_no": 13,
+      "confidence": 0.10864455997943878
+    },
+    {
+      "text": "导向槽基座",
+      "page_no": 2,
+      "line_no": 14,
+      "confidence": 0.998978316783905
+    },
+    {
+      "text": "固定端",
+      "page_no": 2,
+      "line_no": 15,
+      "confidence": 0.9989193081855774
+    },
+    {
+      "text": "移动端",
+      "page_no": 2,
+      "line_no": 16,
+      "confidence": 0.9998500943183899
+    },
+    {
+      "text": "2",
+      "page_no": 2,
+      "line_no": 17,
+      "confidence": 0.9974955916404724
+    },
+    {
+      "text": "3",
+      "page_no": 2,
+      "line_no": 18,
+      "confidence": 0.9977096319198608
+    }
+  ]
+}

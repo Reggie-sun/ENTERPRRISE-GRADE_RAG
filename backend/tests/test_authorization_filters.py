@@ -258,7 +258,7 @@ def test_document_list_filters_by_department_for_employee(authz_env) -> None:
 
 
 def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
-    """Employee retrieval should return own-department results first, with cross-department results as supplemental."""
+    """Employee retrieval should return own-department results first, with cross-department public docs as supplemental."""
     client, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
@@ -276,6 +276,7 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
         filename="assembly_alarm.txt",
         content="Alarm E205 assembly station torque inspection and fixture reset process.",
         department_id="dept_assembly",
+        visibility="public",
     )
 
     response = client.post(
@@ -290,7 +291,7 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
     result_doc_ids = {item["document_id"] for item in payload["results"]}
     # Own-department result must always be present
     assert visible_doc_id in result_doc_ids
-    # Cross-department result should now be available as supplemental
+    # Cross-department public doc should be available as supplemental
     assert other_doc_id in result_doc_ids
     # Own-department result should rank first
     assert payload["results"][0]["document_id"] == visible_doc_id

@@ -1,0 +1,165 @@
+{
+  "snapshot_id": "rsp_944464e01cbd41d3",
+  "trace_id": "trc_sop_23d06f8d983d4cc0",
+  "request_id": "req_sop_03efcc3af1b64a9f",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T08:28:37.187601Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260331072109_83df27cb",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_production_technology",
+    "document_id": "doc_20260331072109_83df27cb",
+    "title_hint": "直线导轨装配SOP SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260331072109_83df27cb 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331072109_83df27cb-chunk-0",
+      "document_id": "doc_20260331072109_83df27cb",
+      "document_name": "直线导轨装配SOP.docx",
+      "snippet": "直线导轨装配SOP-生技部直线导轨装配SOP-生技部\n\n装配准备工作\n\n1.准备好油石、铲刀、百分表、橡胶锤；\n\n2.准备好相应的螺丝、弹垫、内六角扳手；\n\n3.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n4.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n一、清洁\n\n内容\n\n平铲刀去除直线导轨面多余毛刺，确保直线导轨面、齿条面全程无刮伤、无毛刺等不良现象。用油石研磨直线导轨面、齿条面摩擦至少2次；研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n主轨主轨二、安装主副轨\n\n内容\n\n基准面一侧光轨（主直线导轨）有中间到向两边依次预锁紧，并且紧贴紧基准面；\n\n内容\n\n将滑块放入线轨中。\n\n副轨副轨\n\n内容\n\n将大理石在横行梁上面，（如图），百分表打大理石两端确保大理石与线轨平行。打好后再用百分表从左到右沿着大理石打一遍（目的：以大理石为基准，查看线轨是否靠准基准面），看百分表的跳动，要求跳动每米：≤0.030mm，若跳动过大请用防震橡皮锤矫正并锁紧，紧固扭矩参照《WI-SJ-005》。\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容\n\n顺位将整根主轨的跳动依次打完。\n\n要求跳动每米：≤0.030mm\n\n内容\n\n将工装推入线轨内(如图)，确保全程来回移动顺畅螺丝只需要预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可。\n\n三、直线导轨打表（副轨）\n\n内容\n\n百分表安装磁性表座吸住滑块；",
+      "score": 4.328125,
+      "source_path": "/app/data/uploads/doc_20260331072109_83df27cb__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7745322,
+      "lexical_score": 5.130116178027601,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331072109_83df27cb-chunk-1",
+      "document_id": "doc_20260331072109_83df27cb",
+      "document_name": "直线导轨装配SOP.docx",
+      "snippet": "0.030mm\n\n内容\n\n将工装推入线轨内(如图)，确保全程来回移动顺畅螺丝只需要预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可。\n\n三、直线导轨打表（副轨）\n\n内容\n\n百分表安装磁性表座吸住滑块；调整支架让百分表针头对准辅助光轨边外侧；带表磁性底座滑块测试全程；读取并记录千分表读数；要求跳动每米：≤0.030mm；（偏大的数值，用防震橡皮锤敲打光轨矫正）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n附件视频（双击观看）\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n•\n\n滑块\n假轨\n滑轨\n。\n0\n\n大理石\n调平工装2\n调平工装1\n杠杆百分表\n\nD\n0\n0\nT\n\n区",
+      "score": -0.09033203125,
+      "source_path": "/app/data/uploads/doc_20260331072109_83df27cb__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.61814713,
+      "lexical_score": 1.20259432172961,
+      "fused_score": 0.03225806451612903
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260331072109_83df27cb-chunk-0",
+      "document_id": "doc_20260331072109_83df27cb",
+      "document_name": "直线导轨装配SOP.docx",
+      "snippet": "直线导轨装配SOP-生技部直线导轨装配SOP-生技部\n\n装配准备工作\n\n1.准备好油石、铲刀、百分表、橡胶锤；\n\n2.准备好相应的螺丝、弹垫、内六角扳手；\n\n3.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n4.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n一、清洁\n\n内容\n\n平铲刀去除直线导轨面多余毛刺，确保直线导轨面、齿条面全程无刮伤、无毛刺等不良现象。用油石研磨直线导轨面、齿条面摩擦至少2次；研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n主轨主轨二、安装主副轨\n\n内容\n\n基准面一侧光轨（主直线导轨）有中间到向两边依次预锁紧，并且紧贴紧基准面；\n\n内容\n\n将滑块放入线轨中。\n\n副轨副轨\n\n内容\n\n将大理石在横行梁上面，（如图），百分表打大理石两端确保大理石与线轨平行。打好后再用百分表从左到右沿着大理石打一遍（目的：以大理石为基准，查看线轨是否靠准基准面），看百分表的跳动，要求跳动每米：≤0.030mm，若跳动过大请用防震橡皮锤矫正并锁紧，紧固扭矩参照《WI-SJ-005》。\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容\n\n顺位将整根主轨的跳动依次打完。\n\n要求跳动每米：≤0.030mm\n\n内容\n\n将工装推入线轨内(如图)，确保全程来回移动顺畅螺丝只需要预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可。\n\n三、直线导轨打表（副轨）\n\n内容\n\n百分表安装磁性表座吸住滑块；",
+      "score": 4.328125,
+      "source_path": "/app/data/uploads/doc_20260331072109_83df27cb__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7745322,
+      "lexical_score": 5.130116178027601,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331072109_83df27cb-chunk-1",
+      "document_id": "doc_20260331072109_83df27cb",
+      "document_name": "直线导轨装配SOP.docx",
+      "snippet": "0.030mm\n\n内容\n\n将工装推入线轨内(如图)，确保全程来回移动顺畅螺丝只需要预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可。\n\n三、直线导轨打表（副轨）\n\n内容\n\n百分表安装磁性表座吸住滑块；调整支架让百分表针头对准辅助光轨边外侧；带表磁性底座滑块测试全程；读取并记录千分表读数；要求跳动每米：≤0.030mm；（偏大的数值，用防震橡皮锤敲打光轨矫正）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n附件视频（双击观看）\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n0\n•\n\n滑块\n假轨\n滑轨\n。\n0\n\n大理石\n调平工装2\n调平工装1\n杠杆百分表\n\nD\n0\n0\nT\n\n区",
+      "score": -0.09033203125,
+      "source_path": "/app/data/uploads/doc_20260331072109_83df27cb__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.61814713,
+      "lexical_score": 1.20259432172961,
+      "fused_score": 0.03225806451612903,
+      "ocr_used": true,
+      "parser_name": "docx_embedded_image_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": 0.6912,
+      "quality_score": 0.6912
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "```markdown\n# 直线导轨装配SOP SOP 草稿\n\n## 部门：生产技术部\n\n## 来源文档：直线导轨装配SOP.docx\n\n## 工序：未指定工序\n\n## 场景：未指定场景\n\n## 目的：\n\n确保直线导轨装配过程中的精度和质量，避免因装配不当导致的产品性能下降或损坏。\n\n## 适用范围：\n\n适用于所有需要装配直线导轨的生产活动。\n\n## 前置检查：\n\n1. 准备好油石、铲刀、百分表、橡胶锤；\n2. 准备好相应的螺丝、弹垫、内六角扳手；\n3. 检查外观表面无磕碰、变形、刮伤等不良现象；\n4. 检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n## 操作步骤：\n\n### 清...",
+    "answer_chars": 705,
+    "citation_count": 2,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "直线导轨装配SOP SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 2,
+    "document_id": "doc_20260331072109_83df27cb",
+    "department_id": "dept_production_technology",
+    "department_name": "生产技术部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "直线导轨装配SOP",
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 2,
+    "rerank_input_count": 2,
+    "rerank_output_count": 2,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

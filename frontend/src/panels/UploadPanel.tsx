@@ -106,7 +106,7 @@ interface UploadPanelProps {
   onUploadStart?: (fileName: string) => void;
   onUploadCreated?: (docId: string) => void;
   onJobStatusChange?: (job: IngestJobStatusResponse) => void;
-  onUploadFailed?: () => void;
+  onUploadFailed?: (message?: string) => void;
 }
 
 export function UploadPanel({
@@ -269,9 +269,10 @@ export function UploadPanel({
       if (isRetriablePollError && consecutivePollFailureCountRef.current < 3) {
         return;
       }
-      setError(formatApiError(err, '任务状态轮询'));
+      const errorMessage = formatApiError(err, '任务状态轮询');
+      setError(errorMessage);
       setStatus('error');
-      onUploadFailed?.();
+      onUploadFailed?.(errorMessage);
       stopPolling();
     } finally {
       pollRequestInFlightRef.current = false;
@@ -376,9 +377,10 @@ export function UploadPanel({
           return;
         }
 
-        setError(formatApiError(err, '上传并创建入库任务'));
+        const errorMessage = formatApiError(err, '上传并创建入库任务');
+        setError(errorMessage);
         setStatus('error');
-        onUploadFailed?.();
+        onUploadFailed?.(errorMessage);
       }
       return;
     }
@@ -424,16 +426,19 @@ export function UploadPanel({
         .filter((row) => row.submitStatus === 'queued' && row.jobId)
         .map((row) => row.jobId as string);
       if (queuedJobIds.length === 0) {
+        const errorMessage = '本次批量上传未创建任何可轮询的入库任务，请查看失败详情。';
+        setError(errorMessage);
         setStatus('error');
-        onUploadFailed?.();
+        onUploadFailed?.(errorMessage);
         return;
       }
 
       startPolling(queuedJobIds);
     } catch (err) {
-      setError(formatApiError(err, '批量上传并创建入库任务'));
+      const errorMessage = formatApiError(err, '批量上传并创建入库任务');
+      setError(errorMessage);
       setStatus('error');
-      onUploadFailed?.();
+      onUploadFailed?.(errorMessage);
     }
   };
 
@@ -456,7 +461,8 @@ export function UploadPanel({
     const ingestFailedCount = queuedRows.filter((row) => (
       row.ingestStatus !== null && TERMINAL_STATES.has(row.ingestStatus) && row.ingestStatus !== 'completed'
     )).length;
-    const totalFailed = submitFailedCount + ingestFailedCount;
+    const standaloneFailureCount = status === 'error' && batchRows.length === 0 && error ? 1 : 0;
+    const totalFailed = submitFailedCount + ingestFailedCount + standaloneFailureCount;
 
     if (status === 'idle') {
       return { text: '等待上传', tone: 'warn' as const };
@@ -472,6 +478,9 @@ export function UploadPanel({
     }
     if (status === 'success') {
       return { text: `任务完成：成功 ${completedCount} 个`, tone: 'ok' as const };
+    }
+    if (totalFailed === 0) {
+      return { text: '任务异常，请查看错误详情', tone: 'error' as const };
     }
     return { text: `任务结束：失败 ${totalFailed} 个`, tone: 'error' as const };
   };
@@ -529,7 +538,7 @@ export function UploadPanel({
           <input
             type="file"
             multiple={allowMultiple}
-            accept=".pdf,.md,.markdown,.txt,.docx,.png,.jpg,.jpeg,.webp,.bmp"
+            accept=".pdf,.md,.markdown,.txt,.doc,.docx,.csv,.html,.json,.xlsx,.pptx,.xls,.png,.jpg,.jpeg,.webp,.bmp"
             onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
             className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-accent-deep"
           />
@@ -559,6 +568,7 @@ export function UploadPanel({
 
       {/* 状态徽章 */}
       <StatusPill tone={statusInfo.tone}>{statusInfo.text}</StatusPill>
+      {error ? <p className="m-0 mt-2 text-sm leading-relaxed text-[rgb(164,41,22)]">{error}</p> : null}
       {hint ? <p className="m-0 mt-2 text-sm text-ink-soft">{hint}</p> : null}
 
       {/* 主结果展示 */}

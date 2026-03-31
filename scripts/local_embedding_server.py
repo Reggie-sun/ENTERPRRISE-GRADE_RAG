@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 DEFAULT_MODEL_PATH = Path(os.getenv("RAG_LOCAL_EMBEDDING_MODEL_PATH", "/home/reggie/bge-m3"))  # 默认读取本机 bge-m3 模型目录。
 DEFAULT_HOST = os.getenv("RAG_LOCAL_EMBEDDING_HOST", "127.0.0.1")  # 默认只监听本机，避免调试时意外对外暴露。
-DEFAULT_PORT = int(os.getenv("RAG_LOCAL_EMBEDDING_PORT", "8001"))  # 默认端口与本地 vLLM 的 8000 错开。
+DEFAULT_PORT = int(os.getenv("RAG_LOCAL_EMBEDDING_PORT", "8002"))  # 默认端口与本地 vLLM 的 8000 错开。
 DEFAULT_BATCH_SIZE = int(os.getenv("RAG_LOCAL_EMBEDDING_BATCH_SIZE", "16"))  # 默认批大小与后端配置对齐。
 DEFAULT_MAX_LENGTH = int(os.getenv("RAG_LOCAL_EMBEDDING_MAX_LENGTH", "8192"))  # bge-m3 支持长文本，这里先给一个稳妥上限。
 

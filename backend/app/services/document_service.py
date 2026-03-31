@@ -9,14 +9,17 @@
 """
 
 import hashlib
+import importlib.util
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
+from io import BytesIO
 from pathlib import Path
 from time import perf_counter
 from typing import Literal
 from uuid import uuid4
+from zipfile import is_zipfile
 
 from fastapi import HTTPException, UploadFile, status
 
@@ -45,12 +48,12 @@ from ..schemas.ops import OpsStuckIngestJobSummary
 from .asset_store import AssetStore
 from .event_log_service import EventLogService, get_event_log_service
 from .ingestion_service import DocumentIngestionService
-from ..rag.parsers.document_parser import SUPPORTED_PARSE_SUFFIXES
+from ..rag.parsers.document_parser import SUPPORTED_PARSE_SUFFIXES, find_libreoffice_binary
 from ..worker.celery_app import dispatch_ingest_job
 
 SUPPORTED_UPLOAD_SUFFIXES = SUPPORTED_PARSE_SUFFIXES  # 当前允许上传的扩展名与可解析扩展名保持一致
 TEXT_PREVIEW_SUFFIXES = {".txt", ".md", ".markdown"}
-PARSED_TEXT_PREVIEW_SUFFIXES = {".docx", ".csv", ".html", ".json", ".xlsx", ".pptx", ".xls"}
+PARSED_TEXT_PREVIEW_SUFFIXES = {".doc", ".docx", ".csv", ".html", ".json", ".xlsx", ".pptx", ".xls"}
 PDF_PREVIEW_SUFFIXES = {".pdf"}
 SUPPORTED_PREVIEW_SUFFIXES = TEXT_PREVIEW_SUFFIXES | PARSED_TEXT_PREVIEW_SUFFIXES | PDF_PREVIEW_SUFFIXES
 TEXT_PREVIEW_MAX_CHARS = 12_000
@@ -58,6 +61,7 @@ TEXT_PREVIEW_CONTENT_TYPE_BY_SUFFIX = {
     ".txt": "text/plain; charset=utf-8",
     ".md": "text/markdown; charset=utf-8",
     ".markdown": "text/markdown; charset=utf-8",
+    ".doc": "text/plain; charset=utf-8",
     ".docx": "text/plain; charset=utf-8",
     ".csv": "text/plain; charset=utf-8",
     ".html": "text/plain; charset=utf-8",
@@ -71,6 +75,7 @@ DOCUMENT_CONTENT_TYPE_BY_SUFFIX = {
     ".md": "text/markdown; charset=utf-8",
     ".markdown": "text/markdown; charset=utf-8",
     ".pdf": "application/pdf",
+    ".doc": "application/msword",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".csv": "text/csv; charset=utf-8",
     ".html": "text/html; charset=utf-8",
@@ -88,6 +93,12 @@ INGEST_ERROR_CODE_DISPATCH: IngestBaseErrorCode = "INGEST_DISPATCH_ERROR"
 INGEST_ERROR_CODE_VALIDATION: IngestBaseErrorCode = "INGEST_VALIDATION_ERROR"
 INGEST_ERROR_CODE_RUNTIME: IngestBaseErrorCode = "INGEST_RUNTIME_ERROR"
 DEAD_LETTER_ERROR_SUFFIX = "_DEAD_LETTER"
+PDF_MAGIC_PREFIX = b"%PDF-"
+ZIP_OFFICE_UPLOAD_LABELS = {
+    ".docx": "DOCX",
+    ".pptx": "PPTX",
+    ".xlsx": "XLSX",
+}
 
 
 @dataclass(frozen=True)
@@ -1081,14 +1092,8 @@ class DocumentService:
                 department_document_ids.append(record.doc_id)
             else:
                 # Supplemental pool: same-tenant documents not in the user's department.
-                # These will be ranked lower by _fuse_scope_candidates.
-                global_document_ids.append(record.doc_id)
-
-            # Documents with shared/public visibility that also match the department
-            # get added to both pools so source_scope can resolve to "both"
-            is_global_visible = record.visibility in {"public", "department"} or not record_departments
-            if is_department_match and is_global_visible:
-                if record.doc_id not in global_document_ids:
+                # Only documents with public visibility belong in the supplemental pool.
+                if record.visibility == "public":
                     global_document_ids.append(record.doc_id)
 
         return DepartmentPriorityRetrievalScope(
@@ -1259,7 +1264,38 @@ class DocumentService:
                 detail="Uploaded file is empty.",
             )
 
+        self._validate_upload_parse_prerequisites(filename=filename, suffix=suffix, content=content)
         return filename, suffix, content
+
+    @staticmethod
+    def _validate_upload_parse_prerequisites(*, filename: str, suffix: str, content: bytes) -> None:
+        if suffix == ".pdf" and not content.lstrip().startswith(PDF_MAGIC_PREFIX):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Invalid PDF content for '{filename}': missing PDF file signature (%PDF-); "
+                    "source file may be mislabeled, encrypted, or corrupted."
+                ),
+            )
+
+        office_label = ZIP_OFFICE_UPLOAD_LABELS.get(suffix)
+        if office_label is not None and not is_zipfile(BytesIO(content)):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid {office_label} container for '{filename}'.",
+            )
+
+        if suffix == ".doc" and find_libreoffice_binary() is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Legacy DOC parsing requires a resolvable LibreOffice binary in the current API runtime.",
+            )
+
+        if suffix == ".xls" and importlib.util.find_spec("xlrd") is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Parsing .xls files requires xlrd to be installed on the API/worker runtime.",
+            )
 
     @staticmethod
     def _generate_entity_id(prefix: str) -> str:
@@ -1446,14 +1482,19 @@ class DocumentService:
         if created_by is not None:
             document_record.created_by = created_by
 
-        target_name = f"{document_record.doc_id}__{_sanitize_filename(document_record.file_name)}"
-        document_record.storage_path = self.asset_store.save_upload(
-            doc_id=document_record.doc_id,
-            target_name=target_name,
-            file_name=document_record.file_name,
-            content=content,
-            job_id=document_record.latest_job_id,
-        )
+        storage_path_suffix = Path(document_record.storage_path).suffix.lower()
+        source_exists = self.asset_store.exists(document_record.storage_path)
+        should_rewrite_source = (not source_exists) or (storage_path_suffix != f".{source_type.lower()}" if source_type else False)
+
+        if should_rewrite_source:
+            target_name = f"{document_record.doc_id}__{_sanitize_filename(document_record.file_name)}"
+            document_record.storage_path = self.asset_store.save_upload(
+                doc_id=document_record.doc_id,
+                target_name=target_name,
+                file_name=document_record.file_name,
+                content=content,
+                job_id=document_record.latest_job_id,
+            )
         document_record.updated_at = datetime.now(timezone.utc)
 
     def _dispatch_job_or_fail(self, job_record: IngestJobRecord, document_record: DocumentRecord) -> None:

@@ -27,6 +27,7 @@ class _AppSettings(BaseSettings):
     celery_ingest_queue: str = "ingest"                       # 文档摄取队列名称
     celery_task_always_eager: bool = False                    # 为 True 时任务同步执行（调试用）
     celery_task_eager_propagates: bool = True                 # 同步模式下异常是否向上传播
+    libreoffice_binary: str | None = None                     # 旧版 .doc 解析器显式二进制路径覆写。
     ingest_failure_retry_limit: int = Field(default=3, ge=1)          # 摄取失败最大重试次数
     ingest_retry_delay_seconds: int = Field(default=2, ge=0)          # 重试间隔（秒）
     ingest_inflight_stale_seconds: int = Field(default=30 * 60, ge=1) # 进行中任务超时判定时间（30分钟）

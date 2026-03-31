@@ -5,7 +5,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
 
-from backend.app.rag.parsers.document_parser import DocumentParser
+from backend.app.rag.parsers.document_parser import DocumentParser, find_libreoffice_binary
 
 
 def test_parse_falls_back_to_filename_suffix_when_storage_path_has_no_extension(tmp_path: Path) -> None:
@@ -346,3 +346,30 @@ def test_parse_xls_extracts_text_with_fake_xlrd(tmp_path: Path, monkeypatch: pyt
     assert "[Sheet] Summary" in result.text
     assert "Name\tScore" in result.text
     assert "Alice\t95" in result.text
+
+
+def test_find_libreoffice_binary_uses_env_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_binary = tmp_path / "custom-lowriter"
+    fake_binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    fake_binary.chmod(0o755)
+
+    monkeypatch.setenv("RAG_LIBREOFFICE_BINARY", str(fake_binary))
+
+    assert find_libreoffice_binary() == str(fake_binary)
+
+
+def test_find_libreoffice_binary_falls_back_to_lowriter_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_binary = tmp_path / "lowriter"
+    fake_binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    fake_binary.chmod(0o755)
+
+    monkeypatch.delenv("RAG_LIBREOFFICE_BINARY", raising=False)
+    monkeypatch.delenv("LIBREOFFICE_BINARY", raising=False)
+    monkeypatch.setattr("backend.app.rag.parsers.document_parser.get_configured_libreoffice_binary", lambda: None)
+    monkeypatch.setattr("backend.app.rag.parsers.document_parser.LIBREOFFICE_BINARY_CANDIDATES", ())
+    monkeypatch.setattr(
+        "backend.app.rag.parsers.document_parser.shutil.which",
+        lambda command: str(fake_binary) if command == "lowriter" else None,
+    )
+
+    assert find_libreoffice_binary() == str(fake_binary)

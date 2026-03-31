@@ -1,0 +1,186 @@
+{
+  "snapshot_id": "rsp_fdc2ec8ddaab406d",
+  "trace_id": "trc_ce54d1e5420445a0",
+  "request_id": "req_da765e1d93644476",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T07:50:31.437682Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 2]\nUser: 你好\nAssistant: 您好！有什么可以帮助您的吗？\n\n[Recent Turn 3]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 4]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。\n\n[Recent Turn 5]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -5.6171875,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51349247,
+      "lexical_score": 19.48444847765304,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -6.83203125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 15.747316033693238,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主轴箱端面，再用标准斜铁和用手锤轻轻敲打，不得碰打钻杆。\n4.13.钻孔时必须经常注意清除铁屑，钻头上有长屑时要停车清除，禁止用风吹手拉，要用刷子或铁钩清除。在扩孔时不得用偏刃钻具。\n4.14.工作中注意超负荷现象，发生异常响声，应立即停止自动进给，并消除超负荷原因。\n4.15.攻螺纹时，操纵可逆顺结合主轴正反转，但必须注意将手柄放在固定槽中。\n4.16.禁止开车变速，若变速挂轮的手柄挂不到位时，应点动一下再变换，但不得强力扳动手柄。\n4.17.钻孔过程中钻头未退离工件前不得停车。严禁用手去停住转动着的钻头，反车时，必须等主轴停止后再开动。\n4.18.薄板、大型或长形的工件竖着钻孔时，必须压牢，严禁用手扶着加工，工件钻通孔时应减压慢速，防止损伤平台。\n4.19.禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，",
+      "score": -6.9609375,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 6.824042235094103,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -5.6171875,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51349247,
+      "lexical_score": 19.48444847765304,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -6.83203125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 15.747316033693238,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主轴箱端面，再用标准斜铁和用手锤轻轻敲打，不得碰打钻杆。\n4.13.钻孔时必须经常注意清除铁屑，钻头上有长屑时要停车清除，禁止用风吹手拉，要用刷子或铁钩清除。在扩孔时不得用偏刃钻具。\n4.14.工作中注意超负荷现象，发生异常响声，应立即停止自动进给，并消除超负荷原因。\n4.15.攻螺纹时，操纵可逆顺结合主轴正反转，但必须注意将手柄放在固定槽中。\n4.16.禁止开车变速，若变速挂轮的手柄挂不到位时，应点动一下再变换，但不得强力扳动手柄。\n4.17.钻孔过程中钻头未退离工件前不得停车。严禁用手去停住转动着的钻头，反车时，必须等主轴停止后再开动。\n4.18.薄板、大型或长形的工件竖着钻孔时，必须压牢，严禁用手扶着加工，工件钻通孔时应减压慢速，防止损伤平台。\n4.19.禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，",
+      "score": -6.9609375,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 6.824042235094103,
+      "fused_score": 0.015384615384615385,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "您提供的上下文中没有关于“SOP”或处理资料的最近更新的信息。请提供更多的背景信息以便更好地解答您的问题。",
+    "answer_chars": 53,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 9,
+    "rerank_input_count": 9,
+    "rerank_output_count": 9,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

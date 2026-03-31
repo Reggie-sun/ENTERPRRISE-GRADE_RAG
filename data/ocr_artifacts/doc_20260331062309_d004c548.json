@@ -1,0 +1,72 @@
+{
+  "document_id": "doc_20260331062309_d004c548",
+  "file_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+  "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 10,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\nAuto Robot For Plastic Injection Molding Machine\n注塑机专用机械手臂\n勇冠者-悬挂式全伺服机械手\nMaxA05-1000P X1800 Y1000\n装配作业指导书(机械篇)\n美标机（反装）\n一生技部\n伟立机器人\nWELLLIH ROBOTS",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.8306876420974731
+    },
+    {
+      "text": "Auto Robot For Plastic Injection Molding Machine",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9592664837837219
+    },
+    {
+      "text": "注塑机专用机械手臂",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9980817437171936
+    },
+    {
+      "text": "勇冠者-悬挂式全伺服机械手",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9739024639129639
+    },
+    {
+      "text": "MaxA05-1000P X1800 Y1000",
+      "page_no": 1,
+      "line_no": 5,
+      "confidence": 0.9747869372367859
+    },
+    {
+      "text": "装配作业指导书(机械篇)",
+      "page_no": 1,
+      "line_no": 6,
+      "confidence": 0.9589561820030212
+    },
+    {
+      "text": "美标机（反装）",
+      "page_no": 1,
+      "line_no": 7,
+      "confidence": 0.9497628808021545
+    },
+    {
+      "text": "一生技部",
+      "page_no": 1,
+      "line_no": 8,
+      "confidence": 0.9590304493904114
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": 1,
+      "line_no": 9,
+      "confidence": 0.9998933672904968
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": 1,
+      "line_no": 10,
+      "confidence": 0.9877349138259888
+    }
+  ]
+}

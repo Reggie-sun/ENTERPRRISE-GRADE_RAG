@@ -2265,3 +2265,271 @@ def test_retrieval_rerank_compare_endpoint_returns_comparison_payload(tmp_path: 
     assert payload["provider_candidate_summary"]["configured_only_chunk_ids"] == ["chunk-b"]
     assert payload["recommendation"]["decision"] == "eligible"
     assert payload["canary_sample_id"] == "rcs_demo_001"
+
+
+# ---------------------------------------------------------------------------
+# Staged retrieval tests (department-first with conditional supplemental)
+# ---------------------------------------------------------------------------
+
+
+def test_retrieval_service_staged_skips_supplemental_when_department_sufficient(tmp_path: Path) -> None:
+    """When department route returns enough results, supplemental route should be skipped entirely."""
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            self.scope_calls += 1
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        # Return 3 results from department pool (enough for top_k=3)
+        for i, doc_id in enumerate(["doc_dept_1", "doc_dept_2", "doc_dept_3"]):
+            if doc_id in ids:
+                results.append(
+                    SimpleNamespace(
+                        id=f"point-{doc_id}",
+                        score=0.95 - i * 0.05,
+                        payload={
+                            "chunk_id": f"chunk-{doc_id}",
+                            "document_id": doc_id,
+                            "document_name": f"{doc_id}.txt",
+                            "text": f"Content from {doc_id}",
+                            "source_path": f"/tmp/{doc_id}.txt",
+                        },
+                    )
+                )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="test query", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    # Only department route should be called; supplemental route skipped
+    assert vector_route_calls == [["doc_dept_1", "doc_dept_2", "doc_dept_3"]]
+    assert len(response.results) == 3
+    assert all(item.source_scope == "department" for item in response.results)
+    assert retrieval_service.document_service.scope_calls == 1
+
+
+def test_retrieval_service_staged_triggers_supplemental_when_department_insufficient(tmp_path: Path) -> None:
+    """When department route returns insufficient results, supplemental route should be triggered."""
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            self.scope_calls += 1
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1"],
+                global_document_ids=["doc_global_1", "doc_global_2"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        for doc_id in ids:
+            results.append(
+                SimpleNamespace(
+                    id=f"point-{doc_id}",
+                    score=0.9,
+                    payload={
+                        "chunk_id": f"chunk-{doc_id}",
+                        "document_id": doc_id,
+                        "document_name": f"{doc_id}.txt",
+                        "text": f"Content from {doc_id}",
+                        "source_path": f"/tmp/{doc_id}.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="test query", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    # Both routes should be called since department has only 1 result < top_k=3
+    assert vector_route_calls == [["doc_dept_1"], ["doc_global_1", "doc_global_2"]]
+    assert len(response.results) == 3
+    # Department result should rank first
+    assert response.results[0].source_scope == "department"
+    # Remaining results should be from supplemental pool
+    assert all(item.source_scope == "global" for item in response.results[1:])
+
+
+def test_retrieval_service_staged_uses_rerank_top_n_when_truncate_is_false(tmp_path: Path) -> None:
+    """When truncate_to_top_k=False, use rerank_top_n as the sufficiency threshold."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n_default": 3,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            self.scope_calls += 1
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3", "doc_dept_4"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        for doc_id in ids:
+            results.append(
+                SimpleNamespace(
+                    id=f"point-{doc_id}",
+                    score=0.9,
+                    payload={
+                        "chunk_id": f"chunk-{doc_id}",
+                        "document_id": doc_id,
+                        "document_name": f"{doc_id}.txt",
+                        "text": f"Content from {doc_id}",
+                        "source_path": f"/tmp/{doc_id}.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    # With truncate_to_top_k=False, the threshold should be rerank_top_n=3
+    # Department has 4 results >= 3, so supplemental should be skipped
+    results, mode, profile = retrieval_service.search_candidates(
+        request=RetrievalRequest(query="test query"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+        truncate_to_top_k=False,
+    )
+
+    # Only department route called; supplemental skipped because 4 >= rerank_top_n(3)
+    assert vector_route_calls == [["doc_dept_1", "doc_dept_2", "doc_dept_3", "doc_dept_4"]]
+    assert len(results) == 4
+    assert all(item.source_scope == "department" for item in results)
+
+
+def test_retrieval_service_staged_triggers_supplemental_with_rerank_top_n_threshold(tmp_path: Path) -> None:
+    """When truncate_to_top_k=False and department results < rerank_top_n, supplemental should trigger."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n_default": 4,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        def __init__(self) -> None:
+            self.scope_calls = 0
+
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            self.scope_calls += 1
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2"],
+                global_document_ids=["doc_global_1", "doc_global_2"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = set(document_ids or [])
+        results: list[SimpleNamespace] = []
+        for doc_id in ids:
+            results.append(
+                SimpleNamespace(
+                    id=f"point-{doc_id}",
+                    score=0.9,
+                    payload={
+                        "chunk_id": f"chunk-{doc_id}",
+                        "document_id": doc_id,
+                        "document_name": f"{doc_id}.txt",
+                        "text": f"Content from {doc_id}",
+                        "source_path": f"/tmp/{doc_id}.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    # With truncate_to_top_k=False, threshold is rerank_top_n=4
+    # Department has 2 results < 4, so supplemental should trigger
+    results, mode, profile = retrieval_service.search_candidates(
+        request=RetrievalRequest(query="test query"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+        truncate_to_top_k=False,
+    )
+
+    # Both routes called because 2 < rerank_top_n(4)
+    assert vector_route_calls == [["doc_dept_1", "doc_dept_2"], ["doc_global_1", "doc_global_2"]]
+    # Department results rank first
+    assert results[0].source_scope == "department"
+    assert results[1].source_scope == "department"

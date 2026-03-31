@@ -1,0 +1,75 @@
+{
+  "snapshot_id": "rsp_7356b350be1f49cb",
+  "trace_id": "trc_6281246726564457",
+  "request_id": "req_deb4ed3b29344a65",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "failed",
+  "occurred_at": "2026-03-31T09:15:14.540864Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "解释一下悖论放松法",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_b447737da64a483da9bf7052fe3f65be",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 更详细一点\nAssistant: CPPS，即慢性盆腔疼痛综合征（Chronic Prostatitis/Pelvic Pain Syndrome），是一种长期存在的盆腔区域疼痛状况。这种综合征可影响男性和女性，主要症状包括盆腔区域的不适或疼痛，具体表现为直肠、生殖器或腹部的不适或疼痛，坐下时疼痛加剧，性行为时或之后的不适或疼痛，尿频、尿急等症状。\n\n值得注意的是，尽管患者表现出明显的症状，但常规的身体检查和测试结果通常都在正常范围内，难以找到明确的生理异常作为病因。因此，CPPS的成因复杂，可能涉及到多种因素，包括但不限于解剖结构的问题、神经系统的问题等。此外，疼痛感知可能不仅仅局限于某个特定器官，也可能与支持这些器官的肌肉、筋膜和韧带相关。\n\n[Recent Turn 2]\nUser: 不同部门最近更新了哪些关键知识资料？\nAssistant: 无法从提供的上下文中找到关于不同部门最近更新的关键知识资料的信息。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下悖论放松法",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "timed out"
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

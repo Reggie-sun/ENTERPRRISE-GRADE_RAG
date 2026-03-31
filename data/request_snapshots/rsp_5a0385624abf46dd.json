@@ -1,0 +1,186 @@
+{
+  "snapshot_id": "rsp_5a0385624abf46dd",
+  "trace_id": "trc_4136dbe6e6a04297",
+  "request_id": "req_cb0bf51498d24e0a",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T09:21:40.668027Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "不同部门最近更新了哪些关键知识资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_b447737da64a483da9bf7052fe3f65be",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 不同部门最近更新了哪些关键知识资料？\nAssistant: 无法从提供的上下文中找到关于不同部门最近更新的关键知识资料的信息。\n\n[Recent Turn 2]\nUser: 跨部门常见问题有哪些可以沉淀成统一回答？\nAssistant: 跨部门常见问题可以通过以下方式来沉淀成统一回答：\n\n- 将各部门遇到的重复性问题进行收集和整理。\n- 对这些问题进行分类，比如按照报警处理、工单处理、数据分析等方面进行划分。\n- 制定标准答案，确保每个问题都有一个权威且准确的回答。\n- 将这些标准答案存储于知识库中，供智能助手调用。\n- 定期更新知识库内容，确保信息的时效性和准确性。\n\n例如，在DFMS系统中，当系统出现报警时，可以直接给出建议摘要；在工单详情中显示处理建议和知识来源；在数据分析方面，用户可以通过自然语言直接提问，系统返回结果、图表和结论。这些都可以作为跨部门常见问题的标准答案进行沉淀。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "不同部门最近更新了哪些关键知识资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -6.375,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.48176977,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "│\n│ 私有化部署 / 混合云部署 / 安全审计 / 监控运维             │\n└──────────────────────────────────────────────────────────┘\n```\n\n---\n\n## 4. 核心架构分层\n\n### 4.1 使用入口层\n\n这一层负责承接不同使用场景，让用户在熟悉的入口中使用智能助手。\n\n主要入口包括：\n\n- DFMS 系统内嵌入口\n- 企业微信工作台入口\n- 企业微信告警消息 / 通知入口\n- 管理后台入口\n- 外部业务系统接口入口\n\n这层的价值，不是增加一个新系统，而是把 AI 能力放进现有工作流程里。\n\n### 4.2 智能交互层\n\n这一层负责把不同业务场景组织成统一交互体验。\n\n包括：\n\n- 智能问答\n- 报警辅助处理\n- 工单协同\n- 数据分析入口\n- 结果展示与引用查看\n\n这一层面向用户，强调“好用”和“可进入实际业务流程”。\n\n### 4.3 智能能力层\n\n这一层是系统核心，负责把知识、数据和模型能力变成可用的业务能力。\n\n主要包含：\n\n- 页面和业务上下文识别\n- 企业知识检索与回答生成\n- 故障维修建议生成\n- 自然语言数据分析\n- 多轮问题理解与结果组织\n\n这层是项目真正的“智能中台”。\n\n### 4.4 数据与业务层\n\n这一层是智能能力的业务基础，包含两类关键数据：\n\n1. 业务数据\n   来自 DFMS 的设备、报警、工单、生产、效率等数据\n\n2. 知识数据\n   来自手册、维修文档、技术规范、历史案例等资料\n\n这层同时统一承接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维",
+      "score": -6.46875,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 23.356550619353317,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -6.95703125,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 24.47702505768618,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4.25.工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。\n4.26.下班前十五分钟停机清扫设备，清扫部位按照设备保养的有关规定进行。\n4.27.操作者要做好运行保养记录。\n编制\t李双田\t审核\t方梦然\t批准\t吕政权\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2022-12-05\tALL\t4\t新制定",
+      "score": -6.375,
+      "source_path": "/app/data/uploads/doc_20260330055115_c20cfc5a__WI-SJ-052_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.48176977,
+      "lexical_score": null,
+      "fused_score": 0.015625,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "│\n│ 私有化部署 / 混合云部署 / 安全审计 / 监控运维             │\n└──────────────────────────────────────────────────────────┘\n```\n\n---\n\n## 4. 核心架构分层\n\n### 4.1 使用入口层\n\n这一层负责承接不同使用场景，让用户在熟悉的入口中使用智能助手。\n\n主要入口包括：\n\n- DFMS 系统内嵌入口\n- 企业微信工作台入口\n- 企业微信告警消息 / 通知入口\n- 管理后台入口\n- 外部业务系统接口入口\n\n这层的价值，不是增加一个新系统，而是把 AI 能力放进现有工作流程里。\n\n### 4.2 智能交互层\n\n这一层负责把不同业务场景组织成统一交互体验。\n\n包括：\n\n- 智能问答\n- 报警辅助处理\n- 工单协同\n- 数据分析入口\n- 结果展示与引用查看\n\n这一层面向用户，强调“好用”和“可进入实际业务流程”。\n\n### 4.3 智能能力层\n\n这一层是系统核心，负责把知识、数据和模型能力变成可用的业务能力。\n\n主要包含：\n\n- 页面和业务上下文识别\n- 企业知识检索与回答生成\n- 故障维修建议生成\n- 自然语言数据分析\n- 多轮问题理解与结果组织\n\n这层是项目真正的“智能中台”。\n\n### 4.4 数据与业务层\n\n这一层是智能能力的业务基础，包含两类关键数据：\n\n1. 业务数据\n   来自 DFMS 的设备、报警、工单、生产、效率等数据\n\n2. 知识数据\n   来自手册、维修文档、技术规范、历史案例等资料\n\n这层同时统一承接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维",
+      "score": -6.46875,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 23.356550619353317,
+      "fused_score": 0.016129032258064516,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。\n\n最终会表现为：\n\n- 在 DFMS 中提供单独的智能分析入口\n- 用户通过自然语言直接提问\n- 系统返回结果、图表和结论\n\n用户最终看到的是：\n\n- 指标结果\n- 统计图表\n- 趋势分析\n- 可直接阅读的管理结论\n\n#### 4. 企业微信移动入口\n\n这是移动端和触达侧的呈现形态。\n\n最终会表现为：\n\n- 企业微信工作台入口\n- 报警消息通知\n- 工单提醒卡片\n- 智能助手快捷跳转入口\n\n用户最终看到的是：\n\n- 一条告警消息\n- 一段处理建议\n- 一张结果卡片\n- 一键跳转回 DFMS\n\n#### 5. 知识运营后台\n\n这是管理侧的呈现形态。\n\n最终会表现为：\n\n- 文档上传页面\n- 知识审核页面\n- 运营统计看板\n- 权限和范围配置页面\n\n管理人员最终看到的是：\n\n- 哪些知识已发布\n- 哪些文档待处理\n- 哪些问题使用最多\n- 哪些场景效果最好\n\n**一句话理解**\n\nRAG 最终不是单独摆在后台的一套能力。\n它会分别出现在：\n\n- DFMS 页面里的助手面板\n- 报警和工单里的辅助卡片\n- 数据分析入口里的分析界面\n- 企业微信里的消息和入口\n- 后台里的知识运营中心\n\n---\n\n## 3. 总体架构思路\n\n整体架构遵循一个原则：\n\n**前端多入口，后端一套智能中台，数据和权限统一收口。**\n\n也就是说，不管用户是从 DFMS 页面进入、从企业微信进入，",
+      "score": -6.95703125,
+      "source_path": "/app/data/uploads/doc_20260326064202_f5b7a9ae__RAG.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 24.47702505768618,
+      "fused_score": 0.01639344262295082,
+      "ocr_used": false,
+      "parser_name": null,
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "无法从提供的上下文中找到关于不同部门最近更新的关键知识资料的信息。",
+    "answer_chars": 33,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_sys_admin_demo"
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "snapshot_id": "rsp_71d4070124934ec2",
+  "trace_id": "trc_f10767fc223644d0",
+  "request_id": "req_be34f28635374d8a",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "success",
+  "occurred_at": "2026-03-31T07:43:11.571014Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "你好",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 无法从提供的上下文中直接获取最近更新的SOP或处理资料的信息。不过，可以确认的是上下文提到了一些关于摇臂钻床安全操作的具体规范，这些规范可能属于更新后的SOP的一部分。具体更新信息需要参照实际的SOP文档或通知。\n\n[Recent Turn 2]\nUser: 解释一下cpps\nAssistant: 您提供的上下文中没有关于“cpps”的解释或定义。请提供更多的背景信息以便更好地解答您的问题。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "你好",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-213",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 禁止进入到动作范围内\n\n行进动作危险警告\n\n下降动作危险警告\n以保养维修为目的或其他理由在\n工作范围内进行作业的时候，请勿用\n手触摸电动机、齿轮、滑轮及同步带\n等这些容易产生卷入危险的部分。\n进行操作的时候，请切断电源开关，\n并关闭空气压力开关。\n\n- - 127 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 卷入危险警告\n\n以保养维修为目的或其他理由在\n工作范围内进行作业的时候，请勿用\n手触摸电动机、齿轮、滑轮及同步带\n等这些容易产生卷入危险的部分。\n进行操作的时候，请切断电源开关，\n并关闭空气压力开关。\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u0001 吊装点的注意\n\n负载掉落可引起严重的损伤。\n吊装设备在合适的吊装点提升。 远离吊装\n区域。 （详见标贴位置参照）",
+      "score": -1.0126953125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5403125,
+      "lexical_score": null,
+      "fused_score": 0.5403125
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-212",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "ity, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n请注意，可能存在着在本类型的机器中没有使用的警告标志。\n\n\u0001 高压电触电警告\n\n保养维修作业时， 请务必注意切断\n控制箱的电源， 特别是在进行控制箱内\n部的保养作业时， 需要取下与注塑机相\n连接的电缆， 并关闭工厂的主控电源开\n关。\n在维修之前请阅读并理解操作手册。\n只有获得授权的维修人员才能对本机\n进行维修。\n\n\u0001 重心点\n\n准备吊装的时候要把手臂和引拔都移\n到此标识处。 （详见标贴位置参照）\n\n- - 126 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 禁止进入到动作范围内\n\n行进动作危险警告\n\n下降动作危险警告",
+      "score": -3.53125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5340089,
+      "lexical_score": null,
+      "fused_score": 0.5340089
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -4.1796875,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51896644,
+      "lexical_score": null,
+      "fused_score": 0.51896644
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-213",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 禁止进入到动作范围内\n\n行进动作危险警告\n\n下降动作危险警告\n以保养维修为目的或其他理由在\n工作范围内进行作业的时候，请勿用\n手触摸电动机、齿轮、滑轮及同步带\n等这些容易产生卷入危险的部分。\n进行操作的时候，请切断电源开关，\n并关闭空气压力开关。\n\n- - 127 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 卷入危险警告\n\n以保养维修为目的或其他理由在\n工作范围内进行作业的时候，请勿用\n手触摸电动机、齿轮、滑轮及同步带\n等这些容易产生卷入危险的部分。\n进行操作的时候，请切断电源开关，\n并关闭空气压力开关。\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u0001 吊装点的注意\n\n负载掉落可引起严重的损伤。\n吊装设备在合适的吊装点提升。 远离吊装\n区域。 （详见标贴位置参照）",
+      "score": -1.0126953125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5403125,
+      "lexical_score": null,
+      "fused_score": 0.5403125,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-212",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "ity, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n请注意，可能存在着在本类型的机器中没有使用的警告标志。\n\n\u0001 高压电触电警告\n\n保养维修作业时， 请务必注意切断\n控制箱的电源， 特别是在进行控制箱内\n部的保养作业时， 需要取下与注塑机相\n连接的电缆， 并关闭工厂的主控电源开\n关。\n在维修之前请阅读并理解操作手册。\n只有获得授权的维修人员才能对本机\n进行维修。\n\n\u0001 重心点\n\n准备吊装的时候要把手臂和引拔都移\n到此标识处。 （详见标贴位置参照）\n\n- - 126 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480\n电话：+86 574 5822 1610  传真：+86 574  5822 1647\nE-mail: sales@welllih.com   http:// www.welllih.com\n警示标志的种类\n\n\u0001 禁止进入到动作范围内\n\n行进动作危险警告\n\n下降动作危险警告",
+      "score": -3.53125,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5340089,
+      "lexical_score": null,
+      "fused_score": 0.5340089,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "务、高效的技\n术支持，满足客户高效率、高质量的生产需求。\n本装配作业指导书旨在说明机械部分操作步骤、注意事项、等相关内容。\n为安全操作并最大限度发挥本机性能，请在装配以前仔细阅读本说明书。此外，请妥\n善保管本书并放置在随手可取之处。\n本书中附有照片及图解。\n本装配作业指导书记载之事项，旨在让您安全、正确使用本产品，避免对您和其他人\n员产生危害及损失。\n为标明危害和损失的程度及其紧迫性， 把一旦误操作就有可能会产生的问题区分\n为“危险”、“警告”、“注意”。\n因改良等原因，规格及外观有所变更时，不再另行通知，敬请谅解。\n以下皆为相关安全的重要内容，请务必遵守。\n常规注意事项\n（1） 本说明书中的部分或全部内容，禁止擅自转载。\n（2） 本说明书中若有因改良而进行的变更，系统更新替换另行通知。\n（3） 本说明书制作周详，若有不明、或记载错误，遗漏等问题，请与制作者联系。\n（4） 若有缺页或错页，我们将给予更换。\n（5） 如果您在使用的过程中遇到疑问，可以第一时间翻看这本装配说明书；若是在\n装配说明书中仍未找到问题的答案，您可以联系生技部负责人。\n\n- - 2 - -\nCHINA NINGBO WELL-LIH\nROBOTS TECHNOLOGY CO.,\nLTD.\n宁波伟立机器人科技股份有限公司\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480",
+      "score": -4.1796875,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51896644,
+      "lexical_score": null,
+      "fused_score": 0.51896644,
+      "ocr_used": false,
+      "parser_name": "pdf_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "您好！有什么可以帮助您的吗？",
+    "answer_chars": 14,
+    "citation_count": 3,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 10,
+    "rerank_input_count": 10,
+    "rerank_output_count": 10,
+    "citation_count": 3,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

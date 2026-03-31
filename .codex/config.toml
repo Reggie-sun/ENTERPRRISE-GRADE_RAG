@@ -44,3 +44,13 @@ bearer_token_env_var = "GITHUB_PAT_TOKEN"
 [mcp_servers.qdrant]
 command = "/home/reggie/vscode_folder/Enterprise-grade_RAG/.codex/bin/run-qdrant-mcp.sh"
 startup_timeout_sec = 60
+
+[mcp_servers."chrome-devtools"]
+command = "node"
+args = [
+  "/home/reggie/vscode_folder/MCP/chrome-devtools-mcp/build/src/index.js",
+  "--headless",
+  "--isolated",
+]
+cwd = "/home/reggie/vscode_folder/MCP/chrome-devtools-mcp"
+startup_timeout_sec = 60
