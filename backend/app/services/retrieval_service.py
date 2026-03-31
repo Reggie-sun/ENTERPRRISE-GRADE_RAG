@@ -1,3 +1,4 @@
+"""文档检索服务，封装向量召回、词法召回、RRF混合融合、部门优先检索和Rerank对比验证。"""
 from dataclasses import dataclass
 import logging
 
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class _RetrievalCandidate:
+    """检索候选内部数据结构，用于融合阶段统一承载向量/词法/部门优先的候选信息。"""
     candidate_id: str
     payload: dict[str, object]
     score: float
@@ -40,6 +42,16 @@ class _RetrievalCandidate:
 
 
 class RetrievalService:  # 封装文档检索接口的业务逻辑。
+    """文档检索服务核心类。
+
+    核心职责：
+    1. 向量召回：通过 Qdrant 执行语义相似度检索；
+    2. 词法召回：基于关键词/分片的精确匹配召回，与向量召回互为补充；
+    3. RRF 混合融合：将向量与词法候选按 Reciprocal Rank Fusion 加权融合；
+    4. 部门优先检索：在多租户场景下优先召回本部门文档，全局文档作为补充；
+    5. OCR 质量治理：过滤低质量 OCR 识别结果，避免噪声进入生成链路；
+    6. Rerank 对比验证：在相同候选集上对比 heuristic 与模型 rerank，为灰度切换提供数据支撑。
+    """
     def __init__(
         self,
         settings: Settings | None = None,
@@ -61,6 +73,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.query_router = query_router or RetrievalQueryRouter(self.settings)  # 查询分类与 hybrid 动态权重策略统一收口到独立模块。
 
     def search(self, request: RetrievalRequest, *, auth_context: AuthContext | None = None) -> RetrievalResponse:  # 执行检索并返回结果。
+        """对外检索入口。
+
+        功能：调用 search_candidates 获取候选并截断到 top_k，组装为 RetrievalResponse 返回。
+        输入：RetrievalRequest（含查询文本、模式、top_k等），可选鉴权上下文。
+        输出：RetrievalResponse，包含查询文本、top_k、检索模式和结果列表。
+        """
         results, retrieval_mode, profile = self.search_candidates(
             request,
             auth_context=auth_context,
@@ -80,7 +98,28 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         auth_context: AuthContext | None = None,
         profile: QueryProfile | None = None,
         truncate_to_top_k: bool = True,
+        diagnostic: dict[str, object] | None = None,
     ) -> tuple[list[RetrievedChunk], str, QueryProfile]:
+        """检索候选生成主流程。
+
+        功能：解析查询档位 → 权限校验 → 向量/词法召回 → RRF融合 → OCR质量治理 → 权限过滤 → 截断返回。
+        输入：RetrievalRequest、可选鉴权上下文、可选预解析档位、是否截断到top_k。
+        输出：(检索结果列表, 实际检索模式字符串, 查询档位对象) 三元组。
+
+        diagnostic: 可选的诊断字典，传入后本方法会在其中写入检索各阶段的摘要信息，
+                     供上层（如 chat_service）合并进 trace 而不影响主契约字段。
+        """
+        # --- diagnostic: query metadata ---
+        if diagnostic is not None:
+            diagnostic["raw_query"] = request.query
+            diagnostic["retrieval_mode"] = None
+            if hasattr(self, "query_router") and self.query_router is not None:
+                try:
+                    bw = self.query_router.resolve_branch_weights(request.query)
+                    diagnostic["query_type"] = bw.query_type
+                except Exception:
+                    pass
+
         profile = profile or self.query_profile_service.resolve(
             purpose="retrieval",
             requested_mode=request.mode,
@@ -117,23 +156,40 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 limit=search_limit,
                 document_id=normalized_document_id,
             )
-        candidates = self._apply_ocr_quality_governance(candidates)
+
+        # --- diagnostic: recall stage ---
+        pre_filter_count = len(candidates)
+        if diagnostic is not None:
+            diagnostic["retrieval_mode"] = retrieval_mode
+            diagnostic["recall_candidates"] = pre_filter_count
+
+        candidates, ocr_filtered_count = self._apply_ocr_quality_governance(candidates)
+
+        if diagnostic is not None and ocr_filtered_count > 0:
+            diagnostic["ocr_quality_filtered"] = ocr_filtered_count
+
         results: list[RetrievedChunk] = []  # 初始化检索结果列表。
-        readability_cache: dict[str, bool] = {}  # 同一次检索里缓存按文档判断结果，避免重复读 metadata。
+        # Use retrieval-scoped map for filtering (allows cross-department supplemental results)
+        # instead of direct-access readability map (which enforces department isolation).
+        retrievability_cache: dict[str, bool] = {}  # 同一次检索里缓存按文档判断结果，避免重复读 metadata。
         if auth_context is not None:
-            readability_cache = self.document_service.get_document_readability_map(
+            retrievability_cache = self.document_service.get_document_retrievability_map(
                 [str(candidate.payload.get("document_id") or "") for candidate in candidates],
                 auth_context,
             )
 
         result_limit = profile.top_k if truncate_to_top_k else None
 
+        _permission_filtered = 0
+        _scope_filtered = 0
+
         for candidate in candidates:  # 遍历最终候选结果，统一兼容纯向量与 hybrid 模式。
             payload = candidate.payload  # 读取 payload，空值在融合前已经归一成空字典。
             resolved_document_id = str(payload.get("document_id") or "unknown")  # 先解析文档 ID，供权限判断和结果对象复用。
             if auth_context is not None:
-                can_read = readability_cache.get(resolved_document_id, False)
+                can_read = retrievability_cache.get(resolved_document_id, False)
                 if not can_read:
+                    _permission_filtered += 1
                     continue
             raw_score = float(candidate.score)  # 保留内部原始排序分，hybrid 模式下这是加权 RRF 原始值。
             output_score = self._response_score(
@@ -160,10 +216,27 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 quality_score=float(payload["quality_score"]) if payload.get("quality_score") is not None else None,  # 返回统一质量分。
             )
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
+                _scope_filtered += 1
                 continue
             results.append(item)  # 命中过滤条件后才加入返回列表。
             if result_limit is not None and len(results) >= result_limit:  # 对外检索保留 top_k，内部链路可显式拿到更大的融合候选。
                 break
+
+        # --- diagnostic: filter summary ---
+        if diagnostic is not None:
+            diagnostic["final_results"] = len(results)
+            filters: dict[str, int] = {}
+            if ocr_filtered_count:
+                filters["ocr_quality"] = ocr_filtered_count
+            if _permission_filtered:
+                filters["permission"] = _permission_filtered
+            if _scope_filtered:
+                filters["document_scope"] = _scope_filtered
+            truncated = pre_filter_count - len(results) - _permission_filtered - _scope_filtered - ocr_filtered_count
+            if truncated > 0:
+                filters["top_k_truncated"] = truncated
+            if filters:
+                diagnostic["filters"] = filters
 
         return results, retrieval_mode, profile
 
@@ -173,6 +246,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         *,
         auth_context: AuthContext | None = None,
     ) -> RetrievalRerankCompareResponse:  # 在同一批检索候选上对比当前默认 rerank 路由与 heuristic 基线。
+        """Rerank 对比验证入口。
+
+        功能：在同一批检索候选上分别执行 configured provider rerank 和 heuristic rerank，
+              计算两者重合度，给出灰度切换建议，并沉淀为 canary 样本供运维复盘。
+        输入：RetrievalRequest、可选鉴权上下文。
+        输出：RetrievalRerankCompareResponse，包含双方排序结果、重合摘要和切换建议。
+        """
         response = self.search(request, auth_context=auth_context)  # 先复用现有检索链路，确保权限过滤和 hybrid 逻辑完全一致。
         profile = self.query_profile_service.resolve(
             purpose="retrieval",
@@ -222,6 +302,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 ),
             )
 
+        # 先执行 heuristic rerank 作为基线，用于后续对比
         heuristic_results = self.reranker_client.rerank_heuristic(
             query=request.query,
             candidates=response.results,
@@ -229,6 +310,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         )
         route_status = self._build_route_status()
 
+        # 执行当前配置的模型 rerank，失败时根据降级开关决定是否回退到 heuristic
         try:
             configured_results = self.reranker_client.rerank(
                 query=request.query,
@@ -248,6 +330,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         provider_candidate: RerankComparisonResult | None = None
         provider_candidate_summary: RerankComparisonSummary | None = None
 
+        # 如果当前 provider 不是 heuristic，额外跑一轮 provider_candidate 用于灰度对比
         if route.provider.lower().strip() != "heuristic":
             try:
                 provider_candidate_results = self.reranker_client.rerank_provider_candidate(
@@ -366,7 +449,14 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         document_id: str | None,
         document_ids: list[str] | None = None,
     ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
+        """收集并融合向量与词法召回候选。
+
+        功能：将向量召回结果与词法召回结果按 RRF 策略融合；若策略非 hybrid 或词法召回失败，则仅返回向量候选。
+        输入：查询文本、向量召回原始点集、查询档位、召回上限、可选文档ID/文档ID列表。
+        输出：(候选列表, 检索模式, 分支权重) 三元组。
+        """
         vector_candidates = [self._candidate_from_vector_point(point) for point in vector_points]
+        # 非混合策略时直接返回纯向量候选，无需执行词法召回
         if self._normalized_retrieval_strategy() != "hybrid":
             return vector_candidates, "qdrant", None
 
@@ -417,6 +507,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         document_id: str | None = None,
         document_ids: list[str] | None = None,
     ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
+        """带作用域限制的候选收集：先执行向量检索，再调用 _collect_candidates 完成融合。
+
+        功能：根据文档ID或文档ID列表限定检索范围，执行向量检索后进入融合流程。
+        输入：查询文本、查询向量、查询档位、召回上限、可选文档ID或文档ID列表。
+        输出：(候选列表, 检索模式, 分支权重) 三元组。
+        """
         if document_ids is not None and not document_ids:
             return [], "qdrant", None
         vector_points = self._search_vector_points(
@@ -443,6 +539,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         limit: int,
         scope: DepartmentPriorityRetrievalScope | None,
     ) -> tuple[list[_RetrievalCandidate], str, HybridBranchWeights | None]:
+        """部门优先候选收集：在本部门文档范围内优先召回，全局范围作为补充。
+
+        功能：分别对本部门文档和全局文档执行候选收集，标记来源范围后融合排序。
+        输入：查询文本、查询向量、查询档位、召回上限、部门优先作用域。
+        输出：(融合后候选列表, 检索模式, 分支权重) 三元组。
+        """
         if scope is None:
             return self._collect_scoped_candidates(
                 query=query,
@@ -452,6 +554,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             )
 
         department_limit = limit
+        # 全局召回量不超过 limit，但至少保证 top_k 或 limit/2，避免全局补充过少
         global_limit = min(limit, max(profile.top_k, max(limit // 2, 1)))
 
         department_candidates, department_mode, department_branch_weights = self._collect_scoped_candidates(
@@ -484,9 +587,17 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
     def _apply_ocr_quality_governance(
         self,
         candidates: list[_RetrievalCandidate],
-    ) -> list[_RetrievalCandidate]:
+    ) -> tuple[list[_RetrievalCandidate], int]:
+        """Filter low-quality OCR candidates.
+
+        OCR 质量治理：过滤低质量 OCR 识别候选，防止噪声进入下游生成链路。
+        若过滤后结果为空则保留原始候选，避免检索结果被完全打空。
+
+        输入：候选列表。
+        输出：(过滤后的候选列表, 被过滤的数量) 二元组。
+        """
         if not self.settings.ocr_low_quality_filter_enabled or not candidates:
-            return candidates
+            return candidates, 0
 
         kept_candidates: list[_RetrievalCandidate] = []
         filtered_count = 0
@@ -497,14 +608,14 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             kept_candidates.append(candidate)
 
         if filtered_count <= 0:
-            return candidates
+            return candidates, 0
         if not kept_candidates:  # 不让 OCR 质量治理把结果完全打空；极端情况下保留原始候选供后续链路继续工作。
             logger.info(
                 "ocr quality governance skipped reason=all_candidates_low_quality filtered_count=%d threshold=%.3f",
                 filtered_count,
                 self.settings.ocr_low_quality_min_score,
             )
-            return candidates
+            return candidates, 0
 
         logger.info(
             "ocr quality governance filtered_count=%d kept_count=%d threshold=%.3f",
@@ -512,7 +623,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             len(kept_candidates),
             self.settings.ocr_low_quality_min_score,
         )
-        return kept_candidates
+        return kept_candidates, filtered_count
 
     def _is_low_quality_ocr_candidate(self, candidate: _RetrievalCandidate) -> bool:
         payload = candidate.payload
@@ -535,10 +646,17 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         limit: int,
         branch_weights: HybridBranchWeights | None = None,
     ) -> list[_RetrievalCandidate]:
+        """RRF 混合融合：将向量候选与词法候选按加权 Reciprocal Rank Fusion 合并排序。
+
+        功能：对向量候选和词法候选分别按排名计算 RRF 分数，同一 chunk 取最高分，最终按融合分数降序排列。
+        输入：向量候选列表、词法匹配列表、召回上限、可选分支权重。
+        输出：融合后按分数排序的候选列表（截断到 limit）。
+        """
         fused_candidates: dict[str, _RetrievalCandidate] = {}
         rrf_k = self.settings.retrieval_hybrid_rrf_k
         weights = branch_weights or self.query_router.fixed_branch_weights()
 
+        # 遍历向量候选，按排名计算加权 RRF 分数并累积到融合字典
         for rank, candidate in enumerate(vector_candidates, start=1):
             fused = fused_candidates.get(candidate.candidate_id)
             if fused is None:
@@ -553,6 +671,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             if weights.vector_weight > 0:
                 fused.score += weights.vector_weight / (rrf_k + rank)
 
+        # 遍历词法候选，按排名计算加权 RRF 分数；已有 chunk 则累加分数并更新 payload
         for rank, lexical_match in enumerate(lexical_matches, start=1):
             candidate_id = str(lexical_match.payload.get("chunk_id") or lexical_match.point_id)
             fused = fused_candidates.get(candidate_id)
@@ -589,6 +708,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         global_candidates: list[_RetrievalCandidate],
         limit: int,
     ) -> list[_RetrievalCandidate]:
+        """部门优先候选融合：将部门候选与全局候选按去重+优先部门命中规则合并排序。
+
+        功能：合并部门候选和全局候选，同一 chunk 取最高分并标记来源范围；
+              排序时部门命中优先，分数次之，最终截断到 limit。
+        输入：部门候选列表、全局候选列表、召回上限。
+        输出：按部门优先+分数排序的候选列表（截断到 limit）。
+        """
         if limit <= 0:
             return []
 
@@ -709,6 +835,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         retrieval_mode: str,
         branch_weights: HybridBranchWeights | None,
     ) -> float:
+        """将内部 RRF 原始分数归一化为 [0,1] 区间的对外相关度分数。
+
+        功能：纯向量模式直接返回原始分；hybrid 模式下以理论最大 RRF 分数为基准做归一化，
+              避免对外暴露量级极低的 RRF 原始值。
+        输入：原始分数、检索模式、分支权重。
+        输出：归一化后的 [0,1] 分数（纯向量模式为原始分）。
+        """
         if retrieval_mode != "hybrid" or branch_weights is None:
             return raw_score
 
@@ -716,6 +849,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if total_weight <= 0:
             return raw_score
 
+        # 计算理论最大 RRF 分数（权重 / (rrf_k + rank_1)），用于将原始分归一化到 [0,1]
         max_rrf_score = total_weight / (self.settings.retrieval_hybrid_rrf_k + 1)
         if max_rrf_score <= 0:
             return raw_score
@@ -749,6 +883,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         provider_candidate_summary: RerankComparisonSummary | None,
         rerank_top_n: int,
     ) -> RerankPromotionRecommendation:
+        """根据 rerank 对比结果，判断是否建议将默认策略从 heuristic 切换到 provider。
+
+        功能：综合路由状态、provider 候选可用性和与 heuristic 的重合度，输出灰度切换建议。
+        输入：路由状态、provider 名称、provider 候选对比结果、重合摘要、rerank top_n。
+        输出：RerankPromotionRecommendation，包含决策、是否建议切换和说明信息。
+        """
         normalized_provider = provider.lower().strip()
         if normalized_provider == "heuristic":
             return RerankPromotionRecommendation(

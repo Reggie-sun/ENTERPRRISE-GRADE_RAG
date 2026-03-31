@@ -258,6 +258,7 @@ def test_document_list_filters_by_department_for_employee(authz_env) -> None:
 
 
 def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
+    """Employee retrieval should return own-department results first, with cross-department results as supplemental."""
     client, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
@@ -269,7 +270,7 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
         content="Alarm E205 after-sales handling process and spare-parts checklist.",
         department_id="dept_after_sales",
     )
-    _create_document(
+    other_doc_id = _create_document(
         client,
         headers=sys_admin_headers,
         filename="assembly_alarm.txt",
@@ -286,7 +287,13 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["results"]
-    assert {item["document_id"] for item in payload["results"]} == {visible_doc_id}
+    result_doc_ids = {item["document_id"] for item in payload["results"]}
+    # Own-department result must always be present
+    assert visible_doc_id in result_doc_ids
+    # Cross-department result should now be available as supplemental
+    assert other_doc_id in result_doc_ids
+    # Own-department result should rank first
+    assert payload["results"][0]["document_id"] == visible_doc_id
 
 
 def test_cross_department_document_id_is_rejected_for_retrieval_and_chat(authz_env) -> None:
