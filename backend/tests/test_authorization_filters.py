@@ -492,7 +492,7 @@ def test_query_scope_disable_does_not_widen_write_boundaries(authz_env_no_query_
 
 
 def test_build_department_priority_scope_includes_cross_department_docs_in_supplemental(authz_env) -> None:
-    """Non-global employee retrieval scope should include same-tenant cross-department docs in supplemental pool."""
+    """Non-global employee retrieval scope should include cross-department public docs in supplemental pool."""
     client, document_service = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
 
@@ -509,6 +509,7 @@ def test_build_department_priority_scope_includes_cross_department_docs_in_suppl
         filename="assembly_guide.txt",
         content="Assembly line calibration procedure for E102.",
         department_id="dept_assembly",
+        visibility="public",
     )
 
     # Build auth_context for the employee via login + token decode
@@ -526,5 +527,5 @@ def test_build_department_priority_scope_includes_cross_department_docs_in_suppl
 
     assert scope is not None
     assert own_doc_id in scope.department_document_ids, "Own-department doc must be in department pool"
-    # Cross-department doc should be in the supplemental (global) pool
-    assert other_doc_id in scope.global_document_ids, "Cross-department doc must be in supplemental pool"
+    # Cross-department public doc should be in the supplemental (global) pool
+    assert other_doc_id in scope.global_document_ids, "Cross-department public doc must be in supplemental pool"

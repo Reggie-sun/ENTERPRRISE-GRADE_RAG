@@ -1092,8 +1092,10 @@ class DocumentService:
                 department_document_ids.append(record.doc_id)
             else:
                 # Supplemental pool: same-tenant documents not in the user's department.
-                # Only documents with public visibility belong in the supplemental pool.
-                if record.visibility == "public":
+                # When department_query_isolation_enabled is False, all same-tenant
+                # retrievable documents belong in the supplemental pool.
+                # Otherwise, only public documents enter the supplemental pool.
+                if not self.settings.department_query_isolation_enabled or record.visibility == "public":
                     global_document_ids.append(record.doc_id)
 
         return DepartmentPriorityRetrievalScope(
