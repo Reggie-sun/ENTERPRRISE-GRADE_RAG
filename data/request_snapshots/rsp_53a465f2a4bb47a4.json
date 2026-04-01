@@ -1,0 +1,189 @@
+{
+  "snapshot_id": "rsp_53a465f2a4bb47a4",
+  "trace_id": "trc_sop_6bb5bc0749aa4563",
+  "request_id": "req_sop_859eaee2e1d54669",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T08:49:05.431328Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260331072848_83da0c24",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_production_technology",
+    "document_id": "doc_20260331072848_83da0c24",
+    "title_hint": "金属地轨安装SOP(拼接版) SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260331072848_83da0c24 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331072848_83da0c24-preview-0",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "金属地轨安装(拼接版) SOP-生技部金属地轨安装(拼接版) SOP-生技部",
+      "score": 1.0,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331072848_83da0c24-preview-1",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "总图",
+      "score": 0.99,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331072848_83da0c24-preview-2",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "一、地轨定位与调平",
+      "score": 0.98,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260331072848_83da0c24-preview-0",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "金属地轨安装(拼接版) SOP-生技部金属地轨安装(拼接版) SOP-生技部",
+      "score": 1.0,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null,
+      "ocr_used": false,
+      "parser_name": "document_preview",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331072848_83da0c24-preview-1",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "总图",
+      "score": 0.99,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null,
+      "ocr_used": false,
+      "parser_name": "document_preview",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331072848_83da0c24-preview-2",
+      "document_id": "doc_20260331072848_83da0c24",
+      "document_name": "金属地轨安装SOP(拼接版).docx",
+      "snippet": "一、地轨定位与调平",
+      "score": 0.98,
+      "source_path": "document-preview://doc_20260331072848_83da0c24",
+      "retrieval_strategy": "document_preview",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": null,
+      "fused_score": null,
+      "ocr_used": false,
+      "parser_name": "document_preview",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "# 金属地轨安装SOP(拼接版) SOP 草稿\n\n## 部门\n生产技术部\n\n## 来源文档\n金属地轨安装SOP(拼接版).docx\n\n## 工序\n未指定工序\n\n## 场景\n未指定场景\n\n## 目的\n证据不足/待补充\n\n## 适用范围\n证据不足/待补充\n\n## 前置检查\n证据不足/待补充\n\n## 操作步骤\n一、地轨定位与调平\n证据不足/待补充\n\n## 异常处理\n证据不足/待补充\n\n## 记录要求\n证据不足/待补充\n\n注：由于提供的上下文信息不足以生成完整的SOP内容，因此大部分部分标记为“证据不足/待补充”。",
+    "answer_chars": 256,
+    "citation_count": 3,
+    "rerank_strategy": "document_preview",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "金属地轨安装SOP(拼接版) SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 3,
+    "document_id": "doc_20260331072848_83da0c24",
+    "department_id": "dept_production_technology",
+    "department_name": "生产技术部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "金属地轨安装SOP(拼接版)",
+    "streaming": true,
+    "retrieval_mode": "document_preview",
+    "retrieved_count": 0,
+    "rerank_input_count": 0,
+    "rerank_output_count": 0,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

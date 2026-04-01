@@ -55,7 +55,7 @@ def test_get_system_config_endpoint_returns_defaults_for_sys_admin(tmp_path: Pat
     assert response.status_code == 200
     payload = response.json()
     assert payload["query_profiles"]["fast"]["top_k_default"] == 5
-    assert payload["query_profiles"]["fast"]["lexical_top_k"] == 10
+    assert payload["query_profiles"]["fast"]["lexical_top_k"] == 20
     assert payload["query_profiles"]["accurate"]["top_k_default"] == 8
     assert payload["query_profiles"]["accurate"]["lexical_top_k"] == 32
     assert payload["model_routing"]["fast_model"] == "qwen2.5:7b"

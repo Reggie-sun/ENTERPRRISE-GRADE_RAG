@@ -1,0 +1,167 @@
+{
+  "snapshot_id": "rsp_effda86e106c43cb",
+  "trace_id": "trc_retrieval_7ce05fb12ed540ed",
+  "request_id": "req_retrieval_48da05300bcc4a7e",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T06:41:45.456439Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "解释一下cpps",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-1",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "ROLLEY-WIRE（9OA））安全说明\n本产品的故障处理和维修作业需专业电气工程师负责。维保时务必交付“安装施工说明书”，\n本产品的施工需要电工资质。为防止意外伤害事故发生，请务必遵守以下事项。\n1.本产品需要定期进行维护保养。请用于能够进行定期维护保养\n10.本产品，因使用时间过长发生老化，集电器和导体发生磨损。因\n的设备。\n施工精度和使用环境，可能导致磨损不均衡的发生。施工时，碰\n□施工注",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260331081535_5d30086d__DH54.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 5.7510455944790095,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "3P\n4P\n1P\n3P\n4P\n1P\n1P\n（镀金工厂、涂装工厂、药品工厂等）\n(1)电动机负载\n产生腐蚀性气体的场所\n×\n×\n×\n×\n×\n×\n×\n×\nTRO-REEL HS\n•\n•\n•\n•\n••\n•\n负载的额定电流小于50A时\n（污水处理广、药品加工厂等）\n（非张力型)\n适用的额定电流=负载的额定电流×1.25以上\n产生油雾的场所\n×\nHIGH-TRO-REEL\n（非张力型)\nの\n•\n•\n•\n•\n",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260331081535_5d30086d__DH54.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.425238,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-26",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "EL本体的安装相关尺寸如图所示。\n( mm )\n●标准安装\n●2段安装\n●横向安装\n尺寸\nA尺寸\nB尺寸\n吊夹的种类\n最小\n标准\nB1\nB2\nB3\n使用标准吊夹时\n135\n295\n75\n100\n95\n使用带绝缘子的吊夹时\n160\n320\n标准4000以下\nB\nB\n理）B3尺寸为使用托座L-40×40×5时的尺寸.\nB\n中间固定绝缘子\n集电臂\n安装用角棒（25口）\nX\n将TRO-REEL本体的一部分",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260331081535_5d30086d__DH54.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 5.676819820672485,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401023359_ace477d5-chunk-65",
+      "document_id": "doc_20260401023359_ace477d5",
+      "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+      "snippet": "、无堵塞；规格型号与清单一致；内六角扳手4MM；（紧固扭矩7.5N·m）所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；检查外观表面无磕碰、变形、刮伤等不良现象；所有螺纹孔无残渣、无堵塞；规格型号与清单一致；内六角扳手4MM；（紧固扭矩7.5N·m）所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n引拔拖链固定（分主副两边方法类似）\n\n检查外观表面无磕碰、变形、刮伤等不良",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260401023359_ace477d5__FA05_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.42447793,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401053010_246cace7-chunk-0",
+      "document_id": "doc_20260401053010_246cace7",
+      "document_name": "WL-SJ-023机械手润滑脂使用标准#A0.docx",
+      "snippet": "机械手润滑脂使用规范\t文件编号\tWI-SJ-023\n版本号\tA/0\n页次\t5\n生效日期\t2017-08-14\n目的\n机械手导轨、减速机润滑脂使用规范化。\n适用范围\n适用于我司所有机械手导轨、减速机；\n职责\n生产技术部：   负责本标准制定和优化；\n研发部/项目组：负责按照此标准制定产品说明书；\n品质保障部：   负责按照标准要求进行检验；\n生产管理部：   负责按照标准要求执行；\n润滑脂使用型号说",
+      "score": 0.4841269841269841,
+      "source_path": "/app/data/uploads/doc_20260401053010_246cace7__WL-SJ-023_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 5.644982758763608,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "解释一下cpps",
+    "query_type": "fixed",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 8,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector": 5,
+      "department_after_ocr": 8,
+      "total_candidates": 10
+    },
+    "filter_counts": {
+      "ocr_quality": 2,
+      "top_k_truncated": 3
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {}
+  }
+}

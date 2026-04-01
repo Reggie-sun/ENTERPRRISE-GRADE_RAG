@@ -1,0 +1,60 @@
+{
+  "document_id": "doc_20260401034536_c635304a",
+  "file_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+  "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 8,
+  "page_count": 1,
+  "normalized_text": "I\n\nEloxal.\n173\nSchicht\n2/3\newo\ngewpua\nAluminium",
+  "segments": [
+    {
+      "text": "I",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.27911582589149475
+    },
+    {
+      "text": "Eloxal.",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.8574573397636414
+    },
+    {
+      "text": "173",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.8524739742279053
+    },
+    {
+      "text": "Schicht",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.994259238243103
+    },
+    {
+      "text": "2/3",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.9542816281318665
+    },
+    {
+      "text": "ewo",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.356050044298172
+    },
+    {
+      "text": "gewpua",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.683562695980072
+    },
+    {
+      "text": "Aluminium",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.990667998790741
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "snapshot_id": "rsp_41fbe20997404af7",
+  "trace_id": "trc_sop_d885c7fecba7450e",
+  "request_id": "req_sop_b7ea00352c394ffd",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T08:48:53.180424Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260331071413_6d60ce93",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_production_technology",
+    "document_id": "doc_20260331071413_6d60ce93",
+    "title_hint": "金属地轨安装SOP(非拼接版) SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260331071413_6d60ce93 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331071413_6d60ce93-chunk-0",
+      "document_id": "doc_20260331071413_6d60ce93",
+      "document_name": "金属地轨安装SOP(非拼接版).docx",
+      "snippet": "金属地轨安装(非拼接版) SOP-生技部金属地轨安装(非拼接版) SOP-生技部\n\n总图\n\n激光投线仪激光投线仪一、地轨定位与调平\n\n水平尺水平尺\n\n内容（定位）\n\n用激光投线仪根据布局图确认地脚板位置，并且将定位线画好。\n\n按划线位置摆放地脚板，并且用膨胀螺丝固定。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（调平）\n\n用行车将地轨放置于到地脚板上方，并且对准安装孔位。\n\n如左图中间的螺丝为调节螺丝，两边的螺丝为固定螺丝，通过调节螺丝与水平尺来保证整根地轨的平行。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n二、地轨线轨安装\n\n内容(清洁)\n\n平铲刀去除线轨与齿条安装面多余毛刺。确保安装面全程无刮伤、无毛刺等不良现象。\n\n再用油石研磨安装面擦至少2次。\n\n研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n内容（主轨）\n\n基准面一侧光轨（主直线导轨）中间相两端依次锁紧，贴紧基准面偏大间隙，用防震橡皮锤矫正并锁紧。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（副轨）\n\n副轨的螺丝预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可（紧固扭矩参照《WI-SJ-005》）。\n\n将滑块插入主副轨中。\n\n内容（线轨拼接）",
+      "score": 6.09765625,
+      "source_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260331071413_6d60ce93__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7824436,
+      "lexical_score": 8.158019157133337,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331071413_6d60ce93-chunk-1",
+      "document_id": "doc_20260331071413_6d60ce93",
+      "document_name": "金属地轨安装SOP(非拼接版).docx",
+      "snippet": "00%在螺丝上画线且画线方向一致。\n\n内容（副轨）\n\n副轨的螺丝预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可（紧固扭矩参照《WI-SJ-005》）。\n\n将滑块插入主副轨中。\n\n内容（线轨拼接）\n\n线轨拼接时主轨与副轨应错开拼接，切拼接间隙应小于0.2mm。\n\n内容（线轨打表）\n\n将过渡板安装在滑块上（左图蓝色部分）。\n\n百分表安装（0~0.01mm）磁性表座吸住过渡板（NO\\OFF）。调整支架让百分表针头对准辅助光轨侧边。\n\n测试全程。读取并记录百分表读数。要求值：每米≤0.03mm。（偏大或偏小的数值，用防震橡皮锤敲打光轨矫正）。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n三、地轨齿条安装\n\n反向假齿反向假齿\n\n内容（齿条安装）\n\n先两端拧入螺丝3螺牙。\n\n从左到右依次把螺丝拧入3螺牙（埋入螺丝孔内）。\n\n确保斜精铣齿条与假齿条啮合。\n\n斜精铣齿条贴紧端面。\n\n螺丝从左到右依次锁紧。\n\n紧固扭矩参照《WI-SJ-005》）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（检测）\n\n将深度百分表放在平面上，旋转表盘将表针调整到零位。\n\n将芯棒放在齿条接缝处，左右调剂差看指针跳动，要求值：≤0.05mm。",
+      "score": 2.173828125,
+      "source_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260331071413_6d60ce93__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.66014963,
+      "lexical_score": 1.4260723628848073,
+      "fused_score": 0.03225806451612903
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260331071413_6d60ce93-chunk-0",
+      "document_id": "doc_20260331071413_6d60ce93",
+      "document_name": "金属地轨安装SOP(非拼接版).docx",
+      "snippet": "金属地轨安装(非拼接版) SOP-生技部金属地轨安装(非拼接版) SOP-生技部\n\n总图\n\n激光投线仪激光投线仪一、地轨定位与调平\n\n水平尺水平尺\n\n内容（定位）\n\n用激光投线仪根据布局图确认地脚板位置，并且将定位线画好。\n\n按划线位置摆放地脚板，并且用膨胀螺丝固定。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（调平）\n\n用行车将地轨放置于到地脚板上方，并且对准安装孔位。\n\n如左图中间的螺丝为调节螺丝，两边的螺丝为固定螺丝，通过调节螺丝与水平尺来保证整根地轨的平行。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n二、地轨线轨安装\n\n内容(清洁)\n\n平铲刀去除线轨与齿条安装面多余毛刺。确保安装面全程无刮伤、无毛刺等不良现象。\n\n再用油石研磨安装面擦至少2次。\n\n研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n内容（主轨）\n\n基准面一侧光轨（主直线导轨）中间相两端依次锁紧，贴紧基准面偏大间隙，用防震橡皮锤矫正并锁紧。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（副轨）\n\n副轨的螺丝预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可（紧固扭矩参照《WI-SJ-005》）。\n\n将滑块插入主副轨中。\n\n内容（线轨拼接）",
+      "score": 6.09765625,
+      "source_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260331071413_6d60ce93__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7824436,
+      "lexical_score": 8.158019157133337,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    },
+    {
+      "chunk_id": "doc_20260331071413_6d60ce93-chunk-1",
+      "document_id": "doc_20260331071413_6d60ce93",
+      "document_name": "金属地轨安装SOP(非拼接版).docx",
+      "snippet": "00%在螺丝上画线且画线方向一致。\n\n内容（副轨）\n\n副轨的螺丝预锁紧即可，打表完成后再将螺丝用标准扭矩锁紧即可（紧固扭矩参照《WI-SJ-005》）。\n\n将滑块插入主副轨中。\n\n内容（线轨拼接）\n\n线轨拼接时主轨与副轨应错开拼接，切拼接间隙应小于0.2mm。\n\n内容（线轨打表）\n\n将过渡板安装在滑块上（左图蓝色部分）。\n\n百分表安装（0~0.01mm）磁性表座吸住过渡板（NO\\OFF）。调整支架让百分表针头对准辅助光轨侧边。\n\n测试全程。读取并记录百分表读数。要求值：每米≤0.03mm。（偏大或偏小的数值，用防震橡皮锤敲打光轨矫正）。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n三、地轨齿条安装\n\n反向假齿反向假齿\n\n内容（齿条安装）\n\n先两端拧入螺丝3螺牙。\n\n从左到右依次把螺丝拧入3螺牙（埋入螺丝孔内）。\n\n确保斜精铣齿条与假齿条啮合。\n\n斜精铣齿条贴紧端面。\n\n螺丝从左到右依次锁紧。\n\n紧固扭矩参照《WI-SJ-005》）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n内容（检测）\n\n将深度百分表放在平面上，旋转表盘将表针调整到零位。\n\n将芯棒放在齿条接缝处，左右调剂差看指针跳动，要求值：≤0.05mm。",
+      "score": 2.173828125,
+      "source_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260331071413_6d60ce93__SOP.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.66014963,
+      "lexical_score": 1.4260723628848073,
+      "fused_score": 0.03225806451612903,
+      "ocr_used": false,
+      "parser_name": "docx_xml",
+      "page_no": null,
+      "ocr_confidence": null,
+      "quality_score": null
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "```markdown\n# 金属地轨安装SOP(非拼接版) SOP 草稿\n\n## 部门\n生产技术部\n\n## 来源文档\n金属地轨安装SOP(非拼接版).docx\n\n## 目的\n本SOP旨在规范金属地轨的安装流程，确保安装精度和质量。\n\n## 适用范围\n适用于生产技术部所有涉及金属地轨安装的项目。\n\n## 前置检查\n- 确认所有工具（如激光投线仪、水平尺、行车等）齐全且处于良好状态。\n- 检查地脚板位置是否已按照布局图确认并标记。\n- 确保安装面无刮伤、无毛刺等不良现象。\n\n## 操作步骤\n### 地轨定位与调平\n1. 使用激光投线仪确认地脚板位置，并画好定位线。\n2. 按照划线位置摆放地脚...",
+    "answer_chars": 681,
+    "citation_count": 2,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "金属地轨安装SOP(非拼接版) SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 2,
+    "document_id": "doc_20260331071413_6d60ce93",
+    "department_id": "dept_production_technology",
+    "department_name": "生产技术部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "金属地轨安装SOP(非拼接版)",
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 2,
+    "rerank_input_count": 2,
+    "rerank_output_count": 2,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

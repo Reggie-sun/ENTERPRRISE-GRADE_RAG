@@ -1,0 +1,30 @@
+{
+  "document_id": "doc_20260401053010_246cace7",
+  "file_name": "WL-SJ-023机械手润滑脂使用标准#A0.docx",
+  "source_path": "/app/data/uploads/doc_20260401053010_246cace7__WL-SJ-023_A0.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 3,
+  "page_count": 1,
+  "normalized_text": "ELLLIH\n伟立机器人\n\n天",
+  "segments": [
+    {
+      "text": "ELLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.7144613862037659
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9998916387557983
+    },
+    {
+      "text": "天",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.09120683372020721
+    }
+  ]
+}

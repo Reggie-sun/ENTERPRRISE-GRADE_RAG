@@ -67,9 +67,9 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
     payload = service.get_config(auth_context=_build_auth_context())
 
     assert payload.query_profiles.fast.top_k_default == 5
-    assert payload.query_profiles.fast.candidate_multiplier == 2
-    assert payload.query_profiles.fast.lexical_top_k == 10
-    assert payload.query_profiles.fast.rerank_top_n == 3
+    assert payload.query_profiles.fast.candidate_multiplier == 4
+    assert payload.query_profiles.fast.lexical_top_k == 20
+    assert payload.query_profiles.fast.rerank_top_n == 5
     assert payload.query_profiles.fast.timeout_budget_seconds == 12.0
     assert payload.query_profiles.accurate.top_k_default == 8
     assert payload.query_profiles.accurate.lexical_top_k == 32

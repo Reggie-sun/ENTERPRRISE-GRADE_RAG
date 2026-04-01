@@ -73,6 +73,10 @@ export interface ChatStreamHandlers {
   onDone?: (response: ChatResponse) => void;
 }
 
+export interface StreamRequestOptions {
+  signal?: AbortSignal;
+}
+
 export interface SopGenerationStreamMeta {
   request_mode: SopGenerationDraftResponse['request_mode'];
   generation_mode: SopGenerationDraftResponse['generation_mode'];
@@ -226,6 +230,16 @@ async function requestWithTimeout<T>(path: string, timeoutMs: number, options: R
   const isFormDataBody = options.body instanceof FormData;  // FormData 由浏览器自动注入 multipart boundary。
   const controller = new AbortController();  // 为请求加可控超时。
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const externalSignal = options.signal;
+  const handleExternalAbort = () => controller.abort();
+
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener('abort', handleExternalAbort, { once: true });
+    }
+  }
 
   if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`);
@@ -250,6 +264,7 @@ async function requestWithTimeout<T>(path: string, timeoutMs: number, options: R
     throw new ApiError('network', `Network error: ${path}`);
   } finally {
     clearTimeout(timeout);
+    externalSignal?.removeEventListener('abort', handleExternalAbort);
   }
 
   let data: unknown;
@@ -431,8 +446,10 @@ export async function updateSystemConfig(payload: SystemConfigUpdateRequest): Pr
 // ========== 运行态汇总 API ==========
 
 /** 读取运行态汇总 */
-export async function getOpsSummary(): Promise<OpsSummaryResponse> {
-  return requestWithTimeout<OpsSummaryResponse>('/ops/summary', OPS_SUMMARY_TIMEOUT_MS);
+export async function getOpsSummary(options: { signal?: AbortSignal } = {}): Promise<OpsSummaryResponse> {
+  return requestWithTimeout<OpsSummaryResponse>('/ops/summary', OPS_SUMMARY_TIMEOUT_MS, {
+    signal: options.signal,
+  });
 }
 
 export async function replayRequestSnapshot(
@@ -507,10 +524,21 @@ async function generateSopStream(
   path: string,
   payload: SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest,
   handlers: SopGenerationStreamHandlers = {},
+  options: StreamRequestOptions = {},
 ): Promise<SopGenerationDraftResponse> {
   const controller = new AbortController();
   const timeout = createAbortTimeout(controller, STREAM_IDLE_TIMEOUT_MS);
   const headers = new Headers({ 'Content-Type': 'application/json' });
+  const externalSignal = options.signal;
+  const handleExternalAbort = () => controller.abort();
+
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener('abort', handleExternalAbort, { once: true });
+    }
+  }
 
   if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`);
@@ -621,7 +649,7 @@ async function generateSopStream(
       }
       timeout.touch();
       buffer += decoder.decode(value, { stream: true });
-      const frames = buffer.split('\n\n');
+      const frames = buffer.split(/\r?\n\r?\n/u);
       buffer = frames.pop() ?? '';
       for (const frame of frames) {
         handleFrame(frame);
@@ -645,6 +673,7 @@ async function generateSopStream(
     throw new ApiError('network', `Stream read failed: ${message}`);
   } finally {
     timeout.clear();
+    externalSignal?.removeEventListener('abort', handleExternalAbort);
     try {
       reader.releaseLock();
     } catch {
@@ -678,22 +707,25 @@ async function generateSopStream(
 export async function generateSopByDocumentStream(
   payload: SopGenerateByDocumentRequest,
   handlers: SopGenerationStreamHandlers = {},
+  options: StreamRequestOptions = {},
 ): Promise<SopGenerationDraftResponse> {
-  return generateSopStream('/sops/generate/document/stream', payload, handlers);
+  return generateSopStream('/sops/generate/document/stream', payload, handlers, options);
 }
 
 export async function generateSopByScenarioStream(
   payload: SopGenerateByScenarioRequest,
   handlers: SopGenerationStreamHandlers = {},
+  options: StreamRequestOptions = {},
 ): Promise<SopGenerationDraftResponse> {
-  return generateSopStream('/sops/generate/scenario/stream', payload, handlers);
+  return generateSopStream('/sops/generate/scenario/stream', payload, handlers, options);
 }
 
 export async function generateSopByTopicStream(
   payload: SopGenerateByTopicRequest,
   handlers: SopGenerationStreamHandlers = {},
+  options: StreamRequestOptions = {},
 ): Promise<SopGenerationDraftResponse> {
-  return generateSopStream('/sops/generate/topic/stream', payload, handlers);
+  return generateSopStream('/sops/generate/topic/stream', payload, handlers, options);
 }
 
 /** 保存 SOP 当前版本 */
@@ -879,10 +911,24 @@ export async function askQuestion(req: ChatRequest): Promise<ChatResponse> {
 }
 
 /** 发起流式问答请求（SSE） */
-export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHandlers = {}): Promise<ChatResponse> {
+export async function askQuestionStream(
+  req: ChatRequest,
+  handlers: ChatStreamHandlers = {},
+  options: StreamRequestOptions = {},
+): Promise<ChatResponse> {
   const controller = new AbortController();  // 复用统一超时逻辑，避免流式请求悬挂。
   const timeout = createAbortTimeout(controller, STREAM_IDLE_TIMEOUT_MS);
   const headers = new Headers({ 'Content-Type': 'application/json' });
+  const externalSignal = options.signal;
+  const handleExternalAbort = () => controller.abort();
+
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener('abort', handleExternalAbort, { once: true });
+    }
+  }
 
   if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`);
@@ -993,7 +1039,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
       }
       timeout.touch();
       buffer += decoder.decode(value, { stream: true });
-      const frames = buffer.split('\n\n');  // SSE 事件之间以空行分隔。
+      const frames = buffer.split(/\r?\n\r?\n/u);  // 同时兼容 LF 与 CRLF 分隔的 SSE 事件。
       buffer = frames.pop() ?? '';  // 留下最后一个不完整帧，等待下一次拼接。
       for (const frame of frames) {
         handleFrame(frame);
@@ -1017,6 +1063,7 @@ export async function askQuestionStream(req: ChatRequest, handlers: ChatStreamHa
     throw new ApiError('network', `Stream read failed: ${message}`);
   } finally {
     timeout.clear();
+    externalSignal?.removeEventListener('abort', handleExternalAbort);
     try {
       reader.releaseLock();
     } catch {

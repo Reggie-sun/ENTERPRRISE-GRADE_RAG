@@ -11,3 +11,4 @@ export { EvidenceSourceSummary } from './EvidenceSourceSummary';
 export { StreamProgressSummary, type StreamProgressMetrics } from './StreamProgressSummary';
 export { Input, Textarea } from './Input';
 export { ResultBox, ResultCard } from './ResultBox';
+export { RetrievalDiagnosticPanel } from './RetrievalDiagnosticPanel';

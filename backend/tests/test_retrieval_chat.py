@@ -1158,6 +1158,7 @@ def test_retrieval_service_uses_hybrid_fusion_to_promote_keyword_hits(tmp_path: 
     settings = build_test_settings(tmp_path).model_copy(
         update={
             "query_fast_top_k_default": 2,
+            "query_fast_candidate_multiplier": 2,
             "query_fast_lexical_top_k_default": 3,
         }
     )
@@ -1360,7 +1361,9 @@ def test_chat_service_persists_hybrid_retrieval_observability_to_trace_and_snaps
         update={
             "retrieval_dynamic_weighting_enabled": True,
             "query_fast_top_k_default": 5,
+            "query_fast_candidate_multiplier": 2,
             "query_fast_lexical_top_k_default": 10,
+            "query_fast_rerank_top_n": 3,
         }
     )
     ensure_data_directories(settings)
@@ -2414,7 +2417,7 @@ def test_retrieval_service_staged_uses_rerank_top_n_when_truncate_is_false(tmp_p
     settings = build_test_settings(tmp_path).model_copy(
         update={
             "query_fast_top_k_default": 5,
-            "query_fast_rerank_top_n_default": 3,
+            "query_fast_rerank_top_n": 3,
         }
     )
     ensure_data_directories(settings)
@@ -2481,7 +2484,7 @@ def test_retrieval_service_staged_triggers_supplemental_with_rerank_top_n_thresh
     settings = build_test_settings(tmp_path).model_copy(
         update={
             "query_fast_top_k_default": 5,
-            "query_fast_rerank_top_n_default": 4,
+            "query_fast_rerank_top_n": 4,
         }
     )
     ensure_data_directories(settings)

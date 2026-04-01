@@ -84,9 +84,9 @@ def test_query_profile_service_resolves_fast_and_accurate_defaults() -> None:
 
     assert fast_profile.mode == "fast"
     assert fast_profile.top_k == 5
-    assert fast_profile.candidate_top_k == 10
-    assert fast_profile.lexical_top_k == 10
-    assert fast_profile.rerank_top_n == 3
+    assert fast_profile.candidate_top_k == 20
+    assert fast_profile.lexical_top_k == 20
+    assert fast_profile.rerank_top_n == 5
     assert fast_profile.timeout_budget_seconds == 12.0
     assert fast_profile.fallback_mode is None
 
@@ -109,9 +109,9 @@ def test_query_profile_service_builds_fast_fallback_from_accurate_profile() -> N
         purpose="chat",
         mode="fast",
         top_k=6,
-        candidate_top_k=12,
-        lexical_top_k=10,
-        rerank_top_n=3,
+        candidate_top_k=24,
+        lexical_top_k=20,
+        rerank_top_n=5,
         timeout_budget_seconds=12.0,
         fallback_mode=None,
     )
@@ -260,11 +260,11 @@ def test_chat_service_defaults_to_fast_profile_when_request_omits_mode_and_top_k
 
     assert fake_retrieval.last_request.mode == "fast"
     assert fake_retrieval.last_request.top_k == 5
-    assert fake_retrieval.last_request.candidate_top_k == 10
+    assert fake_retrieval.last_request.candidate_top_k == 20
     assert fake_generation.last_timeout_seconds == 12.0
     assert fake_generation.last_model_name == "mock"
     assert response.mode == "rag"
-    assert len(response.citations) == 3
+    assert len(response.citations) == 5
 
 
 def test_chat_service_reranks_full_candidate_pool_before_truncating_citations() -> None:
@@ -279,17 +279,17 @@ def test_chat_service_reranks_full_candidate_pool_before_truncating_citations() 
     response = chat_service.answer(ChatRequest(question="数字化部巡检怎么做？"), auth_context=None)
 
     assert fake_retrieval.last_request.top_k == 5
-    assert fake_retrieval.last_request.candidate_top_k == 10
+    assert fake_retrieval.last_request.candidate_top_k == 20
     assert fake_reranker.calls == [
         {
             "query": "数字化部巡检怎么做？",
-            "candidate_count": 10,
-            "top_n": 10,
-            "chunk_ids": [f"chunk_{index}" for index in range(10)],
+            "candidate_count": 12,
+            "top_n": 12,
+            "chunk_ids": [f"chunk_{index}" for index in range(12)],
         }
     ]
-    assert len(response.citations) == 3
-    assert [citation.chunk_id for citation in response.citations] == ["chunk_9", "chunk_8", "chunk_7"]
+    assert len(response.citations) == 5
+    assert [citation.chunk_id for citation in response.citations] == ["chunk_11", "chunk_10", "chunk_9", "chunk_8", "chunk_7"]
 
 
 def _build_sys_admin_context():

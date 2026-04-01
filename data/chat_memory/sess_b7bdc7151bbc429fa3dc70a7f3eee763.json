@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_b7bdc7151bbc429fa3dc70a7f3eee763",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T07:43:23.003098Z",
+  "turns": [
+    {
+      "turn_id": "turn_6d552cfc6527",
+      "asked_at": "2026-04-01T07:43:23.003057Z",
+      "question": "总结这份已上传文档里最相关的内容。",
+      "answer": "无法直接总结这份文档里最相关的内容，因为提供的上下文是不完整的段落和章节标题，没有提供具体内容。不过，根据给出的上下文，文档似乎涉及多个部分的检查和安装，包括引拔梁检查、主手臂部件检查以及主手臂部件安装等。如果需要更详细的信息来总结文档内容，请提供完整的内容。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

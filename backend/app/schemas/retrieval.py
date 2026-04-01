@@ -38,6 +38,82 @@ class RetrievedChunk(BaseModel):  # 定义单条检索结果的结构。
     quality_score: float | None = None  # 诊断字段：通用质量分，当前优先复用 OCR 置信度。
 
 
+class RetrievalQueryStage(BaseModel):
+    raw_query: str = ""
+    normalized_query: str | None = None
+    query_type: str | None = None
+    query_granularity: str | None = None
+    requested_mode: str | None = None
+    effective_mode: str | None = None
+
+
+class RetrievalRoutingStage(BaseModel):
+    is_hybrid: bool = False
+    vector_weight: float | None = None
+    lexical_weight: float | None = None
+    is_document_id_exact: bool = False
+    department_priority_enabled: bool = False
+    structured_routing_applied: bool = False
+
+
+class RetrievalPrimaryRecallStage(BaseModel):
+    vector_count: int = 0
+    lexical_count: int = 0
+    fused_count: int = 0
+    effective_count: int = 0
+    threshold: int | None = None
+    whether_sufficient: bool = False
+
+
+class RetrievalSupplementalRecallStage(BaseModel):
+    triggered: bool = False
+    reason: str | None = None
+    vector_count: int = 0
+    lexical_count: int = 0
+    fused_count: int = 0
+
+
+class FilteredCandidateSummary(BaseModel):
+    document_id: str = ""
+    chunk_id: str = ""
+    filter_reason: str = ""
+    filter_layer: str = ""
+
+
+class RetrievalFilterStage(BaseModel):
+    ocr_quality_filtered_count: int = 0
+    permission_filtered_count: int = 0
+    document_scope_filtered_count: int = 0
+    top_k_truncated_count: int = 0
+    filtered_candidates: list[FilteredCandidateSummary] = Field(default_factory=list)
+
+
+class ResultExplainability(BaseModel):
+    rank: int = 0
+    document_id: str = ""
+    chunk_id: str = ""
+    document_name: str = ""
+    source_scope: str | None = None
+    department_hit: bool = False
+    supplemental_hit: bool = False
+    vector_score: float | None = None
+    lexical_score: float | None = None
+    fused_score: float | None = None
+    final_score: float | None = None
+    selected_via: str | None = None
+    structured_backfill: bool = False
+    structured_backfill_reason: str | None = None
+    why_included: str | None = None
+
+
+class RetrievalFinalizationStage(BaseModel):
+    final_result_count: int = 0
+    returned_top_k: int = 0
+    response_mode: str | None = None
+    backfilled_chunk_count: int = 0
+    result_explanations: list[ResultExplainability] = Field(default_factory=list)
+
+
 class RetrievalDiagnostic(BaseModel):
     """检索诊断结构，记录一次检索请求的完整可观测与可解释信息。"""
 
@@ -62,6 +138,18 @@ class RetrievalDiagnostic(BaseModel):
     # --- observability details ---
     branch_weights: dict[str, Any] | None = None
     stage_durations_ms: dict[str, int] = Field(default_factory=dict)
+
+    # --- staged pipeline blocks ---
+    query_stage: RetrievalQueryStage = Field(default_factory=RetrievalQueryStage)
+    routing_stage: RetrievalRoutingStage = Field(default_factory=RetrievalRoutingStage)
+    primary_recall_stage: RetrievalPrimaryRecallStage = Field(default_factory=RetrievalPrimaryRecallStage)
+    supplemental_recall_stage: RetrievalSupplementalRecallStage = Field(default_factory=RetrievalSupplementalRecallStage)
+    filter_stage: RetrievalFilterStage = Field(default_factory=RetrievalFilterStage)
+    finalization_stage: RetrievalFinalizationStage = Field(default_factory=RetrievalFinalizationStage)
+
+    # --- explainability ---
+    result_explainability: list[ResultExplainability] = Field(default_factory=list)
+    filtered_candidates: list[FilteredCandidateSummary] = Field(default_factory=list)
 
 
 class RetrievalResponse(BaseModel):  # 定义检索接口的响应结构。

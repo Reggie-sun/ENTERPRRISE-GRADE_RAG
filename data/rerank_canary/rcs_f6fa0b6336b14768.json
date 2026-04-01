@@ -1,0 +1,83 @@
+{
+  "sample_id": "rcs_f6fa0b6336b14768",
+  "occurred_at": "2026-04-01T05:26:08.863035Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "query": "解释一下cpps",
+  "mode": "hybrid",
+  "target_id": null,
+  "candidate_count": 5,
+  "rerank_top_n": 3,
+  "route_status": {
+    "provider": "openai_compatible",
+    "model": "BAAI/bge-reranker-v2-m3",
+    "default_strategy": "provider",
+    "failure_cooldown_seconds": 15.0,
+    "effective_provider": "openai_compatible",
+    "effective_model": "BAAI/bge-reranker-v2-m3",
+    "effective_strategy": "provider",
+    "fallback_enabled": true,
+    "lock_active": false,
+    "lock_source": null,
+    "cooldown_remaining_seconds": 0.0,
+    "ready": true,
+    "detail": "OpenAI-compatible reranker requests are succeeding."
+  },
+  "configured_provider": "openai_compatible",
+  "configured_strategy": "provider",
+  "configured_error_message": null,
+  "heuristic_strategy": "heuristic",
+  "provider_candidate_strategy": "provider",
+  "provider_candidate_error_message": null,
+  "summary": {
+    "overlap_count": 1,
+    "top1_same": false,
+    "configured_only_chunk_ids": [
+      "doc_20260401023359_ace477d5-chunk-65",
+      "doc_20260331081535_5d30086d-chunk-18"
+    ],
+    "heuristic_only_chunk_ids": [
+      "doc_20260331081535_5d30086d-chunk-26",
+      "doc_20260331081535_5d30086d-chunk-1"
+    ]
+  },
+  "provider_candidate_summary": {
+    "overlap_count": 1,
+    "top1_same": false,
+    "configured_only_chunk_ids": [
+      "doc_20260401023359_ace477d5-chunk-65",
+      "doc_20260331081535_5d30086d-chunk-18"
+    ],
+    "heuristic_only_chunk_ids": [
+      "doc_20260331081535_5d30086d-chunk-26",
+      "doc_20260331081535_5d30086d-chunk-1"
+    ]
+  },
+  "recommendation": {
+    "decision": "provider_active",
+    "should_switch_default_strategy": false,
+    "message": "provider 已作为默认主路径运行，无需再切换 default_strategy。"
+  },
+  "details": {
+    "configured_top_chunk_ids": [
+      "doc_20260401023359_ace477d5-chunk-65",
+      "doc_20260331081535_5d30086d-chunk-27",
+      "doc_20260331081535_5d30086d-chunk-18"
+    ],
+    "heuristic_top_chunk_ids": [
+      "doc_20260331081535_5d30086d-chunk-26",
+      "doc_20260331081535_5d30086d-chunk-27",
+      "doc_20260331081535_5d30086d-chunk-1"
+    ],
+    "provider_candidate_top_chunk_ids": [
+      "doc_20260401023359_ace477d5-chunk-65",
+      "doc_20260331081535_5d30086d-chunk-27",
+      "doc_20260331081535_5d30086d-chunk-18"
+    ]
+  }
+}

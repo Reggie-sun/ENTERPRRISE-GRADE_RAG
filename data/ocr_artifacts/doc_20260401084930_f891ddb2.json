@@ -1,0 +1,1020 @@
+{
+  "document_id": "doc_20260401084930_f891ddb2",
+  "file_name": "皮带装配S0P.docx",
+  "source_path": "/app/data/uploads/doc_20260401084930_f891ddb2__S0P.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 168,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\nQ\n9\n0\n0\n一\n\n轴承\n惰轮衬套\n轴承\n同步带惰轮\n惰轮轴\n轴用弹性\n挡圈\n轴用弹性\n挡圈\n\n润滑油脂\n美孚力士EPO\n\n规格清单表\n惰轮\n轴承\n0\n0\n治具\n衬套\n液压机一\n\n7\nC\n-\n-\n1\n0\nC\n0\n\n-\n\n皮带\n皮带压板固定端\n0\n皮带压板调节端\n1\n中T\n\n0\n中\n\n=\n\n甲\n9\n\n。\n0。。\n0\n©\nO\n。\n。0\n。\n。\n。0\no\n。\n0\n2\n0\n0\n中\nQ\nQ\nO\n0\nO\n\n轴承\n情轮衬套\n轴承\n同步带情轮\n情轮悬臂销轴\n轴用弹性\n挡圈\n\n润滑油服\n美学力士0\n\n手扳压力机\n四\n个\nw\n中\n治具\n\n台\n卡簧钳\n\n0\n情轮连\n-\n接件\n2\n工\n\ni\n=\n\n门\nO\n0\n\n皮带\nC\n皮带压板调节端\nA\nG。\nQ\n9\n皮带压板固定端\n\n円\n\n-\nQ\n\nG\n.\nQ\n中\n0\n:\n0\nO\n0\nQ\n口\nL\n的\n(。。。)\n：\nQ\nD\n日\n0\nD\nD\n0\nQ\nD\n-\nQ\nD\n0\n®\nD\n0\n2\n\n同步带情\n轮\n情轮衬套\n轴承\n轴承\n\n内六角止\n动螺丝\n内六角止\n皮带轮固\n动螺丝\n定架\n皮带轮轴\n惰轮轴隔\n圈\n惰轮轴隔\n圈\n\n0\n\n1\n二\n\n皮带压板固定端\n皮带接口\n皮带\nC\n皮带压板调节端\n\nBelt opening 1\nBelt opening 2\n\n0\n\n'",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.3174116015434265
+    },
+    {
+      "text": "9",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.13883236050605774
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.12597858905792236
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.4602408707141876
+    },
+    {
+      "text": "一",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.39688825607299805
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.9998775720596313
+    },
+    {
+      "text": "惰轮衬套",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.995345950126648
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.9998956918716431
+    },
+    {
+      "text": "同步带惰轮",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.9976813197135925
+    },
+    {
+      "text": "惰轮轴",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.988563597202301
+    },
+    {
+      "text": "轴用弹性",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.998977780342102
+    },
+    {
+      "text": "挡圈",
+      "page_no": null,
+      "line_no": 15,
+      "confidence": 0.9869515299797058
+    },
+    {
+      "text": "轴用弹性",
+      "page_no": null,
+      "line_no": 16,
+      "confidence": 0.9989156126976013
+    },
+    {
+      "text": "挡圈",
+      "page_no": null,
+      "line_no": 17,
+      "confidence": 0.9979676008224487
+    },
+    {
+      "text": "润滑油脂",
+      "page_no": null,
+      "line_no": 18,
+      "confidence": 0.9982378482818604
+    },
+    {
+      "text": "美孚力士EPO",
+      "page_no": null,
+      "line_no": 19,
+      "confidence": 0.9691852927207947
+    },
+    {
+      "text": "规格清单表",
+      "page_no": null,
+      "line_no": 20,
+      "confidence": 0.9983938336372375
+    },
+    {
+      "text": "惰轮",
+      "page_no": null,
+      "line_no": 21,
+      "confidence": 0.9930809140205383
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 22,
+      "confidence": 0.9995889663696289
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 23,
+      "confidence": 0.2886119782924652
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 24,
+      "confidence": 0.2810727059841156
+    },
+    {
+      "text": "治具",
+      "page_no": null,
+      "line_no": 25,
+      "confidence": 0.9984363317489624
+    },
+    {
+      "text": "衬套",
+      "page_no": null,
+      "line_no": 26,
+      "confidence": 0.9951750636100769
+    },
+    {
+      "text": "液压机一",
+      "page_no": null,
+      "line_no": 27,
+      "confidence": 0.8940990567207336
+    },
+    {
+      "text": "7",
+      "page_no": null,
+      "line_no": 28,
+      "confidence": 0.06486762315034866
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 29,
+      "confidence": 0.27864739298820496
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 30,
+      "confidence": 0.34983932971954346
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 31,
+      "confidence": 0.11126081645488739
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 32,
+      "confidence": 0.15956608951091766
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 33,
+      "confidence": 0.3448176980018616
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 34,
+      "confidence": 0.3663008213043213
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 35,
+      "confidence": 0.2206442803144455
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 36,
+      "confidence": 0.5434160232543945
+    },
+    {
+      "text": "皮带",
+      "page_no": null,
+      "line_no": 37,
+      "confidence": 0.9975871443748474
+    },
+    {
+      "text": "皮带压板固定端",
+      "page_no": null,
+      "line_no": 38,
+      "confidence": 0.9901660084724426
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 39,
+      "confidence": 0.7574206590652466
+    },
+    {
+      "text": "皮带压板调节端",
+      "page_no": null,
+      "line_no": 40,
+      "confidence": 0.9976246953010559
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 41,
+      "confidence": 0.12205764651298523
+    },
+    {
+      "text": "中T",
+      "page_no": null,
+      "line_no": 42,
+      "confidence": 0.37525588274002075
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 43,
+      "confidence": 0.1524772047996521
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 44,
+      "confidence": 0.09341111779212952
+    },
+    {
+      "text": "=",
+      "page_no": null,
+      "line_no": 45,
+      "confidence": 0.2719341814517975
+    },
+    {
+      "text": "甲",
+      "page_no": null,
+      "line_no": 46,
+      "confidence": 0.7928498983383179
+    },
+    {
+      "text": "9",
+      "page_no": null,
+      "line_no": 47,
+      "confidence": 0.12309806048870087
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 48,
+      "confidence": 0.6480869054794312
+    },
+    {
+      "text": "0。。",
+      "page_no": null,
+      "line_no": 49,
+      "confidence": 0.7246795296669006
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 50,
+      "confidence": 0.2930246591567993
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 51,
+      "confidence": 0.42196857929229736
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 52,
+      "confidence": 0.7687890529632568
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 53,
+      "confidence": 0.9147084951400757
+    },
+    {
+      "text": "。0",
+      "page_no": null,
+      "line_no": 54,
+      "confidence": 0.3695545196533203
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 55,
+      "confidence": 0.5244640707969666
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 56,
+      "confidence": 0.6712456345558167
+    },
+    {
+      "text": "。0",
+      "page_no": null,
+      "line_no": 57,
+      "confidence": 0.2922935485839844
+    },
+    {
+      "text": "o",
+      "page_no": null,
+      "line_no": 58,
+      "confidence": 0.32085850834846497
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 59,
+      "confidence": 0.17914734780788422
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 60,
+      "confidence": 0.5614654421806335
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 61,
+      "confidence": 0.08672457188367844
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 62,
+      "confidence": 0.2563938498497009
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 63,
+      "confidence": 0.504737138748169
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 64,
+      "confidence": 0.16294310986995697
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 65,
+      "confidence": 0.23548151552677155
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 66,
+      "confidence": 0.22183790802955627
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 67,
+      "confidence": 0.3775710463523865
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 68,
+      "confidence": 0.3863677978515625
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 69,
+      "confidence": 0.48010072112083435
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 70,
+      "confidence": 0.9997848272323608
+    },
+    {
+      "text": "情轮衬套",
+      "page_no": null,
+      "line_no": 71,
+      "confidence": 0.9713582992553711
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 72,
+      "confidence": 0.9997670650482178
+    },
+    {
+      "text": "同步带情轮",
+      "page_no": null,
+      "line_no": 73,
+      "confidence": 0.9704552888870239
+    },
+    {
+      "text": "情轮悬臂销轴",
+      "page_no": null,
+      "line_no": 74,
+      "confidence": 0.98637455701828
+    },
+    {
+      "text": "轴用弹性",
+      "page_no": null,
+      "line_no": 75,
+      "confidence": 0.998927891254425
+    },
+    {
+      "text": "挡圈",
+      "page_no": null,
+      "line_no": 76,
+      "confidence": 0.9679597616195679
+    },
+    {
+      "text": "润滑油服",
+      "page_no": null,
+      "line_no": 77,
+      "confidence": 0.7645562887191772
+    },
+    {
+      "text": "美学力士0",
+      "page_no": null,
+      "line_no": 78,
+      "confidence": 0.66419517993927
+    },
+    {
+      "text": "手扳压力机",
+      "page_no": null,
+      "line_no": 79,
+      "confidence": 0.9565402269363403
+    },
+    {
+      "text": "四",
+      "page_no": null,
+      "line_no": 80,
+      "confidence": 0.06898924708366394
+    },
+    {
+      "text": "个",
+      "page_no": null,
+      "line_no": 81,
+      "confidence": 0.8903012275695801
+    },
+    {
+      "text": "w",
+      "page_no": null,
+      "line_no": 82,
+      "confidence": 0.5815132856369019
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 83,
+      "confidence": 0.5828287601470947
+    },
+    {
+      "text": "治具",
+      "page_no": null,
+      "line_no": 84,
+      "confidence": 0.999325156211853
+    },
+    {
+      "text": "台",
+      "page_no": null,
+      "line_no": 85,
+      "confidence": 0.3022741973400116
+    },
+    {
+      "text": "卡簧钳",
+      "page_no": null,
+      "line_no": 86,
+      "confidence": 0.999117374420166
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 87,
+      "confidence": 0.7558286190032959
+    },
+    {
+      "text": "情轮连",
+      "page_no": null,
+      "line_no": 88,
+      "confidence": 0.9551048278808594
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 89,
+      "confidence": 0.1009201854467392
+    },
+    {
+      "text": "接件",
+      "page_no": null,
+      "line_no": 90,
+      "confidence": 0.9996851682662964
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 91,
+      "confidence": 0.2244604527950287
+    },
+    {
+      "text": "工",
+      "page_no": null,
+      "line_no": 92,
+      "confidence": 0.13842898607254028
+    },
+    {
+      "text": "i",
+      "page_no": null,
+      "line_no": 93,
+      "confidence": 0.10952115058898926
+    },
+    {
+      "text": "=",
+      "page_no": null,
+      "line_no": 94,
+      "confidence": 0.3629520833492279
+    },
+    {
+      "text": "门",
+      "page_no": null,
+      "line_no": 95,
+      "confidence": 0.14332693815231323
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 96,
+      "confidence": 0.43456652760505676
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 97,
+      "confidence": 0.40436166524887085
+    },
+    {
+      "text": "皮带",
+      "page_no": null,
+      "line_no": 98,
+      "confidence": 0.9991509318351746
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 99,
+      "confidence": 0.48373398184776306
+    },
+    {
+      "text": "皮带压板调节端",
+      "page_no": null,
+      "line_no": 100,
+      "confidence": 0.9995571970939636
+    },
+    {
+      "text": "A",
+      "page_no": null,
+      "line_no": 101,
+      "confidence": 0.11633075773715973
+    },
+    {
+      "text": "G。",
+      "page_no": null,
+      "line_no": 102,
+      "confidence": 0.3220368027687073
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 103,
+      "confidence": 0.26319777965545654
+    },
+    {
+      "text": "9",
+      "page_no": null,
+      "line_no": 104,
+      "confidence": 0.24417828023433685
+    },
+    {
+      "text": "皮带压板固定端",
+      "page_no": null,
+      "line_no": 105,
+      "confidence": 0.9977157711982727
+    },
+    {
+      "text": "円",
+      "page_no": null,
+      "line_no": 106,
+      "confidence": 0.25272828340530396
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 107,
+      "confidence": 0.09017985314130783
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 108,
+      "confidence": 0.4394505023956299
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 109,
+      "confidence": 0.10034354776144028
+    },
+    {
+      "text": ".",
+      "page_no": null,
+      "line_no": 110,
+      "confidence": 0.49266737699508667
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 111,
+      "confidence": 0.15775452554225922
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 112,
+      "confidence": 0.0890587717294693
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 113,
+      "confidence": 0.5064197182655334
+    },
+    {
+      "text": ":",
+      "page_no": null,
+      "line_no": 114,
+      "confidence": 0.3308919370174408
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 115,
+      "confidence": 0.3402620851993561
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 116,
+      "confidence": 0.31453776359558105
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 117,
+      "confidence": 0.7295527458190918
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 118,
+      "confidence": 0.17982229590415955
+    },
+    {
+      "text": "口",
+      "page_no": null,
+      "line_no": 119,
+      "confidence": 0.26055654883384705
+    },
+    {
+      "text": "L",
+      "page_no": null,
+      "line_no": 120,
+      "confidence": 0.17273029685020447
+    },
+    {
+      "text": "的",
+      "page_no": null,
+      "line_no": 121,
+      "confidence": 0.2690766155719757
+    },
+    {
+      "text": "(。。。)",
+      "page_no": null,
+      "line_no": 122,
+      "confidence": 0.737683892250061
+    },
+    {
+      "text": "：",
+      "page_no": null,
+      "line_no": 123,
+      "confidence": 0.2358914613723755
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 124,
+      "confidence": 0.735150933265686
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 125,
+      "confidence": 0.3141404986381531
+    },
+    {
+      "text": "日",
+      "page_no": null,
+      "line_no": 126,
+      "confidence": 0.16698920726776123
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 127,
+      "confidence": 0.28750544786453247
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 128,
+      "confidence": 0.29110729694366455
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 129,
+      "confidence": 0.27918314933776855
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 130,
+      "confidence": 0.38251712918281555
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 131,
+      "confidence": 0.4417964816093445
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 132,
+      "confidence": 0.27918314933776855
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 133,
+      "confidence": 0.5603162050247192
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 134,
+      "confidence": 0.5883818864822388
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 135,
+      "confidence": 0.3677361309528351
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 136,
+      "confidence": 0.44175174832344055
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 137,
+      "confidence": 0.2079082876443863
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 138,
+      "confidence": 0.2251044660806656
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 139,
+      "confidence": 0.2875294089317322
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 140,
+      "confidence": 0.08079388737678528
+    },
+    {
+      "text": "同步带情",
+      "page_no": null,
+      "line_no": 141,
+      "confidence": 0.8861616253852844
+    },
+    {
+      "text": "轮",
+      "page_no": null,
+      "line_no": 142,
+      "confidence": 0.9999432563781738
+    },
+    {
+      "text": "情轮衬套",
+      "page_no": null,
+      "line_no": 143,
+      "confidence": 0.9147927761077881
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 144,
+      "confidence": 0.9993221163749695
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 145,
+      "confidence": 0.9994634389877319
+    },
+    {
+      "text": "内六角止",
+      "page_no": null,
+      "line_no": 146,
+      "confidence": 0.9977028369903564
+    },
+    {
+      "text": "动螺丝",
+      "page_no": null,
+      "line_no": 147,
+      "confidence": 0.9994540214538574
+    },
+    {
+      "text": "内六角止",
+      "page_no": null,
+      "line_no": 148,
+      "confidence": 0.9963506460189819
+    },
+    {
+      "text": "皮带轮固",
+      "page_no": null,
+      "line_no": 149,
+      "confidence": 0.998248279094696
+    },
+    {
+      "text": "动螺丝",
+      "page_no": null,
+      "line_no": 150,
+      "confidence": 0.9984447360038757
+    },
+    {
+      "text": "定架",
+      "page_no": null,
+      "line_no": 151,
+      "confidence": 0.9968777894973755
+    },
+    {
+      "text": "皮带轮轴",
+      "page_no": null,
+      "line_no": 152,
+      "confidence": 0.9991028308868408
+    },
+    {
+      "text": "惰轮轴隔",
+      "page_no": null,
+      "line_no": 153,
+      "confidence": 0.9625164270401001
+    },
+    {
+      "text": "圈",
+      "page_no": null,
+      "line_no": 154,
+      "confidence": 0.997627317905426
+    },
+    {
+      "text": "惰轮轴隔",
+      "page_no": null,
+      "line_no": 155,
+      "confidence": 0.8948526978492737
+    },
+    {
+      "text": "圈",
+      "page_no": null,
+      "line_no": 156,
+      "confidence": 0.9978682994842529
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 157,
+      "confidence": 0.12017624825239182
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 158,
+      "confidence": 0.19500862061977386
+    },
+    {
+      "text": "二",
+      "page_no": null,
+      "line_no": 159,
+      "confidence": 0.10570927709341049
+    },
+    {
+      "text": "皮带压板固定端",
+      "page_no": null,
+      "line_no": 160,
+      "confidence": 0.9933695793151855
+    },
+    {
+      "text": "皮带接口",
+      "page_no": null,
+      "line_no": 161,
+      "confidence": 0.9425821304321289
+    },
+    {
+      "text": "皮带",
+      "page_no": null,
+      "line_no": 162,
+      "confidence": 0.9987510442733765
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 163,
+      "confidence": 0.1364632397890091
+    },
+    {
+      "text": "皮带压板调节端",
+      "page_no": null,
+      "line_no": 164,
+      "confidence": 0.9953378438949585
+    },
+    {
+      "text": "Belt opening 1",
+      "page_no": null,
+      "line_no": 165,
+      "confidence": 0.9643024802207947
+    },
+    {
+      "text": "Belt opening 2",
+      "page_no": null,
+      "line_no": 166,
+      "confidence": 0.9840071797370911
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 167,
+      "confidence": 0.12873275578022003
+    },
+    {
+      "text": "'",
+      "page_no": null,
+      "line_no": 168,
+      "confidence": 0.7555674910545349
+    }
+  ]
+}

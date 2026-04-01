@@ -1,0 +1,165 @@
+{
+  "snapshot_id": "rsp_99cd49870a474eb1",
+  "trace_id": "trc_retrieval_c4e068ce1f444136",
+  "request_id": "req_retrieval_62f91002ce4e4b52",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T03:46:50.315223Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260401034536_c635304a",
+  "request": {
+    "query": "这份文档主要讲了什么？",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": "doc_20260401034536_c635304a"
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "这份文档主要讲了什么？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-1",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "710Mpa,且硬度值内层大于外层。因膜层有空隙，可吸附各种润滑剂，增加了减磨能力。膜层导热性差，熔点高达2050℃，在大气中有较高的抗腐蚀能力。\n适用范围：主要用于要求耐磨、耐热、绝缘铝合金零件上，我司此项工艺主要用于运动部件的铝合金，例如皮带轮等。\n6.氧化膜膜层质量要求\n6.1 膜层应连续，均匀、细致、完整。\n6.2膜层颜色\n6.2.1经热水封闭的膜层应为本色或乳白色，抛光件膜层应为光亮的乳",
+      "score": 0.9841269841269842,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.38260108,
+      "lexical_score": 2.6384355743783354,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-0",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "铝合金氧化标准\t文件编号\tWI-SJ-022\n版 本 号\tA/0\n页    次\t4\n生效日期\t2017-06-12\n目的\n提供设计依据，规范铝合金氧化标准、检验标准，。\n适用范围\n公司委外氧化或采购的铝合金工件\n职责\n生产技术部：  负责本标准的制定和优化；\n研发部/项目组：按照此标准选定相应的氧化工艺；\n品质保障部：  负责按照标准要求进行检验；\n采购管理部：  负责要求供应商按照本标准要求执行",
+      "score": 0.9838709677419354,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.4180364,
+      "lexical_score": 2.4716114145518,
+      "fused_score": 0.03225806451612903
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-4",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "性检测报告或供应商提供样件我司自行进行耐腐性检测（通过第三方）：\n耐腐蚀性标准要求参见6.5耐腐蚀性实验要求。\n8.图纸技术要求表述\n8.1普通阳极氧化\n表面阳极氧化处理，颜色：颜色+色号（必要时）\n8.2 硬质阳极氧化\n表面硬质阳极氧化处理，颜色：颜色+色号（必要时）\n编制\t审核\t批准\n\n修订页\n\n版本\t日期\t章节\t页码\t修改范围及依据\nA/0\t2017.06.12\tALL\t4\t新制定\n\nI\n\n",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.4427551,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-3",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "续喷雾，测试时间16小时。测试结果按照GB/T 6461-2002进行评级，评级结果达到9级及以上（即：除样品边缘外的腐蚀面积不大于表面积的0.1%）为合格。\n6.5.2滴碱试验\n在35+1℃条件下，将大约10mg、100g/L的氢氧化钠溶液滴至试样样件表面，目视观察液滴处，直至产生腐蚀气泡，记录腐蚀气泡时间，气泡产生时间应≥50S。\n注：膜层耐腐蚀性测试优先选择CASS试验和滴碱试验，CASS试",
+      "score": 0.4765625,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.37651402,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-2",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "厚度的2/3；向外部生长\n约总厚度的1/3。\n例如：氧化膜厚为10um的普通阳极氧化，零件尺寸会\n向外长大约3-3.5um.\n■硬质阳极氧化膜厚说明：\n氧化层以零件表面为中心，向内、外方向等厚生长。\n例如：对于氧化厚度20μm的硬质阳极氧化，零件\n向外“长大”约10μm，向内“长大”约10μm。\n6.4.2我司常用铝合金氧化膜厚要求\n膜厚测量工具：选用ED-300涡流测厚仪\n6.4.3封闭质量\n氧",
+      "score": 0.46923076923076923,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.3724729,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "这份文档主要讲了什么？",
+    "query_type": "fixed",
+    "query_granularity": "doc_overview",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": true,
+    "department_priority_enabled": false,
+    "structured_routing_applied": false,
+    "backfilled_chunk_count": 0,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 5
+    },
+    "filter_counts": {},
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {}
+  }
+}

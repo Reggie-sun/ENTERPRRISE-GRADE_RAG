@@ -116,7 +116,7 @@ def _persist_openai_reranker_route(system_config_service: SystemConfigService) -
     system_config_service.update_config(
         SystemConfigUpdateRequest(
             query_profiles=QueryProfilesConfig(
-                fast=QueryModeConfig(top_k_default=5, candidate_multiplier=2, lexical_top_k=10, rerank_top_n=3, timeout_budget_seconds=12.0),
+                fast=QueryModeConfig(top_k_default=5, candidate_multiplier=4, lexical_top_k=20, rerank_top_n=5, timeout_budget_seconds=12.0),
                 accurate=QueryModeConfig(top_k_default=8, candidate_multiplier=4, lexical_top_k=32, rerank_top_n=5, timeout_budget_seconds=24.0),
             ),
             model_routing=ModelRoutingConfig(

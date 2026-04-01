@@ -1,0 +1,45 @@
+{
+  "session_id": "sess_45d6674d365c47168bbfc14bd7a785a1",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T08:46:50.386146Z",
+  "turns": [
+    {
+      "turn_id": "turn_4deaed47e42a",
+      "asked_at": "2026-04-01T08:31:08.856886Z",
+      "question": "本部门最近更新了哪些 SOP 或处理资料？",
+      "answer": "无法从提供的上下文中找到关于本部门最近更新的SOP或处理资料的具体信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_eef7cd0f21f0",
+      "asked_at": "2026-04-01T08:45:50.630216Z",
+      "question": "本部门最近更新了哪些 SOP 或处理资料？",
+      "answer": "无法从提供的上下文中找到关于本部门最近更新的SOP或处理资料的具体信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_76500b25ce02",
+      "asked_at": "2026-04-01T08:46:00.332830Z",
+      "question": "解释一下cpps",
+      "answer": "根据提供的上下文，CPS似乎是指CPS梳妆片，它被用来扣入CPS拖链连接座的凹槽处。具体来说，这涉及到两个部分：移动端和固定端。移动端和固定端的CPS梳妆片都需要按照特定的方向插入到对应的凹槽中，并且需要使用适当的工具（如内六角扳手和开口扳手）来紧固螺丝，确保安装正确无误。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_035b7b93c29a",
+      "asked_at": "2026-04-01T08:46:50.386132Z",
+      "question": "本部门最近更新了哪些 SOP 或处理资料？",
+      "answer": "无法从提供的上下文中找到关于本部门最近更新的SOP或处理资料的具体信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

@@ -121,14 +121,19 @@ export function OpsPage() {
   const [replayResultBySnapshotId, setReplayResultBySnapshotId] = useState<Record<string, RequestSnapshotReplayResponse>>({});
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const loadSummary = async () => {
       setStatus('loading');
       setError('');
       try {
-        const payload = await getOpsSummary();
+        const payload = await getOpsSummary({ signal: controller.signal });
         setSummary(payload);
         setStatus('success');
       } catch (err) {
+        if (controller.signal.aborted) {
+          return;
+        }
         setSummary(null);
         setStatus('error');
         setError(formatApiError(err, '运行态汇总'));
@@ -136,6 +141,10 @@ export function OpsPage() {
     };
 
     void loadSummary();
+
+    return () => {
+      controller.abort();
+    };
   }, [refreshTick]);
 
   const queueTone = summary?.queue.available
@@ -647,6 +656,96 @@ export function OpsPage() {
                 <p className="m-0 mt-1">last failed: {formatLocalTime(item.last_failed_at)}</p>
               </div>
             ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-12 gap-5">
+        <Card className="col-span-12">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="m-0 text-xl font-semibold text-ink">检索摘要</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                这里把最近窗口里的检索模式、补充召回触发率和过滤情况单独拉出来，方便我们快速判断“命中差”到底是召回不足、过滤过重，还是补充策略没接住。
+              </p>
+            </div>
+            <StatusPill tone={(summary?.retrieval.sample_size ?? 0) > 0 ? 'ok' : 'default'}>
+              {(summary?.retrieval.sample_size ?? 0) > 0 ? `${summary?.retrieval.sample_size ?? 0} 条样本` : '暂无检索样本'}
+            </StatusPill>
+          </div>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">检索模式</strong>
+                <Route className="h-4 w-4 text-accent-deep" />
+              </div>
+              <p className="m-0 mt-4 text-sm text-ink-soft">
+                hybrid {renderNullable(summary?.retrieval.hybrid_count)} / qdrant {renderNullable(summary?.retrieval.qdrant_count)}
+              </p>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                样本总数：{renderNullable(summary?.retrieval.sample_size)}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">补充召回</strong>
+                <StatusPill tone={(summary?.retrieval.supplemental_triggered_count ?? 0) > 0 ? 'warn' : 'default'}>
+                  {(summary?.retrieval.supplemental_triggered_count ?? 0) > 0 ? '已触发' : '未触发'}
+                </StatusPill>
+              </div>
+              <p className="m-0 mt-4 text-3xl font-serif text-ink">
+                {summary?.retrieval.supplemental_triggered_count ?? '-'}
+              </p>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                触发率：{summary ? `${Math.round((summary.retrieval.supplemental_trigger_rate || 0) * 100)}%` : '-'}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">候选规模</strong>
+                <Gauge className="h-4 w-4 text-accent-deep" />
+              </div>
+              <p className="m-0 mt-4 text-3xl font-serif text-ink">
+                {summary?.retrieval.average_candidate_count ?? '-'}
+              </p>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                平均最终返回：{renderNullable(summary?.retrieval.average_final_result_count)}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">过滤情况</strong>
+                <AlertTriangle className="h-4 w-4 text-accent-deep" />
+              </div>
+              <p className="m-0 mt-4 text-sm text-ink-soft">
+                OCR 过滤：{renderNullable(summary?.retrieval.ocr_filtered_count)}
+              </p>
+              <p className="m-0 mt-2 text-sm text-ink-soft">
+                权限过滤：{renderNullable(summary?.retrieval.permission_filtered_count)}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.82)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <strong className="text-ink">高频 Query 类型</strong>
+                <Workflow className="h-4 w-4 text-accent-deep" />
+              </div>
+              {summary?.retrieval.top_query_types.length ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {summary.retrieval.top_query_types.map((item) => (
+                    <StatusPill key={item} tone="default">
+                      {item}
+                    </StatusPill>
+                  ))}
+                </div>
+              ) : (
+                <p className="m-0 mt-4 text-sm text-ink-soft">最近窗口内还没有可用的 query_type 样本。</p>
+              )}
+            </div>
           </div>
         </Card>
       </section>

@@ -1,0 +1,24 @@
+{
+  "document_id": "doc_20260401053010_1c8fa34f",
+  "file_name": "WL-SJ-020#皮带安装张力标准#A1.docx",
+  "source_path": "/app/data/uploads/doc_20260401053010_1c8fa34f__WL-SJ-020_A1.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 2,
+  "page_count": 1,
+  "normalized_text": "ELLLIH\n伟立机器人",
+  "segments": [
+    {
+      "text": "ELLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.7144613862037659
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9998916387557983
+    }
+  ]
+}

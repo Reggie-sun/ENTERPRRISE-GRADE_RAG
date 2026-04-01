@@ -1,0 +1,2994 @@
+{
+  "document_id": "doc_20260401084714_fa3b8bf6",
+  "file_name": "全球的尺寸和公差的规定.pdf",
+  "source_path": "/app/data/uploads/doc_20260401084714_fa3b8bf6__document.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 497,
+  "page_count": 19,
+  "normalized_text": "GD&T（形位公差）简解\n\nb)\n轮廓度中若表示的公差要求适用范围不是整个轮廓时，应标注出\n其范围。见图9标注（仅GM标准）\nO\nR80\nD\n0.12EF\nAB\n8±0.1\n0.1EF\nR82\nBC\n0.05 EF\n75°\nB\nC\nC←+D\nR8\nR12\n日\n10\n4\n0\n78.8\n图13\n\nb）基准要素是中心要素时，符号中的连线应与尺寸线对齐。\nA\n(a)\n(b)\n(c)\nD\n回\n(d)\n(e)\n(f)\n图16\n\n三基面体系 Datum Refere nce Frame 一三个相互垂直的理想\n(基准)平面构成的空间直角坐标系。见图21。\nDirectlon of easurenents-\n坐标方向\n90°\n90°\n90\n上\n基准平面\nDarua Planes\n图21\n\n示例(图26):\n二个点目标\n和\n一个线目标\n构成基准\nO\n图纸标注\nIntorrotorlon说明\nDrarlna\nur\n-A-\n20.0\n-Llne contact A3\n线目标A3接触\n60.0\nL\n20.0\n--1\n120.0\n点目标A1,A2\n-Polnt contact Al. A2\n接触\n图29\n用基准目标来体现基准，能提高基准的定位精度。\n\n直线度\n给一个方向\n给二个方向\nOra-lno collout\nOro-tno callovt\n0.\n10.2\n2\naiLon\nQ.1\nroloronc.\nzon\nthtelonlr\nB\nO.1 tolrance zone\n0.2tolranc• zone\nEochlongltudln\nrh\nsurface\nbotvoon lines ot\nbetenLtnot\noorollol\neach plone A\noch plon B\nltnoe\n90\nrho\nrlaht\nhond vlo\n图 31两平行平面\n图 32\n两组相互垂直的两平行平面\n若系给定平面上线的直线度（如刻度线），则公差带为两平行\n直线。\n\n直线度（轴线)\n平面度\nDravino collout\n015.9\nDrolno collour\n10.1\n任意方向\n0.03\nF016.00\nLo.o3 diametortoleronc zon\nL16.036oundory\nThe derived oxte of h octuolfoature\nauet\nithtn\nocrlindhicalcroieranc\nreotur\nlz.\nAddtrlqnatl.och\nne urfoc uat b\nTho eurfac. uetlle boteeon\nclrculor eieent\n1o\nh.ooctfiattailx.\nparollol olonos o.l apart.\nlthin\n图33\n一个圆柱\n图34\n两平行平面\n\n圆度\nOrolno coliour\n010.03\nO10.03\n0.03\n014.3\nCYLINOER\nCONE\nSPHERE\nIntorprototion\nA\nA\n7\nA\nA\nA\nCYLINDER\nCONE\nSPHERE\nEoch ctrculor oleaent of th urfoce in\nanr plone perpendicutor to  coon oxls\nmuet\nbe.lthtn thesoectflad\nrolerance.of\nslz\nand\nuetlle\nbetveon\n1\nconcontrlc\nSECTION A-A\ncircloe.\none hoving:o rodtu0.o3 1orger\nthan\nthe other.\n图35两同心圆\n\n面对线垂直度\n线对线垂直度\nJroing coliout\nDrolno calloct\n110.1A\n0.2A\nEACH RADIAL ELEMENT\n:\n1\nnteroretatlon\n0.1vld.totronc.\nzonobeienLln\n0ot0 x1A\n0.2 id seroendicular\ntolerancezonebeteen\n90\nolones\n心\n1\nEocn rodlol\nlntofin.rfoc.u=r\n(o(10(.io0r1)h1cn\nor.\nporpendtculor\n1。1n010x1.\nYhi callout\nnot control runout.\nDatun\ndo\nax1\n图44\n两平行平面\n图 45两平行平面\n\n线对面垂直度\n轴线对面垂直度\nDroinocol.out\nDrovlng coliout\n0.2A\n10.2A\nEACH ELEMENT\nT\n20.0\n给定平面上线\n19.0\n4\n任意方向\nIntorpratotlon.\n0.2td oerpondicolortty\ntatanancozonebei=oon1tne\n0.2d101\noorp•ndiculorit\n--\nToleronce zon•\n1\nI1\notur\nnoloht\n-Flotnos not\n-Do1u\nconirollod\nolon\nA\nhTht\noecificotton\nPosstbl.\nortltud\nDotu\nplone人\nofrh\nfoture\noxL\n图46\n两平行直线\n图47\n一个圆柱\n\n线对线平行度\nDrovinc collour\nInrororetotton\n0.1A\nPosstble ottitude\nof thefeoture oxli\n任意方向\n0.1d10otr\nporotlolis\n1oleroncezone\nDatuaxlA-\nstobli=hed br ooo\nhich contacte dio .\nRFS.\nThe feotur oxl ut lle irhin o cylindrtcol\nox1.\n图 49\n一个圆柱\n\n轴线的位置度(任意方向)\nDralng callout\nGoglnterprototion\n00.4\n024.8 000\n024.0-24.4\n0.4MAM\nDatua axls A.\n(n gag\n15.05\n15.05000\n图\n52\n一个圆柱\n右图是用量规来描述零件的检测，详见公差原则。\n我国 GB 标准将此类图样一般用同轴度标注。\n\n面的位置度\nOrarino colloct\n10.2\n10.0\n0.15SAS\n-A-\nIntorprototton\nPormlaetblolocattonfor\nconrr ptonolot\nO.i5 rolerance zone RFs. auollr\ndlspoed about datua center olone\nConrer olon\nof\ndoru.RFS\n图53\n两平行平面\n我国 GB 标准将此类图样一般用对称度标注。\n\nb)\n板类件\n一般位置度(给二个相互垂直的方向）\n\"\n2X|1.5|AB|C\n-2X0.5ABC\nC\nA\n10\nB\n10\n35\n」\n2X06+1-0.25\n图55一组矩形\n\n复合位置度\n\"\n6.96-7.14\nHOLES EOUALLY SPACED\n2.8(M)ABC\n甲\n9\n0.3(M)A\n各孔之间的位置要求\n孔组的定位要求\n50\n150\n-C-\n-\n32.0\n32.0\ng\n10.7-11.0\nHOLES\n2.8MABC\n0.30A\n图56一组圆柱\n\n说明\nnterpretotlon\ntoieranc\nzones\n-Tyo:cl\nhole\ncenter\nif nole\nIs ot MMC\nDotun\n各孔之间\n24.0\n32.0\n+--32.0-\nplane\nA\ndto poslttonal\ntol\nzone\n(otMMC)\n位置要求\nfor\nporternlocotlon\n90°\n的公差带\n孔组定位\n30.0\n要求的公\n32.0\n32.0\n差带\no.3dto poslxtonol zone(ot mc) ior\nhole-to-hol.spoctng.\nols。\nporpendteulor\notttrudoTo dotun plone A.\nGoge for checkino 2.8 dta postttonol toleronce for pottern\n7.9 d1o o0g• ptns\n30.0\n检查孔组\n检查各孔\n定位要求\n24:0\n32.0-32.0-\n之间位置\n的量规\nGoge for checktng O.3 dto poetttonol toleronce for hole-to-hole oactn\n要求的量\nand perpendiculartty\n规\n10.4 dta oo0o pins\n32.0\n32.0-\n图57\n\nGM标准标注延伸公差带的两种形式（图65)\n框外标延伸尺寸及符号\nTHIS ON THE DRAWING\nTHIS ON THE DRAWING\n4X\nM6X1-6H\n6XM20X2-6H\n0.2514ABC\n0.4\nA\nBC\n。\n35 MIN\n框内@后标延伸尺寸\nA\nMEANS THIS\nMEANS THIS\n0.25 positional\n0.4 positional\ntolerance zone\ntolerance zone\n中\nTrue position axis\nTrue position axis\nAxis of threaded\nAxis of threaded\nhole\nhole\n35minimum pro-\njected tolerance\nDatum\nzone height\nplane A\n-14minimum\nprojected\ntolerance zone\nheight\n图\n65\n\n6.96-7.14\nnterpr\ntotlon\ntoioranc\nzones\n6\nHOLESEOUALLY SPACED\n-Tyoical hole center\n2.8(MABC\nif nole\n1s oT MMC\nOotua\nQ\n0.3(M)A\n24.0\n32.0\n32.0\nplaneA\n2.8 dto poslttonol\nTol zone (ot MMC)\nfor\npotrernlocotlon\n90°\nT\n30.0\n-32.032.0\n150.0]\n-0.3dlo poslttonol zone(ot mC) ior\nhole-to-holspoctng.olso\nporpendteulor\nottttudo to dotum plone A.\n30.0\nGoge for checkino 2.8 dio postttonal toleronce for portorn\n-C-\n7.9 dto oog• ptns\n24.0\n32.0\n32.0\n1\n-B-\ng$\n10.7-11.0\nHOLES\n2.8(MABC\n中\n30.0\n0.3(M)A\n上格：\n24:0\n32.0-\n32.0-\nMMVS = MMS − t\n= 10.7 - 2.8 = 7.9\nGoge for checktno O.3 dto poetttonol rolenonce for note-to-hole pacino\nand\nperpendiculortty\n下格：\nMMVS = MMS – t\n0.4\ndta\ngoge\nptna\n= 10.7 - 0.3 = 10.4 -\n32.0\n1\n32.0\n\n-\n-\n-\n谢谢",
+  "segments": [
+    {
+      "text": "GD&T（形位公差）简解",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.964304506778717
+    },
+    {
+      "text": "b)",
+      "page_no": 18,
+      "line_no": 1,
+      "confidence": 0.9813393950462341
+    },
+    {
+      "text": "轮廓度中若表示的公差要求适用范围不是整个轮廓时，应标注出",
+      "page_no": 18,
+      "line_no": 2,
+      "confidence": 0.999291718006134
+    },
+    {
+      "text": "其范围。见图9标注（仅GM标准）",
+      "page_no": 18,
+      "line_no": 3,
+      "confidence": 0.9901039600372314
+    },
+    {
+      "text": "O",
+      "page_no": 18,
+      "line_no": 4,
+      "confidence": 0.3825046718120575
+    },
+    {
+      "text": "R80",
+      "page_no": 18,
+      "line_no": 5,
+      "confidence": 0.9608569741249084
+    },
+    {
+      "text": "D",
+      "page_no": 18,
+      "line_no": 6,
+      "confidence": 0.743003249168396
+    },
+    {
+      "text": "0.12EF",
+      "page_no": 18,
+      "line_no": 7,
+      "confidence": 0.976151168346405
+    },
+    {
+      "text": "AB",
+      "page_no": 18,
+      "line_no": 8,
+      "confidence": 0.957771360874176
+    },
+    {
+      "text": "8±0.1",
+      "page_no": 18,
+      "line_no": 9,
+      "confidence": 0.9923897981643677
+    },
+    {
+      "text": "0.1EF",
+      "page_no": 18,
+      "line_no": 10,
+      "confidence": 0.8993469476699829
+    },
+    {
+      "text": "R82",
+      "page_no": 18,
+      "line_no": 11,
+      "confidence": 0.9713113307952881
+    },
+    {
+      "text": "BC",
+      "page_no": 18,
+      "line_no": 12,
+      "confidence": 0.9516720175743103
+    },
+    {
+      "text": "0.05 EF",
+      "page_no": 18,
+      "line_no": 13,
+      "confidence": 0.8961681127548218
+    },
+    {
+      "text": "75°",
+      "page_no": 18,
+      "line_no": 14,
+      "confidence": 0.9412975311279297
+    },
+    {
+      "text": "B",
+      "page_no": 18,
+      "line_no": 15,
+      "confidence": 0.9911066889762878
+    },
+    {
+      "text": "C",
+      "page_no": 18,
+      "line_no": 16,
+      "confidence": 0.9499185085296631
+    },
+    {
+      "text": "C←+D",
+      "page_no": 18,
+      "line_no": 17,
+      "confidence": 0.6979399919509888
+    },
+    {
+      "text": "R8",
+      "page_no": 18,
+      "line_no": 18,
+      "confidence": 0.8641430139541626
+    },
+    {
+      "text": "R12",
+      "page_no": 18,
+      "line_no": 19,
+      "confidence": 0.9945233464241028
+    },
+    {
+      "text": "日",
+      "page_no": 18,
+      "line_no": 20,
+      "confidence": 0.2108554244041443
+    },
+    {
+      "text": "10",
+      "page_no": 18,
+      "line_no": 21,
+      "confidence": 0.9940327405929565
+    },
+    {
+      "text": "4",
+      "page_no": 18,
+      "line_no": 22,
+      "confidence": 0.14065957069396973
+    },
+    {
+      "text": "0",
+      "page_no": 18,
+      "line_no": 23,
+      "confidence": 0.18675588071346283
+    },
+    {
+      "text": "78.8",
+      "page_no": 18,
+      "line_no": 24,
+      "confidence": 0.998432457447052
+    },
+    {
+      "text": "图13",
+      "page_no": 18,
+      "line_no": 25,
+      "confidence": 0.9998012185096741
+    },
+    {
+      "text": "b）基准要素是中心要素时，符号中的连线应与尺寸线对齐。",
+      "page_no": 22,
+      "line_no": 1,
+      "confidence": 0.9984970092773438
+    },
+    {
+      "text": "A",
+      "page_no": 22,
+      "line_no": 2,
+      "confidence": 0.9833050966262817
+    },
+    {
+      "text": "(a)",
+      "page_no": 22,
+      "line_no": 3,
+      "confidence": 0.9206811785697937
+    },
+    {
+      "text": "(b)",
+      "page_no": 22,
+      "line_no": 4,
+      "confidence": 0.9181457161903381
+    },
+    {
+      "text": "(c)",
+      "page_no": 22,
+      "line_no": 5,
+      "confidence": 0.8666573166847229
+    },
+    {
+      "text": "D",
+      "page_no": 22,
+      "line_no": 6,
+      "confidence": 0.9875072836875916
+    },
+    {
+      "text": "回",
+      "page_no": 22,
+      "line_no": 7,
+      "confidence": 0.6159517765045166
+    },
+    {
+      "text": "(d)",
+      "page_no": 22,
+      "line_no": 8,
+      "confidence": 0.9762733578681946
+    },
+    {
+      "text": "(e)",
+      "page_no": 22,
+      "line_no": 9,
+      "confidence": 0.8804330229759216
+    },
+    {
+      "text": "(f)",
+      "page_no": 22,
+      "line_no": 10,
+      "confidence": 0.9307095408439636
+    },
+    {
+      "text": "图16",
+      "page_no": 22,
+      "line_no": 11,
+      "confidence": 0.9998506903648376
+    },
+    {
+      "text": "三基面体系 Datum Refere nce Frame 一三个相互垂直的理想",
+      "page_no": 27,
+      "line_no": 1,
+      "confidence": 0.950323760509491
+    },
+    {
+      "text": "(基准)平面构成的空间直角坐标系。见图21。",
+      "page_no": 27,
+      "line_no": 2,
+      "confidence": 0.9995077252388
+    },
+    {
+      "text": "Directlon of easurenents-",
+      "page_no": 27,
+      "line_no": 3,
+      "confidence": 0.7928558588027954
+    },
+    {
+      "text": "坐标方向",
+      "page_no": 27,
+      "line_no": 4,
+      "confidence": 0.9995112419128418
+    },
+    {
+      "text": "90°",
+      "page_no": 27,
+      "line_no": 5,
+      "confidence": 0.8544873595237732
+    },
+    {
+      "text": "90°",
+      "page_no": 27,
+      "line_no": 6,
+      "confidence": 0.8579971194267273
+    },
+    {
+      "text": "90",
+      "page_no": 27,
+      "line_no": 7,
+      "confidence": 0.9153198003768921
+    },
+    {
+      "text": "上",
+      "page_no": 27,
+      "line_no": 8,
+      "confidence": 0.28624752163887024
+    },
+    {
+      "text": "基准平面",
+      "page_no": 27,
+      "line_no": 9,
+      "confidence": 0.9994652271270752
+    },
+    {
+      "text": "Darua Planes",
+      "page_no": 27,
+      "line_no": 10,
+      "confidence": 0.8700043559074402
+    },
+    {
+      "text": "图21",
+      "page_no": 27,
+      "line_no": 11,
+      "confidence": 0.9204466938972473
+    },
+    {
+      "text": "示例(图26):",
+      "page_no": 33,
+      "line_no": 1,
+      "confidence": 0.9955967664718628
+    },
+    {
+      "text": "二个点目标",
+      "page_no": 33,
+      "line_no": 2,
+      "confidence": 0.999853789806366
+    },
+    {
+      "text": "和",
+      "page_no": 33,
+      "line_no": 3,
+      "confidence": 0.9999071359634399
+    },
+    {
+      "text": "一个线目标",
+      "page_no": 33,
+      "line_no": 4,
+      "confidence": 0.9993704557418823
+    },
+    {
+      "text": "构成基准",
+      "page_no": 33,
+      "line_no": 5,
+      "confidence": 0.9995250701904297
+    },
+    {
+      "text": "O",
+      "page_no": 33,
+      "line_no": 6,
+      "confidence": 0.7185918092727661
+    },
+    {
+      "text": "图纸标注",
+      "page_no": 33,
+      "line_no": 7,
+      "confidence": 0.9987852573394775
+    },
+    {
+      "text": "Intorrotorlon说明",
+      "page_no": 33,
+      "line_no": 8,
+      "confidence": 0.7459386587142944
+    },
+    {
+      "text": "Drarlna",
+      "page_no": 33,
+      "line_no": 9,
+      "confidence": 0.6814013123512268
+    },
+    {
+      "text": "ur",
+      "page_no": 33,
+      "line_no": 10,
+      "confidence": 0.44746971130371094
+    },
+    {
+      "text": "-A-",
+      "page_no": 33,
+      "line_no": 11,
+      "confidence": 0.957399845123291
+    },
+    {
+      "text": "20.0",
+      "page_no": 33,
+      "line_no": 12,
+      "confidence": 0.9973413944244385
+    },
+    {
+      "text": "-Llne contact A3",
+      "page_no": 33,
+      "line_no": 13,
+      "confidence": 0.8527457118034363
+    },
+    {
+      "text": "线目标A3接触",
+      "page_no": 33,
+      "line_no": 14,
+      "confidence": 0.9977520704269409
+    },
+    {
+      "text": "60.0",
+      "page_no": 33,
+      "line_no": 15,
+      "confidence": 0.9969207048416138
+    },
+    {
+      "text": "L",
+      "page_no": 33,
+      "line_no": 16,
+      "confidence": 0.8739762306213379
+    },
+    {
+      "text": "20.0",
+      "page_no": 33,
+      "line_no": 17,
+      "confidence": 0.9889216423034668
+    },
+    {
+      "text": "--1",
+      "page_no": 33,
+      "line_no": 18,
+      "confidence": 0.6433286666870117
+    },
+    {
+      "text": "120.0",
+      "page_no": 33,
+      "line_no": 19,
+      "confidence": 0.9918798208236694
+    },
+    {
+      "text": "点目标A1,A2",
+      "page_no": 33,
+      "line_no": 20,
+      "confidence": 0.9589016437530518
+    },
+    {
+      "text": "-Polnt contact Al. A2",
+      "page_no": 33,
+      "line_no": 21,
+      "confidence": 0.7331666350364685
+    },
+    {
+      "text": "接触",
+      "page_no": 33,
+      "line_no": 22,
+      "confidence": 0.999565601348877
+    },
+    {
+      "text": "图29",
+      "page_no": 33,
+      "line_no": 23,
+      "confidence": 0.9988616108894348
+    },
+    {
+      "text": "用基准目标来体现基准，能提高基准的定位精度。",
+      "page_no": 33,
+      "line_no": 24,
+      "confidence": 0.9999237656593323
+    },
+    {
+      "text": "直线度",
+      "page_no": 36,
+      "line_no": 1,
+      "confidence": 0.9997046589851379
+    },
+    {
+      "text": "给一个方向",
+      "page_no": 36,
+      "line_no": 2,
+      "confidence": 0.9994685053825378
+    },
+    {
+      "text": "给二个方向",
+      "page_no": 36,
+      "line_no": 3,
+      "confidence": 0.9992759823799133
+    },
+    {
+      "text": "Ora-lno collout",
+      "page_no": 36,
+      "line_no": 4,
+      "confidence": 0.7576356530189514
+    },
+    {
+      "text": "Oro-tno callovt",
+      "page_no": 36,
+      "line_no": 5,
+      "confidence": 0.7562868595123291
+    },
+    {
+      "text": "0.",
+      "page_no": 36,
+      "line_no": 6,
+      "confidence": 0.6952530145645142
+    },
+    {
+      "text": "10.2",
+      "page_no": 36,
+      "line_no": 7,
+      "confidence": 0.870693564414978
+    },
+    {
+      "text": "2",
+      "page_no": 36,
+      "line_no": 8,
+      "confidence": 0.1815255880355835
+    },
+    {
+      "text": "aiLon",
+      "page_no": 36,
+      "line_no": 9,
+      "confidence": 0.6450850367546082
+    },
+    {
+      "text": "Q.1",
+      "page_no": 36,
+      "line_no": 10,
+      "confidence": 0.7388360500335693
+    },
+    {
+      "text": "roloronc.",
+      "page_no": 36,
+      "line_no": 11,
+      "confidence": 0.7345006465911865
+    },
+    {
+      "text": "zon",
+      "page_no": 36,
+      "line_no": 12,
+      "confidence": 0.8373718857765198
+    },
+    {
+      "text": "thtelonlr",
+      "page_no": 36,
+      "line_no": 13,
+      "confidence": 0.7125362157821655
+    },
+    {
+      "text": "B",
+      "page_no": 36,
+      "line_no": 14,
+      "confidence": 0.9732211828231812
+    },
+    {
+      "text": "O.1 tolrance zone",
+      "page_no": 36,
+      "line_no": 15,
+      "confidence": 0.681936502456665
+    },
+    {
+      "text": "0.2tolranc• zone",
+      "page_no": 36,
+      "line_no": 16,
+      "confidence": 0.7334993481636047
+    },
+    {
+      "text": "Eochlongltudln",
+      "page_no": 36,
+      "line_no": 17,
+      "confidence": 0.8498145937919617
+    },
+    {
+      "text": "rh",
+      "page_no": 36,
+      "line_no": 18,
+      "confidence": 0.6575627326965332
+    },
+    {
+      "text": "surface",
+      "page_no": 36,
+      "line_no": 19,
+      "confidence": 0.7806898355484009
+    },
+    {
+      "text": "botvoon lines ot",
+      "page_no": 36,
+      "line_no": 20,
+      "confidence": 0.7417104244232178
+    },
+    {
+      "text": "betenLtnot",
+      "page_no": 36,
+      "line_no": 21,
+      "confidence": 0.5757269859313965
+    },
+    {
+      "text": "oorollol",
+      "page_no": 36,
+      "line_no": 22,
+      "confidence": 0.7948752045631409
+    },
+    {
+      "text": "each plone A",
+      "page_no": 36,
+      "line_no": 23,
+      "confidence": 0.803292453289032
+    },
+    {
+      "text": "och plon B",
+      "page_no": 36,
+      "line_no": 24,
+      "confidence": 0.8565751910209656
+    },
+    {
+      "text": "ltnoe",
+      "page_no": 36,
+      "line_no": 25,
+      "confidence": 0.6185608506202698
+    },
+    {
+      "text": "90",
+      "page_no": 36,
+      "line_no": 26,
+      "confidence": 0.8421905040740967
+    },
+    {
+      "text": "rho",
+      "page_no": 36,
+      "line_no": 27,
+      "confidence": 0.37643298506736755
+    },
+    {
+      "text": "rlaht",
+      "page_no": 36,
+      "line_no": 28,
+      "confidence": 0.6116896867752075
+    },
+    {
+      "text": "hond vlo",
+      "page_no": 36,
+      "line_no": 29,
+      "confidence": 0.7593773007392883
+    },
+    {
+      "text": "图 31两平行平面",
+      "page_no": 36,
+      "line_no": 30,
+      "confidence": 0.9592726230621338
+    },
+    {
+      "text": "图 32",
+      "page_no": 36,
+      "line_no": 31,
+      "confidence": 0.9097203612327576
+    },
+    {
+      "text": "两组相互垂直的两平行平面",
+      "page_no": 36,
+      "line_no": 32,
+      "confidence": 0.9980807304382324
+    },
+    {
+      "text": "若系给定平面上线的直线度（如刻度线），则公差带为两平行",
+      "page_no": 36,
+      "line_no": 33,
+      "confidence": 0.9991188049316406
+    },
+    {
+      "text": "直线。",
+      "page_no": 36,
+      "line_no": 34,
+      "confidence": 0.9966168999671936
+    },
+    {
+      "text": "直线度（轴线)",
+      "page_no": 37,
+      "line_no": 1,
+      "confidence": 0.9336374998092651
+    },
+    {
+      "text": "平面度",
+      "page_no": 37,
+      "line_no": 2,
+      "confidence": 0.9916296005249023
+    },
+    {
+      "text": "Dravino collout",
+      "page_no": 37,
+      "line_no": 3,
+      "confidence": 0.8007311224937439
+    },
+    {
+      "text": "015.9",
+      "page_no": 37,
+      "line_no": 4,
+      "confidence": 0.7859376668930054
+    },
+    {
+      "text": "Drolno collour",
+      "page_no": 37,
+      "line_no": 5,
+      "confidence": 0.7298222184181213
+    },
+    {
+      "text": "10.1",
+      "page_no": 37,
+      "line_no": 6,
+      "confidence": 0.8854953050613403
+    },
+    {
+      "text": "任意方向",
+      "page_no": 37,
+      "line_no": 7,
+      "confidence": 0.9999158382415771
+    },
+    {
+      "text": "0.03",
+      "page_no": 37,
+      "line_no": 8,
+      "confidence": 0.9834473133087158
+    },
+    {
+      "text": "F016.00",
+      "page_no": 37,
+      "line_no": 9,
+      "confidence": 0.8295879364013672
+    },
+    {
+      "text": "Lo.o3 diametortoleronc zon",
+      "page_no": 37,
+      "line_no": 10,
+      "confidence": 0.6632609963417053
+    },
+    {
+      "text": "L16.036oundory",
+      "page_no": 37,
+      "line_no": 11,
+      "confidence": 0.8355046510696411
+    },
+    {
+      "text": "The derived oxte of h octuolfoature",
+      "page_no": 37,
+      "line_no": 12,
+      "confidence": 0.7324004173278809
+    },
+    {
+      "text": "auet",
+      "page_no": 37,
+      "line_no": 13,
+      "confidence": 0.5512130260467529
+    },
+    {
+      "text": "ithtn",
+      "page_no": 37,
+      "line_no": 14,
+      "confidence": 0.6411806344985962
+    },
+    {
+      "text": "ocrlindhicalcroieranc",
+      "page_no": 37,
+      "line_no": 15,
+      "confidence": 0.6485452651977539
+    },
+    {
+      "text": "reotur",
+      "page_no": 37,
+      "line_no": 16,
+      "confidence": 0.6620184779167175
+    },
+    {
+      "text": "lz.",
+      "page_no": 37,
+      "line_no": 17,
+      "confidence": 0.6450206637382507
+    },
+    {
+      "text": "Addtrlqnatl.och",
+      "page_no": 37,
+      "line_no": 18,
+      "confidence": 0.7367028594017029
+    },
+    {
+      "text": "ne urfoc uat b",
+      "page_no": 37,
+      "line_no": 19,
+      "confidence": 0.5894150733947754
+    },
+    {
+      "text": "Tho eurfac. uetlle boteeon",
+      "page_no": 37,
+      "line_no": 20,
+      "confidence": 0.6861266493797302
+    },
+    {
+      "text": "clrculor eieent",
+      "page_no": 37,
+      "line_no": 21,
+      "confidence": 0.7565004825592041
+    },
+    {
+      "text": "1o",
+      "page_no": 37,
+      "line_no": 22,
+      "confidence": 0.6085733771324158
+    },
+    {
+      "text": "h.ooctfiattailx.",
+      "page_no": 37,
+      "line_no": 23,
+      "confidence": 0.394462525844574
+    },
+    {
+      "text": "parollol olonos o.l apart.",
+      "page_no": 37,
+      "line_no": 24,
+      "confidence": 0.6568920612335205
+    },
+    {
+      "text": "lthin",
+      "page_no": 37,
+      "line_no": 25,
+      "confidence": 0.7992109060287476
+    },
+    {
+      "text": "图33",
+      "page_no": 37,
+      "line_no": 26,
+      "confidence": 0.9998032450675964
+    },
+    {
+      "text": "一个圆柱",
+      "page_no": 37,
+      "line_no": 27,
+      "confidence": 0.9997581243515015
+    },
+    {
+      "text": "图34",
+      "page_no": 37,
+      "line_no": 28,
+      "confidence": 0.9997720718383789
+    },
+    {
+      "text": "两平行平面",
+      "page_no": 37,
+      "line_no": 29,
+      "confidence": 0.9784373044967651
+    },
+    {
+      "text": "圆度",
+      "page_no": 38,
+      "line_no": 1,
+      "confidence": 0.9998390674591064
+    },
+    {
+      "text": "Orolno coliour",
+      "page_no": 38,
+      "line_no": 2,
+      "confidence": 0.827041506767273
+    },
+    {
+      "text": "010.03",
+      "page_no": 38,
+      "line_no": 3,
+      "confidence": 0.9169438481330872
+    },
+    {
+      "text": "O10.03",
+      "page_no": 38,
+      "line_no": 4,
+      "confidence": 0.8818385004997253
+    },
+    {
+      "text": "0.03",
+      "page_no": 38,
+      "line_no": 5,
+      "confidence": 0.9902258515357971
+    },
+    {
+      "text": "014.3",
+      "page_no": 38,
+      "line_no": 6,
+      "confidence": 0.7724136114120483
+    },
+    {
+      "text": "CYLINOER",
+      "page_no": 38,
+      "line_no": 7,
+      "confidence": 0.9372645616531372
+    },
+    {
+      "text": "CONE",
+      "page_no": 38,
+      "line_no": 8,
+      "confidence": 0.995586633682251
+    },
+    {
+      "text": "SPHERE",
+      "page_no": 38,
+      "line_no": 9,
+      "confidence": 0.9953293204307556
+    },
+    {
+      "text": "Intorprototion",
+      "page_no": 38,
+      "line_no": 10,
+      "confidence": 0.7370069622993469
+    },
+    {
+      "text": "A",
+      "page_no": 38,
+      "line_no": 11,
+      "confidence": 0.37375712394714355
+    },
+    {
+      "text": "A",
+      "page_no": 38,
+      "line_no": 12,
+      "confidence": 0.9930528998374939
+    },
+    {
+      "text": "7",
+      "page_no": 38,
+      "line_no": 13,
+      "confidence": 0.4570452570915222
+    },
+    {
+      "text": "A",
+      "page_no": 38,
+      "line_no": 14,
+      "confidence": 0.9467074275016785
+    },
+    {
+      "text": "A",
+      "page_no": 38,
+      "line_no": 15,
+      "confidence": 0.9166600108146667
+    },
+    {
+      "text": "A",
+      "page_no": 38,
+      "line_no": 16,
+      "confidence": 0.9768432378768921
+    },
+    {
+      "text": "CYLINDER",
+      "page_no": 38,
+      "line_no": 17,
+      "confidence": 0.9951627850532532
+    },
+    {
+      "text": "CONE",
+      "page_no": 38,
+      "line_no": 18,
+      "confidence": 0.9947516918182373
+    },
+    {
+      "text": "SPHERE",
+      "page_no": 38,
+      "line_no": 19,
+      "confidence": 0.9833584427833557
+    },
+    {
+      "text": "Eoch ctrculor oleaent of th urfoce in",
+      "page_no": 38,
+      "line_no": 20,
+      "confidence": 0.840608537197113
+    },
+    {
+      "text": "anr plone perpendicutor to  coon oxls",
+      "page_no": 38,
+      "line_no": 21,
+      "confidence": 0.7198866605758667
+    },
+    {
+      "text": "muet",
+      "page_no": 38,
+      "line_no": 22,
+      "confidence": 0.7276817560195923
+    },
+    {
+      "text": "be.lthtn thesoectflad",
+      "page_no": 38,
+      "line_no": 23,
+      "confidence": 0.6610044836997986
+    },
+    {
+      "text": "rolerance.of",
+      "page_no": 38,
+      "line_no": 24,
+      "confidence": 0.8568517565727234
+    },
+    {
+      "text": "slz",
+      "page_no": 38,
+      "line_no": 25,
+      "confidence": 0.4980863630771637
+    },
+    {
+      "text": "and",
+      "page_no": 38,
+      "line_no": 26,
+      "confidence": 0.9692944884300232
+    },
+    {
+      "text": "uetlle",
+      "page_no": 38,
+      "line_no": 27,
+      "confidence": 0.5476058125495911
+    },
+    {
+      "text": "betveon",
+      "page_no": 38,
+      "line_no": 28,
+      "confidence": 0.7030853629112244
+    },
+    {
+      "text": "1",
+      "page_no": 38,
+      "line_no": 29,
+      "confidence": 0.4018216133117676
+    },
+    {
+      "text": "concontrlc",
+      "page_no": 38,
+      "line_no": 30,
+      "confidence": 0.8871608972549438
+    },
+    {
+      "text": "SECTION A-A",
+      "page_no": 38,
+      "line_no": 31,
+      "confidence": 0.9545716643333435
+    },
+    {
+      "text": "circloe.",
+      "page_no": 38,
+      "line_no": 32,
+      "confidence": 0.8059420585632324
+    },
+    {
+      "text": "one hoving:o rodtu0.o3 1orger",
+      "page_no": 38,
+      "line_no": 33,
+      "confidence": 0.5241649150848389
+    },
+    {
+      "text": "than",
+      "page_no": 38,
+      "line_no": 34,
+      "confidence": 0.8926867246627808
+    },
+    {
+      "text": "the other.",
+      "page_no": 38,
+      "line_no": 35,
+      "confidence": 0.8604493141174316
+    },
+    {
+      "text": "图35两同心圆",
+      "page_no": 38,
+      "line_no": 36,
+      "confidence": 0.9989691376686096
+    },
+    {
+      "text": "面对线垂直度",
+      "page_no": 49,
+      "line_no": 1,
+      "confidence": 0.9994961619377136
+    },
+    {
+      "text": "线对线垂直度",
+      "page_no": 49,
+      "line_no": 2,
+      "confidence": 0.9996021389961243
+    },
+    {
+      "text": "Jroing coliout",
+      "page_no": 49,
+      "line_no": 3,
+      "confidence": 0.6408693194389343
+    },
+    {
+      "text": "Drolno calloct",
+      "page_no": 49,
+      "line_no": 4,
+      "confidence": 0.7539240121841431
+    },
+    {
+      "text": "110.1A",
+      "page_no": 49,
+      "line_no": 5,
+      "confidence": 0.6814773082733154
+    },
+    {
+      "text": "0.2A",
+      "page_no": 49,
+      "line_no": 6,
+      "confidence": 0.8202374577522278
+    },
+    {
+      "text": "EACH RADIAL ELEMENT",
+      "page_no": 49,
+      "line_no": 7,
+      "confidence": 0.9643892049789429
+    },
+    {
+      "text": ":",
+      "page_no": 49,
+      "line_no": 8,
+      "confidence": 0.399323970079422
+    },
+    {
+      "text": "1",
+      "page_no": 49,
+      "line_no": 9,
+      "confidence": 0.39494970440864563
+    },
+    {
+      "text": "nteroretatlon",
+      "page_no": 49,
+      "line_no": 10,
+      "confidence": 0.6928597688674927
+    },
+    {
+      "text": "0.1vld.totronc.",
+      "page_no": 49,
+      "line_no": 11,
+      "confidence": 0.6414554119110107
+    },
+    {
+      "text": "zonobeienLln",
+      "page_no": 49,
+      "line_no": 12,
+      "confidence": 0.5523385405540466
+    },
+    {
+      "text": "0ot0 x1A",
+      "page_no": 49,
+      "line_no": 13,
+      "confidence": 0.47053462266921997
+    },
+    {
+      "text": "0.2 id seroendicular",
+      "page_no": 49,
+      "line_no": 14,
+      "confidence": 0.7474879026412964
+    },
+    {
+      "text": "tolerancezonebeteen",
+      "page_no": 49,
+      "line_no": 15,
+      "confidence": 0.8145374059677124
+    },
+    {
+      "text": "90",
+      "page_no": 49,
+      "line_no": 16,
+      "confidence": 0.9914326667785645
+    },
+    {
+      "text": "olones",
+      "page_no": 49,
+      "line_no": 17,
+      "confidence": 0.7319075465202332
+    },
+    {
+      "text": "心",
+      "page_no": 49,
+      "line_no": 18,
+      "confidence": 0.12377031147480011
+    },
+    {
+      "text": "1",
+      "page_no": 49,
+      "line_no": 19,
+      "confidence": 0.47119519114494324
+    },
+    {
+      "text": "Eocn rodlol",
+      "page_no": 49,
+      "line_no": 20,
+      "confidence": 0.8412145376205444
+    },
+    {
+      "text": "lntofin.rfoc.u=r",
+      "page_no": 49,
+      "line_no": 21,
+      "confidence": 0.5610885620117188
+    },
+    {
+      "text": "(o(10(.io0r1)h1cn",
+      "page_no": 49,
+      "line_no": 22,
+      "confidence": 0.4881521761417389
+    },
+    {
+      "text": "or.",
+      "page_no": 49,
+      "line_no": 23,
+      "confidence": 0.754123866558075
+    },
+    {
+      "text": "porpendtculor",
+      "page_no": 49,
+      "line_no": 24,
+      "confidence": 0.8211284875869751
+    },
+    {
+      "text": "1。1n010x1.",
+      "page_no": 49,
+      "line_no": 25,
+      "confidence": 0.419656366109848
+    },
+    {
+      "text": "Yhi callout",
+      "page_no": 49,
+      "line_no": 26,
+      "confidence": 0.7695976495742798
+    },
+    {
+      "text": "not control runout.",
+      "page_no": 49,
+      "line_no": 27,
+      "confidence": 0.8389469385147095
+    },
+    {
+      "text": "Datun",
+      "page_no": 49,
+      "line_no": 28,
+      "confidence": 0.7578157186508179
+    },
+    {
+      "text": "do",
+      "page_no": 49,
+      "line_no": 29,
+      "confidence": 0.9758545160293579
+    },
+    {
+      "text": "ax1",
+      "page_no": 49,
+      "line_no": 30,
+      "confidence": 0.5913627743721008
+    },
+    {
+      "text": "图44",
+      "page_no": 49,
+      "line_no": 31,
+      "confidence": 0.9999421238899231
+    },
+    {
+      "text": "两平行平面",
+      "page_no": 49,
+      "line_no": 32,
+      "confidence": 0.9240951538085938
+    },
+    {
+      "text": "图 45两平行平面",
+      "page_no": 49,
+      "line_no": 33,
+      "confidence": 0.9724965691566467
+    },
+    {
+      "text": "线对面垂直度",
+      "page_no": 50,
+      "line_no": 1,
+      "confidence": 0.9993012547492981
+    },
+    {
+      "text": "轴线对面垂直度",
+      "page_no": 50,
+      "line_no": 2,
+      "confidence": 0.999517023563385
+    },
+    {
+      "text": "Droinocol.out",
+      "page_no": 50,
+      "line_no": 3,
+      "confidence": 0.7045177221298218
+    },
+    {
+      "text": "Drovlng coliout",
+      "page_no": 50,
+      "line_no": 4,
+      "confidence": 0.8139642477035522
+    },
+    {
+      "text": "0.2A",
+      "page_no": 50,
+      "line_no": 5,
+      "confidence": 0.8766384720802307
+    },
+    {
+      "text": "10.2A",
+      "page_no": 50,
+      "line_no": 6,
+      "confidence": 0.8664216995239258
+    },
+    {
+      "text": "EACH ELEMENT",
+      "page_no": 50,
+      "line_no": 7,
+      "confidence": 0.9790003299713135
+    },
+    {
+      "text": "T",
+      "page_no": 50,
+      "line_no": 8,
+      "confidence": 0.27706122398376465
+    },
+    {
+      "text": "20.0",
+      "page_no": 50,
+      "line_no": 9,
+      "confidence": 0.9858553409576416
+    },
+    {
+      "text": "给定平面上线",
+      "page_no": 50,
+      "line_no": 10,
+      "confidence": 0.9987273216247559
+    },
+    {
+      "text": "19.0",
+      "page_no": 50,
+      "line_no": 11,
+      "confidence": 0.9707228541374207
+    },
+    {
+      "text": "4",
+      "page_no": 50,
+      "line_no": 12,
+      "confidence": 0.10011035948991776
+    },
+    {
+      "text": "任意方向",
+      "page_no": 50,
+      "line_no": 13,
+      "confidence": 0.9999337792396545
+    },
+    {
+      "text": "Intorpratotlon.",
+      "page_no": 50,
+      "line_no": 14,
+      "confidence": 0.7477442622184753
+    },
+    {
+      "text": "0.2td oerpondicolortty",
+      "page_no": 50,
+      "line_no": 15,
+      "confidence": 0.7731009125709534
+    },
+    {
+      "text": "tatanancozonebei=oon1tne",
+      "page_no": 50,
+      "line_no": 16,
+      "confidence": 0.5389599800109863
+    },
+    {
+      "text": "0.2d101",
+      "page_no": 50,
+      "line_no": 17,
+      "confidence": 0.7402319312095642
+    },
+    {
+      "text": "oorp•ndiculorit",
+      "page_no": 50,
+      "line_no": 18,
+      "confidence": 0.6533879041671753
+    },
+    {
+      "text": "--",
+      "page_no": 50,
+      "line_no": 19,
+      "confidence": 0.7069313526153564
+    },
+    {
+      "text": "Toleronce zon•",
+      "page_no": 50,
+      "line_no": 20,
+      "confidence": 0.771674633026123
+    },
+    {
+      "text": "1",
+      "page_no": 50,
+      "line_no": 21,
+      "confidence": 0.4201921224594116
+    },
+    {
+      "text": "I1",
+      "page_no": 50,
+      "line_no": 22,
+      "confidence": 0.5838472843170166
+    },
+    {
+      "text": "otur",
+      "page_no": 50,
+      "line_no": 23,
+      "confidence": 0.900709331035614
+    },
+    {
+      "text": "noloht",
+      "page_no": 50,
+      "line_no": 24,
+      "confidence": 0.5840657353401184
+    },
+    {
+      "text": "-Flotnos not",
+      "page_no": 50,
+      "line_no": 25,
+      "confidence": 0.6677789688110352
+    },
+    {
+      "text": "-Do1u",
+      "page_no": 50,
+      "line_no": 26,
+      "confidence": 0.4860623776912689
+    },
+    {
+      "text": "conirollod",
+      "page_no": 50,
+      "line_no": 27,
+      "confidence": 0.8577073216438293
+    },
+    {
+      "text": "olon",
+      "page_no": 50,
+      "line_no": 28,
+      "confidence": 0.6986209750175476
+    },
+    {
+      "text": "A",
+      "page_no": 50,
+      "line_no": 29,
+      "confidence": 0.7691662311553955
+    },
+    {
+      "text": "hTht",
+      "page_no": 50,
+      "line_no": 30,
+      "confidence": 0.4541008472442627
+    },
+    {
+      "text": "oecificotton",
+      "page_no": 50,
+      "line_no": 31,
+      "confidence": 0.7966873049736023
+    },
+    {
+      "text": "Posstbl.",
+      "page_no": 50,
+      "line_no": 32,
+      "confidence": 0.7034944295883179
+    },
+    {
+      "text": "ortltud",
+      "page_no": 50,
+      "line_no": 33,
+      "confidence": 0.6194853186607361
+    },
+    {
+      "text": "Dotu",
+      "page_no": 50,
+      "line_no": 34,
+      "confidence": 0.7153037190437317
+    },
+    {
+      "text": "plone人",
+      "page_no": 50,
+      "line_no": 35,
+      "confidence": 0.7112462520599365
+    },
+    {
+      "text": "ofrh",
+      "page_no": 50,
+      "line_no": 36,
+      "confidence": 0.744054913520813
+    },
+    {
+      "text": "foture",
+      "page_no": 50,
+      "line_no": 37,
+      "confidence": 0.7572491765022278
+    },
+    {
+      "text": "oxL",
+      "page_no": 50,
+      "line_no": 38,
+      "confidence": 0.4848761260509491
+    },
+    {
+      "text": "图46",
+      "page_no": 50,
+      "line_no": 39,
+      "confidence": 0.9994208812713623
+    },
+    {
+      "text": "两平行直线",
+      "page_no": 50,
+      "line_no": 40,
+      "confidence": 0.9994425773620605
+    },
+    {
+      "text": "图47",
+      "page_no": 50,
+      "line_no": 41,
+      "confidence": 0.9996092915534973
+    },
+    {
+      "text": "一个圆柱",
+      "page_no": 50,
+      "line_no": 42,
+      "confidence": 0.9995089173316956
+    },
+    {
+      "text": "线对线平行度",
+      "page_no": 52,
+      "line_no": 1,
+      "confidence": 0.9998515248298645
+    },
+    {
+      "text": "Drovinc collour",
+      "page_no": 52,
+      "line_no": 2,
+      "confidence": 0.766453206539154
+    },
+    {
+      "text": "Inrororetotton",
+      "page_no": 52,
+      "line_no": 3,
+      "confidence": 0.7116855978965759
+    },
+    {
+      "text": "0.1A",
+      "page_no": 52,
+      "line_no": 4,
+      "confidence": 0.7968489527702332
+    },
+    {
+      "text": "Posstble ottitude",
+      "page_no": 52,
+      "line_no": 5,
+      "confidence": 0.7798537611961365
+    },
+    {
+      "text": "of thefeoture oxli",
+      "page_no": 52,
+      "line_no": 6,
+      "confidence": 0.6874504089355469
+    },
+    {
+      "text": "任意方向",
+      "page_no": 52,
+      "line_no": 7,
+      "confidence": 0.9998928904533386
+    },
+    {
+      "text": "0.1d10otr",
+      "page_no": 52,
+      "line_no": 8,
+      "confidence": 0.6200379133224487
+    },
+    {
+      "text": "porotlolis",
+      "page_no": 52,
+      "line_no": 9,
+      "confidence": 0.7060693502426147
+    },
+    {
+      "text": "1oleroncezone",
+      "page_no": 52,
+      "line_no": 10,
+      "confidence": 0.7461079359054565
+    },
+    {
+      "text": "DatuaxlA-",
+      "page_no": 52,
+      "line_no": 11,
+      "confidence": 0.655141294002533
+    },
+    {
+      "text": "stobli=hed br ooo",
+      "page_no": 52,
+      "line_no": 12,
+      "confidence": 0.7107566595077515
+    },
+    {
+      "text": "hich contacte dio .",
+      "page_no": 52,
+      "line_no": 13,
+      "confidence": 0.8630731701850891
+    },
+    {
+      "text": "RFS.",
+      "page_no": 52,
+      "line_no": 14,
+      "confidence": 0.96912682056427
+    },
+    {
+      "text": "The feotur oxl ut lle irhin o cylindrtcol",
+      "page_no": 52,
+      "line_no": 15,
+      "confidence": 0.7160668969154358
+    },
+    {
+      "text": "ox1.",
+      "page_no": 52,
+      "line_no": 16,
+      "confidence": 0.7018105387687683
+    },
+    {
+      "text": "图 49",
+      "page_no": 52,
+      "line_no": 17,
+      "confidence": 0.9229056239128113
+    },
+    {
+      "text": "一个圆柱",
+      "page_no": 52,
+      "line_no": 18,
+      "confidence": 0.990264892578125
+    },
+    {
+      "text": "轴线的位置度(任意方向)",
+      "page_no": 56,
+      "line_no": 1,
+      "confidence": 0.9653412699699402
+    },
+    {
+      "text": "Dralng callout",
+      "page_no": 56,
+      "line_no": 2,
+      "confidence": 0.7981027364730835
+    },
+    {
+      "text": "Goglnterprototion",
+      "page_no": 56,
+      "line_no": 3,
+      "confidence": 0.8680679798126221
+    },
+    {
+      "text": "00.4",
+      "page_no": 56,
+      "line_no": 4,
+      "confidence": 0.9397721290588379
+    },
+    {
+      "text": "024.8 000",
+      "page_no": 56,
+      "line_no": 5,
+      "confidence": 0.8152506947517395
+    },
+    {
+      "text": "024.0-24.4",
+      "page_no": 56,
+      "line_no": 6,
+      "confidence": 0.9598705172538757
+    },
+    {
+      "text": "0.4MAM",
+      "page_no": 56,
+      "line_no": 7,
+      "confidence": 0.8604608178138733
+    },
+    {
+      "text": "Datua axls A.",
+      "page_no": 56,
+      "line_no": 8,
+      "confidence": 0.7850504517555237
+    },
+    {
+      "text": "(n gag",
+      "page_no": 56,
+      "line_no": 9,
+      "confidence": 0.7125363349914551
+    },
+    {
+      "text": "15.05",
+      "page_no": 56,
+      "line_no": 10,
+      "confidence": 0.9932304620742798
+    },
+    {
+      "text": "15.05000",
+      "page_no": 56,
+      "line_no": 11,
+      "confidence": 0.9406765103340149
+    },
+    {
+      "text": "图",
+      "page_no": 56,
+      "line_no": 12,
+      "confidence": 0.9999040365219116
+    },
+    {
+      "text": "52",
+      "page_no": 56,
+      "line_no": 13,
+      "confidence": 0.9993631839752197
+    },
+    {
+      "text": "一个圆柱",
+      "page_no": 56,
+      "line_no": 14,
+      "confidence": 0.9997827410697937
+    },
+    {
+      "text": "右图是用量规来描述零件的检测，详见公差原则。",
+      "page_no": 56,
+      "line_no": 15,
+      "confidence": 0.9996559023857117
+    },
+    {
+      "text": "我国 GB 标准将此类图样一般用同轴度标注。",
+      "page_no": 56,
+      "line_no": 16,
+      "confidence": 0.9681965112686157
+    },
+    {
+      "text": "面的位置度",
+      "page_no": 57,
+      "line_no": 1,
+      "confidence": 0.9877321124076843
+    },
+    {
+      "text": "Orarino colloct",
+      "page_no": 57,
+      "line_no": 2,
+      "confidence": 0.722836434841156
+    },
+    {
+      "text": "10.2",
+      "page_no": 57,
+      "line_no": 3,
+      "confidence": 0.9978737831115723
+    },
+    {
+      "text": "10.0",
+      "page_no": 57,
+      "line_no": 4,
+      "confidence": 0.9965523481369019
+    },
+    {
+      "text": "0.15SAS",
+      "page_no": 57,
+      "line_no": 5,
+      "confidence": 0.9397557377815247
+    },
+    {
+      "text": "-A-",
+      "page_no": 57,
+      "line_no": 6,
+      "confidence": 0.8601906895637512
+    },
+    {
+      "text": "Intorprototton",
+      "page_no": 57,
+      "line_no": 7,
+      "confidence": 0.7552460432052612
+    },
+    {
+      "text": "Pormlaetblolocattonfor",
+      "page_no": 57,
+      "line_no": 8,
+      "confidence": 0.756713330745697
+    },
+    {
+      "text": "conrr ptonolot",
+      "page_no": 57,
+      "line_no": 9,
+      "confidence": 0.6664602160453796
+    },
+    {
+      "text": "O.i5 rolerance zone RFs. auollr",
+      "page_no": 57,
+      "line_no": 10,
+      "confidence": 0.7282028794288635
+    },
+    {
+      "text": "dlspoed about datua center olone",
+      "page_no": 57,
+      "line_no": 11,
+      "confidence": 0.8347272872924805
+    },
+    {
+      "text": "Conrer olon",
+      "page_no": 57,
+      "line_no": 12,
+      "confidence": 0.7397264242172241
+    },
+    {
+      "text": "of",
+      "page_no": 57,
+      "line_no": 13,
+      "confidence": 0.8513134717941284
+    },
+    {
+      "text": "doru.RFS",
+      "page_no": 57,
+      "line_no": 14,
+      "confidence": 0.73284512758255
+    },
+    {
+      "text": "图53",
+      "page_no": 57,
+      "line_no": 15,
+      "confidence": 0.9998841285705566
+    },
+    {
+      "text": "两平行平面",
+      "page_no": 57,
+      "line_no": 16,
+      "confidence": 0.983669102191925
+    },
+    {
+      "text": "我国 GB 标准将此类图样一般用对称度标注。",
+      "page_no": 57,
+      "line_no": 17,
+      "confidence": 0.9572131633758545
+    },
+    {
+      "text": "b)",
+      "page_no": 59,
+      "line_no": 1,
+      "confidence": 0.9717909097671509
+    },
+    {
+      "text": "板类件",
+      "page_no": 59,
+      "line_no": 2,
+      "confidence": 0.9996485710144043
+    },
+    {
+      "text": "一般位置度(给二个相互垂直的方向）",
+      "page_no": 59,
+      "line_no": 3,
+      "confidence": 0.9540538787841797
+    },
+    {
+      "text": "\"",
+      "page_no": 59,
+      "line_no": 4,
+      "confidence": 0.38314637541770935
+    },
+    {
+      "text": "2X|1.5|AB|C",
+      "page_no": 59,
+      "line_no": 5,
+      "confidence": 0.8060856461524963
+    },
+    {
+      "text": "-2X0.5ABC",
+      "page_no": 59,
+      "line_no": 6,
+      "confidence": 0.8784563541412354
+    },
+    {
+      "text": "C",
+      "page_no": 59,
+      "line_no": 7,
+      "confidence": 0.7121607065200806
+    },
+    {
+      "text": "A",
+      "page_no": 59,
+      "line_no": 8,
+      "confidence": 0.28179633617401123
+    },
+    {
+      "text": "10",
+      "page_no": 59,
+      "line_no": 9,
+      "confidence": 0.985977053642273
+    },
+    {
+      "text": "B",
+      "page_no": 59,
+      "line_no": 10,
+      "confidence": 0.8206157088279724
+    },
+    {
+      "text": "10",
+      "page_no": 59,
+      "line_no": 11,
+      "confidence": 0.9964218139648438
+    },
+    {
+      "text": "35",
+      "page_no": 59,
+      "line_no": 12,
+      "confidence": 0.9749780297279358
+    },
+    {
+      "text": "」",
+      "page_no": 59,
+      "line_no": 13,
+      "confidence": 0.1267140805721283
+    },
+    {
+      "text": "2X06+1-0.25",
+      "page_no": 59,
+      "line_no": 14,
+      "confidence": 0.8959874510765076
+    },
+    {
+      "text": "图55一组矩形",
+      "page_no": 59,
+      "line_no": 15,
+      "confidence": 0.9995858073234558
+    },
+    {
+      "text": "复合位置度",
+      "page_no": 60,
+      "line_no": 1,
+      "confidence": 0.9999281167984009
+    },
+    {
+      "text": "\"",
+      "page_no": 60,
+      "line_no": 2,
+      "confidence": 0.5026333332061768
+    },
+    {
+      "text": "6.96-7.14",
+      "page_no": 60,
+      "line_no": 3,
+      "confidence": 0.9814090728759766
+    },
+    {
+      "text": "HOLES EOUALLY SPACED",
+      "page_no": 60,
+      "line_no": 4,
+      "confidence": 0.9574264287948608
+    },
+    {
+      "text": "2.8(M)ABC",
+      "page_no": 60,
+      "line_no": 5,
+      "confidence": 0.8333728313446045
+    },
+    {
+      "text": "甲",
+      "page_no": 60,
+      "line_no": 6,
+      "confidence": 0.6525729894638062
+    },
+    {
+      "text": "9",
+      "page_no": 60,
+      "line_no": 7,
+      "confidence": 0.30360642075538635
+    },
+    {
+      "text": "0.3(M)A",
+      "page_no": 60,
+      "line_no": 8,
+      "confidence": 0.8696390986442566
+    },
+    {
+      "text": "各孔之间的位置要求",
+      "page_no": 60,
+      "line_no": 9,
+      "confidence": 0.998367428779602
+    },
+    {
+      "text": "孔组的定位要求",
+      "page_no": 60,
+      "line_no": 10,
+      "confidence": 0.9998378753662109
+    },
+    {
+      "text": "50",
+      "page_no": 60,
+      "line_no": 11,
+      "confidence": 0.793463945388794
+    },
+    {
+      "text": "150",
+      "page_no": 60,
+      "line_no": 12,
+      "confidence": 0.9979612827301025
+    },
+    {
+      "text": "-C-",
+      "page_no": 60,
+      "line_no": 13,
+      "confidence": 0.906334400177002
+    },
+    {
+      "text": "-",
+      "page_no": 60,
+      "line_no": 14,
+      "confidence": 0.45709025859832764
+    },
+    {
+      "text": "32.0",
+      "page_no": 60,
+      "line_no": 15,
+      "confidence": 0.982471764087677
+    },
+    {
+      "text": "32.0",
+      "page_no": 60,
+      "line_no": 16,
+      "confidence": 0.9903402328491211
+    },
+    {
+      "text": "g",
+      "page_no": 60,
+      "line_no": 17,
+      "confidence": 0.1783290058374405
+    },
+    {
+      "text": "10.7-11.0",
+      "page_no": 60,
+      "line_no": 18,
+      "confidence": 0.9701054096221924
+    },
+    {
+      "text": "HOLES",
+      "page_no": 60,
+      "line_no": 19,
+      "confidence": 0.9954317212104797
+    },
+    {
+      "text": "2.8MABC",
+      "page_no": 60,
+      "line_no": 20,
+      "confidence": 0.9382919669151306
+    },
+    {
+      "text": "0.30A",
+      "page_no": 60,
+      "line_no": 21,
+      "confidence": 0.8067232370376587
+    },
+    {
+      "text": "图56一组圆柱",
+      "page_no": 60,
+      "line_no": 22,
+      "confidence": 0.99498450756073
+    },
+    {
+      "text": "说明",
+      "page_no": 61,
+      "line_no": 1,
+      "confidence": 0.9998968839645386
+    },
+    {
+      "text": "nterpretotlon",
+      "page_no": 61,
+      "line_no": 2,
+      "confidence": 0.791936457157135
+    },
+    {
+      "text": "toieranc",
+      "page_no": 61,
+      "line_no": 3,
+      "confidence": 0.6490939259529114
+    },
+    {
+      "text": "zones",
+      "page_no": 61,
+      "line_no": 4,
+      "confidence": 0.6251235008239746
+    },
+    {
+      "text": "-Tyo:cl",
+      "page_no": 61,
+      "line_no": 5,
+      "confidence": 0.8636159300804138
+    },
+    {
+      "text": "hole",
+      "page_no": 61,
+      "line_no": 6,
+      "confidence": 0.8427337408065796
+    },
+    {
+      "text": "center",
+      "page_no": 61,
+      "line_no": 7,
+      "confidence": 0.7174473404884338
+    },
+    {
+      "text": "if nole",
+      "page_no": 61,
+      "line_no": 8,
+      "confidence": 0.7374680638313293
+    },
+    {
+      "text": "Is ot MMC",
+      "page_no": 61,
+      "line_no": 9,
+      "confidence": 0.6861534118652344
+    },
+    {
+      "text": "Dotun",
+      "page_no": 61,
+      "line_no": 10,
+      "confidence": 0.6344903707504272
+    },
+    {
+      "text": "各孔之间",
+      "page_no": 61,
+      "line_no": 11,
+      "confidence": 0.9998975396156311
+    },
+    {
+      "text": "24.0",
+      "page_no": 61,
+      "line_no": 12,
+      "confidence": 0.9784684181213379
+    },
+    {
+      "text": "32.0",
+      "page_no": 61,
+      "line_no": 13,
+      "confidence": 0.9920164942741394
+    },
+    {
+      "text": "+--32.0-",
+      "page_no": 61,
+      "line_no": 14,
+      "confidence": 0.7713000178337097
+    },
+    {
+      "text": "plane",
+      "page_no": 61,
+      "line_no": 15,
+      "confidence": 0.8790501356124878
+    },
+    {
+      "text": "A",
+      "page_no": 61,
+      "line_no": 16,
+      "confidence": 0.9694603085517883
+    },
+    {
+      "text": "dto poslttonal",
+      "page_no": 61,
+      "line_no": 17,
+      "confidence": 0.8157318830490112
+    },
+    {
+      "text": "tol",
+      "page_no": 61,
+      "line_no": 18,
+      "confidence": 0.7336230278015137
+    },
+    {
+      "text": "zone",
+      "page_no": 61,
+      "line_no": 19,
+      "confidence": 0.8150026798248291
+    },
+    {
+      "text": "(otMMC)",
+      "page_no": 61,
+      "line_no": 20,
+      "confidence": 0.7018872499465942
+    },
+    {
+      "text": "位置要求",
+      "page_no": 61,
+      "line_no": 21,
+      "confidence": 0.9999960660934448
+    },
+    {
+      "text": "for",
+      "page_no": 61,
+      "line_no": 22,
+      "confidence": 0.7858802676200867
+    },
+    {
+      "text": "porternlocotlon",
+      "page_no": 61,
+      "line_no": 23,
+      "confidence": 0.751139760017395
+    },
+    {
+      "text": "90°",
+      "page_no": 61,
+      "line_no": 24,
+      "confidence": 0.8790283799171448
+    },
+    {
+      "text": "的公差带",
+      "page_no": 61,
+      "line_no": 25,
+      "confidence": 0.9523143172264099
+    },
+    {
+      "text": "孔组定位",
+      "page_no": 61,
+      "line_no": 26,
+      "confidence": 0.9996747970581055
+    },
+    {
+      "text": "30.0",
+      "page_no": 61,
+      "line_no": 27,
+      "confidence": 0.9927076697349548
+    },
+    {
+      "text": "要求的公",
+      "page_no": 61,
+      "line_no": 28,
+      "confidence": 0.9999887943267822
+    },
+    {
+      "text": "32.0",
+      "page_no": 61,
+      "line_no": 29,
+      "confidence": 0.9976295232772827
+    },
+    {
+      "text": "32.0",
+      "page_no": 61,
+      "line_no": 30,
+      "confidence": 0.9959867596626282
+    },
+    {
+      "text": "差带",
+      "page_no": 61,
+      "line_no": 31,
+      "confidence": 0.9276906251907349
+    },
+    {
+      "text": "o.3dto poslxtonol zone(ot mc) ior",
+      "page_no": 61,
+      "line_no": 32,
+      "confidence": 0.6960265040397644
+    },
+    {
+      "text": "hole-to-hol.spoctng.",
+      "page_no": 61,
+      "line_no": 33,
+      "confidence": 0.7901719808578491
+    },
+    {
+      "text": "ols。",
+      "page_no": 61,
+      "line_no": 34,
+      "confidence": 0.7132248282432556
+    },
+    {
+      "text": "porpendteulor",
+      "page_no": 61,
+      "line_no": 35,
+      "confidence": 0.8081632256507874
+    },
+    {
+      "text": "otttrudoTo dotun plone A.",
+      "page_no": 61,
+      "line_no": 36,
+      "confidence": 0.7265415191650391
+    },
+    {
+      "text": "Goge for checkino 2.8 dta postttonol toleronce for pottern",
+      "page_no": 61,
+      "line_no": 37,
+      "confidence": 0.8421782851219177
+    },
+    {
+      "text": "7.9 d1o o0g• ptns",
+      "page_no": 61,
+      "line_no": 38,
+      "confidence": 0.778876781463623
+    },
+    {
+      "text": "30.0",
+      "page_no": 61,
+      "line_no": 39,
+      "confidence": 0.9948960542678833
+    },
+    {
+      "text": "检查孔组",
+      "page_no": 61,
+      "line_no": 40,
+      "confidence": 0.9995032548904419
+    },
+    {
+      "text": "检查各孔",
+      "page_no": 61,
+      "line_no": 41,
+      "confidence": 0.9995571374893188
+    },
+    {
+      "text": "定位要求",
+      "page_no": 61,
+      "line_no": 42,
+      "confidence": 0.9999954104423523
+    },
+    {
+      "text": "24:0",
+      "page_no": 61,
+      "line_no": 43,
+      "confidence": 0.9612741470336914
+    },
+    {
+      "text": "32.0-32.0-",
+      "page_no": 61,
+      "line_no": 44,
+      "confidence": 0.9212873578071594
+    },
+    {
+      "text": "之间位置",
+      "page_no": 61,
+      "line_no": 45,
+      "confidence": 0.9997190237045288
+    },
+    {
+      "text": "的量规",
+      "page_no": 61,
+      "line_no": 46,
+      "confidence": 0.9994065761566162
+    },
+    {
+      "text": "Goge for checktng O.3 dto poetttonol toleronce for hole-to-hole oactn",
+      "page_no": 61,
+      "line_no": 47,
+      "confidence": 0.8179771304130554
+    },
+    {
+      "text": "要求的量",
+      "page_no": 61,
+      "line_no": 48,
+      "confidence": 0.9999872446060181
+    },
+    {
+      "text": "and perpendiculartty",
+      "page_no": 61,
+      "line_no": 49,
+      "confidence": 0.8270951509475708
+    },
+    {
+      "text": "规",
+      "page_no": 61,
+      "line_no": 50,
+      "confidence": 0.9999856948852539
+    },
+    {
+      "text": "10.4 dta oo0o pins",
+      "page_no": 61,
+      "line_no": 51,
+      "confidence": 0.7743804454803467
+    },
+    {
+      "text": "32.0",
+      "page_no": 61,
+      "line_no": 52,
+      "confidence": 0.9944770336151123
+    },
+    {
+      "text": "32.0-",
+      "page_no": 61,
+      "line_no": 53,
+      "confidence": 0.9270809888839722
+    },
+    {
+      "text": "图57",
+      "page_no": 61,
+      "line_no": 54,
+      "confidence": 0.9996514916419983
+    },
+    {
+      "text": "GM标准标注延伸公差带的两种形式（图65)",
+      "page_no": 71,
+      "line_no": 1,
+      "confidence": 0.9857003092765808
+    },
+    {
+      "text": "框外标延伸尺寸及符号",
+      "page_no": 71,
+      "line_no": 2,
+      "confidence": 0.9997133016586304
+    },
+    {
+      "text": "THIS ON THE DRAWING",
+      "page_no": 71,
+      "line_no": 3,
+      "confidence": 0.9663562774658203
+    },
+    {
+      "text": "THIS ON THE DRAWING",
+      "page_no": 71,
+      "line_no": 4,
+      "confidence": 0.9657182097434998
+    },
+    {
+      "text": "4X",
+      "page_no": 71,
+      "line_no": 5,
+      "confidence": 0.9150751829147339
+    },
+    {
+      "text": "M6X1-6H",
+      "page_no": 71,
+      "line_no": 6,
+      "confidence": 0.9945610761642456
+    },
+    {
+      "text": "6XM20X2-6H",
+      "page_no": 71,
+      "line_no": 7,
+      "confidence": 0.9875596761703491
+    },
+    {
+      "text": "0.2514ABC",
+      "page_no": 71,
+      "line_no": 8,
+      "confidence": 0.98131263256073
+    },
+    {
+      "text": "0.4",
+      "page_no": 71,
+      "line_no": 9,
+      "confidence": 0.9915194511413574
+    },
+    {
+      "text": "A",
+      "page_no": 71,
+      "line_no": 10,
+      "confidence": 0.986925482749939
+    },
+    {
+      "text": "BC",
+      "page_no": 71,
+      "line_no": 11,
+      "confidence": 0.934419572353363
+    },
+    {
+      "text": "。",
+      "page_no": 71,
+      "line_no": 12,
+      "confidence": 0.40555617213249207
+    },
+    {
+      "text": "35 MIN",
+      "page_no": 71,
+      "line_no": 13,
+      "confidence": 0.9174705147743225
+    },
+    {
+      "text": "框内@后标延伸尺寸",
+      "page_no": 71,
+      "line_no": 14,
+      "confidence": 0.9289824962615967
+    },
+    {
+      "text": "A",
+      "page_no": 71,
+      "line_no": 15,
+      "confidence": 0.9828153252601624
+    },
+    {
+      "text": "MEANS THIS",
+      "page_no": 71,
+      "line_no": 16,
+      "confidence": 0.9835466146469116
+    },
+    {
+      "text": "MEANS THIS",
+      "page_no": 71,
+      "line_no": 17,
+      "confidence": 0.9506964683532715
+    },
+    {
+      "text": "0.25 positional",
+      "page_no": 71,
+      "line_no": 18,
+      "confidence": 0.954438328742981
+    },
+    {
+      "text": "0.4 positional",
+      "page_no": 71,
+      "line_no": 19,
+      "confidence": 0.9662957787513733
+    },
+    {
+      "text": "tolerance zone",
+      "page_no": 71,
+      "line_no": 20,
+      "confidence": 0.979032039642334
+    },
+    {
+      "text": "tolerance zone",
+      "page_no": 71,
+      "line_no": 21,
+      "confidence": 0.9895859956741333
+    },
+    {
+      "text": "中",
+      "page_no": 71,
+      "line_no": 22,
+      "confidence": 0.12895691394805908
+    },
+    {
+      "text": "True position axis",
+      "page_no": 71,
+      "line_no": 23,
+      "confidence": 0.972944974899292
+    },
+    {
+      "text": "True position axis",
+      "page_no": 71,
+      "line_no": 24,
+      "confidence": 0.9845210313796997
+    },
+    {
+      "text": "Axis of threaded",
+      "page_no": 71,
+      "line_no": 25,
+      "confidence": 0.9585065841674805
+    },
+    {
+      "text": "Axis of threaded",
+      "page_no": 71,
+      "line_no": 26,
+      "confidence": 0.9727015495300293
+    },
+    {
+      "text": "hole",
+      "page_no": 71,
+      "line_no": 27,
+      "confidence": 0.9950335621833801
+    },
+    {
+      "text": "hole",
+      "page_no": 71,
+      "line_no": 28,
+      "confidence": 0.9956554174423218
+    },
+    {
+      "text": "35minimum pro-",
+      "page_no": 71,
+      "line_no": 29,
+      "confidence": 0.9634414315223694
+    },
+    {
+      "text": "jected tolerance",
+      "page_no": 71,
+      "line_no": 30,
+      "confidence": 0.9711527228355408
+    },
+    {
+      "text": "Datum",
+      "page_no": 71,
+      "line_no": 31,
+      "confidence": 0.9977768659591675
+    },
+    {
+      "text": "zone height",
+      "page_no": 71,
+      "line_no": 32,
+      "confidence": 0.9596546292304993
+    },
+    {
+      "text": "plane A",
+      "page_no": 71,
+      "line_no": 33,
+      "confidence": 0.9743961691856384
+    },
+    {
+      "text": "-14minimum",
+      "page_no": 71,
+      "line_no": 34,
+      "confidence": 0.9565669894218445
+    },
+    {
+      "text": "projected",
+      "page_no": 71,
+      "line_no": 35,
+      "confidence": 0.9988046288490295
+    },
+    {
+      "text": "tolerance zone",
+      "page_no": 71,
+      "line_no": 36,
+      "confidence": 0.985396683216095
+    },
+    {
+      "text": "height",
+      "page_no": 71,
+      "line_no": 37,
+      "confidence": 0.9977181553840637
+    },
+    {
+      "text": "图",
+      "page_no": 71,
+      "line_no": 38,
+      "confidence": 0.9999732971191406
+    },
+    {
+      "text": "65",
+      "page_no": 71,
+      "line_no": 39,
+      "confidence": 0.9997579455375671
+    },
+    {
+      "text": "6.96-7.14",
+      "page_no": 96,
+      "line_no": 1,
+      "confidence": 0.9925488233566284
+    },
+    {
+      "text": "nterpr",
+      "page_no": 96,
+      "line_no": 2,
+      "confidence": 0.7943177223205566
+    },
+    {
+      "text": "totlon",
+      "page_no": 96,
+      "line_no": 3,
+      "confidence": 0.8495094180107117
+    },
+    {
+      "text": "toioranc",
+      "page_no": 96,
+      "line_no": 4,
+      "confidence": 0.6506695747375488
+    },
+    {
+      "text": "zones",
+      "page_no": 96,
+      "line_no": 5,
+      "confidence": 0.6677871942520142
+    },
+    {
+      "text": "6",
+      "page_no": 96,
+      "line_no": 6,
+      "confidence": 0.9993060827255249
+    },
+    {
+      "text": "HOLESEOUALLY SPACED",
+      "page_no": 96,
+      "line_no": 7,
+      "confidence": 0.9634210467338562
+    },
+    {
+      "text": "-Tyoical hole center",
+      "page_no": 96,
+      "line_no": 8,
+      "confidence": 0.7849656939506531
+    },
+    {
+      "text": "2.8(MABC",
+      "page_no": 96,
+      "line_no": 9,
+      "confidence": 0.8474020957946777
+    },
+    {
+      "text": "if nole",
+      "page_no": 96,
+      "line_no": 10,
+      "confidence": 0.6844522356987
+    },
+    {
+      "text": "1s oT MMC",
+      "page_no": 96,
+      "line_no": 11,
+      "confidence": 0.655199408531189
+    },
+    {
+      "text": "Ootua",
+      "page_no": 96,
+      "line_no": 12,
+      "confidence": 0.7171853184700012
+    },
+    {
+      "text": "Q",
+      "page_no": 96,
+      "line_no": 13,
+      "confidence": 0.4805191457271576
+    },
+    {
+      "text": "0.3(M)A",
+      "page_no": 96,
+      "line_no": 14,
+      "confidence": 0.9225311279296875
+    },
+    {
+      "text": "24.0",
+      "page_no": 96,
+      "line_no": 15,
+      "confidence": 0.9808254837989807
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 16,
+      "confidence": 0.9855872392654419
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 17,
+      "confidence": 0.9652683734893799
+    },
+    {
+      "text": "planeA",
+      "page_no": 96,
+      "line_no": 18,
+      "confidence": 0.7937052845954895
+    },
+    {
+      "text": "2.8 dto poslttonol",
+      "page_no": 96,
+      "line_no": 19,
+      "confidence": 0.8222532868385315
+    },
+    {
+      "text": "Tol zone (ot MMC)",
+      "page_no": 96,
+      "line_no": 20,
+      "confidence": 0.7361845970153809
+    },
+    {
+      "text": "for",
+      "page_no": 96,
+      "line_no": 21,
+      "confidence": 0.8851079344749451
+    },
+    {
+      "text": "potrernlocotlon",
+      "page_no": 96,
+      "line_no": 22,
+      "confidence": 0.7723962068557739
+    },
+    {
+      "text": "90°",
+      "page_no": 96,
+      "line_no": 23,
+      "confidence": 0.8776567578315735
+    },
+    {
+      "text": "T",
+      "page_no": 96,
+      "line_no": 24,
+      "confidence": 0.579093337059021
+    },
+    {
+      "text": "30.0",
+      "page_no": 96,
+      "line_no": 25,
+      "confidence": 0.9858349561691284
+    },
+    {
+      "text": "-32.032.0",
+      "page_no": 96,
+      "line_no": 26,
+      "confidence": 0.9517641067504883
+    },
+    {
+      "text": "150.0]",
+      "page_no": 96,
+      "line_no": 27,
+      "confidence": 0.9051547050476074
+    },
+    {
+      "text": "-0.3dlo poslttonol zone(ot mC) ior",
+      "page_no": 96,
+      "line_no": 28,
+      "confidence": 0.6778442859649658
+    },
+    {
+      "text": "hole-to-holspoctng.olso",
+      "page_no": 96,
+      "line_no": 29,
+      "confidence": 0.7860265970230103
+    },
+    {
+      "text": "porpendteulor",
+      "page_no": 96,
+      "line_no": 30,
+      "confidence": 0.8005290627479553
+    },
+    {
+      "text": "ottttudo to dotum plone A.",
+      "page_no": 96,
+      "line_no": 31,
+      "confidence": 0.7413297891616821
+    },
+    {
+      "text": "30.0",
+      "page_no": 96,
+      "line_no": 32,
+      "confidence": 0.9966226816177368
+    },
+    {
+      "text": "Goge for checkino 2.8 dio postttonal toleronce for portorn",
+      "page_no": 96,
+      "line_no": 33,
+      "confidence": 0.8418293595314026
+    },
+    {
+      "text": "-C-",
+      "page_no": 96,
+      "line_no": 34,
+      "confidence": 0.841938316822052
+    },
+    {
+      "text": "7.9 dto oog• ptns",
+      "page_no": 96,
+      "line_no": 35,
+      "confidence": 0.7631235122680664
+    },
+    {
+      "text": "24.0",
+      "page_no": 96,
+      "line_no": 36,
+      "confidence": 0.9983482956886292
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 37,
+      "confidence": 0.9953523874282837
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 38,
+      "confidence": 0.9939274191856384
+    },
+    {
+      "text": "1",
+      "page_no": 96,
+      "line_no": 39,
+      "confidence": 0.09366749972105026
+    },
+    {
+      "text": "-B-",
+      "page_no": 96,
+      "line_no": 40,
+      "confidence": 0.8728191256523132
+    },
+    {
+      "text": "g$",
+      "page_no": 96,
+      "line_no": 41,
+      "confidence": 0.40443360805511475
+    },
+    {
+      "text": "10.7-11.0",
+      "page_no": 96,
+      "line_no": 42,
+      "confidence": 0.968792200088501
+    },
+    {
+      "text": "HOLES",
+      "page_no": 96,
+      "line_no": 43,
+      "confidence": 0.9949766397476196
+    },
+    {
+      "text": "2.8(MABC",
+      "page_no": 96,
+      "line_no": 44,
+      "confidence": 0.8574521541595459
+    },
+    {
+      "text": "中",
+      "page_no": 96,
+      "line_no": 45,
+      "confidence": 0.14601749181747437
+    },
+    {
+      "text": "30.0",
+      "page_no": 96,
+      "line_no": 46,
+      "confidence": 0.9939934015274048
+    },
+    {
+      "text": "0.3(M)A",
+      "page_no": 96,
+      "line_no": 47,
+      "confidence": 0.8663684725761414
+    },
+    {
+      "text": "上格：",
+      "page_no": 96,
+      "line_no": 48,
+      "confidence": 0.8786028027534485
+    },
+    {
+      "text": "24:0",
+      "page_no": 96,
+      "line_no": 49,
+      "confidence": 0.9592911005020142
+    },
+    {
+      "text": "32.0-",
+      "page_no": 96,
+      "line_no": 50,
+      "confidence": 0.8843156695365906
+    },
+    {
+      "text": "32.0-",
+      "page_no": 96,
+      "line_no": 51,
+      "confidence": 0.9258561134338379
+    },
+    {
+      "text": "MMVS = MMS − t",
+      "page_no": 96,
+      "line_no": 52,
+      "confidence": 0.9048287272453308
+    },
+    {
+      "text": "= 10.7 - 2.8 = 7.9",
+      "page_no": 96,
+      "line_no": 53,
+      "confidence": 0.883779764175415
+    },
+    {
+      "text": "Goge for checktno O.3 dto poetttonol rolenonce for note-to-hole pacino",
+      "page_no": 96,
+      "line_no": 54,
+      "confidence": 0.8257672190666199
+    },
+    {
+      "text": "and",
+      "page_no": 96,
+      "line_no": 55,
+      "confidence": 0.9732811450958252
+    },
+    {
+      "text": "perpendiculortty",
+      "page_no": 96,
+      "line_no": 56,
+      "confidence": 0.8504838943481445
+    },
+    {
+      "text": "下格：",
+      "page_no": 96,
+      "line_no": 57,
+      "confidence": 0.8573951721191406
+    },
+    {
+      "text": "MMVS = MMS – t",
+      "page_no": 96,
+      "line_no": 58,
+      "confidence": 0.9199030995368958
+    },
+    {
+      "text": "0.4",
+      "page_no": 96,
+      "line_no": 59,
+      "confidence": 0.9856030941009521
+    },
+    {
+      "text": "dta",
+      "page_no": 96,
+      "line_no": 60,
+      "confidence": 0.8284425735473633
+    },
+    {
+      "text": "goge",
+      "page_no": 96,
+      "line_no": 61,
+      "confidence": 0.4229353666305542
+    },
+    {
+      "text": "ptna",
+      "page_no": 96,
+      "line_no": 62,
+      "confidence": 0.6778629422187805
+    },
+    {
+      "text": "= 10.7 - 0.3 = 10.4 -",
+      "page_no": 96,
+      "line_no": 63,
+      "confidence": 0.9206982851028442
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 64,
+      "confidence": 0.9919811487197876
+    },
+    {
+      "text": "1",
+      "page_no": 96,
+      "line_no": 65,
+      "confidence": 0.31791070103645325
+    },
+    {
+      "text": "32.0",
+      "page_no": 96,
+      "line_no": 66,
+      "confidence": 0.992911159992218
+    },
+    {
+      "text": "-",
+      "page_no": 105,
+      "line_no": 1,
+      "confidence": 0.9710548520088196
+    },
+    {
+      "text": "-",
+      "page_no": 105,
+      "line_no": 2,
+      "confidence": 0.9268714189529419
+    },
+    {
+      "text": "-",
+      "page_no": 105,
+      "line_no": 3,
+      "confidence": 0.8810520768165588
+    },
+    {
+      "text": "谢谢",
+      "page_no": 105,
+      "line_no": 4,
+      "confidence": 0.9985120296478271
+    }
+  ]
+}

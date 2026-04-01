@@ -18,7 +18,21 @@ export type SopDownloadFormat = 'docx' | 'pdf';
 export type QueryMode = 'fast' | 'accurate';
 export type EventLogCategory = 'chat' | 'document' | 'sop_generation';
 export type EventLogOutcome = 'success' | 'failed';
-export type RequestTraceStageName = 'query_rewrite' | 'retrieval' | 'rerank' | 'llm' | 'answer';
+export type RequestTraceStageName =
+  | 'query_rewrite'
+  | 'retrieval'
+  | 'route_planning'
+  | 'primary_recall'
+  | 'supplemental_recall'
+  | 'rerank'
+  | 'embedding'
+  | 'lexical'
+  | 'fusion'
+  | 'ocr_filter'
+  | 'permission_filter'
+  | 'result_finalize'
+  | 'llm'
+  | 'answer';
 export type RequestTraceStageStatus = 'success' | 'failed' | 'skipped' | 'degraded';
 export type RequestSnapshotReplayMode = 'original' | 'current';
 
@@ -555,6 +569,19 @@ export interface OpsStuckIngestJobSummary {
   reason: OpsStuckIngestJobReason;
 }
 
+export interface OpsRetrievalSummary {
+  sample_size: number;
+  qdrant_count: number;
+  hybrid_count: number;
+  supplemental_triggered_count: number;
+  supplemental_trigger_rate: number;
+  ocr_filtered_count: number;
+  permission_filtered_count: number;
+  average_candidate_count: number;
+  average_final_result_count: number;
+  top_query_types: string[];
+}
+
 export interface OpsSummaryResponse {
   checked_at: string;
   health: HealthResponse;
@@ -564,6 +591,7 @@ export interface OpsSummaryResponse {
   rerank_usage: OpsRerankUsageSummary;
   rerank_decision: OpsRerankDecisionSummary;
   rerank_canary: OpsRerankCanarySummary;
+  retrieval: OpsRetrievalSummary;
   stuck_ingest_jobs: OpsStuckIngestJobSummary[];
   categories: OpsCategorySummary[];
   recent_failures: EventLogRecord[];
@@ -944,6 +972,7 @@ export interface RetrievedChunk {
   score: number;  // chunk 匹配分数。
   source_path: string;  // 原始文档路径。
   retrieval_strategy: string | null;  // 当前结果的召回策略。
+  source_scope: string | null;  // 当前结果的来源范围，例如 department / global / both。
   vector_score: number | null;  // 原始向量召回分数。
   lexical_score: number | null;  // 原始词项召回分数。
   fused_score: number | null;  // 当前最终融合分数。
@@ -954,12 +983,117 @@ export interface RetrievedChunk {
   quality_score: number | null;  // OCR/解析质量分。
 }
 
+export interface RetrievalQueryStage {
+  raw_query: string;
+  normalized_query: string | null;
+  query_type: string | null;
+  query_granularity: string | null;
+  requested_mode: string | null;
+  effective_mode: string | null;
+}
+
+export interface RetrievalRoutingStage {
+  is_hybrid: boolean;
+  vector_weight: number | null;
+  lexical_weight: number | null;
+  is_document_id_exact: boolean;
+  department_priority_enabled: boolean;
+  structured_routing_applied: boolean;
+}
+
+export interface RetrievalPrimaryRecallStage {
+  vector_count: number;
+  lexical_count: number;
+  fused_count: number;
+  effective_count: number;
+  threshold: number | null;
+  whether_sufficient: boolean;
+}
+
+export interface RetrievalSupplementalRecallStage {
+  triggered: boolean;
+  reason: string | null;
+  vector_count: number;
+  lexical_count: number;
+  fused_count: number;
+}
+
+export interface ResultExplainability {
+  rank: number;
+  document_id: string;
+  chunk_id: string;
+  document_name: string;
+  source_scope: string | null;
+  department_hit: boolean;
+  supplemental_hit: boolean;
+  vector_score: number | null;
+  lexical_score: number | null;
+  fused_score: number | null;
+  final_score: number | null;
+  selected_via: string | null;
+  structured_backfill: boolean;
+  structured_backfill_reason: string | null;
+  why_included: string | null;
+}
+
+export interface FilteredCandidateSummary {
+  document_id: string;
+  chunk_id: string;
+  filter_reason: string;
+  filter_layer: string;
+}
+
+export interface RetrievalFilterStage {
+  ocr_quality_filtered_count: number;
+  permission_filtered_count: number;
+  document_scope_filtered_count: number;
+  top_k_truncated_count: number;
+  filtered_candidates: FilteredCandidateSummary[];
+}
+
+export interface RetrievalFinalizationStage {
+  final_result_count: number;
+  returned_top_k: number;
+  response_mode: string | null;
+  backfilled_chunk_count: number;
+  result_explanations: ResultExplainability[];
+}
+
+export interface RetrievalDiagnostic {
+  query: string;
+  query_type: string | null;
+  query_granularity?: string | null;
+  retrieval_mode: string | null;
+  document_id_filter_applied: boolean;
+  department_priority_enabled: boolean;
+  structured_routing_applied?: boolean;
+  backfilled_chunk_count?: number;
+  primary_threshold: number | null;
+  primary_effective_count: number | null;
+  supplemental_triggered: boolean;
+  supplemental_reason: string | null;
+  recall_counts: Record<string, number>;
+  filter_counts: Record<string, number>;
+  final_result_count: number;
+  branch_weights: Record<string, unknown> | null;
+  stage_durations_ms: Record<string, number>;
+  query_stage?: RetrievalQueryStage;
+  routing_stage?: RetrievalRoutingStage;
+  primary_recall_stage?: RetrievalPrimaryRecallStage;
+  supplemental_recall_stage?: RetrievalSupplementalRecallStage;
+  filter_stage?: RetrievalFilterStage;
+  finalization_stage?: RetrievalFinalizationStage;
+  result_explainability?: ResultExplainability[];
+  filtered_candidates?: FilteredCandidateSummary[];
+}
+
 /** 检索响应 */
 export interface RetrievalResponse {
   query: string;  // 原始查询文本。
   top_k: number;  // 本次请求的 top_k 值。
   mode: string;  // 当前检索模式。
   results: RetrievedChunk[];  // 返回的检索结果列表。
+  diagnostic: RetrievalDiagnostic | null;  // 结构化检索诊断信息。
 }
 
 export interface RerankComparisonResult {

@@ -1,0 +1,27 @@
+{
+  "session_id": "sess_42bcf8fc6d75489c99703a0c9769cfc2",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T08:46:54.264454Z",
+  "turns": [
+    {
+      "turn_id": "turn_628a8e13bdce",
+      "asked_at": "2026-04-01T08:43:54.434262Z",
+      "question": "解释一下cpps",
+      "answer": "根据提供的上下文，CPS（可能是Cable Protection System的缩写，即电缆保护系统）指的是在装配过程中用于固定拖链的一种部件。具体来说：\n\n- CPS梳妆片需要扣入到CPS拖链连接座的凹槽处，这一步骤确保了拖链能够正确地安装和保护内部的电缆。\n- 在固定端和移动端，使用特定的工具（如内六角扳手4mm和开口扳手8mm）来紧固螺丝，以确保CPS系统的稳固性。\n- 紧固螺丝后，需要用红色油性记号笔在每个螺丝上画线，以便于后续检查螺丝是否松动。\n\n这些步骤保证了CPS系统的正确安装和维护，从而保护了内部的电缆不受损坏。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_2d61a0c9887d",
+      "asked_at": "2026-04-01T08:46:54.264444Z",
+      "question": "解释一下cpps",
+      "answer": "根据提供的上下文，CPPS（可能是指Cable Protection System，即电缆保护系统）涉及在装配过程中固定拖链的操作。具体步骤包括：\n\n- 确保CPS梳妆片正确地扣入到CPS拖链连接座的凹槽处；\n- 使用内六角扳手4mm和开口扳手8mm来紧固螺丝；\n- 紧固螺丝后，需用红色油性记号笔在每个螺丝上画线，以确保后续检查螺丝是否松动。\n\n这些步骤确保了CPS系统的正确安装和维护，从而保护了内部的电缆不受损坏。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

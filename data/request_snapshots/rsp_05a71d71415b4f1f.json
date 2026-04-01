@@ -1,0 +1,164 @@
+{
+  "snapshot_id": "rsp_05a71d71415b4f1f",
+  "trace_id": "trc_retrieval_4d2fe2b45d914e1f",
+  "request_id": "req_retrieval_92747f4f1c3b435b",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T07:45:49.952574Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "解释一下cpps",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状",
+      "score": 0.9692307692307693,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5115614,
+      "lexical_score": 9.874934301697515,
+      "fused_score": 0.03177805800756621
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325071124_17f09733-chunk-4",
+      "document_id": "doc_20260325071124_17f09733",
+      "document_name": "zoom13.txt",
+      "snippet": "very high in one, two, three, four and six.\n你看，你的一、二、三、四和六都很高。\nSo one, two, three, four and six.\n所以一、二、三、四和六。\nRight.\n对。\nSo very high up here in your clustering\n在你的集群中，这里非常高\nHigh here.\n这里很高。\nBut we're ",
+      "score": 0.9276497695852534,
+      "source_path": "/app/data/uploads/doc_20260325071124_17f09733__zoom13.txt",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.4657632,
+      "lexical_score": 19.056407484915447,
+      "fused_score": 0.0304147465437788
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经\n我们关于前列腺炎 (CPPS) 的观点不同于传统的做法。 传统做法是将盆\n腔疼痛当 作前列腺炎进行治疗， 但我们不认为前列腺是大部 分男性盆腔疼\n痛问 题的根源",
+      "score": 0.9112597547380157,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.49304807,
+      "lexical_score": 8.550191810276187,
+      "fused_score": 0.029877369007803793
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-483",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "许\n多患者中， 十个激痛点中至少有两个可以诱发或引传疼痛至每 一个解 剖 位\n置 ， 每一个激痛点都能够再现至少一个部位的疼痛。 最具活性 的肌肉是腹\n直肌和腹外斜肌 ：对 这些肌肉中的激痛点进行触诊可以引起 七处部位中的\n四处产生疼痛。 会阴部位是最容易重现疼痛的部位， 十个激痛点中有八个\n可引 发会阴部位的疼痛。\n激痛点触诊在 患者 自述 长期疼痛的部位引 发的疼痛频 率非常值 得注\n意。 比",
+      "score": 0.8730320997750971,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.45679912,
+      "lexical_score": 9.622886146092139,
+      "fused_score": 0.02862400327131466
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-470",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "的另 一个特 点是：前列腺排空\n能力最 差的老 鼠前列腺腺叶表现 出更多的炎症 。 这是极少数的尝试记录生\n理和微观变化的行为效应的实验之一。\n米勒博士仅仅使用心理 学疗法就让他86%\n的前列腺炎 患者症状得到改善\n\n慢性盆腔疼痛 相关的 科学研究 367\n19 88 年 ， 哈里 ·米 勒 (Dr. Harry C. Miller) 对 218 名诉称有典型 CPPS\n症状的患者进行了研究。 他",
+      "score": 0.8364738805970149,
+      "source_path": "/app/data/uploads/doc_20260325053354_d093bd3e__The_headache_of_Penq.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.48394188,
+      "lexical_score": 6.792641722117992,
+      "fused_score": 0.027425373134328357
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "解释一下cpps",
+    "query_type": "fixed",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {}
+  }
+}

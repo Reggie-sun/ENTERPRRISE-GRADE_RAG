@@ -1,0 +1,77 @@
+{
+  "sample_id": "rcs_d464b010263f494d",
+  "occurred_at": "2026-04-01T07:13:36.149333Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "query": "这份文档主要讲了什么？",
+  "mode": "hybrid",
+  "target_id": null,
+  "candidate_count": 5,
+  "rerank_top_n": 5,
+  "route_status": {
+    "provider": "openai_compatible",
+    "model": "BAAI/bge-reranker-v2-m3",
+    "default_strategy": "provider",
+    "failure_cooldown_seconds": 15.0,
+    "effective_provider": "openai_compatible",
+    "effective_model": "BAAI/bge-reranker-v2-m3",
+    "effective_strategy": "provider",
+    "fallback_enabled": true,
+    "lock_active": false,
+    "lock_source": null,
+    "cooldown_remaining_seconds": 0.0,
+    "ready": true,
+    "detail": "OpenAI-compatible reranker requests are succeeding."
+  },
+  "configured_provider": "openai_compatible",
+  "configured_strategy": "provider",
+  "configured_error_message": null,
+  "heuristic_strategy": "heuristic",
+  "provider_candidate_strategy": "provider",
+  "provider_candidate_error_message": null,
+  "summary": {
+    "overlap_count": 5,
+    "top1_same": false,
+    "configured_only_chunk_ids": [],
+    "heuristic_only_chunk_ids": []
+  },
+  "provider_candidate_summary": {
+    "overlap_count": 5,
+    "top1_same": false,
+    "configured_only_chunk_ids": [],
+    "heuristic_only_chunk_ids": []
+  },
+  "recommendation": {
+    "decision": "provider_active",
+    "should_switch_default_strategy": false,
+    "message": "provider 已作为默认主路径运行，无需再切换 default_strategy。"
+  },
+  "details": {
+    "configured_top_chunk_ids": [
+      "doc_20260401034536_c635304a-chunk-0",
+      "doc_20260331064305_3ef34d9c-chunk-0",
+      "doc_20260331062309_d004c548-chunk-42",
+      "doc_20260401034536_c635304a-chunk-1",
+      "doc_20260331062309_d004c548-chunk-218"
+    ],
+    "heuristic_top_chunk_ids": [
+      "doc_20260401034536_c635304a-chunk-1",
+      "doc_20260401034536_c635304a-chunk-0",
+      "doc_20260331064305_3ef34d9c-chunk-0",
+      "doc_20260331062309_d004c548-chunk-42",
+      "doc_20260331062309_d004c548-chunk-218"
+    ],
+    "provider_candidate_top_chunk_ids": [
+      "doc_20260401034536_c635304a-chunk-0",
+      "doc_20260331064305_3ef34d9c-chunk-0",
+      "doc_20260331062309_d004c548-chunk-42",
+      "doc_20260401034536_c635304a-chunk-1",
+      "doc_20260331062309_d004c548-chunk-218"
+    ]
+  }
+}

@@ -48,9 +48,9 @@ class _RetrievalSettings(BaseSettings):
 
     # ── Fast 快速档配置（优先延迟） ──────────────────────────────────────────
     query_fast_top_k_default: int = Field(default=5, ge=1, le=20)           # 向量召回数
-    query_fast_candidate_multiplier: int = Field(default=2, ge=1, le=20)    # 候选集倍数
-    query_fast_lexical_top_k_default: int = Field(default=10, ge=1, le=200) # 词法召回数
-    query_fast_rerank_top_n: int = Field(default=3, ge=1, le=20)            # 重排序返回数
+    query_fast_candidate_multiplier: int = Field(default=4, ge=1, le=20)    # 候选集倍数
+    query_fast_lexical_top_k_default: int = Field(default=20, ge=1, le=200) # 词法召回数
+    query_fast_rerank_top_n: int = Field(default=5, ge=1, le=20)            # 重排序返回数
     query_fast_timeout_budget_seconds: float = Field(default=12.0, gt=0)    # 超时预算（秒）
 
     # ── Accurate 精确档配置（优先质量） ───────────────────────────────────────

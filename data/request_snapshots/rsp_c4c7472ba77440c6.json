@@ -1,0 +1,520 @@
+{
+  "snapshot_id": "rsp_c4c7472ba77440c6",
+  "trace_id": "trc_retrieval_d41eca8c828d4778",
+  "request_id": "req_retrieval_8b1ac263c6a940c1",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T08:15:37.967249Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "倒角规范",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "倒角规范",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "倒角标准及规范\t文件编号\tWI-SJ-043\n版 本 号\tA/1\n页    次\t6\n生效日期\t2022-11-17\n倒角的目的\n1.1安全需要：为了使在接触工件时不被锋利的边角划伤手；\n1.2 外观需要：为了使加工出来的工件更加美观；\n1.3工艺需要：在配合部位避免互相干涉，另外倒角还可以去除内应力防止工件热处理后因为应力集中而料裂；\n适用范围\n本标准适用我公司所有加工件、部套。\n职责\n3.1 生",
+      "score": 1.0,
+      "source_path": "/app/data/uploads/doc_20260330055115_5847f42f__WI-SJ-043_A1.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.7223489,
+      "lexical_score": 19.04728616166383,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "定\n6.1 倒角范围：外形楞、槽、台阶、孔口、螺纹孔口等部件C角、R角加工（C倒角：45°）。\n6.2 图纸应对不允许倒角的地方做出明确规定；\n6.3 图纸中所需要倒圆角的地方需要明确注明；\n6.4 图纸已有明确标注的按图加工检验，下表为普通零件倒角或圆角一般参考值；\n(d为直径或板面厚度）\n6.5图纸画出倒角而未标注的为未注倒角。未注倒角按技术要求所约定尺寸加工检验：\n外螺纹倒角，图纸有要求的，",
+      "score": 0.9760624679979518,
+      "source_path": "/app/data/uploads/doc_20260330055115_5847f42f__WI-SJ-043_A1.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.70545584,
+      "lexical_score": 15.300854724604278,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331083626_2236f7b1-chunk-4",
+      "document_id": "doc_20260331083626_2236f7b1",
+      "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+      "snippet": "规格型号与清单一致；\n内六角扳手\n2.5MM;(\n紧固扭矩\n2.5N\n•\nm)\n所有螺丝用红色油性记号笔\n100%\n在螺丝上画线且画线方向一致；\n注：确认配置单正、反方向\n；\n\nStep2\n检查\n外观表面无磕碰、变形、刮伤等不良现象；\n所有螺纹孔无残渣、无堵塞；\n规格型号与清单一致；\n内六角扳手\n2.5MM;(\n紧固扭矩\n2.5N\n•\nm)\n所有螺丝用红色油性记号笔\n100%\n在螺丝上画线且画线",
+      "score": 0.8504807692307692,
+      "source_path": "/app/data/uploads/doc_20260331083626_2236f7b1__FAW05-1000P-X1000-Y2000_SOP.pptx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.51384217,
+      "lexical_score": 4.655405284181178,
+      "fused_score": 0.027884615384615386
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401024730_572f32aa-chunk-0",
+      "document_id": "doc_20260401024730_572f32aa",
+      "document_name": "MaxC1015外观件螺丝使用规范.pdf",
+      "snippet": "第 1 页共5 页\n\nMaxC10/C15/CW\n10/CW15 外观件螺\n丝使用规范\n文件编号 WI-GC-038\n版本号 A/0\n页次 5\n生效日期 2017-05-27\n1 目的\n制定外观件螺丝使用标准，形成统一作业的规范。\n2 适用范围\nMaxC10/C15/CW10/CW15 外观件螺丝使用规范\n3 具体内容说明\n外观件定义：封机用罩壳类（包括塑料罩壳及钣金罩壳）、拖链板类、感应铁片固定",
+      "score": 0.7990582191780822,
+      "source_path": "/app/data/uploads/doc_20260401024730_572f32aa__MaxC1015.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.49041367,
+      "lexical_score": 5.609488037439087,
+      "fused_score": 0.0261986301369863
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-51",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "300A时)\n的脱轨等事故。\n●导向端盖与本体的滑动面有高差，\n导向端盖\n⚫ 在室外使用时，请咨询本公司。\n本体长度：75m以下\n本体长度：2m以下\n如右图所示，请对本体末端进行\n⚫ 必须安装盖子。\n倒角。\nwuz\n末端紧固绝缘子\n导向端盖\n导向端盖\n否则可能导致触电事故。\n（无供电）\n（通电）\n否则可能导致接触不良以及集电\n约5mm\n臂的脱轨等事故。\n本体滑动面\n张力区间：吊夹间隙2m以下\n非张",
+      "score": 0.4765625,
+      "source_path": "/app/data/uploads/doc_20260331081535_5d30086d__DH54.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 8.527770528931182,
+      "fused_score": 0.015625
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "倒角规范",
+    "query_type": "fixed",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 19,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector": 12,
+      "department_after_ocr": 19,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "倒角规范",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": null,
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 12,
+      "lexical_count": 0,
+      "fused_count": 19,
+      "effective_count": 19,
+      "threshold": 5,
+      "whether_sufficient": true
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_0e157e08",
+          "chunk_id": "doc_20260401023359_0e157e08-chunk-29",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-34",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-12",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-12",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-83",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+          "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.7223489,
+          "lexical_score": 19.04728616166383,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.7223，词法 19.0473，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+          "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.70545584,
+          "lexical_score": 15.300854724604278,
+          "fused_score": 0.03200204813108039,
+          "final_score": 0.9760624679979518,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.7055，词法 15.3009，融合 0.0320。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-4",
+          "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.51384217,
+          "lexical_score": 4.655405284181178,
+          "fused_score": 0.027884615384615386,
+          "final_score": 0.8504807692307692,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5138，词法 4.6554，融合 0.0279。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401024730_572f32aa",
+          "chunk_id": "doc_20260401024730_572f32aa-chunk-0",
+          "document_name": "MaxC1015外观件螺丝使用规范.pdf",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.49041367,
+          "lexical_score": 5.609488037439087,
+          "fused_score": 0.0261986301369863,
+          "final_score": 0.7990582191780822,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4904，词法 5.6095，融合 0.0262。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-51",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 8.527770528931182,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 8.5278，融合 0.0156。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+        "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.7223489,
+        "lexical_score": 19.04728616166383,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.7223，词法 19.0473，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+        "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.70545584,
+        "lexical_score": 15.300854724604278,
+        "fused_score": 0.03200204813108039,
+        "final_score": 0.9760624679979518,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.7055，词法 15.3009，融合 0.0320。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-4",
+        "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.51384217,
+        "lexical_score": 4.655405284181178,
+        "fused_score": 0.027884615384615386,
+        "final_score": 0.8504807692307692,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5138，词法 4.6554，融合 0.0279。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401024730_572f32aa",
+        "chunk_id": "doc_20260401024730_572f32aa-chunk-0",
+        "document_name": "MaxC1015外观件螺丝使用规范.pdf",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.49041367,
+        "lexical_score": 5.609488037439087,
+        "fused_score": 0.0261986301369863,
+        "final_score": 0.7990582191780822,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4904，词法 5.6095，融合 0.0262。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-51",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 8.527770528931182,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 8.5278，融合 0.0156。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_0e157e08",
+        "chunk_id": "doc_20260401023359_0e157e08-chunk-29",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-34",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-12",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-12",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-83",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

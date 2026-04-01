@@ -2,9 +2,9 @@
   "query_profiles": {
     "fast": {
       "top_k_default": 5,
-      "candidate_multiplier": 2,
-      "lexical_top_k": 10,
-      "rerank_top_n": 3,
+      "candidate_multiplier": 4,
+      "lexical_top_k": 20,
+      "rerank_top_n": 5,
       "timeout_budget_seconds": 12.0
     },
     "accurate": {

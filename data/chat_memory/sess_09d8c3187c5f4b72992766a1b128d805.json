@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_09d8c3187c5f4b72992766a1b128d805",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-04-01T05:08:26.149719Z",
+  "turns": [
+    {
+      "turn_id": "turn_48ba33956448",
+      "asked_at": "2026-04-01T05:08:26.149625Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS（慢性盆腔疼痛综合征）指的是男性的一种长期盆腔区域疼痛状况，这种疼痛并非由感染或其他明确原因引起。书中指出，传统上医生倾向于将盆腔疼痛归因于前列腺炎，但作者认为这是错误的，因为大部分男性盆腔疼痛并非由前列腺问题引起。相反，疼痛可能是由于盆腔内的复杂神经系统、肌肉结构及其相互作用的问题导致的。此外，书中还提到CPPS与头痛有相似之处，强调了心理因素在疼痛感知中的作用，并指出目前对于这类疾病的治疗手段并不十分有效。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 3
+    }
+  ]
+}

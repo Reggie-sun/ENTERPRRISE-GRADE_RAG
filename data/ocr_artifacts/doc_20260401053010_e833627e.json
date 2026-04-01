@@ -1,0 +1,24 @@
+{
+  "document_id": "doc_20260401053010_e833627e",
+  "file_name": "WL-SJ-046#地轨制造工艺规范#A0.docx",
+  "source_path": "/app/data/uploads/doc_20260401053010_e833627e__WL-SJ-046_A0.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 2,
+  "page_count": 1,
+  "normalized_text": "WELLLIH\n伟立机器人",
+  "segments": [
+    {
+      "text": "WELLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.7709583640098572
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9999231100082397
+    }
+  ]
+}

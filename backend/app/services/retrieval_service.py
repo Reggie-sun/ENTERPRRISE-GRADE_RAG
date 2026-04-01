@@ -12,11 +12,19 @@ from ..rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant �
 from ..schemas.auth import AuthContext  # 导入统一鉴权上下文，供检索结果过滤复用。
 from ..schemas.query_profile import QueryProfile
 from ..schemas.retrieval import (  # 导入检索请求、响应和结果模型。
+    FilteredCandidateSummary,
+    ResultExplainability,
     RetrievalDiagnostic,
+    RetrievalFilterStage,
+    RetrievalFinalizationStage,
+    RetrievalPrimaryRecallStage,
+    RetrievalQueryStage,
     RetrievalRerankCompareResponse,
     RetrievalRerankRouteStatus,
     RetrievalRequest,
     RetrievalResponse,
+    RetrievalRoutingStage,
+    RetrievalSupplementalRecallStage,
     RetrievedChunk,
     RerankPromotionRecommendation,
     RerankComparisonResult,
@@ -107,6 +115,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 request=request,
                 profile=profile,
                 auth_context=auth_context,
+                results=results,
             )
             if include_diagnostic
             else None
@@ -206,7 +215,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             recall_counts["total_candidates"] = pre_filter_count
             diagnostic["recall_counts"] = recall_counts
 
-        candidates, ocr_filtered_count = self._apply_ocr_quality_governance(candidates)
+        candidates, ocr_filtered_candidates = self._apply_ocr_quality_governance(candidates)
+        ocr_filtered_count = len(ocr_filtered_candidates)
 
         if diagnostic is not None and ocr_filtered_count > 0:
             diagnostic["ocr_quality_filtered"] = ocr_filtered_count
@@ -225,14 +235,30 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
 
         _permission_filtered = 0
         _scope_filtered = 0
+        filtered_candidates: list[dict[str, str]] = [
+            self._candidate_summary(
+                candidate,
+                filter_reason=f"ocr_quality_below_threshold({self.settings.ocr_low_quality_min_score:.2f})",
+                filter_layer="ocr_governance",
+            )
+            for candidate in ocr_filtered_candidates
+        ]
+        truncated_candidates: list[dict[str, str]] = []
 
-        for candidate in candidates:  # 遍历最终候选结果，统一兼容纯向量与 hybrid 模式。
+        for index, candidate in enumerate(candidates):  # 遍历最终候选结果，统一兼容纯向量与 hybrid 模式。
             payload = candidate.payload  # 读取 payload，空值在融合前已经归一成空字典。
             resolved_document_id = str(payload.get("document_id") or "unknown")  # 先解析文档 ID，供权限判断和结果对象复用。
             if auth_context is not None:
                 can_read = retrievability_cache.get(resolved_document_id, False)
                 if not can_read:
                     _permission_filtered += 1
+                    filtered_candidates.append(
+                        self._candidate_summary(
+                            candidate,
+                            filter_reason="not_retrievable_for_auth_context",
+                            filter_layer="permission_check",
+                        )
+                    )
                     continue
             raw_score = float(candidate.score)  # 保留内部原始排序分，hybrid 模式下这是加权 RRF 原始值。
             output_score = self._response_score(
@@ -260,9 +286,24 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             )
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
                 _scope_filtered += 1
+                filtered_candidates.append(
+                    self._candidate_summary(
+                        candidate,
+                        filter_reason="document_scope_mismatch",
+                        filter_layer="scope_check",
+                    )
+                )
                 continue
             results.append(item)  # 命中过滤条件后才加入返回列表。
             if result_limit is not None and len(results) >= result_limit:  # 对外检索保留 top_k，内部链路可显式拿到更大的融合候选。
+                truncated_candidates = [
+                    self._candidate_summary(
+                        remainder,
+                        filter_reason="ranked_below_top_k",
+                        filter_layer="top_k",
+                    )
+                    for remainder in candidates[index + 1 :]
+                ]
                 break
 
         # --- diagnostic: filter summary ---
@@ -282,6 +323,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             if filters:
                 diagnostic["filters"] = filters
                 diagnostic["filter_counts"] = dict(filters)
+            diagnostic["filtered_candidates"] = filtered_candidates + truncated_candidates[:10]
 
         return results, retrieval_mode, profile
 
@@ -473,25 +515,221 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         request: RetrievalRequest,
         profile: QueryProfile,
         auth_context: AuthContext | None,
+        results: list[RetrievedChunk],
     ) -> RetrievalDiagnostic:
         """将 search_candidates 内部诊断字典转换为结构化 RetrievalDiagnostic。"""
-        recall_counts = diagnostic.get("recall_counts")
-        filter_counts = diagnostic.get("filter_counts", diagnostic.get("filters"))
-        return RetrievalDiagnostic(
-            query=str(diagnostic.get("raw_query", request.query)),
-            query_type=diagnostic.get("query_type"),
-            retrieval_mode=str(diagnostic.get("retrieval_mode", "")),
-            document_id_filter_applied=bool(diagnostic.get("document_id_filter_applied", False)),
-            department_priority_enabled=bool(diagnostic.get("department_priority_enabled", False)),
-            primary_threshold=diagnostic.get("primary_threshold"),
-            primary_effective_count=diagnostic.get("primary_effective_count"),
-            supplemental_triggered=bool(diagnostic.get("supplemental_triggered", False)),
-            supplemental_reason=diagnostic.get("supplemental_reason"),
-            recall_counts=dict(recall_counts) if isinstance(recall_counts, dict) else {},
-            filter_counts=dict(filter_counts) if isinstance(filter_counts, dict) else {},
-            final_result_count=int(diagnostic.get("final_result_count", diagnostic.get("final_results", 0))),
-            branch_weights=diagnostic.get("branch_weights"),
+        recall_counts = dict(diagnostic.get("recall_counts")) if isinstance(diagnostic.get("recall_counts"), dict) else {}
+        filter_counts = dict(diagnostic.get("filter_counts", diagnostic.get("filters"))) if isinstance(diagnostic.get("filter_counts", diagnostic.get("filters")), dict) else {}
+        branch_weights = diagnostic.get("branch_weights")
+        retrieval_mode = str(diagnostic.get("retrieval_mode", "")) or None
+        query_text = str(diagnostic.get("raw_query", request.query))
+        department_priority_enabled = bool(diagnostic.get("department_priority_enabled", False))
+        primary_effective_count = RetrievalService._as_int(diagnostic.get("primary_effective_count"))
+        primary_threshold = RetrievalService._as_int(diagnostic.get("primary_threshold"))
+        supplemental_triggered = bool(diagnostic.get("supplemental_triggered", False))
+        filtered_candidates = RetrievalService._build_filtered_candidate_summaries(
+            diagnostic.get("filtered_candidates"),
         )
+        result_explainability = RetrievalService._build_result_explainability(
+            results=results,
+            department_priority_enabled=department_priority_enabled,
+        )
+        query_stage = RetrievalQueryStage(
+            raw_query=query_text,
+            normalized_query=None,
+            query_type=RetrievalService._as_optional_str(diagnostic.get("query_type")),
+            query_granularity=RetrievalService._as_optional_str(diagnostic.get("query_granularity")),
+            requested_mode=str(request.mode) if request.mode is not None else None,
+            effective_mode=retrieval_mode,
+        )
+        routing_stage = RetrievalRoutingStage(
+            is_hybrid=retrieval_mode == "hybrid",
+            vector_weight=RetrievalService._as_float((branch_weights or {}).get("vector_weight")) if isinstance(branch_weights, dict) else None,
+            lexical_weight=RetrievalService._as_float((branch_weights or {}).get("lexical_weight")) if isinstance(branch_weights, dict) else None,
+            is_document_id_exact=bool(diagnostic.get("document_id_filter_applied", False)),
+            department_priority_enabled=department_priority_enabled,
+            structured_routing_applied=bool(diagnostic.get("structured_routing_applied", False)),
+        )
+        primary_vector_count = RetrievalService._pick_count(recall_counts, "department_vector_count", "department_vector", "vector_count")
+        primary_lexical_count = RetrievalService._pick_count(recall_counts, "department_lexical_count", "department_lexical", "lexical_count")
+        primary_fused_count = RetrievalService._pick_count(recall_counts, "department_fused_count", "department_after_ocr", "fused_count", "total_candidates")
+        effective_count = primary_effective_count if primary_effective_count is not None else primary_fused_count
+        primary_recall_stage = RetrievalPrimaryRecallStage(
+            vector_count=primary_vector_count,
+            lexical_count=primary_lexical_count,
+            fused_count=primary_fused_count,
+            effective_count=effective_count,
+            threshold=primary_threshold,
+            whether_sufficient=(not supplemental_triggered) if primary_threshold is None else effective_count >= primary_threshold,
+        )
+        supplemental_recall_stage = RetrievalSupplementalRecallStage(
+            triggered=supplemental_triggered,
+            reason=RetrievalService._as_optional_str(diagnostic.get("supplemental_reason")),
+            vector_count=RetrievalService._pick_count(recall_counts, "supplemental_vector_count", "supplemental_vector"),
+            lexical_count=RetrievalService._pick_count(recall_counts, "supplemental_lexical_count", "supplemental_lexical"),
+            fused_count=RetrievalService._pick_count(recall_counts, "supplemental_fused_count", "supplemental_recall"),
+        )
+        filter_stage = RetrievalFilterStage(
+            ocr_quality_filtered_count=RetrievalService._pick_count(filter_counts, "ocr_quality_filtered_count", "ocr_quality_filtered", "ocr_quality"),
+            permission_filtered_count=RetrievalService._pick_count(filter_counts, "permission_filtered_count", "permission_filtered", "permission"),
+            document_scope_filtered_count=RetrievalService._pick_count(filter_counts, "document_scope_filtered_count", "document_scope_filtered", "document_scope"),
+            top_k_truncated_count=RetrievalService._pick_count(filter_counts, "top_k_truncated_count", "top_k_truncated"),
+            filtered_candidates=filtered_candidates,
+        )
+        final_result_count = int(diagnostic.get("final_result_count", diagnostic.get("final_results", 0)))
+        finalization_stage = RetrievalFinalizationStage(
+            final_result_count=final_result_count,
+            returned_top_k=len(results),
+            response_mode=retrieval_mode,
+            backfilled_chunk_count=RetrievalService._as_int(diagnostic.get("backfilled_chunk_count")) or 0,
+            result_explanations=result_explainability,
+        )
+        return RetrievalDiagnostic(
+            query=query_text,
+            query_type=RetrievalService._as_optional_str(diagnostic.get("query_type")),
+            retrieval_mode=retrieval_mode,
+            document_id_filter_applied=bool(diagnostic.get("document_id_filter_applied", False)),
+            department_priority_enabled=department_priority_enabled,
+            primary_threshold=primary_threshold,
+            primary_effective_count=primary_effective_count,
+            supplemental_triggered=supplemental_triggered,
+            supplemental_reason=RetrievalService._as_optional_str(diagnostic.get("supplemental_reason")),
+            recall_counts=recall_counts,
+            filter_counts=filter_counts,
+            final_result_count=final_result_count,
+            branch_weights=branch_weights if isinstance(branch_weights, dict) else None,
+            stage_durations_ms=dict(diagnostic.get("stage_durations_ms")) if isinstance(diagnostic.get("stage_durations_ms"), dict) else {},
+            query_stage=query_stage,
+            routing_stage=routing_stage,
+            primary_recall_stage=primary_recall_stage,
+            supplemental_recall_stage=supplemental_recall_stage,
+            filter_stage=filter_stage,
+            finalization_stage=finalization_stage,
+            result_explainability=result_explainability,
+            filtered_candidates=filtered_candidates,
+        )
+
+    @staticmethod
+    def _pick_count(record: dict[str, int], *keys: str) -> int:
+        for key in keys:
+            value = record.get(key)
+            if isinstance(value, int):
+                return value
+        return 0
+
+    @staticmethod
+    def _as_int(value: object) -> int | None:
+        if isinstance(value, bool) or value is None:
+            return None
+        if isinstance(value, int):
+            return value
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _as_float(value: object) -> float | None:
+        if isinstance(value, bool) or value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return float(value)
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _as_optional_str(value: object) -> str | None:
+        if value is None:
+            return None
+        value_str = str(value).strip()
+        return value_str or None
+
+    @staticmethod
+    def _build_filtered_candidate_summaries(raw_items: object) -> list[FilteredCandidateSummary]:
+        if not isinstance(raw_items, list):
+            return []
+        items: list[FilteredCandidateSummary] = []
+        for raw in raw_items:
+            if not isinstance(raw, dict):
+                continue
+            items.append(
+                FilteredCandidateSummary(
+                    document_id=str(raw.get("document_id") or ""),
+                    chunk_id=str(raw.get("chunk_id") or ""),
+                    filter_reason=str(raw.get("filter_reason") or ""),
+                    filter_layer=str(raw.get("filter_layer") or ""),
+                )
+            )
+        return items
+
+    @staticmethod
+    def _build_result_explainability(
+        *,
+        results: list[RetrievedChunk],
+        department_priority_enabled: bool,
+    ) -> list[ResultExplainability]:
+        explainability: list[ResultExplainability] = []
+        for rank, item in enumerate(results, start=1):
+            source_scope = item.source_scope
+            if source_scope in {"department", "global", "both"}:
+                selected_via = source_scope
+            elif department_priority_enabled:
+                selected_via = "department"
+            else:
+                selected_via = "global"
+            explainability.append(
+                ResultExplainability(
+                    rank=rank,
+                    document_id=item.document_id,
+                    chunk_id=item.chunk_id,
+                    document_name=item.document_name,
+                    source_scope=source_scope,
+                    department_hit=source_scope in {"department", "both"},
+                    supplemental_hit=source_scope in {"global", "both"},
+                    vector_score=item.vector_score,
+                    lexical_score=item.lexical_score,
+                    fused_score=item.fused_score,
+                    final_score=item.score,
+                    selected_via=selected_via,
+                    structured_backfill=False,
+                    structured_backfill_reason=None,
+                    why_included=RetrievalService._build_inclusion_reason(item=item, selected_via=selected_via),
+                )
+            )
+        return explainability
+
+    @staticmethod
+    def _build_inclusion_reason(*, item: RetrievedChunk, selected_via: str | None) -> str:
+        routing_text = "hybrid 融合排序" if item.retrieval_strategy == "hybrid" else (item.retrieval_strategy or "检索排序")
+        via_text = {
+            "department": "本部门命中",
+            "supplemental": "补充命中",
+            "global": "全局范围命中",
+            "both": "部门与补充双重命中",
+        }.get(selected_via, "检索命中")
+        score_parts: list[str] = []
+        if item.vector_score is not None:
+            score_parts.append(f"向量 {item.vector_score:.4f}")
+        if item.lexical_score is not None:
+            score_parts.append(f"词法 {item.lexical_score:.4f}")
+        if item.fused_score is not None:
+            score_parts.append(f"融合 {item.fused_score:.4f}")
+        score_text = "，".join(score_parts)
+        if score_text:
+            return f"{via_text}，按 {routing_text} 保留；{score_text}。"
+        return f"{via_text}，按 {routing_text} 保留。"
+
+    @staticmethod
+    def _candidate_summary(candidate: _RetrievalCandidate, *, filter_reason: str, filter_layer: str) -> dict[str, str]:
+        payload = candidate.payload
+        return {
+            "document_id": str(payload.get("document_id") or ""),
+            "chunk_id": str(payload.get("chunk_id") or candidate.candidate_id),
+            "filter_reason": filter_reason,
+            "filter_layer": filter_layer,
+        }
 
     def _build_route_status(self) -> RetrievalRerankRouteStatus:
         status = self.reranker_client.get_runtime_status()
@@ -725,43 +963,43 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
     def _apply_ocr_quality_governance(
         self,
         candidates: list[_RetrievalCandidate],
-    ) -> tuple[list[_RetrievalCandidate], int]:
+    ) -> tuple[list[_RetrievalCandidate], list[_RetrievalCandidate]]:
         """Filter low-quality OCR candidates.
 
         OCR 质量治理：过滤低质量 OCR 识别候选，防止噪声进入下游生成链路。
         若过滤后结果为空则保留原始候选，避免检索结果被完全打空。
 
         输入：候选列表。
-        输出：(过滤后的候选列表, 被过滤的数量) 二元组。
+        输出：(过滤后的候选列表, 被过滤的候选列表) 二元组。
         """
         if not self.settings.ocr_low_quality_filter_enabled or not candidates:
-            return candidates, 0
+            return candidates, []
 
         kept_candidates: list[_RetrievalCandidate] = []
-        filtered_count = 0
+        filtered_candidates: list[_RetrievalCandidate] = []
         for candidate in candidates:
             if self._is_low_quality_ocr_candidate(candidate):
-                filtered_count += 1
+                filtered_candidates.append(candidate)
                 continue
             kept_candidates.append(candidate)
 
-        if filtered_count <= 0:
-            return candidates, 0
+        if not filtered_candidates:
+            return candidates, []
         if not kept_candidates:  # 不让 OCR 质量治理把结果完全打空；极端情况下保留原始候选供后续链路继续工作。
             logger.info(
                 "ocr quality governance skipped reason=all_candidates_low_quality filtered_count=%d threshold=%.3f",
-                filtered_count,
+                len(filtered_candidates),
                 self.settings.ocr_low_quality_min_score,
             )
-            return candidates, 0
+            return candidates, []
 
         logger.info(
             "ocr quality governance filtered_count=%d kept_count=%d threshold=%.3f",
-            filtered_count,
+            len(filtered_candidates),
             len(kept_candidates),
             self.settings.ocr_low_quality_min_score,
         )
-        return kept_candidates, filtered_count
+        return kept_candidates, filtered_candidates
 
     def _is_low_quality_ocr_candidate(self, candidate: _RetrievalCandidate) -> bool:
         payload = candidate.payload

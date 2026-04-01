@@ -1,0 +1,78 @@
+{
+  "snapshot_id": "rsp_4b36ad5812064548",
+  "trace_id": "trc_476b16ac8e714889",
+  "request_id": "req_bce1df7e2324466e",
+  "category": "chat",
+  "action": "stream_answer",
+  "outcome": "failed",
+  "occurred_at": "2026-04-01T05:32:47.355612Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "top_k": null,
+    "mode": "fast",
+    "session_id": "sess_73ca9f131bbf495296e3a86e69ae4171",
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "chat",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 10,
+    "lexical_top_k": 10,
+    "rerank_top_n": 3,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": "[Recent Turn 1]\nUser: 解释一下cpps\nAssistant: 根据提供的上下文，CPPS中的CPS指的是CPS梳妆片，它需要按照特定的方向扣入到CPS拖链连接座的凹槽处。这一步骤对于确保拖链系统的正确安装和功能至关重要。具体来说，CPS梳妆片在固定端和移动端都需要正确地扣入到对应的CPS拖链连接座的凹槽中，并且有明确的方向要求。此外，安装过程中使用内六角扳手4MM和开口扳手8MM进行紧固，紧固扭矩为7.5N·m，所有螺丝需要用红色油性记号笔标记以确保一致性。\n\n[Recent Turn 2]\nUser: 本部门最近更新了哪些 SOP 或处理资料？\nAssistant: 无法找到足够的证据来回答关于本部门最近更新了哪些SOP或处理资料的问题。提供的上下文中没有提及任何SOP或处理资料的更新信息。",
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "本部门最近更新了哪些 SOP 或处理资料？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "chat-rag-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "failed",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 0,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": true,
+    "error_message": "Embedding request to OpenAI-compatible server failed: timed out",
+    "query_granularity": null,
+    "structured_routing_applied": false,
+    "backfilled_chunk_count": 0
+  },
+  "details": {
+    "streaming": true,
+    "runtime_channel": "chat_fast",
+    "acquire_timeout_ms": 800,
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

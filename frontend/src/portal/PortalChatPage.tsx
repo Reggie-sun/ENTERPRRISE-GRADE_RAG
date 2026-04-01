@@ -1,9 +1,11 @@
 import { MessageSquareText, Sparkles } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Button, Card, HeroCard, StatusPill, Textarea, EvidenceSourceSummary } from '@/components';
 import {
+  ApiError,
+  askQuestion,
   askQuestionStream,
   formatApiError,
   type ChatResponse,
@@ -14,6 +16,7 @@ import {
 import { getOrCreateStoredSessionId, rememberDocument, rememberQuestion } from '@/portal/portalStorage';
 
 type PortalChatStatus = 'idle' | 'loading' | 'success' | 'error';
+const PORTAL_STREAM_START_TIMEOUT_MS = 15_000;
 const QUERY_MODE_OPTIONS: Array<{
   value: QueryMode;
   label: string;
@@ -37,6 +40,8 @@ export function PortalChatPage() {
   const [status, setStatus] = useState<PortalChatStatus>('idle');
   const [data, setData] = useState<ChatResponse | null>(null);
   const [error, setError] = useState('');
+  const activeRequestRef = useRef<{ controller: AbortController; reason: 'superseded' | 'unmounted' | 'startup-timeout' | null } | null>(null);
+  const requestVersionRef = useRef(0);
 
   useEffect(() => {
     if (searchQuestion) {
@@ -45,6 +50,14 @@ export function PortalChatPage() {
     }
     setQuestion((current) => current || suggestedDefaultQuestion);
   }, [searchQuestion, suggestedDefaultQuestion]);
+
+  useEffect(() => () => {
+    if (activeRequestRef.current) {
+      activeRequestRef.current.reason = 'unmounted';
+      activeRequestRef.current.controller.abort();
+      activeRequestRef.current = null;
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +68,53 @@ export function PortalChatPage() {
       return;
     }
 
+    if (activeRequestRef.current) {
+      activeRequestRef.current.reason = 'superseded';
+      activeRequestRef.current.controller.abort();
+    }
+
+    const requestVersion = requestVersionRef.current + 1;
+    requestVersionRef.current = requestVersion;
+    const controller = new AbortController();
+    activeRequestRef.current = { controller, reason: null };
+    let sawStreamEvent = false;
+    let fallbackRequested = false;
+    const requestPayload = { question: normalizedQuestion, mode: queryMode, session_id: sessionId } as const;
+    const clearActiveRequest = () => {
+      if (activeRequestRef.current?.controller === controller) {
+        activeRequestRef.current = null;
+      }
+    };
+    const markStreamEvent = () => {
+      sawStreamEvent = true;
+      window.clearTimeout(startupTimer);
+    };
+    const persistResponse = (response: ChatResponse) => {
+      response.citations.forEach((item) => {
+        rememberDocument({
+          docId: item.document_id,
+          fileName: item.document_name,
+          departmentId: null,
+          categoryId: null,
+          source: 'chat',
+        });
+      });
+      setData(response);
+      setStatus('success');
+      setSearchParams(
+        normalizedQuestion
+          ? new URLSearchParams({ q: normalizedQuestion })
+          : new URLSearchParams(),
+      );
+    };
+    const startupTimer = window.setTimeout(() => {
+      if (!sawStreamEvent && activeRequestRef.current?.controller === controller) {
+        fallbackRequested = true;
+        activeRequestRef.current.reason = 'startup-timeout';
+        controller.abort();
+      }
+    }, PORTAL_STREAM_START_TIMEOUT_MS);
+
     setStatus('loading');
     setError('');
     setData(null);
@@ -62,9 +122,13 @@ export function PortalChatPage() {
 
     try {
       const response = await askQuestionStream(
-        { question: normalizedQuestion, mode: queryMode, session_id: sessionId },
+        requestPayload,
         {
           onMeta: (meta: ChatStreamMeta) => {
+            if (requestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setData({
               question: meta.question,
               answer: '',
@@ -74,6 +138,10 @@ export function PortalChatPage() {
             });
           },
           onDelta: (delta: string) => {
+            if (requestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setData((prev) => {
               if (!prev) {
                 return {
@@ -88,31 +156,49 @@ export function PortalChatPage() {
             });
           },
           onDone: (done: ChatResponse) => {
+            if (requestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setData(done);
           },
         },
+        { signal: controller.signal },
       );
 
-      response.citations.forEach((item) => {
-        rememberDocument({
-          docId: item.document_id,
-          fileName: item.document_name,
-          departmentId: null,
-          categoryId: null,
-          source: 'chat',
-        });
-      });
-
-      setData(response);
-      setStatus('success');
-      setSearchParams(
-        normalizedQuestion
-          ? new URLSearchParams({ q: normalizedQuestion })
-          : new URLSearchParams(),
-      );
+      if (requestVersionRef.current !== requestVersion) {
+        return;
+      }
+      persistResponse(response);
     } catch (err) {
+      if (requestVersionRef.current !== requestVersion) {
+        return;
+      }
+      const abortReason = activeRequestRef.current?.controller === controller ? activeRequestRef.current.reason : null;
+      const shouldFallback =
+        !sawStreamEvent &&
+        (fallbackRequested ||
+          (err instanceof ApiError && (err.kind === 'timeout' || err.kind === 'network' || err.kind === 'parse')));
+      if (shouldFallback && abortReason !== 'superseded' && abortReason !== 'unmounted') {
+        try {
+          const fallbackResponse = await askQuestion(requestPayload);
+          if (requestVersionRef.current !== requestVersion) {
+            return;
+          }
+          persistResponse(fallbackResponse);
+          return;
+        } catch (fallbackError) {
+          err = fallbackError;
+        }
+      }
+      if (abortReason === 'superseded' || abortReason === 'unmounted') {
+        return;
+      }
       setStatus('error');
       setError(formatApiError(err, '智能问答'));
+    } finally {
+      window.clearTimeout(startupTimer);
+      clearActiveRequest();
     }
   };
 

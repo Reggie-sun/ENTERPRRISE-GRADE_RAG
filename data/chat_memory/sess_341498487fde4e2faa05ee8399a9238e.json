@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_341498487fde4e2faa05ee8399a9238e",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T07:58:37.394656Z",
+  "turns": [
+    {
+      "turn_id": "turn_3d5ebbc3024a",
+      "asked_at": "2026-04-01T07:58:37.394618Z",
+      "question": "总结这份已上传文档里最相关的内容。",
+      "answer": "无法直接总结这份文档里最相关的内容，因为提供的上下文是不完整的段落和章节标题，并没有提供具体内容。这些上下文显示了文档中涉及的几个部分，如“引拔梁检查”、“主手臂部件”、“总装”以及“搬运注意事项”，但没有给出每个部分的具体内容或细节。因此，无法确定哪个部分是最相关的。 若要进行总结，需要更多具体信息。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

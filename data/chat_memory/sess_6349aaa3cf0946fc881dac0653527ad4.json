@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_6349aaa3cf0946fc881dac0653527ad4",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T07:28:17.246506Z",
+  "turns": [
+    {
+      "turn_id": "turn_ffb7c9bb157d",
+      "asked_at": "2026-04-01T07:28:17.246487Z",
+      "question": "解释一下cpps",
+      "answer": "根据提供的上下文，CPS（可能是Cable Protection System的缩写，即电缆保护系统）指的是在装配过程中用于固定拖链的一种部件。具体来说：\n\n- CPS梳妆片需要扣入到CPS拖链连接座的凹槽处，这一步骤确保了拖链能够正确地被固定和引导。\n- 在固定端和移动端，使用特定的工具（如内六角扳手4mm和开口扳手8mm）来紧固螺丝，其紧固扭矩为7.5N·m。\n- 所有螺丝需用红色油性记号笔标记，以确保它们的方向一致。\n\n这些步骤保证了装配过程中的精确性和可靠性。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

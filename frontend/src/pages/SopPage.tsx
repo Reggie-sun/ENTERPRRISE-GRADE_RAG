@@ -1,12 +1,14 @@
 import { Download, History, LibraryBig, RefreshCcw, Save, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { useUploadWorkspace } from '@/app/UploadWorkspaceContext';
 import { Button, Card, HeroCard, Input, StatusPill, StreamProgressSummary, Textarea, type StreamProgressMetrics, EvidenceSourceSummary } from '@/components';
 import { UploadPanel } from '@/panels';
 import {
+  ApiError,
   downloadSopDraftFile,
   formatApiError,
+  generateSopByDocument,
   generateSopByDocumentStream,
   getAuthBootstrap,
   getSops,
@@ -26,6 +28,7 @@ import {
 
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 type DraftRequestMode = SopGenerationRequestMode | '';
+const SOP_STREAM_START_TIMEOUT_MS = 15_000;
 const GENERATION_MODE_OPTIONS: Array<{
   value: QueryMode;
   label: string;
@@ -256,6 +259,8 @@ export function SopPage() {
   const [saveStatus, setSaveStatus] = useState<PanelStatus>('idle');
   const [saveMessage, setSaveMessage] = useState('');
   const [streamProgress, setStreamProgress] = useState<StreamProgressState>(() => createEmptyStreamProgress());
+  const activeGenerateRequestRef = useRef<{ controller: AbortController; reason: 'superseded' | 'unmounted' | 'startup-timeout' | null } | null>(null);
+  const generateRequestVersionRef = useRef(0);
 
   const departmentNameById = useMemo(() => {
     const mapping = new Map<string, string>();
@@ -426,6 +431,14 @@ export function SopPage() {
       ? '当前文件还在入库，等任务完成后再生成 SOP。'
       : '当前文件已完成入库，可以直接生成 SOP 草稿。';
 
+  useEffect(() => () => {
+    if (activeGenerateRequestRef.current) {
+      activeGenerateRequestRef.current.reason = 'unmounted';
+      activeGenerateRequestRef.current.controller.abort();
+      activeGenerateRequestRef.current = null;
+    }
+  }, []);
+
   const handleGenerate = async () => {
     if (!currentDocId) {
       setGenerateStatus('error');
@@ -438,6 +451,52 @@ export function SopPage() {
       return;
     }
 
+    if (activeGenerateRequestRef.current) {
+      activeGenerateRequestRef.current.reason = 'superseded';
+      activeGenerateRequestRef.current.controller.abort();
+    }
+
+    const requestVersion = generateRequestVersionRef.current + 1;
+    generateRequestVersionRef.current = requestVersion;
+    const controller = new AbortController();
+    activeGenerateRequestRef.current = { controller, reason: null };
+    let sawStreamEvent = false;
+    let fallbackRequested = false;
+    const requestPayload = {
+      document_id: currentDocId,
+      department_id: lockedDepartmentId || generateDepartmentId || undefined,
+      process_name: processName.trim() || undefined,
+      scenario_name: scenarioName.trim() || undefined,
+      title_hint: titleHint.trim() || undefined,
+      mode: queryMode,
+      top_k: normalizeTopK(topK),
+    } as const;
+    const clearActiveRequest = () => {
+      if (activeGenerateRequestRef.current?.controller === controller) {
+        activeGenerateRequestRef.current = null;
+      }
+    };
+    const markStreamEvent = () => {
+      sawStreamEvent = true;
+      window.clearTimeout(startupTimer);
+    };
+    const persistDraft = (payload: SopGenerationDraftResponse) => {
+      setDraft(toDraftFromGeneration(payload));
+      setGenerateDepartmentId(payload.department_id);
+      setGenerateStatus('success');
+      setGenerateMessage(`已基于当前文档生成草稿，模型：${payload.model}`);
+      setSaveStatus('idle');
+      setSaveMessage('');
+      setStreamProgress((prev) => completeStreamProgress(prev));
+    };
+    const startupTimer = window.setTimeout(() => {
+      if (!sawStreamEvent && activeGenerateRequestRef.current?.controller === controller) {
+        fallbackRequested = true;
+        activeGenerateRequestRef.current.reason = 'startup-timeout';
+        controller.abort();
+      }
+    }, SOP_STREAM_START_TIMEOUT_MS);
+
     setGenerateStatus('loading');
     setGenerateMessage('');
     setDownloadMessage('');
@@ -449,44 +508,72 @@ export function SopPage() {
         departmentNameById.get(lockedDepartmentId || generateDepartmentId || fallbackDepartmentId) || fallbackDepartmentName,
       ));
       const payload = await generateSopByDocumentStream(
-        {
-          document_id: currentDocId,
-          department_id: lockedDepartmentId || generateDepartmentId || undefined,
-          process_name: processName.trim() || undefined,
-          scenario_name: scenarioName.trim() || undefined,
-          title_hint: titleHint.trim() || undefined,
-          mode: queryMode,
-          top_k: normalizeTopK(topK),
-        },
+        requestPayload,
         {
           onMeta: (meta) => {
+            if (generateRequestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setDraft((prev) => mergeDraftWithStreamMeta(prev, meta));
             setGenerateDepartmentId(meta.department_id);
             setGenerateMessage(`已建立流式连接，模型：${meta.model}，等待首包...`);
           },
           onDelta: (delta) => {
+            if (generateRequestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setDraft((prev) => ({ ...prev, content: `${prev.content}${delta}` }));
             setStreamProgress((prev) => recordStreamDelta(prev, delta));
           },
           onDone: (response) => {
+            if (generateRequestVersionRef.current !== requestVersion) {
+              return;
+            }
+            markStreamEvent();
             setDraft(toDraftFromGeneration(response));
             setGenerateDepartmentId(response.department_id);
             setStreamProgress((prev) => completeStreamProgress(prev));
           },
         },
+        { signal: controller.signal },
       );
 
-      setDraft(toDraftFromGeneration(payload));
-      setGenerateDepartmentId(payload.department_id);
-      setGenerateStatus('success');
-      setGenerateMessage(`已基于当前文档生成草稿，模型：${payload.model}`);
-      setSaveStatus('idle');
-      setSaveMessage('');
-      setStreamProgress((prev) => completeStreamProgress(prev));
+      if (generateRequestVersionRef.current !== requestVersion) {
+        return;
+      }
+      persistDraft(payload);
     } catch (error) {
+      if (generateRequestVersionRef.current !== requestVersion) {
+        return;
+      }
+      const abortReason = activeGenerateRequestRef.current?.controller === controller ? activeGenerateRequestRef.current.reason : null;
+      const shouldFallback =
+        !sawStreamEvent &&
+        (fallbackRequested ||
+          (error instanceof ApiError && (error.kind === 'timeout' || error.kind === 'network' || error.kind === 'parse')));
+      if (shouldFallback && abortReason !== 'superseded' && abortReason !== 'unmounted') {
+        try {
+          const fallbackPayload = await generateSopByDocument(requestPayload);
+          if (generateRequestVersionRef.current !== requestVersion) {
+            return;
+          }
+          persistDraft(fallbackPayload);
+          return;
+        } catch (fallbackError) {
+          error = fallbackError;
+        }
+      }
+      if (abortReason === 'superseded' || abortReason === 'unmounted') {
+        return;
+      }
       setGenerateStatus('error');
       setGenerateMessage(formatApiError(error, 'SOP 草稿生成'));
       setStreamProgress((prev) => completeStreamProgress(prev));
+    } finally {
+      window.clearTimeout(startupTimer);
+      clearActiveRequest();
     }
   };
 

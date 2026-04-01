@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_debug_portal2",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T08:40:16.047394Z",
+  "turns": [
+    {
+      "turn_id": "turn_86037c8b3c7b",
+      "asked_at": "2026-04-01T08:40:16.047354Z",
+      "question": "解释一下cpps",
+      "answer": "根据提供的上下文，CPS（可能是文中提到的CPS梳妆片）指的是用于固定拖链连接座的一种部件。具体来说，它需要被扣入到拖链连接座的凹槽中，且有特定的方向要求。固定端和移动端的CPS梳妆片扣入方式可能有所不同，固定端需按照图示方向进行操作。\n\n请注意，这里的解释基于提供的文本内容，如果CPS有更专业的定义或使用说明，则需要参考相关的技术文档或手册。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

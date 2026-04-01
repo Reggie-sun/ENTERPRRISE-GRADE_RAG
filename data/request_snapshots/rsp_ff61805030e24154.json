@@ -1,0 +1,166 @@
+{
+  "snapshot_id": "rsp_ff61805030e24154",
+  "trace_id": "trc_retrieval_406922c7314e4a9f",
+  "request_id": "req_retrieval_8df390ece4b244c8",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T07:31:09.480954Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "这份文档主要讲了什么？",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "这份文档主要讲了什么？",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-1",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "710Mpa,且硬度值内层大于外层。因膜层有空隙，可吸附各种润滑剂，增加了减磨能力。膜层导热性差，熔点高达2050℃，在大气中有较高的抗腐蚀能力。\n适用范围：主要用于要求耐磨、耐热、绝缘铝合金零件上，我司此项工艺主要用于运动部件的铝合金，例如皮带轮等。\n6.氧化膜膜层质量要求\n6.1 膜层应连续，均匀、细致、完整。\n6.2膜层颜色\n6.2.1经热水封闭的膜层应为本色或乳白色，抛光件膜层应为光亮的乳",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 12.439665087417145,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-42",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": ".. ................................ ................................ ................................ ................................ ............  - 75 -\n综 述 （总 装 ） ................................ ",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5341057,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401034536_c635304a-chunk-0",
+      "document_id": "doc_20260401034536_c635304a",
+      "document_name": "WL-SJ-022#铝合金氧化标准#A0.docx",
+      "snippet": "铝合金氧化标准\t文件编号\tWI-SJ-022\n版 本 号\tA/0\n页    次\t4\n生效日期\t2017-06-12\n目的\n提供设计依据，规范铝合金氧化标准、检验标准，。\n适用范围\n公司委外氧化或采购的铝合金工件\n职责\n生产技术部：  负责本标准的制定和优化；\n研发部/项目组：按照此标准选定相应的氧化工艺；\n品质保障部：  负责按照标准要求进行检验；\n采购管理部：  负责要求供应商按照本标准要求执行",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260401034536_c635304a__WL-SJ-022_A0.docx",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 11.34895296209139,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331062309_d004c548-chunk-218",
+      "document_id": "doc_20260331062309_d004c548",
+      "document_name": "MaxA05#悬挂式全伺服机械手（反装）单臂式（装配SOP)#A0).pdf",
+      "snippet": "m\n结 束 语\n\n欲了解更多详情，请联系伟立机器人-生技部，您可以扫描下方二微码，获得机器最新消息。\n\n\n\n\n\n本手册的所有文字、插图和其他信息的版权均归伟立机器人所有。\n未经伟立机器人事先书面许可，不得复制、翻印或以其他使用本文的任何内容。\n本手册中介绍的机器装配内容，某些配置项目仅作为装配配置提供。\n生技部编辑者已尽最大努力确保机器装配步骤、安装注意要求等详细信息的准确度。\n保留对错误和遗漏进",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260331062309_d004c548__MaxA05_SOP_A0.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5152677,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331064305_3ef34d9c-chunk-0",
+      "document_id": "doc_20260331064305_3ef34d9c",
+      "document_name": "链轮链条传动装配作业标准.doc",
+      "snippet": "链传动装配作业标准\n\n一、 将传递动力和运动的传动链条及主、从动链轮等零、部件组装到机械设备上的工艺过程;链传动是属于具有中间挠性件的啮合传动,其所用的链条,按用途不同可分为传动链、输送链和起重链;\n\n二、常见的传动链有套筒滚子传动链简称滚子链和齿形传动链又名无声链；输送链有滚子输送链；起重链有多片式起重链和环形链等;链传动的主要技术要求是链条运行平稳,啮合良好,噪声小;\n\n三、链轮的装配\n\nA、",
+      "score": 0.4841269841269841,
+      "source_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/data/uploads/doc_20260331064305_3ef34d9c__document.doc",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 4.975605619231001,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "这份文档主要讲了什么？",
+    "query_type": "fixed",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector": 10,
+      "department_after_ocr": 20,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {}
+  }
+}

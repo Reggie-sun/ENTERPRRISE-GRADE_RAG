@@ -11,7 +11,7 @@ import {
   getRerankDecisionPresentation,
   type RerankCanaryDecisionFilter,
 } from '@/app/rerankCanaryPresentation';
-import { Card, Button, StatusPill, Textarea, Input, ResultCard, EvidenceSourceSummary } from '@/components';
+import { Card, Button, StatusPill, Textarea, Input, ResultCard, EvidenceSourceSummary, RetrievalDiagnosticPanel } from '@/components';
 import {
   compareRetrievalRerank,
   formatApiError,
@@ -412,6 +412,10 @@ export function RetrievalPanel({
           ))
         )}
       </div>
+
+      {data?.diagnostic ? (
+        <RetrievalDiagnosticPanel diagnostic={data.diagnostic} />
+      ) : null}
 
       <div className="mt-6 grid gap-3">
         <div className="flex items-center justify-between gap-3 max-md:flex-col max-md:items-start">
