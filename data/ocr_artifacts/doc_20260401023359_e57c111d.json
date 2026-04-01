@@ -1,0 +1,1962 @@
+{
+  "document_id": "doc_20260401023359_e57c111d",
+  "file_name": "FA05系列阿博格#双臂式（正装)#A0.docx",
+  "source_path": "/app/data/uploads/doc_20260401023359_e57c111d__FA05_A0.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 325,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n。\n\n8\n\nE\nD\nG\n\n0\n日\nB\n\n0\n\n滑块\n假轨\n滑轨\n-\n7\nG\n0\n00\np\n0\n0\nO\n0\n4\n®\n®\n\n支架\n磁力座\n千分表\n\n0\n\n00C\n6\n\n0\noo\nO\n0\nC\n0\nD\n\n0\n\n涂油面\n刷子\nL\n润看油脑\n（美享力士EPO）\n\n规格清单表\n惰轮\n轴承\n治具\n衬套\n液压机\n\n0\n0\nO\n©\nO\nO\n0\nC\n-\nO\n0\n0\nO\n0\nQ\n一\nO\nO\nO\n0\nO\nO\n\n5\n4\n\n2\n@\n\nD\n80\n\nU\no00\n000\n\n3\n2\n-\n9\nG\n中\n\n0\n治具\n工作台\n\n一\n©\n©\n?\n0\n©\n©\nD\nQ\nQ\n@\n©\n©\n©\n□000\n0\n0\n0\ne\n1\nQ\nQ\nO\n□\nO\nO\n0\n包\nn\nO\nO\nQ\n③\nT\n□\n?\nQ\n7\n2\n中\n中\nQ\n中\n广\n0\nC\n\nO\nO\nO\nQ\n©\n©\n©\n@\nO\ng\n6\n©\n©\nO\n回\n@0\nO\nQ\n©\n3\n合\nD\n2\n\n0\n\n1\nL\n5\n\n0\nH\n\nT\n中\nQ\nQ\n\n-2\n田T\n\nO\n00\n©\nO\n3\n4\n©\n©\n0\nO\nO\n0\nO\nO\n©\n0\n1\nD\nO\nO\nO\n。\nD\n0\nD\nO\n0\n®\n©\n口\n日\nO\n0\nC\n0\n®\n©\n©\nQ\n0\nQ\n©\n，\n©\nR\nO\n0\n2\n\nO\nR\n00000000\n0000000\n®\n©\nC\n\n独\n文\n\n000)\n\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\n□\nOO\n)（\n\nmmmd\n分\n1\nA\n□\n-\n0\n88\n2\nR\n日\n4\nY\nS\n。\n□\nD\nO\nO\nO\nO\nO\n。\n0\n\nO\nO\nO\nO\nO\nO\nO\n-\nD\nC\nO\no\nD\nO\nO\nO\nO\n\n-\n-\nO\n\n0\n一\n@\n0\n©\n©\n•\n?\n0\n0\n©\n-\n-\n-\n一\n□\n2\n©\nQ\n2\n❤\n↓\n+\nR\n合\n\n0\n日\n\n方向正面\n\nQ\nt",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.11062101274728775
+    },
+    {
+      "text": "8",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.23052889108657837
+    },
+    {
+      "text": "E",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.16527119278907776
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.5746257901191711
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.4464079439640045
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.5177571773529053
+    },
+    {
+      "text": "日",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.1026809960603714
+    },
+    {
+      "text": "B",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.49227458238601685
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.3356839120388031
+    },
+    {
+      "text": "滑块",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.9903649091720581
+    },
+    {
+      "text": "假轨",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.996446967124939
+    },
+    {
+      "text": "滑轨",
+      "page_no": null,
+      "line_no": 15,
+      "confidence": 0.994387149810791
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 16,
+      "confidence": 0.09649202972650528
+    },
+    {
+      "text": "7",
+      "page_no": null,
+      "line_no": 17,
+      "confidence": 0.3510940670967102
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 18,
+      "confidence": 0.14701779186725616
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 19,
+      "confidence": 0.4886080026626587
+    },
+    {
+      "text": "00",
+      "page_no": null,
+      "line_no": 20,
+      "confidence": 0.8320100903511047
+    },
+    {
+      "text": "p",
+      "page_no": null,
+      "line_no": 21,
+      "confidence": 0.1546599417924881
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 22,
+      "confidence": 0.9431833028793335
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 23,
+      "confidence": 0.8056619763374329
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 24,
+      "confidence": 0.5239688158035278
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 25,
+      "confidence": 0.7923681735992432
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 26,
+      "confidence": 0.039470233023166656
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 27,
+      "confidence": 0.21434244513511658
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 28,
+      "confidence": 0.12981805205345154
+    },
+    {
+      "text": "支架",
+      "page_no": null,
+      "line_no": 29,
+      "confidence": 0.9992856979370117
+    },
+    {
+      "text": "磁力座",
+      "page_no": null,
+      "line_no": 30,
+      "confidence": 0.9997193813323975
+    },
+    {
+      "text": "千分表",
+      "page_no": null,
+      "line_no": 31,
+      "confidence": 0.9782525897026062
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 32,
+      "confidence": 0.2775839865207672
+    },
+    {
+      "text": "00C",
+      "page_no": null,
+      "line_no": 33,
+      "confidence": 0.5457025170326233
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 34,
+      "confidence": 0.07474815100431442
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 35,
+      "confidence": 0.3645288944244385
+    },
+    {
+      "text": "oo",
+      "page_no": null,
+      "line_no": 36,
+      "confidence": 0.3924753963947296
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 37,
+      "confidence": 0.3900240361690521
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 38,
+      "confidence": 0.09429553896188736
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 39,
+      "confidence": 0.3764428496360779
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 40,
+      "confidence": 0.41061973571777344
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 41,
+      "confidence": 0.47881823778152466
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 42,
+      "confidence": 0.4213520884513855
+    },
+    {
+      "text": "涂油面",
+      "page_no": null,
+      "line_no": 43,
+      "confidence": 0.9935055375099182
+    },
+    {
+      "text": "刷子",
+      "page_no": null,
+      "line_no": 44,
+      "confidence": 0.999636173248291
+    },
+    {
+      "text": "L",
+      "page_no": null,
+      "line_no": 45,
+      "confidence": 0.09430401772260666
+    },
+    {
+      "text": "润看油脑",
+      "page_no": null,
+      "line_no": 46,
+      "confidence": 0.5686678886413574
+    },
+    {
+      "text": "（美享力士EPO）",
+      "page_no": null,
+      "line_no": 47,
+      "confidence": 0.7992105484008789
+    },
+    {
+      "text": "规格清单表",
+      "page_no": null,
+      "line_no": 48,
+      "confidence": 0.9988157153129578
+    },
+    {
+      "text": "惰轮",
+      "page_no": null,
+      "line_no": 49,
+      "confidence": 0.9559357166290283
+    },
+    {
+      "text": "轴承",
+      "page_no": null,
+      "line_no": 50,
+      "confidence": 0.9994502067565918
+    },
+    {
+      "text": "治具",
+      "page_no": null,
+      "line_no": 51,
+      "confidence": 0.9974801540374756
+    },
+    {
+      "text": "衬套",
+      "page_no": null,
+      "line_no": 52,
+      "confidence": 0.9909869432449341
+    },
+    {
+      "text": "液压机",
+      "page_no": null,
+      "line_no": 53,
+      "confidence": 0.9988263249397278
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 54,
+      "confidence": 0.30581218004226685
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 55,
+      "confidence": 0.2359139323234558
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 56,
+      "confidence": 0.7171100974082947
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 57,
+      "confidence": 0.31091511249542236
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 58,
+      "confidence": 0.5315901041030884
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 59,
+      "confidence": 0.5650604367256165
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 60,
+      "confidence": 0.46444079279899597
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 61,
+      "confidence": 0.2703857421875
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 62,
+      "confidence": 0.32542482018470764
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 63,
+      "confidence": 0.3670932948589325
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 64,
+      "confidence": 0.4816293716430664
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 65,
+      "confidence": 0.31175991892814636
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 66,
+      "confidence": 0.4667743444442749
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 67,
+      "confidence": 0.3816191554069519
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 68,
+      "confidence": 0.18171148002147675
+    },
+    {
+      "text": "一",
+      "page_no": null,
+      "line_no": 69,
+      "confidence": 0.22600188851356506
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 70,
+      "confidence": 0.18069593608379364
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 71,
+      "confidence": 0.48773393034935
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 72,
+      "confidence": 0.3554804027080536
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 73,
+      "confidence": 0.21230021119117737
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 74,
+      "confidence": 0.7270967364311218
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 75,
+      "confidence": 0.4733547866344452
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 76,
+      "confidence": 0.08326730877161026
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 77,
+      "confidence": 0.10163535177707672
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 78,
+      "confidence": 0.35617777705192566
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 79,
+      "confidence": 0.2432813048362732
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 80,
+      "confidence": 0.9651211500167847
+    },
+    {
+      "text": "80",
+      "page_no": null,
+      "line_no": 81,
+      "confidence": 0.7537349462509155
+    },
+    {
+      "text": "U",
+      "page_no": null,
+      "line_no": 82,
+      "confidence": 0.24431584775447845
+    },
+    {
+      "text": "o00",
+      "page_no": null,
+      "line_no": 83,
+      "confidence": 0.49847280979156494
+    },
+    {
+      "text": "000",
+      "page_no": null,
+      "line_no": 84,
+      "confidence": 0.5582659840583801
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 85,
+      "confidence": 0.08098409324884415
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 86,
+      "confidence": 0.20436671376228333
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 87,
+      "confidence": 0.21016095578670502
+    },
+    {
+      "text": "9",
+      "page_no": null,
+      "line_no": 88,
+      "confidence": 0.21098053455352783
+    },
+    {
+      "text": "G",
+      "page_no": null,
+      "line_no": 89,
+      "confidence": 0.19977587461471558
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 90,
+      "confidence": 0.21408846974372864
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 91,
+      "confidence": 0.7159489989280701
+    },
+    {
+      "text": "治具",
+      "page_no": null,
+      "line_no": 92,
+      "confidence": 0.9966115951538086
+    },
+    {
+      "text": "工作台",
+      "page_no": null,
+      "line_no": 93,
+      "confidence": 0.9353205561637878
+    },
+    {
+      "text": "一",
+      "page_no": null,
+      "line_no": 94,
+      "confidence": 0.38457608222961426
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 95,
+      "confidence": 0.17440897226333618
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 96,
+      "confidence": 0.3371129333972931
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 97,
+      "confidence": 0.2682759761810303
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 98,
+      "confidence": 0.2567957043647766
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 99,
+      "confidence": 0.4036068618297577
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 100,
+      "confidence": 0.46306097507476807
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 101,
+      "confidence": 0.8313180208206177
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 102,
+      "confidence": 0.42153725028038025
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 103,
+      "confidence": 0.19676394760608673
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 104,
+      "confidence": 0.28180673718452454
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 105,
+      "confidence": 0.2889888286590576
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 106,
+      "confidence": 0.209195077419281
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 107,
+      "confidence": 0.38980093598365784
+    },
+    {
+      "text": "□000",
+      "page_no": null,
+      "line_no": 108,
+      "confidence": 0.348376989364624
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 109,
+      "confidence": 0.33133968710899353
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 110,
+      "confidence": 0.5774978399276733
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 111,
+      "confidence": 0.19028984010219574
+    },
+    {
+      "text": "e",
+      "page_no": null,
+      "line_no": 112,
+      "confidence": 0.16480371356010437
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 113,
+      "confidence": 0.05695367231965065
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 114,
+      "confidence": 0.43564632534980774
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 115,
+      "confidence": 0.5769788026809692
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 116,
+      "confidence": 0.32476329803466797
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 117,
+      "confidence": 0.2734996974468231
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 118,
+      "confidence": 0.35189875960350037
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 119,
+      "confidence": 0.30394449830055237
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 120,
+      "confidence": 0.3780048191547394
+    },
+    {
+      "text": "包",
+      "page_no": null,
+      "line_no": 121,
+      "confidence": 0.17093628644943237
+    },
+    {
+      "text": "n",
+      "page_no": null,
+      "line_no": 122,
+      "confidence": 0.3295230567455292
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 123,
+      "confidence": 0.2492973357439041
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 124,
+      "confidence": 0.5487053990364075
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 125,
+      "confidence": 0.1881950944662094
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 126,
+      "confidence": 0.12193745374679565
+    },
+    {
+      "text": "T",
+      "page_no": null,
+      "line_no": 127,
+      "confidence": 0.1006423756480217
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 128,
+      "confidence": 0.15993529558181763
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 129,
+      "confidence": 0.2062419056892395
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 130,
+      "confidence": 0.41470804810523987
+    },
+    {
+      "text": "7",
+      "page_no": null,
+      "line_no": 131,
+      "confidence": 0.18094483017921448
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 132,
+      "confidence": 0.22931422293186188
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 133,
+      "confidence": 0.17283746600151062
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 134,
+      "confidence": 0.49429282546043396
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 135,
+      "confidence": 0.22325998544692993
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 136,
+      "confidence": 0.4166727662086487
+    },
+    {
+      "text": "广",
+      "page_no": null,
+      "line_no": 137,
+      "confidence": 0.10628386586904526
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 138,
+      "confidence": 0.33969056606292725
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 139,
+      "confidence": 0.22187553346157074
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 140,
+      "confidence": 0.6678635478019714
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 141,
+      "confidence": 0.5678678750991821
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 142,
+      "confidence": 0.6624219417572021
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 143,
+      "confidence": 0.2620956003665924
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 144,
+      "confidence": 0.4255691468715668
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 145,
+      "confidence": 0.5887333154678345
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 146,
+      "confidence": 0.3797440230846405
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 147,
+      "confidence": 0.24401094019412994
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 148,
+      "confidence": 0.8972317576408386
+    },
+    {
+      "text": "g",
+      "page_no": null,
+      "line_no": 149,
+      "confidence": 0.11504223197698593
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 150,
+      "confidence": 0.19821405410766602
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 151,
+      "confidence": 0.25126275420188904
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 152,
+      "confidence": 0.24877212941646576
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 153,
+      "confidence": 0.6788175702095032
+    },
+    {
+      "text": "回",
+      "page_no": null,
+      "line_no": 154,
+      "confidence": 0.19105984270572662
+    },
+    {
+      "text": "@0",
+      "page_no": null,
+      "line_no": 155,
+      "confidence": 0.21790863573551178
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 156,
+      "confidence": 0.62948077917099
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 157,
+      "confidence": 0.4799826145172119
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 158,
+      "confidence": 0.2931269705295563
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 159,
+      "confidence": 0.06046699732542038
+    },
+    {
+      "text": "合",
+      "page_no": null,
+      "line_no": 160,
+      "confidence": 0.205314040184021
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 161,
+      "confidence": 0.9930900931358337
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 162,
+      "confidence": 0.26841792464256287
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 163,
+      "confidence": 0.5811803340911865
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 164,
+      "confidence": 0.9957239627838135
+    },
+    {
+      "text": "L",
+      "page_no": null,
+      "line_no": 165,
+      "confidence": 0.19800487160682678
+    },
+    {
+      "text": "5",
+      "page_no": null,
+      "line_no": 166,
+      "confidence": 0.9997648596763611
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 167,
+      "confidence": 0.5602214336395264
+    },
+    {
+      "text": "H",
+      "page_no": null,
+      "line_no": 168,
+      "confidence": 0.40204083919525146
+    },
+    {
+      "text": "T",
+      "page_no": null,
+      "line_no": 169,
+      "confidence": 0.25350579619407654
+    },
+    {
+      "text": "中",
+      "page_no": null,
+      "line_no": 170,
+      "confidence": 0.5243545770645142
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 171,
+      "confidence": 0.19033227860927582
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 172,
+      "confidence": 0.6774566173553467
+    },
+    {
+      "text": "-2",
+      "page_no": null,
+      "line_no": 173,
+      "confidence": 0.809561014175415
+    },
+    {
+      "text": "田T",
+      "page_no": null,
+      "line_no": 174,
+      "confidence": 0.37143033742904663
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 175,
+      "confidence": 0.48090943694114685
+    },
+    {
+      "text": "00",
+      "page_no": null,
+      "line_no": 176,
+      "confidence": 0.35352152585983276
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 177,
+      "confidence": 0.6882604360580444
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 178,
+      "confidence": 0.699247419834137
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 179,
+      "confidence": 0.9900065660476685
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 180,
+      "confidence": 0.999168872833252
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 181,
+      "confidence": 0.4582313597202301
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 182,
+      "confidence": 0.6832058429718018
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 183,
+      "confidence": 0.46269649267196655
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 184,
+      "confidence": 0.6137682795524597
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 185,
+      "confidence": 0.5100318193435669
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 186,
+      "confidence": 0.41285941004753113
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 187,
+      "confidence": 0.41892334818840027
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 188,
+      "confidence": 0.4705778956413269
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 189,
+      "confidence": 0.4630128741264343
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 190,
+      "confidence": 0.23497022688388824
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 191,
+      "confidence": 0.9471102952957153
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 192,
+      "confidence": 0.30689775943756104
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 193,
+      "confidence": 0.45268452167510986
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 194,
+      "confidence": 0.5367677211761475
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 195,
+      "confidence": 0.5480415225028992
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 196,
+      "confidence": 0.24538671970367432
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 197,
+      "confidence": 0.40042048692703247
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 198,
+      "confidence": 0.5850761532783508
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 199,
+      "confidence": 0.48247313499450684
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 200,
+      "confidence": 0.6370202898979187
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 201,
+      "confidence": 0.5758361220359802
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 202,
+      "confidence": 0.20417237281799316
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 203,
+      "confidence": 0.40661364793777466
+    },
+    {
+      "text": "口",
+      "page_no": null,
+      "line_no": 204,
+      "confidence": 0.47941192984580994
+    },
+    {
+      "text": "日",
+      "page_no": null,
+      "line_no": 205,
+      "confidence": 0.24571587145328522
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 206,
+      "confidence": 0.30799809098243713
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 207,
+      "confidence": 0.13162539899349213
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 208,
+      "confidence": 0.26095589995384216
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 209,
+      "confidence": 0.7931466102600098
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 210,
+      "confidence": 0.18851639330387115
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 211,
+      "confidence": 0.6505661606788635
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 212,
+      "confidence": 0.5166075825691223
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 213,
+      "confidence": 0.20111452043056488
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 214,
+      "confidence": 0.38788557052612305
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 215,
+      "confidence": 0.41557779908180237
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 216,
+      "confidence": 0.6665399670600891
+    },
+    {
+      "text": "，",
+      "page_no": null,
+      "line_no": 217,
+      "confidence": 0.10409320145845413
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 218,
+      "confidence": 0.37443095445632935
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 219,
+      "confidence": 0.15324677526950836
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 220,
+      "confidence": 0.23746365308761597
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 221,
+      "confidence": 0.24737852811813354
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 222,
+      "confidence": 0.9969561100006104
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 223,
+      "confidence": 0.6604909896850586
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 224,
+      "confidence": 0.30316609144210815
+    },
+    {
+      "text": "00000000",
+      "page_no": null,
+      "line_no": 225,
+      "confidence": 0.697357177734375
+    },
+    {
+      "text": "0000000",
+      "page_no": null,
+      "line_no": 226,
+      "confidence": 0.5940669178962708
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 227,
+      "confidence": 0.549915075302124
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 228,
+      "confidence": 0.19424781203269958
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 229,
+      "confidence": 0.11734330654144287
+    },
+    {
+      "text": "独",
+      "page_no": null,
+      "line_no": 230,
+      "confidence": 0.1627119481563568
+    },
+    {
+      "text": "文",
+      "page_no": null,
+      "line_no": 231,
+      "confidence": 0.11446493119001389
+    },
+    {
+      "text": "000)",
+      "page_no": null,
+      "line_no": 232,
+      "confidence": 0.4785391688346863
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 233,
+      "confidence": 0.7970806360244751
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 234,
+      "confidence": 0.7430511713027954
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 235,
+      "confidence": 0.895612359046936
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 236,
+      "confidence": 0.6898927092552185
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 237,
+      "confidence": 0.7923159003257751
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 238,
+      "confidence": 0.7110409736633301
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 239,
+      "confidence": 0.4700193405151367
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 240,
+      "confidence": 0.8376505374908447
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 241,
+      "confidence": 0.8152245283126831
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 242,
+      "confidence": 0.9275255799293518
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 243,
+      "confidence": 0.7580337524414062
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 244,
+      "confidence": 0.8081401586532593
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 245,
+      "confidence": 0.7773387432098389
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 246,
+      "confidence": 0.5955571532249451
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 247,
+      "confidence": 0.7622862458229065
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 248,
+      "confidence": 0.5322137475013733
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 249,
+      "confidence": 0.8972078561782837
+    },
+    {
+      "text": "OO",
+      "page_no": null,
+      "line_no": 250,
+      "confidence": 0.4160459637641907
+    },
+    {
+      "text": ")（",
+      "page_no": null,
+      "line_no": 251,
+      "confidence": 0.49041563272476196
+    },
+    {
+      "text": "mmmd",
+      "page_no": null,
+      "line_no": 252,
+      "confidence": 0.7476074695587158
+    },
+    {
+      "text": "分",
+      "page_no": null,
+      "line_no": 253,
+      "confidence": 0.2785114645957947
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 254,
+      "confidence": 0.08628115803003311
+    },
+    {
+      "text": "A",
+      "page_no": null,
+      "line_no": 255,
+      "confidence": 0.2075546830892563
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 256,
+      "confidence": 0.4716299772262573
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 257,
+      "confidence": 0.1590508669614792
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 258,
+      "confidence": 0.1325531005859375
+    },
+    {
+      "text": "88",
+      "page_no": null,
+      "line_no": 259,
+      "confidence": 0.3743124008178711
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 260,
+      "confidence": 0.1245587021112442
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 261,
+      "confidence": 0.0922674909234047
+    },
+    {
+      "text": "日",
+      "page_no": null,
+      "line_no": 262,
+      "confidence": 0.11298604309558868
+    },
+    {
+      "text": "4",
+      "page_no": null,
+      "line_no": 263,
+      "confidence": 0.13556638360023499
+    },
+    {
+      "text": "Y",
+      "page_no": null,
+      "line_no": 264,
+      "confidence": 0.09121116250753403
+    },
+    {
+      "text": "S",
+      "page_no": null,
+      "line_no": 265,
+      "confidence": 0.051289185881614685
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 266,
+      "confidence": 0.40466251969337463
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 267,
+      "confidence": 0.6200770139694214
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 268,
+      "confidence": 0.45909813046455383
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 269,
+      "confidence": 0.5333788394927979
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 270,
+      "confidence": 0.5306439399719238
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 271,
+      "confidence": 0.5345597863197327
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 272,
+      "confidence": 0.34813159704208374
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 273,
+      "confidence": 0.4623924493789673
+    },
+    {
+      "text": "。",
+      "page_no": null,
+      "line_no": 274,
+      "confidence": 0.5137156844139099
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 275,
+      "confidence": 0.8682110905647278
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 276,
+      "confidence": 0.6968435645103455
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 277,
+      "confidence": 0.7157801389694214
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 278,
+      "confidence": 0.7424542903900146
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 279,
+      "confidence": 0.7341345548629761
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 280,
+      "confidence": 0.7699545621871948
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 281,
+      "confidence": 0.6664800643920898
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 282,
+      "confidence": 0.27195119857788086
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 283,
+      "confidence": 0.1462109237909317
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 284,
+      "confidence": 0.3022756278514862
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 285,
+      "confidence": 0.9185556173324585
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 286,
+      "confidence": 0.8530505299568176
+    },
+    {
+      "text": "o",
+      "page_no": null,
+      "line_no": 287,
+      "confidence": 0.36852627992630005
+    },
+    {
+      "text": "D",
+      "page_no": null,
+      "line_no": 288,
+      "confidence": 0.3136894404888153
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 289,
+      "confidence": 0.8447044491767883
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 290,
+      "confidence": 0.4734789729118347
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 291,
+      "confidence": 0.918315052986145
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 292,
+      "confidence": 0.8067588210105896
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 293,
+      "confidence": 0.5788939595222473
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 294,
+      "confidence": 0.688985288143158
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 295,
+      "confidence": 0.4761454164981842
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 296,
+      "confidence": 0.18135271966457367
+    },
+    {
+      "text": "一",
+      "page_no": null,
+      "line_no": 297,
+      "confidence": 0.102963887155056
+    },
+    {
+      "text": "@",
+      "page_no": null,
+      "line_no": 298,
+      "confidence": 0.1858801245689392
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 299,
+      "confidence": 0.3034701347351074
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 300,
+      "confidence": 0.2979695200920105
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 301,
+      "confidence": 0.474768728017807
+    },
+    {
+      "text": "•",
+      "page_no": null,
+      "line_no": 302,
+      "confidence": 0.4027085602283478
+    },
+    {
+      "text": "?",
+      "page_no": null,
+      "line_no": 303,
+      "confidence": 0.3270893394947052
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 304,
+      "confidence": 0.2249174565076828
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 305,
+      "confidence": 0.3258574306964874
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 306,
+      "confidence": 0.5613250136375427
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 307,
+      "confidence": 0.10556216537952423
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 308,
+      "confidence": 0.15204477310180664
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 309,
+      "confidence": 0.20528608560562134
+    },
+    {
+      "text": "一",
+      "page_no": null,
+      "line_no": 310,
+      "confidence": 0.09567920118570328
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 311,
+      "confidence": 0.09010019898414612
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 312,
+      "confidence": 0.09364509582519531
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 313,
+      "confidence": 0.2479792982339859
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 314,
+      "confidence": 0.11009952425956726
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 315,
+      "confidence": 0.054220858961343765
+    },
+    {
+      "text": "❤",
+      "page_no": null,
+      "line_no": 316,
+      "confidence": 0.5464068651199341
+    },
+    {
+      "text": "↓",
+      "page_no": null,
+      "line_no": 317,
+      "confidence": 0.3019646406173706
+    },
+    {
+      "text": "+",
+      "page_no": null,
+      "line_no": 318,
+      "confidence": 0.21324610710144043
+    },
+    {
+      "text": "R",
+      "page_no": null,
+      "line_no": 319,
+      "confidence": 0.11820396035909653
+    },
+    {
+      "text": "合",
+      "page_no": null,
+      "line_no": 320,
+      "confidence": 0.1524231880903244
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 321,
+      "confidence": 0.6281906366348267
+    },
+    {
+      "text": "日",
+      "page_no": null,
+      "line_no": 322,
+      "confidence": 0.3050615191459656
+    },
+    {
+      "text": "方向正面",
+      "page_no": null,
+      "line_no": 323,
+      "confidence": 0.9978439807891846
+    },
+    {
+      "text": "Q",
+      "page_no": null,
+      "line_no": 324,
+      "confidence": 0.20529617369174957
+    },
+    {
+      "text": "t",
+      "page_no": null,
+      "line_no": 325,
+      "confidence": 0.4520348012447357
+    }
+  ]
+}

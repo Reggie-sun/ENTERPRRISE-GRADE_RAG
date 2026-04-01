@@ -14,7 +14,7 @@ from typing import Literal
 from typing import Callable  # 导入 Callable，用于定义阶段回调类型。
 
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
-from ..rag.chunkers.text_chunker import TextChunk, TextChunker  # 导入文本切分器与 chunk 结构。
+from ..rag.chunkers import SOPStructuredChunker, TextChunk, TextChunker  # 导入结构化/通用文本切分器与 chunk 结构。
 from ..rag.embeddings.client import EmbeddingClient  # 导入 embedding 客户端。
 from ..rag.ocr.client import OCRClient, OCRExtractionResult  # 导入 OCR 客户端和结果结构，给扫描件和图片补最小可用链路。
 from ..rag.parsers.document_parser import DocumentParser  # 导入文档解析器。
@@ -54,6 +54,7 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
             chunk_overlap=self.settings.chunk_overlap_chars,  # 设置 chunk 重叠长度。
             chunk_min_chars=self.settings.chunk_min_chars,  # 设置 chunk 最小长度阈值。
         )
+        self.structured_chunker = SOPStructuredChunker()  # 对 SOP / WI 等强结构化文档优先走多粒度分块。
         self.embedding_client = EmbeddingClient(self.settings)  # 创建 embedding 客户端。
         self.vector_store = QdrantVectorStore(self.settings)  # 创建 Qdrant 写入器。
 
@@ -83,7 +84,11 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
 
         if on_stage is not None:  # 解析完成后进入切块阶段。
             on_stage("chunking", 35)  # 更新阶段和进度。
-        chunks = self.chunker.split(document_id=document_id, text=parsed_document.text)  # 按配置把纯文本切成多个 chunk。
+        chunks = self._build_chunks(  # 优先走结构化多粒度切块，未命中时回退到固定字符切块。
+            document_id=document_id,
+            filename=filename,
+            text=parsed_document.text,
+        )
         if not chunks:  # 如果没有切出任何 chunk，说明文本不可用。
             raise ValueError(f"No chunks generated from '{filename}'.")  # 抛出业务错误，停止入库。
         self._annotate_chunk_metadata(  # 把 OCR/parser 元数据真正带进 chunk，给后续检索与 rerank 复用。
@@ -102,7 +107,7 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
 
         if on_stage is not None:  # 切块完成后进入 embedding 阶段。
             on_stage("embedding", 65)  # 更新阶段和进度。
-        embeddings = self.embedding_client.embed_texts([chunk.text for chunk in chunks])  # 对所有 chunk 文本生成向量。
+        embeddings = self.embedding_client.embed_texts([chunk.embedding_text() for chunk in chunks])  # 对所有 chunk 检索文本生成向量。
         if len(embeddings) != len(chunks):  # 如果向量数量和 chunk 数量不一致，说明依赖返回异常。
             raise RuntimeError("Embedding count does not match chunk count.")  # 抛出运行时错误。
 
@@ -128,6 +133,17 @@ class DocumentIngestionService:  # 封装文档入库整条链路的业务逻辑
             final_status="partial_failed" if warning_message else "completed",  # 有 OCR 告警时落 partial_failed。
             warning_message=warning_message,
         )
+
+    def _build_chunks(self, *, document_id: str, filename: str, text: str) -> list[TextChunk]:
+        if self.structured_chunker.should_use(text=text, filename=filename):  # 命中 SOP / WI 结构时优先走多粒度方案。
+            structured_chunks = self.structured_chunker.split(
+                document_id=document_id,
+                text=text,
+                filename=filename,
+            )
+            if structured_chunks:
+                return structured_chunks
+        return self.chunker.split(document_id=document_id, text=text)  # 结构化识别失败时无感回退到原有通用切块。
 
     def _build_parsed_document(
         self,

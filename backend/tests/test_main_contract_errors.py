@@ -16,7 +16,7 @@ def _assert_error_envelope(payload: dict[str, object], *, code: str, message: st
 
 
 def test_retrieval_and_chat_reject_cross_department_document_scope(authz_env) -> None:
-    client, _document_service = authz_env
+    client, _document_service, _retrieval_scope_policy = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 

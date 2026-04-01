@@ -69,3 +69,26 @@ def test_lexical_retriever_supplemental_bigrams_rescue_partial_chinese_match() -
 
     assert [item.point_id for item in matches] == ["point-1"]
     assert matches[0].score > 0
+
+
+def test_lexical_retriever_prefers_retrieval_text_when_present() -> None:
+    retriever = QdrantLexicalRetriever(
+        _FakeVectorStore(
+            [
+                SimpleNamespace(
+                    id="point-structured",
+                    payload={
+                        "chunk_id": "chunk-structured",
+                        "document_id": "doc-structured",
+                        "text": "钻孔时必须经常注意清除铁屑。",
+                        "retrieval_text": "摇臂钻床安全操作规范 WI-SJ-052 clause 4.13 清屑要求 铁屑 停车清除",
+                    },
+                )
+            ]
+        )
+    )
+
+    matches = retriever.search("WI-SJ-052", limit=3)
+
+    assert [item.point_id for item in matches] == ["point-structured"]
+    assert matches[0].score > 0

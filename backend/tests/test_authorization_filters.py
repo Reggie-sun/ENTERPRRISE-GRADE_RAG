@@ -8,6 +8,7 @@ from backend.app.core.config import Settings, ensure_data_directories
 from backend.app.main import app
 from backend.app.services.auth_service import AuthService, get_auth_service
 from backend.app.services.chat_service import ChatService, get_chat_service
+from backend.app.services.document_record_accessor import DocumentServiceRecordAccessor
 from backend.app.services.document_service import DocumentService, get_document_service
 from backend.app.services.identity_service import IdentityService, get_identity_service
 from backend.app.services.retrieval_scope_policy import RetrievalScopePolicy
@@ -158,7 +159,7 @@ def authz_env(tmp_path: Path):
     document_service = DocumentService(settings)
     retrieval_scope_policy = RetrievalScopePolicy(
         settings,
-        record_provider=document_service,
+        record_accessor=DocumentServiceRecordAccessor(document_service),
         metadata_store=document_service.metadata_store,
     )
     retrieval_service = RetrievalService(settings, document_service=document_service, retrieval_scope_policy=retrieval_scope_policy)
@@ -192,7 +193,7 @@ def authz_env_no_query_isolation(tmp_path: Path):
     document_service = DocumentService(settings)
     retrieval_scope_policy = RetrievalScopePolicy(
         settings,
-        record_provider=document_service,
+        record_accessor=DocumentServiceRecordAccessor(document_service),
         metadata_store=document_service.metadata_store,
     )
     retrieval_service = RetrievalService(settings, document_service=document_service, retrieval_scope_policy=retrieval_scope_policy)
@@ -207,7 +208,7 @@ def authz_env_no_query_isolation(tmp_path: Path):
     client = TestClient(app)
 
     try:
-        yield client, document_service
+        yield client, document_service, retrieval_scope_policy
     finally:
         app.dependency_overrides.clear()
 
@@ -258,7 +259,7 @@ def _build_employee_auth_context(client, document_service):
 
 
 def test_document_list_filters_by_department_for_employee(authz_env) -> None:
-    client, _ = authz_env
+    client, _, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
@@ -287,7 +288,7 @@ def test_document_list_filters_by_department_for_employee(authz_env) -> None:
 
 def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
     """Employee retrieval should return own-department results first, with cross-department public docs as supplemental."""
-    client, _ = authz_env
+    client, _, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
@@ -323,7 +324,7 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
 
 
 def test_cross_department_document_id_is_rejected_for_retrieval_and_chat(authz_env) -> None:
-    client, _ = authz_env
+    client, _, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
@@ -353,7 +354,7 @@ def test_cross_department_document_id_is_rejected_for_retrieval_and_chat(authz_e
 
 
 def test_management_boundaries_are_enforced_by_role(authz_env) -> None:
-    client, _ = authz_env
+    client, _, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     department_admin_headers = _login_headers(client, "department.admin.demo", "department-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
@@ -386,7 +387,7 @@ def test_management_boundaries_are_enforced_by_role(authz_env) -> None:
 
 
 def test_department_admin_create_defaults_to_own_department_and_rejects_other_departments(authz_env) -> None:
-    client, document_service = authz_env
+    client, document_service, _ = authz_env
     department_admin_headers = _login_headers(client, "department.admin.demo", "department-admin-demo-pass")
 
     default_department_response = client.post(
@@ -413,7 +414,7 @@ def test_department_admin_create_defaults_to_own_department_and_rejects_other_de
 
 
 def test_employee_create_defaults_to_own_department_and_rejects_other_departments(authz_env) -> None:
-    client, document_service = authz_env
+    client, document_service, _ = authz_env
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
     default_department_response = client.post(
@@ -440,7 +441,7 @@ def test_employee_create_defaults_to_own_department_and_rejects_other_department
 
 
 def test_query_scope_can_read_cross_department_documents_when_query_isolation_disabled(authz_env_no_query_isolation) -> None:
-    client, _ = authz_env_no_query_isolation
+    client, _, _ = authz_env_no_query_isolation
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
@@ -486,7 +487,7 @@ def test_query_scope_can_read_cross_department_documents_when_query_isolation_di
 
 
 def test_query_scope_disable_does_not_widen_write_boundaries(authz_env_no_query_isolation) -> None:
-    client, document_service = authz_env_no_query_isolation
+    client, document_service, _ = authz_env_no_query_isolation
     employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
     default_department_response = client.post(

@@ -1,0 +1,66 @@
+{
+  "document_id": "doc_20260401023358_e0a01f4b",
+  "file_name": "美标CW15纵走机吊装SOP.pdf",
+  "source_path": "/app/data/uploads/doc_20260401023358_e0a01f4b__CW15_SOP.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 9,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\nAuto Robot For Plastic Injection Molding Machine\n注塑机专用机械手臂\n开放式全伺服机械手\nMAXCW15纵走系列（机械篇）\n吊装作业指导书(机械篇)\n一生技部\n伟立机器人\nWELLLIH ROBOTS",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.8122254014015198
+    },
+    {
+      "text": "Auto Robot For Plastic Injection Molding Machine",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9650343060493469
+    },
+    {
+      "text": "注塑机专用机械手臂",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9978731870651245
+    },
+    {
+      "text": "开放式全伺服机械手",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9992777705192566
+    },
+    {
+      "text": "MAXCW15纵走系列（机械篇）",
+      "page_no": 1,
+      "line_no": 5,
+      "confidence": 0.9954735040664673
+    },
+    {
+      "text": "吊装作业指导书(机械篇)",
+      "page_no": 1,
+      "line_no": 6,
+      "confidence": 0.9930028915405273
+    },
+    {
+      "text": "一生技部",
+      "page_no": 1,
+      "line_no": 7,
+      "confidence": 0.9799810647964478
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": 1,
+      "line_no": 8,
+      "confidence": 0.9997806549072266
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": 1,
+      "line_no": 9,
+      "confidence": 0.9597689509391785
+    }
+  ]
+}

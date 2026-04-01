@@ -466,7 +466,12 @@ def test_sop_generation_service_persists_hybrid_retrieval_observability_to_snaps
         password="digitalization-admin-pass",
     )
     document_service = _FakeDocumentService({"doc_digitalization": "dept_digitalization"})
-    retrieval_service = RetrievalService(settings, document_service=document_service)
+    from backend.app.services.retrieval_scope_policy import RetrievalScopePolicy
+    _dummy_policy = SimpleNamespace(
+        get_document_retrievability_map=lambda doc_ids, auth_context=None: {doc_id: True for doc_id in doc_ids},
+        build_department_priority_retrieval_scope=lambda auth_context=None: None,
+    )
+    retrieval_service = RetrievalService(settings, document_service=document_service, retrieval_scope_policy=_dummy_policy)
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     retrieval_service.vector_store = SimpleNamespace(
         search=lambda query_vector, *, limit, document_id=None: [

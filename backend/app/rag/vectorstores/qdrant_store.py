@@ -56,7 +56,9 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
                     "document_id": chunk.document_id,  # 保存所属文档 ID。
                     "document_name": document_name,  # 保存文档名。
                     "chunk_index": chunk.chunk_index,  # 保存 chunk 序号。
-                    "text": chunk.text,  # 保存 chunk 文本内容。
+                    "text": chunk.payload_text(),  # 保存对外展示与引用的文本内容。
+                    "display_text": chunk.payload_text(),  # 明确保留展示文本，避免后续把 retrieval_text 暴露给前端主流程。
+                    "retrieval_text": chunk.embedding_text(),  # 保存用于 embedding / lexical 的增强文本。
                     "source_path": source_path,  # 保存原始文件路径。
                     "parsed_path": parsed_path,  # 保存解析文本路径。
                     "char_start": chunk.char_start,  # 保存原文起始位置。
@@ -66,6 +68,22 @@ class QdrantVectorStore:  # 封装 Qdrant 读写逻辑。
                     "page_no": chunk.page_no,  # OCR 可可靠定位时保存页码。
                     "ocr_confidence": chunk.ocr_confidence,  # 保存 OCR 置信度摘要，供后续质量分析。
                     "quality_score": chunk.quality_score,  # 保存统一质量分，为后续排序增强预留。
+                    "chunk_type": chunk.chunk_type,  # 保存 chunk 语义类型，供结构化检索和调试使用。
+                    "parent_id": chunk.parent_id,  # 保存父级关系，便于命中条款后回补父章节。
+                    "doc_title": chunk.doc_title,  # 保存文档标题，结构化场景便于检索增强和可视化观察。
+                    "document_code": chunk.document_code,  # 保存业务文档编号，如 WI-SJ-052。
+                    "section": chunk.section,  # 保存章节号或章节范围。
+                    "section_label": chunk.section_label,  # 保存章节语义标签。
+                    "keywords": chunk.keywords,  # 保存结构化关键词列表。
+                    "summary_text": chunk.summary_text,  # 保存可选短摘要。
+                    "section_path": chunk.section_path,  # 保存章节路径。
+                    "clause_no": chunk.clause_no,  # 保存原始条款号。
+                    "clause_no_normalized": chunk.clause_no_normalized,  # 保存归一化条款号。
+                    "source_file_name": chunk.source_file_name,  # 保存原始文件名。
+                    "version": chunk.version,  # 保存文档版本号。
+                    "effective_date": chunk.effective_date,  # 保存生效日期。
+                    "risk_level": chunk.risk_level,  # 保存风险等级。
+                    "is_generated_summary": chunk.is_generated_summary,  # 标记是否为摘要块。
                 },
             )
             for chunk, embedding in zip(chunks, embeddings, strict=True)  # 严格按一一对应关系配对 chunk 和向量。

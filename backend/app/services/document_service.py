@@ -718,7 +718,6 @@ class DocumentService:
             latest_job_id=record.latest_job_id,
             created_at=record.created_at,
             updated_at=record.updated_at,
-            retrieval_department_ids=record.retrieval_department_ids,
         )
 
     def get_document_preview(
@@ -1429,6 +1428,10 @@ class DocumentService:
             return
         self._write_json(self._job_record_path(record.job_id), record)
 
+    def list_document_records(self) -> list[DocumentRecord]:
+        """稳定的文档记录读取接口，供检索等只读协作者复用。"""
+        return self._list_document_records()
+
     def _list_document_records(self) -> list[DocumentRecord]:
         """列出所有文档记录。PostgreSQL 模式走批量查询，JSON 模式遍历目录。"""
         if self.metadata_store is not None:
@@ -1494,6 +1497,10 @@ class DocumentService:
         if not path.exists():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document not found: {doc_id}")
         return DocumentRecord.model_validate_json(path.read_text(encoding="utf-8"))
+
+    def load_document_record(self, doc_id: str) -> DocumentRecord:
+        """稳定的单文档记录读取接口，供检索等只读协作者复用。"""
+        return self._load_document_record(doc_id)
 
     def _load_job_record(self, job_id: str) -> IngestJobRecord:
         """按 ID 加载入库任务记录，不存在时抛 404。"""

@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING
 
 from ..core.config import Settings
 from ..schemas.auth import AuthContext
 from ..schemas.document import DocumentRecord
+from .document_record_accessor import DocumentRecordAccessor
 
 if TYPE_CHECKING:
     from ..db.postgres_metadata_store import PostgresMetadataStore
@@ -38,13 +39,6 @@ class DepartmentPriorityRetrievalScope:
     global_document_ids: list[str]
 
 
-class _DocumentRecordProvider(Protocol):
-    """最低限度的文档记录访问协议，供 RetrievalScopePolicy 消费。"""
-
-    def load_document_record(self, doc_id: str) -> DocumentRecord: ...
-    def list_document_records(self) -> list[DocumentRecord]: ...
-
-
 class RetrievalScopePolicy:
     """检索权限策略。
 
@@ -62,12 +56,12 @@ class RetrievalScopePolicy:
         self,
         settings: Settings,
         *,
-        record_provider: _DocumentRecordProvider | None = None,
+        record_accessor: DocumentRecordAccessor | None = None,
         metadata_store: PostgresMetadataStore | None = None,
     ) -> None:
         self.settings = settings
         self.metadata_store = metadata_store
-        self._record_provider = record_provider
+        self._record_accessor = record_accessor
 
     # ===== 单文档检索可读性 =====
 
@@ -211,14 +205,14 @@ class RetrievalScopePolicy:
             if record is None:
                 raise LookupError(f"Document not found: {doc_id}")
             return record
-        if self._record_provider is not None:
-            return self._record_provider.load_document_record(doc_id)
-        raise RuntimeError("No record provider or metadata store configured for RetrievalScopePolicy")
+        if self._record_accessor is not None:
+            return self._record_accessor.load_document_record(doc_id)
+        raise RuntimeError("No record accessor or metadata store configured for RetrievalScopePolicy")
 
     def _list_document_records(self) -> list[DocumentRecord]:
         """列出所有文档记录。"""
         if self.metadata_store is not None:
             return self.metadata_store.list_documents()
-        if self._record_provider is not None:
-            return self._record_provider.list_document_records()
-        raise RuntimeError("No record provider or metadata store configured for RetrievalScopePolicy")
+        if self._record_accessor is not None:
+            return self._record_accessor.list_document_records()
+        raise RuntimeError("No record accessor or metadata store configured for RetrievalScopePolicy")

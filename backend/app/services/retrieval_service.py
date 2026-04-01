@@ -22,6 +22,7 @@ from ..schemas.retrieval import (  # 导入检索请求、响应和结果模型�
     RerankComparisonSummary,
 )
 from .document_service import DocumentService  # 导入文档服务，复用统一的文档读权限判断。
+from .document_record_accessor import DocumentServiceRecordAccessor
 from .retrieval_scope_policy import DepartmentPriorityRetrievalScope, RetrievalScopePolicy  # 导入检索权限策略。
 from .query_profile_service import QueryProfileService
 from .rerank_canary_service import RerankCanaryService
@@ -70,8 +71,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self.document_service = document_service or DocumentService(self.settings)  # 复用同一份 settings 创建文档服务，避免自定义配置时又回退到全局 .env。
         self.retrieval_scope_policy = retrieval_scope_policy or RetrievalScopePolicy(
             self.settings,
-            metadata_store=self.document_service.metadata_store,
-            record_provider=self.document_service,
+            metadata_store=getattr(self.document_service, "metadata_store", None),
+            record_accessor=DocumentServiceRecordAccessor(self.document_service),
         )  # 检索权限策略：优先注入，否则基于 document_service 自动构造。
         self.query_profile_service = query_profile_service or QueryProfileService(self.settings)  # 统一解析 fast/accurate 档位，避免参数散落在检索服务里。
         self.system_config_service = self.query_profile_service.system_config_service  # 复用统一系统配置服务，保证检索和 rerank 读取的是同一份配置。
@@ -146,7 +147,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if self._should_use_department_priority_routes(
             auth_context=auth_context,
             document_id=normalized_document_id,
-        ):
+        ) and hasattr(self.retrieval_scope_policy, "build_department_priority_retrieval_scope"):
             retrieval_scope = self.retrieval_scope_policy.build_department_priority_retrieval_scope(auth_context)
             candidates, retrieval_mode, branch_weights = self._collect_department_priority_candidates(
                 query=request.query,

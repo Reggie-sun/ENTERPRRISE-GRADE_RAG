@@ -1,5 +1,6 @@
 import asyncio  # 导入 asyncio，便于在同步测试里调用异步读取函数。
 import base64  # 导入 base64，用于内嵌最小 PNG 测试图片。
+from collections import Counter
 from datetime import datetime, timedelta, timezone  # 导入时间工具，便于构造历史元数据测试记录和过期任务场景。
 from io import BytesIO  # 导入 BytesIO，用于在测试里动态拼装最小 DOCX 文件。
 import json  # 导入 json，用来读取 chunk 结果文件里的 JSON 内容。
@@ -2343,6 +2344,100 @@ def test_create_document_supports_docx_embedded_image_ocr_and_mixed_chunks(tmp_p
     assert preview_response.status_code == 200
     preview_payload = preview_response.json()
     assert "截图：检查温度传感器报警灯。" in (preview_payload["text_content"] or "")
+
+
+def test_sop_wi_docx_ingestion_generates_multigranularity_chunks(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    source_path = settings.upload_dir / "WI-SJ-052#摇臂钻床安全操作规范#A0.docx"
+    source_path.write_bytes(
+        build_minimal_docx_bytes(
+            "摇臂钻床安全操作规范\t文件编号\tWI-SJ-052",
+            "版 本 号\tA/0",
+            "生效日期\t2022-12-05",
+            "目的",
+            "本规程用于指导操作者正确操作和使用设备。",
+            "适用范围",
+            "本规程适用于指导本公司摇臂钻的操作与安全操作。",
+            "职责",
+            "3.1 生产管理部负责设备保养、设备维修以及改善的确认工作；",
+            "3.2 生产技术部负责设备故障原因查找、故障定性、设备维护方案制定。",
+            "内容",
+            "4.1 摇臂钻床应有专人操作与保养。",
+            "4.2 作业前应该检查摇臂钻床电器、机械、工具、夹具是否存在异常。",
+            "4.13 钻孔时必须经常注意清除铁屑，钻头上有长屑时要停车清除，禁止用风吹手拉。",
+            "4.17 钻孔过程中钻头未退离工件前不得停车。严禁用手去停住转动着的钻头。",
+            "4.22 当设备出现异常现象不得强行使用，不能排除应立即通知维修人员处理。",
+            "4.25 工作后须卸下钻头，将各手柄置于非工作位置上，再切断电源以防止发生意外。",
+            "编制\t李双田\t审核\t方梦然\t批准\t吕政权",
+        )
+    )
+
+    ingestion_result = service.ingestion_service.ingest_document(
+        document_id="doc_structured_sop",
+        filename=source_path.name,
+        source_path=source_path,
+    )
+
+    assert ingestion_result.final_status == "completed"
+    chunk_payload = json.loads(Path(ingestion_result.chunk_path).read_text(encoding="utf-8"))
+    chunk_type_counter = Counter(item["chunk_type"] for item in chunk_payload)
+    assert chunk_type_counter["metadata"] == 1
+    assert chunk_type_counter["doc_summary"] == 1
+    assert chunk_type_counter["section_summary"] >= 4
+    assert chunk_type_counter["clause"] >= 10
+
+    metadata_chunk = next(item for item in chunk_payload if item["chunk_type"] == "metadata")
+    assert metadata_chunk["document_code"] == "WI-SJ-052"
+    assert metadata_chunk["version"] == "A/0"
+    assert metadata_chunk["effective_date"] == "2022-12-05"
+
+    doc_summary_chunk = next(item for item in chunk_payload if item["chunk_type"] == "doc_summary")
+    assert doc_summary_chunk["doc_title"] == "摇臂钻床安全操作规范"
+    assert "作业前准备与防护要求" in (doc_summary_chunk["retrieval_text"] or "")
+
+    clause_chunk = next(item for item in chunk_payload if item["clause_no"] == "4.13")
+    assert clause_chunk["chunk_type"] == "clause"
+    assert clause_chunk["section_label"] == "清屑要求"
+    assert clause_chunk["parent_id"] == "doc_structured_sop::section_summary::chip_and_stop"
+    assert clause_chunk["risk_level"] == "high"
+    assert clause_chunk["display_text"] == clause_chunk["text"]
+    assert "WI-SJ-052" in (clause_chunk["retrieval_text"] or "")
+
+    indexed_records = list(service.ingestion_service.vector_store.scroll_records(document_id="doc_structured_sop"))
+    indexed_payload = next(record.payload for record in indexed_records if record.payload["clause_no"] == "4.13")
+    assert indexed_payload["chunk_type"] == "clause"
+    assert indexed_payload["text"] == clause_chunk["text"]
+    assert indexed_payload["retrieval_text"] == clause_chunk["retrieval_text"]
+    assert indexed_payload["display_text"] == clause_chunk["display_text"]
+    assert indexed_payload["document_code"] == "WI-SJ-052"
+
+
+def test_plain_text_ingestion_still_uses_default_text_chunks(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    source_path = settings.upload_dir / "manual.txt"
+    source_path.write_text(
+        "RAG can help engineers search maintenance manuals quickly.\n\n"
+        "This document explains alarm handling steps, safety notes, and repair guides.",
+        encoding="utf-8",
+    )
+
+    ingestion_result = service.ingestion_service.ingest_document(
+        document_id="doc_plain_text",
+        filename="manual.txt",
+        source_path=source_path,
+    )
+
+    chunk_payload = json.loads(Path(ingestion_result.chunk_path).read_text(encoding="utf-8"))
+    assert chunk_payload
+    assert all(item["chunk_type"] == "text" for item in chunk_payload)
+    assert all(item["parent_id"] is None for item in chunk_payload)
+    assert all(item["document_code"] is None for item in chunk_payload)
 
 
 def test_upload_rejects_unsupported_extension(tmp_path: Path) -> None:  # 测试系统会拒绝不支持的文件扩展名。

@@ -4,6 +4,7 @@
 并尽量在自然边界（段落、句子、标点）处切分，保持语义完整性。
 """
 from dataclasses import dataclass  # 导入 dataclass，用于定义轻量级 chunk 数据结构。
+from dataclasses import field
 
 
 @dataclass(slots=True)  # 用 dataclass 定义 chunk 结构，并启用 slots 节省内存。
@@ -19,6 +20,30 @@ class TextChunk:  # 表示切分后的一个文本片段。
     page_no: int | None = None  # OCR 可可靠定位时返回页码；普通文本和无法映射时为空。
     ocr_confidence: float | None = None  # OCR 置信度摘要，供后续排序和质量评估复用。
     quality_score: float | None = None  # 通用质量分，当前优先复用 OCR 置信度，为后续排序增强预留统一字段。
+    chunk_type: str = "text"  # chunk 语义类型，普通文档默认为 text；结构化文档可落 doc_summary/section_summary/clause/metadata。
+    parent_id: str | None = None  # 当前 chunk 的父级 chunk id，结构化文档做章节回溯时复用。
+    doc_title: str | None = None  # 文档标题，供结构化检索增强使用。
+    document_code: str | None = None  # 文档业务编号，如 WI-SJ-052；与内部 document_id 区分。
+    section: str | None = None  # 章节号或章节范围，如 4.13 / 4.1-4.4 / ALL。
+    section_label: str | None = None  # 章节语义标签，如 清屑要求 / 作业前准备。
+    keywords: list[str] = field(default_factory=list)  # 结构化关键词，用于 embedding / lexical 增强。
+    retrieval_text: str | None = None  # 用于 embedding / lexical 的增强文本，缺失时回退到 text。
+    display_text: str | None = None  # 用于展示与引用的文本，缺失时回退到 text。
+    summary_text: str | None = None  # 可选短摘要，供前端展示和后续 rerank 扩展复用。
+    section_path: list[str] = field(default_factory=list)  # 结构化章节路径，如 ["内容", "4.13"]。
+    clause_no: str | None = None  # 原始条款号。
+    clause_no_normalized: str | None = None  # 归一化条款号，便于精确检索 4.17 / 第4.17条 等问法。
+    source_file_name: str | None = None  # 原始文件名，给索引层和追溯层统一留存。
+    version: str | None = None  # 文档版本号，如 A/0。
+    effective_date: str | None = None  # 生效日期，统一保留成字符串，避免早期 schema 被日期格式约束住。
+    risk_level: str | None = None  # 风险等级，安全类规范可复用。
+    is_generated_summary: bool = False  # 当前 chunk 是否为规则/LLM 生成的摘要块。
+
+    def embedding_text(self) -> str:  # 统一返回用于 embedding 的文本，优先使用 retrieval_text。
+        return (self.retrieval_text or self.text).strip()
+
+    def payload_text(self) -> str:  # 统一返回写入 payload 的展示文本，优先使用 display_text。
+        return (self.display_text or self.text).strip()
 
 
 class TextChunker:  # 按字符长度切分文本的简单 chunker。

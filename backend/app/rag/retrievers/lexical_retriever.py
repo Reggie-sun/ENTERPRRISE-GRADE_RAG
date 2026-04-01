@@ -145,7 +145,7 @@ class QdrantLexicalRetriever:
                 scroll_kwargs["document_ids"] = document_ids
             for record in self.vector_store.scroll_records(**scroll_kwargs):
                 payload = dict(record.payload or {})
-                text = str(payload.get("text") or "")
+                text = str(payload.get("retrieval_text") or payload.get("text") or "")
                 tokenized_text = self._tokenize(text)
                 primary_doc_length = len(tokenized_text.primary_tokens)
                 supplemental_doc_length = len(tokenized_text.supplemental_tokens)
