@@ -26,6 +26,12 @@ from ..schemas.request_snapshot import (
     RequestSnapshotResult,
     RequestSnapshotRewrite,
 )
+from ..schemas.retrieval import (
+    RetrievalDiagnostic,
+    RetrievalRequest,
+    RetrievalResponse,
+    RetrievedChunk,
+)
 from ..schemas.sop_generation import (
     SopGenerateByDocumentRequest,
     SopGenerateByScenarioRequest,
@@ -38,6 +44,7 @@ from .system_config_service import SystemConfigService
 
 if TYPE_CHECKING:
     from .chat_service import ChatService
+    from .retrieval_service import RetrievalService
     from .sop_generation_service import SopGenerationService
 
 
@@ -208,6 +215,95 @@ class RequestSnapshotService:
             return record
         return record
 
+    def record_retrieval_snapshot(
+        self,
+        *,
+        trace_id: str,
+        request_id: str,
+        action: str,
+        outcome: str,
+        request: RetrievalRequest,
+        profile: QueryProfile,
+        auth_context: AuthContext | None,
+        response: RetrievalResponse,
+        error_message: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> RequestSnapshotRecord:
+        """记录检索请求快照，用于后续回放和对比。"""
+        reranker_route = self.system_config_service.get_reranker_routing()
+        record = RequestSnapshotRecord(
+            snapshot_id=self._new_snapshot_id(),
+            trace_id=trace_id,
+            request_id=request_id,
+            category="retrieval",
+            action=action,
+            outcome="success" if outcome == "success" else "failed",
+            occurred_at=datetime.now(timezone.utc),
+            actor=self._build_actor(auth_context),
+            target_type="document" if request.document_id else None,
+            target_id=request.document_id,
+            request=request.model_copy(deep=True),
+            profile=profile.model_copy(deep=True),
+            memory_summary=None,
+            rewrite=RequestSnapshotRewrite(
+                status="skipped",
+                original_question=request.query,
+                rewritten_question=None,
+                details={"reason": "query rewrite is not applicable to retrieval requests."},
+            ),
+            contexts=self._build_retrieval_contexts(response.results),
+            citations=[],
+            model_route=RequestSnapshotModelRoute(
+                provider=self.settings.embedding_provider,
+                base_url=None,
+                model=self.settings.embedding_model,
+            ),
+            component_versions=RequestSnapshotComponentVersions(
+                prompt_version="retrieval-v1",
+                embedding_provider=self.settings.embedding_provider,
+                embedding_model=self.settings.embedding_model,
+                reranker_provider=reranker_route.provider,
+                reranker_model=reranker_route.model,
+            ),
+            result=RequestSnapshotResult(
+                response_mode=response.mode,
+                model=self.settings.embedding_model,
+                answer_preview=None,
+                answer_chars=0,
+                citation_count=len(response.results),
+                rerank_strategy="skipped",
+                downgraded_from=None,
+                timeout_flag=False,
+                error_message=error_message,
+            ),
+            details=dict(details or {}),
+        )
+        try:
+            self.repository.append(record)
+        except Exception:
+            return record
+        return record
+
+    @staticmethod
+    def _build_retrieval_contexts(results: list[RetrievedChunk]) -> list[RequestSnapshotContext]:
+        return [
+            RequestSnapshotContext(
+                rank=index,
+                chunk_id=chunk.chunk_id,
+                document_id=chunk.document_id,
+                document_name=chunk.document_name,
+                snippet=chunk.text[:200] if chunk.text else "",
+                score=chunk.score,
+                source_path=chunk.source_path,
+                retrieval_strategy=chunk.retrieval_strategy,
+                source_scope=chunk.source_scope,
+                vector_score=chunk.vector_score,
+                lexical_score=chunk.lexical_score,
+                fused_score=chunk.fused_score,
+            )
+            for index, chunk in enumerate(results, start=1)
+        ]
+
     def list_recent(
         self,
         *,
@@ -280,6 +376,7 @@ class RequestSnapshotService:
         auth_context: AuthContext,
         chat_service: ChatService,
         sop_generation_service: SopGenerationService,
+        retrieval_service: RetrievalService | None = None,
     ) -> RequestSnapshotReplayResponse:
         record = self.get_snapshot(snapshot_id, auth_context=auth_context)
         replay_request = record.request.model_copy(deep=True)
@@ -306,6 +403,7 @@ class RequestSnapshotService:
             auth_context=auth_context,
             chat_service=chat_service,
             sop_generation_service=sop_generation_service,
+            retrieval_service=retrieval_service,
         )
         return RequestSnapshotReplayResponse(
             snapshot_id=record.snapshot_id,
@@ -443,7 +541,8 @@ class RequestSnapshotService:
         auth_context: AuthContext,
         chat_service: ChatService,
         sop_generation_service: SopGenerationService,
-    ) -> ChatResponse | SopGenerationDraftResponse:
+        retrieval_service: RetrievalService | None = None,
+    ) -> ChatResponse | SopGenerationDraftResponse | RetrievalResponse:
         if record.category == "chat":
             if not isinstance(replay_request, ChatRequest):
                 raise HTTPException(
@@ -451,6 +550,19 @@ class RequestSnapshotService:
                     detail="Snapshot payload does not match chat replay requirements.",
                 )
             return chat_service.answer(replay_request, auth_context=auth_context)
+
+        if record.category == "retrieval":
+            if not isinstance(replay_request, RetrievalRequest):
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Snapshot payload does not match retrieval replay requirements.",
+                )
+            if retrieval_service is None:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Retrieval replay is not available in the current configuration.",
+                )
+            return retrieval_service.search(replay_request, auth_context=auth_context)
 
         if record.category == "sop_generation":
             if isinstance(replay_request, SopGenerateByDocumentRequest):
