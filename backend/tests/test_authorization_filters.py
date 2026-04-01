@@ -10,6 +10,7 @@ from backend.app.services.auth_service import AuthService, get_auth_service
 from backend.app.services.chat_service import ChatService, get_chat_service
 from backend.app.services.document_service import DocumentService, get_document_service
 from backend.app.services.identity_service import IdentityService, get_identity_service
+from backend.app.services.retrieval_scope_policy import RetrievalScopePolicy
 from backend.app.services.retrieval_service import RetrievalService, get_retrieval_service
 
 
@@ -155,7 +156,12 @@ def authz_env(tmp_path: Path):
 
     auth_service = AuthService(settings, identity_service=identity_service)
     document_service = DocumentService(settings)
-    retrieval_service = RetrievalService(settings, document_service=document_service)
+    retrieval_scope_policy = RetrievalScopePolicy(
+        settings,
+        record_provider=document_service,
+        metadata_store=document_service.metadata_store,
+    )
+    retrieval_service = RetrievalService(settings, document_service=document_service, retrieval_scope_policy=retrieval_scope_policy)
     chat_service = ChatService(settings)
     chat_service.retrieval_service = retrieval_service
 
@@ -167,7 +173,7 @@ def authz_env(tmp_path: Path):
     client = TestClient(app)
 
     try:
-        yield client, document_service
+        yield client, document_service, retrieval_scope_policy
     finally:
         app.dependency_overrides.clear()
 
@@ -184,7 +190,12 @@ def authz_env_no_query_isolation(tmp_path: Path):
 
     auth_service = AuthService(settings, identity_service=identity_service)
     document_service = DocumentService(settings)
-    retrieval_service = RetrievalService(settings, document_service=document_service)
+    retrieval_scope_policy = RetrievalScopePolicy(
+        settings,
+        record_provider=document_service,
+        metadata_store=document_service.metadata_store,
+    )
+    retrieval_service = RetrievalService(settings, document_service=document_service, retrieval_scope_policy=retrieval_scope_policy)
     chat_service = ChatService(settings)
     chat_service.retrieval_service = retrieval_service
 
@@ -227,6 +238,23 @@ def _create_document(
     )
     assert response.status_code == 201
     return str(response.json()["doc_id"])
+
+
+def _build_employee_auth_context(client, document_service):
+    """Helper to build an auth_context for the employee user."""
+    login_response = client.post("/api/v1/auth/login", json={"username": "employee.demo", "password": "employee-demo-pass"})
+    assert login_response.status_code == 200
+    token = login_response.json()["access_token"]
+
+    identity_service_factory = client.app.dependency_overrides[get_identity_service]
+    identity_service: IdentityService = identity_service_factory()
+    auth_service = AuthService(document_service.settings, identity_service=identity_service)
+    return auth_service.build_auth_context(token)
+
+
+# ---------------------------------------------------------------------------
+# Existing tests
+# ---------------------------------------------------------------------------
 
 
 def test_document_list_filters_by_department_for_employee(authz_env) -> None:
@@ -289,11 +317,8 @@ def test_retrieval_filters_results_to_accessible_departments(authz_env) -> None:
     payload = response.json()
     assert payload["results"]
     result_doc_ids = {item["document_id"] for item in payload["results"]}
-    # Own-department result must always be present
     assert visible_doc_id in result_doc_ids
-    # Cross-department public doc should be available as supplemental
     assert other_doc_id in result_doc_ids
-    # Own-department result should rank first
     assert payload["results"][0]["document_id"] == visible_doc_id
 
 
@@ -493,7 +518,7 @@ def test_query_scope_disable_does_not_widen_write_boundaries(authz_env_no_query_
 
 def test_build_department_priority_scope_includes_cross_department_docs_in_supplemental(authz_env) -> None:
     """Non-global employee retrieval scope should include cross-department public docs in supplemental pool."""
-    client, document_service = authz_env
+    client, document_service, retrieval_scope_policy = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
 
     own_doc_id = _create_document(
@@ -512,20 +537,82 @@ def test_build_department_priority_scope_includes_cross_department_docs_in_suppl
         visibility="public",
     )
 
-    # Build auth_context for the employee via login + token decode
-    login_response = client.post("/api/v1/auth/login", json={"username": "employee.demo", "password": "employee-demo-pass"})
-    assert login_response.status_code == 200
-    token = login_response.json()["access_token"]
-
-    from backend.app.services.identity_service import IdentityService
-    identity_service_factory = client.app.dependency_overrides[get_identity_service]
-    identity_service: IdentityService = identity_service_factory()
-    auth_service = AuthService(document_service.settings, identity_service=identity_service)
-    auth_context = auth_service.build_auth_context(token)
-
-    scope = document_service.build_department_priority_retrieval_scope(auth_context)
+    auth_context = _build_employee_auth_context(client, document_service)
+    scope = retrieval_scope_policy.build_department_priority_retrieval_scope(auth_context)
 
     assert scope is not None
     assert own_doc_id in scope.department_document_ids, "Own-department doc must be in department pool"
-    # Cross-department public doc should be in the supplemental (global) pool
     assert other_doc_id in scope.global_document_ids, "Cross-department public doc must be in supplemental pool"
+
+
+# ---------------------------------------------------------------------------
+# Directed cross-department retrieval authorization (retrieval_department_ids)
+# ---------------------------------------------------------------------------
+
+
+def test_directed_cross_department_retrieval_in_supplemental_pool(authz_env) -> None:
+    """Documents with retrieval_department_ids should be retrievable by authorized departments as supplemental."""
+    client, document_service, retrieval_scope_policy = authz_env
+    sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
+
+    # Create an assembly doc that authorizes after-sales in retrieval_department_ids
+    authorized_doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="assembly_authorized.txt",
+        content="Assembly line E300 troubleshooting guide for authorized departments.",
+        department_id="dept_assembly",
+    )
+    authorized_record = document_service._load_document_record(authorized_doc_id)
+    authorized_record.retrieval_department_ids = ["dept_after_sales"]
+    document_service._save_document_record(authorized_record)
+
+    # Create an assembly doc WITHOUT retrieval authorization (default empty)
+    unauthorized_doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="assembly_unauthorized.txt",
+        content="Assembly line E400 quality control notes internal use only.",
+        department_id="dept_assembly",
+    )
+
+    # Create an after-sales doc (own department)
+    own_doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="after_sales_guide.txt",
+        content="After-sales alarm E300 troubleshooting guide.",
+        department_id="dept_after_sales",
+    )
+
+    auth_context = _build_employee_auth_context(client, document_service)
+    scope = retrieval_scope_policy.build_department_priority_retrieval_scope(auth_context)
+
+    assert scope is not None
+    assert own_doc_id in scope.department_document_ids, "Own-department doc must be in department pool"
+    assert authorized_doc_id in scope.global_document_ids, "Authorized doc must be in supplemental pool via retrieval_department_ids"
+    assert unauthorized_doc_id not in scope.global_document_ids, "Unauthorized doc must not be in supplemental pool"
+
+
+def test_directed_cross_department_retrieval_does_not_widen_direct_access(authz_env) -> None:
+    """Retrieval authorization should NOT allow direct access to document detail/preview/download."""
+    client, document_service, _retrieval_scope_policy = authz_env
+    sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")
+    employee_headers = _login_headers(client, "employee.demo", "employee-demo-pass")
+
+    # Create a private assembly doc that authorizes after-sales for retrieval only
+    doc_id = _create_document(
+        client,
+        headers=sys_admin_headers,
+        filename="assembly_secret.txt",
+        content="Assembly line E500 proprietary notes.",
+        department_id="dept_assembly",
+        visibility="private",
+    )
+    record = document_service._load_document_record(doc_id)
+    record.retrieval_department_ids = ["dept_after_sales"]
+    document_service._save_document_record(record)
+
+    # Direct access (detail/preview/download) should be DENIED even though retrieval is authorized
+    detail_response = client.get(f"/api/v1/documents/{doc_id}", headers=employee_headers)
+    assert detail_response.status_code == 403

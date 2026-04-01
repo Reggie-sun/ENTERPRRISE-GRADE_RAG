@@ -35,6 +35,7 @@ async def create_document(  # 定义文档创建接口函数。
     tenant_id: str = Form(..., description="Tenant identifier"),  # 接收租户 ID。
     department_id: str | None = Form(default=None),  # 接收主部门（v0.2 新增字段）。
     department_ids: list[str] | None = Form(default=None),  # 接收部门范围。
+    retrieval_department_ids: list[str] | None = Form(default=None),  # 接收检索补充授权部门范围。
     category_id: str | None = Form(default=None),  # 接收二级分类（v0.2 新增字段）。
     role_ids: list[str] | None = Form(default=None),  # 接收角色范围。
     owner_id: str | None = Form(default=None),  # 接收 owner。
@@ -52,6 +53,7 @@ async def create_document(  # 定义文档创建接口函数。
         tenant_id=tenant_id,
         department_id=department_id,
         department_ids=department_ids,
+        retrieval_department_ids=retrieval_department_ids,
         category_id=category_id,
         role_ids=role_ids,
         owner_id=owner_id,
@@ -77,6 +79,7 @@ async def create_documents_batch(  # 定义批量文档创建接口函数。
     tenant_id: str = Form(..., description="Tenant identifier"),  # 接收租户 ID。
     department_id: str | None = Form(default=None),  # 接收主部门（v0.2 新增字段）。
     department_ids: list[str] | None = Form(default=None),  # 接收部门范围。
+    retrieval_department_ids: list[str] | None = Form(default=None),  # 接收检索补充授权部门范围。
     category_id: str | None = Form(default=None),  # 接收二级分类（v0.2 新增字段）。
     role_ids: list[str] | None = Form(default=None),  # 接收角色范围。
     owner_id: str | None = Form(default=None),  # 接收 owner。
@@ -94,6 +97,7 @@ async def create_documents_batch(  # 定义批量文档创建接口函数。
         tenant_id=tenant_id,
         department_id=department_id,
         department_ids=department_ids,
+        retrieval_department_ids=retrieval_department_ids,
         category_id=category_id,
         role_ids=role_ids,
         owner_id=owner_id,

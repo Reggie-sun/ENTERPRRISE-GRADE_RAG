@@ -47,6 +47,7 @@ class PostgresMetadataStore:
             "department_id": record.department_id,
             "category_id": record.category_id,
             "uploaded_by": record.uploaded_by,
+            "retrieval_department_ids": record.retrieval_department_ids,
         }  # 新增主数据字段先落在 metadata JSON，避免强依赖库表结构变更。
         if record.status == "deleted":  # 仅删除状态写 deleted 标记，避免污染既有 metadata 断言与下游兼容逻辑。
             metadata_payload["deleted"] = True
@@ -336,6 +337,8 @@ class PostgresMetadataStore:
         department_id = metadata_map.get("department_id")
         category_id = metadata_map.get("category_id")
         uploaded_by = metadata_map.get("uploaded_by")
+        retrieval_department_ids_raw = metadata_map.get("retrieval_department_ids")
+        retrieval_department_ids = retrieval_department_ids_raw if isinstance(retrieval_department_ids_raw, list) else []
         deleted_flag = bool(metadata_map.get("deleted"))  # deleted 通过 metadata 标记回读，避免依赖数据库枚举扩展。
         record_status = "deleted" if deleted_flag else str(row["status"])
         return DocumentRecord(
@@ -346,6 +349,7 @@ class PostgresMetadataStore:
             source_type=str(row["sourceType"]),
             department_id=None if department_id is None else str(department_id),
             department_ids=self._as_str_list(row.get("departmentIds")),
+            retrieval_department_ids=retrieval_department_ids,
             category_id=None if category_id is None else str(category_id),
             role_ids=self._as_str_list(row.get("roleIds")),
             owner_id=None if row.get("ownerId") is None else str(row["ownerId"]),

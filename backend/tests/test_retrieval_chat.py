@@ -12,7 +12,8 @@ from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefiniti
 from backend.app.schemas.chat import ChatRequest
 from backend.app.schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求/响应模型，用于直接调用服务层测试过滤逻辑。
 from backend.app.services.chat_service import ChatService, get_chat_service  # 导入问答服务和依赖入口。
-from backend.app.services.document_service import DepartmentPriorityRetrievalScope, DocumentService, get_document_service  # 导入文档服务和依赖入口。
+from backend.app.services.document_service import DocumentService, get_document_service  # 导入文档服务和依赖入口。
+from backend.app.services.retrieval_scope_policy import DepartmentPriorityRetrievalScope, RetrievalScopePolicy  # 导入检索权限策略。
 from backend.app.services.request_snapshot_service import RequestSnapshotService
 from backend.app.services.request_trace_service import RequestTraceService
 from backend.app.services.runtime_gate_service import RuntimeGateBusyError, RuntimeGateService
@@ -1551,23 +1552,28 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
     settings = build_test_settings(tmp_path)
 
     class SpyDocumentService:
-        def __init__(self) -> None:
-            self.calls: list[list[str]] = []
-
         def is_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> bool:  # pragma: no cover
             raise AssertionError("retrieval should batch readability checks instead of loading one document at a time")
 
         def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {
+                "doc_a": True,
+                "doc_b": False,
+            }
+
+    class SpyRetrievalScopePolicy:
+        def __init__(self) -> None:
+            self.calls: list[list[str]] = []
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             self.calls.append(doc_ids)
             return {
                 "doc_a": True,
                 "doc_b": False,
             }
 
-        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
-            return self.get_document_readability_map(doc_ids, auth_context)
-
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    spy_policy = SpyRetrievalScopePolicy()
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=spy_policy)  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     retrieval_service.vector_store = SimpleNamespace(
         search=lambda query_vector, *, limit, document_id=None: [
@@ -1602,7 +1608,7 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
     )
 
     assert [item.document_id for item in response.results] == ["doc_a"]
-    assert retrieval_service.document_service.calls == [["doc_a", "doc_b"]]
+    assert spy_policy.calls == [["doc_a", "doc_b"]]
 
 
 def test_retrieval_service_department_priority_dual_route_fuses_department_and_global_candidates(tmp_path: Path) -> None:
@@ -1610,6 +1616,13 @@ def test_retrieval_service_department_priority_dual_route_fuses_department_and_g
     ensure_data_directories(settings)
 
     class SpyDocumentService:
+        def is_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> bool:
+            return True
+
+        def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    class SpyRetrievalScopePolicy:
         def __init__(self) -> None:
             self.scope_calls = 0
 
@@ -1623,16 +1636,11 @@ def test_retrieval_service_department_priority_dual_route_fuses_department_and_g
                 global_document_ids=["doc_shared", "doc_global"],
             )
 
-        def is_document_readable(self, doc_id: str, auth_context: AuthContext | None) -> bool:
-            return True
-
-        def get_document_readability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
-            return {doc_id: True for doc_id in doc_ids}
-
         def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    spy_policy = SpyRetrievalScopePolicy()
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=spy_policy)  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     vector_route_calls: list[list[str]] = []
     lexical_route_calls: list[list[str]] = []
@@ -1748,7 +1756,7 @@ def test_retrieval_service_department_priority_dual_route_fuses_department_and_g
     assert response.results[-1].source_scope == "global"
     assert {item.chunk_id for item in response.results[:2]} == {"chunk-dept", "chunk-shared"}
     assert {item.source_scope for item in response.results[:2]} == {"department", "both"}
-    assert retrieval_service.document_service.scope_calls == 1
+    assert spy_policy.scope_calls == 1
 
 
 def test_chat_ask_propagates_source_scope_to_citations(tmp_path: Path) -> None:
@@ -2278,6 +2286,9 @@ def test_retrieval_service_staged_skips_supplemental_when_department_sufficient(
     ensure_data_directories(settings)
 
     class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
         def __init__(self) -> None:
             self.scope_calls = 0
 
@@ -2294,7 +2305,8 @@ def test_retrieval_service_staged_skips_supplemental_when_department_sufficient(
         def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    spy_policy = SpyRetrievalScopePolicy()
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=spy_policy)  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     vector_route_calls: list[list[str]] = []
 
@@ -2332,7 +2344,7 @@ def test_retrieval_service_staged_skips_supplemental_when_department_sufficient(
     assert vector_route_calls == [["doc_dept_1", "doc_dept_2", "doc_dept_3"]]
     assert len(response.results) == 3
     assert all(item.source_scope == "department" for item in response.results)
-    assert retrieval_service.document_service.scope_calls == 1
+    assert spy_policy.scope_calls == 1
 
 
 def test_retrieval_service_staged_triggers_supplemental_when_department_insufficient(tmp_path: Path) -> None:
@@ -2341,14 +2353,13 @@ def test_retrieval_service_staged_triggers_supplemental_when_department_insuffic
     ensure_data_directories(settings)
 
     class SpyDocumentService:
-        def __init__(self) -> None:
-            self.scope_calls = 0
+        pass
 
+    class SpyRetrievalScopePolicy:
         def build_department_priority_retrieval_scope(
             self,
             auth_context: AuthContext | None,
         ) -> DepartmentPriorityRetrievalScope:
-            self.scope_calls += 1
             return DepartmentPriorityRetrievalScope(
                 department_document_ids=["doc_dept_1"],
                 global_document_ids=["doc_global_1", "doc_global_2"],
@@ -2357,7 +2368,7 @@ def test_retrieval_service_staged_triggers_supplemental_when_department_insuffic
         def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     vector_route_calls: list[list[str]] = []
 
@@ -2409,14 +2420,13 @@ def test_retrieval_service_staged_uses_rerank_top_n_when_truncate_is_false(tmp_p
     ensure_data_directories(settings)
 
     class SpyDocumentService:
-        def __init__(self) -> None:
-            self.scope_calls = 0
+        pass
 
+    class SpyRetrievalScopePolicy:
         def build_department_priority_retrieval_scope(
             self,
             auth_context: AuthContext | None,
         ) -> DepartmentPriorityRetrievalScope:
-            self.scope_calls += 1
             return DepartmentPriorityRetrievalScope(
                 department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3", "doc_dept_4"],
                 global_document_ids=["doc_global_1"],
@@ -2425,7 +2435,7 @@ def test_retrieval_service_staged_uses_rerank_top_n_when_truncate_is_false(tmp_p
         def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     vector_route_calls: list[list[str]] = []
 
@@ -2477,14 +2487,13 @@ def test_retrieval_service_staged_triggers_supplemental_with_rerank_top_n_thresh
     ensure_data_directories(settings)
 
     class SpyDocumentService:
-        def __init__(self) -> None:
-            self.scope_calls = 0
+        pass
 
+    class SpyRetrievalScopePolicy:
         def build_department_priority_retrieval_scope(
             self,
             auth_context: AuthContext | None,
         ) -> DepartmentPriorityRetrievalScope:
-            self.scope_calls += 1
             return DepartmentPriorityRetrievalScope(
                 department_document_ids=["doc_dept_1", "doc_dept_2"],
                 global_document_ids=["doc_global_1", "doc_global_2"],
@@ -2493,7 +2502,7 @@ def test_retrieval_service_staged_triggers_supplemental_with_rerank_top_n_thresh
         def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
             return {doc_id: True for doc_id in doc_ids}
 
-    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService())
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
     retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
     vector_route_calls: list[list[str]] = []
 
