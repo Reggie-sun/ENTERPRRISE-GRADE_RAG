@@ -104,6 +104,15 @@ class ChatService:  # 封装问答接口的业务逻辑。
             citation_pipeline=self.citation_pipeline,
         )
 
+    @property
+    def retrieval_service(self):
+        """向后兼容：外部替换 chat_service.retrieval_service 时同步更新 citation pipeline。"""
+        return self.citation_pipeline.retrieval_service
+
+    @retrieval_service.setter
+    def retrieval_service(self, value) -> None:
+        self.citation_pipeline.retrieval_service = value
+
     def answer(self, request: ChatRequest, *, auth_context: AuthContext | None = None) -> ChatResponse:  # 根据用户问题生成问答响应。
         started_at = perf_counter()
         trace_id, request_id = self._new_trace_identifiers()
