@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .event_log import EventLogActor, EventLogCategory, EventLogOutcome
 
-RequestTraceStageName = Literal["query_rewrite", "retrieval", "rerank", "llm", "answer"]
+RequestTraceStageName = Literal["query_rewrite", "retrieval", "rerank", "embedding", "lexical", "fusion", "ocr_filter", "permission_filter", "llm", "answer"]
 RequestTraceStageStatus = Literal["success", "failed", "skipped", "degraded"]
 
 

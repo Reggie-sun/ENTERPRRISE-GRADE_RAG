@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import AliasChoices, BaseModel, Field  # 导入 Pydantic 基类、字段约束和别名工具。
 
 from .query_profile import QueryMode
@@ -36,11 +38,38 @@ class RetrievedChunk(BaseModel):  # 定义单条检索结果的结构。
     quality_score: float | None = None  # 诊断字段：通用质量分，当前优先复用 OCR 置信度。
 
 
+class RetrievalDiagnostic(BaseModel):
+    """检索诊断结构，记录一次检索请求的完整可观测与可解释信息。"""
+
+    # --- query metadata ---
+    query: str = ""
+    query_type: str | None = None
+    retrieval_mode: str | None = None
+    document_id_filter_applied: bool = False
+    department_priority_enabled: bool = False
+
+    # --- staged retrieval ---
+    primary_threshold: int | None = None
+    primary_effective_count: int | None = None
+    supplemental_triggered: bool = False
+    supplemental_reason: str | None = None
+
+    # --- recall / filter counts ---
+    recall_counts: dict[str, int] = Field(default_factory=dict)
+    filter_counts: dict[str, int] = Field(default_factory=dict)
+    final_result_count: int = 0
+
+    # --- observability details ---
+    branch_weights: dict[str, Any] | None = None
+    stage_durations_ms: dict[str, int] = Field(default_factory=dict)
+
+
 class RetrievalResponse(BaseModel):  # 定义检索接口的响应结构。
     query: str  # 原始查询文本。
     top_k: int  # 本次请求的 top_k 值。
     mode: str  # 当前检索模式，例如 placeholder 或 real。
     results: list[RetrievedChunk]  # 返回的检索结果列表。
+    diagnostic: RetrievalDiagnostic | None = None  # 诊断字段：结构化检索诊断信息。
 
 
 class RerankComparisonResult(BaseModel):  # 定义单一路由下的 rerank 对比结果。

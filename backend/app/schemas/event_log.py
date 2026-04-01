@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-EventLogCategory = Literal["chat", "document", "sop_generation"]
+EventLogCategory = Literal["chat", "document", "retrieval", "sop_generation"]
 EventLogOutcome = Literal["success", "failed"]
 
 

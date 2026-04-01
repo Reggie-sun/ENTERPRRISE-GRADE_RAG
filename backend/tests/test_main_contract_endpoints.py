@@ -247,7 +247,7 @@ def test_retrieval_and_chat_contract_shapes(tmp_path: Path) -> None:
 
     assert retrieval_response.status_code == 200
     retrieval_payload = retrieval_response.json()
-    _assert_key_set(retrieval_payload, {"query", "top_k", "mode", "results"})
+    _assert_key_set(retrieval_payload, {"query", "top_k", "mode", "results", "diagnostic"})
     _assert_contains_keys(
         retrieval_payload["results"][0],
         {

@@ -16,6 +16,7 @@ from ..schemas.ops import (
     OpsQueueSummary,
     OpsRecentWindowSummary,
     OpsRerankUsageSummary,
+    OpsRetrievalSummary,
     OpsRuntimeChannelSummary,
     OpsRuntimeGateSummary,
     OpsSummaryResponse,
@@ -72,6 +73,7 @@ class OpsService:
         )
         health = self.health_service.get_snapshot()
         rerank_usage = self._build_rerank_usage(records)
+        retrieval_summary = self._build_retrieval_summary(records)
         return OpsSummaryResponse(
             checked_at=datetime.now(UTC),
             health=health,
@@ -84,6 +86,7 @@ class OpsService:
                 usage=rerank_usage,
             ),
             rerank_canary=self.rerank_canary_service.summarize(auth_context=auth_context, limit=self.recent_window_size),
+            retrieval=retrieval_summary,
             stuck_ingest_jobs=self.document_service.list_stuck_ingest_jobs(auth_context=auth_context, limit=5),
             categories=self._build_category_summaries(records),
             recent_failures=[record for record in records if record.outcome == "failed"][:5],
@@ -312,8 +315,67 @@ class OpsService:
         )
 
     @staticmethod
+    def _build_retrieval_summary(
+        records: list[EventLogRecord],
+    ) -> OpsRetrievalSummary:
+        """聚合最近检索事件日志的统计维度。"""
+        retrieval_records = [r for r in records if r.category == "retrieval"]
+        if not retrieval_records:
+            return OpsRetrievalSummary()
+
+        qdrant_count = 0
+        hybrid_count = 0
+        supplemental_triggered_count = 0
+        ocr_filtered_count = 0
+        permission_filtered_count = 0
+        candidate_counts: list[int] = []
+        final_counts: list[int] = []
+        query_type_counter: dict[str, int] = {}
+
+        for record in retrieval_records:
+            details = record.details or {}
+            mode = str(details.get("retrieval_mode", ""))
+            if mode == "hybrid":
+                hybrid_count += 1
+            else:
+                qdrant_count += 1
+            if details.get("supplemental_triggered"):
+                supplemental_triggered_count += 1
+            filters = details.get("filter_counts", details.get("filters", {}))
+            if isinstance(filters, dict):
+                ocr_filtered_count += int(filters.get("ocr_quality", 0))
+                permission_filtered_count += int(filters.get("permission", 0))
+            recall = details.get("recall_candidates")
+            recall_counts = details.get("recall_counts", {})
+            if recall is None and isinstance(recall_counts, dict):
+                recall = recall_counts.get("total_candidates")
+            if isinstance(recall, (int, float)):
+                candidate_counts.append(int(recall))
+            final = details.get("final_result_count", details.get("final_results"))
+            if isinstance(final, (int, float)):
+                final_counts.append(int(final))
+            qt = details.get("query_type")
+            if isinstance(qt, str) and qt:
+                query_type_counter[qt] = query_type_counter.get(qt, 0) + 1
+
+        sample_size = len(retrieval_records)
+        sorted_qt = sorted(query_type_counter.items(), key=lambda item: item[1], reverse=True)
+        return OpsRetrievalSummary(
+            sample_size=sample_size,
+            qdrant_count=qdrant_count,
+            hybrid_count=hybrid_count,
+            supplemental_triggered_count=supplemental_triggered_count,
+            supplemental_trigger_rate=round(supplemental_triggered_count / sample_size, 3) if sample_size else 0.0,
+            ocr_filtered_count=ocr_filtered_count,
+            permission_filtered_count=permission_filtered_count,
+            average_candidate_count=round(sum(candidate_counts) / len(candidate_counts), 1) if candidate_counts else 0.0,
+            average_final_result_count=round(sum(final_counts) / len(final_counts), 1) if final_counts else 0.0,
+            top_query_types=[qt for qt, _ in sorted_qt[:5]],
+        )
+
+    @staticmethod
     def _build_category_summaries(records: list[EventLogRecord]) -> list[OpsCategorySummary]:
-        categories: tuple[EventLogCategory, ...] = ("chat", "document", "sop_generation")
+        categories: tuple[EventLogCategory, ...] = ("chat", "document", "retrieval", "sop_generation")
         summaries: list[OpsCategorySummary] = []
         for category in categories:
             category_records = [record for record in records if record.category == category]

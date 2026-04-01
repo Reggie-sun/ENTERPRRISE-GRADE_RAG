@@ -107,6 +107,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
     # -- 向后兼容代理属性：测试直接 patch/赋值这些属性 --
     @property
     def retrieval_service(self):
+        """向后兼容：外部替换 chat_service.retrieval_service 时同步更新 citation pipeline。"""
         return self.citation_pipeline.retrieval_service
 
     @retrieval_service.setter
@@ -120,7 +121,6 @@ class ChatService:  # 封装问答接口的业务逻辑。
     @reranker_client.setter
     def reranker_client(self, value):
         self.citation_pipeline.reranker_client = value
-
     def answer(self, request: ChatRequest, *, auth_context: AuthContext | None = None) -> ChatResponse:  # 根据用户问题生成问答响应。
         started_at = perf_counter()
         trace_id, request_id = self._new_trace_identifiers()

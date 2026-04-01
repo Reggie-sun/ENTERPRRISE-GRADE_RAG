@@ -12,6 +12,7 @@ from ....schemas.request_snapshot import (
 from ....services.auth_service import get_current_auth_context
 from ....services.chat_service import ChatService, get_chat_service
 from ....services.request_snapshot_service import RequestSnapshotService, get_request_snapshot_service
+from ....services.retrieval_service import RetrievalService, get_retrieval_service
 from ....services.sop_generation_service import SopGenerationService, get_sop_generation_service
 
 router = APIRouter(prefix="/request-snapshots", tags=["request-snapshots"])
@@ -92,6 +93,7 @@ def replay_request_snapshot(
     request_snapshot_service: RequestSnapshotService = Depends(get_request_snapshot_service),
     chat_service: ChatService = Depends(get_chat_service),
     sop_generation_service: SopGenerationService = Depends(get_sop_generation_service),
+    retrieval_service: RetrievalService = Depends(get_retrieval_service),
 ) -> RequestSnapshotReplayResponse:
     return request_snapshot_service.replay_snapshot(
         snapshot_id=snapshot_id,
@@ -99,4 +101,5 @@ def replay_request_snapshot(
         auth_context=auth_context,
         chat_service=chat_service,
         sop_generation_service=sop_generation_service,
+        retrieval_service=retrieval_service,
     )

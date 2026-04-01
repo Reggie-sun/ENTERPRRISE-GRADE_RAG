@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from .chat import ChatRequest, ChatResponse, Citation
 from .event_log import EventLogActor, EventLogCategory, EventLogOutcome
 from .query_profile import QueryProfile
+from .retrieval import RetrievalRequest, RetrievalResponse
 from .sop_generation import (
     SopGenerateByDocumentRequest,
     SopGenerateByScenarioRequest,
@@ -21,8 +22,9 @@ RequestSnapshotRequestPayload = (
     | SopGenerateByDocumentRequest
     | SopGenerateByScenarioRequest
     | SopGenerateByTopicRequest
+    | RetrievalRequest
 )
-RequestSnapshotResponsePayload = ChatResponse | SopGenerationDraftResponse
+RequestSnapshotResponsePayload = ChatResponse | SopGenerationDraftResponse | RetrievalResponse
 
 
 class RequestSnapshotRewrite(BaseModel):

@@ -53,6 +53,21 @@ class OpsRerankDecisionSummary(BaseModel):
     should_rollback_to_heuristic: bool = False  # 主契约稳定字段：是否建议回滚 heuristic。
 
 
+class OpsRetrievalSummary(BaseModel):
+    """检索维度聚合统计，用于可优化。"""
+
+    sample_size: int = Field(default=0, ge=0)  # 统计窗口内检索 trace 样本数。
+    qdrant_count: int = Field(default=0, ge=0)  # 纯 qdrant 模式检索次数。
+    hybrid_count: int = Field(default=0, ge=0)  # hybrid 模式检索次数。
+    supplemental_triggered_count: int = Field(default=0, ge=0)  # supplemental 被触发的次数。
+    supplemental_trigger_rate: float = Field(default=0.0, ge=0.0, le=1.0)  # supplemental 触发率。
+    ocr_filtered_count: int = Field(default=0, ge=0)  # OCR 质量过滤命中的总次数。
+    permission_filtered_count: int = Field(default=0, ge=0)  # 权限过滤命中的总次数。
+    average_candidate_count: float = Field(default=0.0, ge=0.0)  # 平均召回候选数。
+    average_final_result_count: float = Field(default=0.0, ge=0.0)  # 平均最终返回结果数。
+    top_query_types: list[str] = Field(default_factory=list)  # 最近窗口中出现频率最高的 query_type。
+
+
 class OpsCategorySummary(BaseModel):
     category: EventLogCategory  # 主契约稳定字段：chat / document / sop_generation。
     total: int = Field(default=0, ge=0)  # 主契约稳定字段：总量。
@@ -105,6 +120,7 @@ class OpsSummaryResponse(BaseModel):
     rerank_usage: OpsRerankUsageSummary  # 主契约稳定字段：rerank 实际流量摘要。
     rerank_decision: OpsRerankDecisionSummary  # 主契约稳定字段：默认策略建议。
     rerank_canary: RerankCanarySummary  # 诊断字段：rerank canary 样本摘要。
+    retrieval: OpsRetrievalSummary = Field(default_factory=lambda: OpsRetrievalSummary())  # 诊断字段：检索维度聚合。
     stuck_ingest_jobs: list[OpsStuckIngestJobSummary] = Field(default_factory=list)  # 诊断字段：卡住的 ingest jobs。
     categories: list[OpsCategorySummary] = Field(default_factory=list)  # 主契约稳定字段：按类别聚合统计。
     recent_failures: list[EventLogRecord] = Field(default_factory=list)  # 主契约稳定字段：最近失败事件简表。

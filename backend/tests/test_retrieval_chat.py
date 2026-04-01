@@ -1604,7 +1604,7 @@ def test_retrieval_service_batches_document_readability_checks(tmp_path: Path) -
 
     response = retrieval_service.search(
         request=RetrievalRequest(query="test", top_k=5),
-        auth_context=_build_auth_context(),
+        auth_context=_build_auth_context(role_id="sys_admin"),
     )
 
     assert [item.document_id for item in response.results] == ["doc_a"]
