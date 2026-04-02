@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Card, Input, Layout } from '@/components';
+import { Button, Card, Input } from '@/components';
 import { formatAuthError, normalizeNextPath, useAuth } from '@/auth';
 
 export function LoginPage() {
@@ -37,9 +37,15 @@ export function LoginPage() {
   };
 
   return (
-    <Layout>
-      <div className="grid min-h-[70vh] place-items-center">
-        <Card className="w-full max-w-[560px] border-[rgba(182,70,47,0.14)] bg-[rgba(255,248,240,0.88)] shadow-[0_24px_54px_rgba(77,42,16,0.12)]">
+    <>
+      {/* 科技感背景层 */}
+      <div className="login-page-bg" />
+      <div className="login-page-glow-secondary" />
+      <div className="login-page-noise" />
+
+      {/* 登录卡片 */}
+      <div className="login-card-wrapper">
+        <Card className="login-card w-full max-w-[560px]">
           <div className="mb-2 flex justify-center">
             <img
               src="/welli-login-logo-v2.png"
@@ -80,6 +86,6 @@ export function LoginPage() {
           </div>
         </Card>
       </div>
-    </Layout>
+    </>
   );
 }

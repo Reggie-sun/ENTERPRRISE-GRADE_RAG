@@ -1,0 +1,133 @@
+{
+  "snapshot_id": "rsp_b7334816f0314284",
+  "trace_id": "trc_sop_4222c71ef18c4c5c",
+  "request_id": "req_sop_122be2a32cdf4b9d",
+  "category": "sop_generation",
+  "action": "generate_document",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T07:59:18.807475Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": "document",
+  "target_id": "doc_20260330075201_24a4a12e",
+  "request": {
+    "top_k": 8,
+    "mode": "accurate",
+    "department_id": "dept_production_technology",
+    "document_id": "doc_20260330075201_24a4a12e",
+    "title_hint": "齿条安装SOP  SOP 草稿",
+    "process_name": null,
+    "scenario_name": null
+  },
+  "profile": {
+    "purpose": "sop_generation",
+    "mode": "accurate",
+    "top_k": 8,
+    "candidate_top_k": 32,
+    "lexical_top_k": 32,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 24.0,
+    "fallback_mode": "fast"
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "根据文档 doc_20260330075201_24a4a12e 生成 SOP 草稿",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not enabled in the current V1 slice."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+      "document_id": "doc_20260330075201_24a4a12e",
+      "document_name": "齿条安装SOP .docx",
+      "snippet": "斜精铣齿条安装SOP-生技部斜精铣齿条安装SOP-生技部\n装配准备工作\n\n1.准备好油石、铲刀、百分表、橡胶锤、芯棒；\n\n2.准备好相应的螺丝、弹垫、内六角扳手；\n\n3.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n4.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n一、清洁\n\n内容\n\n用油石研磨齿条安装面摩擦至少2次；\n\n研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n二、安装齿条\n\n反向假齿反向假齿\n\n内容\n\n先两端拧入螺丝3螺牙\n\n从左到右依次把螺丝拧入3螺牙；（埋入螺丝孔内）\n\n内容\n\n确保斜精铣齿条与假齿条啮合；\n\n斜精铣齿条贴紧端面；\n\n螺丝从左到右依次锁紧；\n\n紧固扭矩参照《WI-SJ-005》）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n三、调节\n\n①②②①②②④②②④②②③②②③②②②②②②②②\n\n1.将深度百分表的弓形座安装好。\n\n2.将深度百分表放在平面上，旋转表盘将表针调整到零位。\n\n3.将芯棒放在齿条接缝处，如图3，左右调剂差看指针跳动。\n\n4.若跳动过大，用调节工装调节，然后再打表即可。\n\n跳动视频：\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n-0.01mm\n0-10mm\n0106\n山测\n009\n80\n70%\n\n品\n山测\n品\n20",
+      "score": 1.6875,
+      "source_path": "document://doc_20260330075201_24a4a12e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7368111,
+      "lexical_score": 2.5542529717937756,
+      "fused_score": 0.03278688524590164
+    }
+  ],
+  "citations": [
+    {
+      "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+      "document_id": "doc_20260330075201_24a4a12e",
+      "document_name": "齿条安装SOP .docx",
+      "snippet": "斜精铣齿条安装SOP-生技部斜精铣齿条安装SOP-生技部\n装配准备工作\n\n1.准备好油石、铲刀、百分表、橡胶锤、芯棒；\n\n2.准备好相应的螺丝、弹垫、内六角扳手；\n\n3.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n4.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n一、清洁\n\n内容\n\n用油石研磨齿条安装面摩擦至少2次；\n\n研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨直到没有明显的凹凸感即可。\n\n二、安装齿条\n\n反向假齿反向假齿\n\n内容\n\n先两端拧入螺丝3螺牙\n\n从左到右依次把螺丝拧入3螺牙；（埋入螺丝孔内）\n\n内容\n\n确保斜精铣齿条与假齿条啮合；\n\n斜精铣齿条贴紧端面；\n\n螺丝从左到右依次锁紧；\n\n紧固扭矩参照《WI-SJ-005》）；所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致；\n\n三、调节\n\n①②②①②②④②②④②②③②②③②②②②②②②②\n\n1.将深度百分表的弓形座安装好。\n\n2.将深度百分表放在平面上，旋转表盘将表针调整到零位。\n\n3.将芯棒放在齿条接缝处，如图3，左右调剂差看指针跳动。\n\n4.若跳动过大，用调节工装调节，然后再打表即可。\n\n跳动视频：\n\nWCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n-0.01mm\n0-10mm\n0106\n山测\n009\n80\n70%\n\n品\n山测\n品\n20",
+      "score": 1.6875,
+      "source_path": "document://doc_20260330075201_24a4a12e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7368111,
+      "lexical_score": 2.5542529717937756,
+      "fused_score": 0.03278688524590164,
+      "ocr_used": true,
+      "parser_name": "docx_embedded_image_ocr_paddle",
+      "page_no": null,
+      "ocr_confidence": 0.7987,
+      "quality_score": 0.7987
+    }
+  ],
+  "model_route": {
+    "provider": "openai",
+    "base_url": "http://192.168.10.200:8000/v1",
+    "model": "Qwen2.5-14B-AWQ"
+  },
+  "component_versions": {
+    "prompt_version": "sop-generation-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "rag",
+    "model": "Qwen2.5-14B-AWQ",
+    "answer_preview": "### 齿条安装SOP SOP 草稿\n**部门：生产技术部**\n\n**来源文档：齿条安装SOP .docx**\n\n#### 目的\n本标准作业程序(SOP)旨在规范斜精铣齿条的安装过程，确保安装质量符合标准要求。\n\n#### 适用范围\n适用于生产技术部斜精铣齿条的安装工作。\n\n#### 前置检查\n1. 准备好油石、铲刀、百分表、橡胶锤、芯棒；\n2. 准备好相应的螺丝、弹垫、内六角扳手；\n3. 检查外观表面无磕碰、变形、刮伤等不良现象；\n4. 检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n#### 操作步骤\n1. **清洁**\n   - 用油石研磨齿条安装面摩擦至少2次；\n   - ...",
+    "answer_chars": 739,
+    "citation_count": 1,
+    "rerank_strategy": "provider",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "title": "齿条安装SOP  SOP 草稿",
+    "generation_mode": "rag",
+    "citation_count": 1,
+    "document_id": "doc_20260330075201_24a4a12e",
+    "department_id": "dept_production_technology",
+    "department_name": "生产技术部",
+    "process_name": null,
+    "scenario_name": null,
+    "topic": "齿条安装SOP",
+    "streaming": true,
+    "retrieval_mode": "hybrid",
+    "query_type": "fixed",
+    "vector_weight": 1.0,
+    "lexical_weight": 1.0,
+    "dynamic_weighting_enabled": false,
+    "rerank_provider": "openai_compatible",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "rerank_default_strategy": "provider",
+    "rerank_effective_strategy": "provider",
+    "retrieved_count": 1,
+    "rerank_input_count": 1,
+    "rerank_output_count": 1,
+    "runtime_channel": "sop_generation",
+    "acquire_timeout_ms": 800,
+    "requested_mode": "accurate",
+    "runtime_owner_key": "user_roster_10565"
+  }
+}

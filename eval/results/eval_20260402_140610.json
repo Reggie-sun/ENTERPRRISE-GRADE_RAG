@@ -1,0 +1,786 @@
+{
+  "summary": {
+    "total_samples": 19,
+    "evaluated_at": "2026-04-02T06:06:10.988893+00:00",
+    "metrics": {
+      "top1_accuracy": 1.0,
+      "top1_partial_hit_rate": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage_avg": 1.0,
+      "supplemental_precision": null,
+      "supplemental_recall": null,
+      "conservative_trigger_count": 0,
+      "supplemental_true_negatives": 19,
+      "heuristic_chunk_type_full_match_rate": 0.3684210526315789,
+      "heuristic_chunk_type_partial_match_rate": 0.631578947368421,
+      "term_coverage_avg": 0.9342105263157895
+    },
+    "by_query_type": {
+      "exact": {
+        "count": 12,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      },
+      "semantic": {
+        "count": 7,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      }
+    },
+    "by_department": {
+      "dept_after_sales": {
+        "count": 3,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      },
+      "dept_assembly": {
+        "count": 10,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      },
+      "dept_digitalization": {
+        "count": 6,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      }
+    },
+    "by_granularity": {
+      "fine": {
+        "count": 12,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      },
+      "coarse": {
+        "count": 7,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      }
+    },
+    "by_supplemental_expected": {
+      "False": {
+        "count": 19,
+        "top1_accuracy": 1.0,
+        "topk_recall": 1.0,
+        "expected_doc_coverage_avg": 1.0
+      }
+    }
+  },
+  "scores": [
+    {
+      "sample_id": "exact-001",
+      "query": "700000 面板急停报警 现场先查什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_after_sales",
+      "top1_doc_id": "doc_20260321070337_445684f4",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1827
+    },
+    {
+      "sample_id": "exact-002",
+      "query": "700018 B轴夹紧放松信号异常 怎么处理",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.6666666666666666,
+      "requester_department_id": "dept_after_sales",
+      "top1_doc_id": "doc_20260321070337_445684f4",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1818
+    },
+    {
+      "sample_id": "exact-003",
+      "query": "皮带轮固定架组压装止动螺丝安装 Step3 扭矩是多少",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401092629_f470103f"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401084930_f891ddb2",
+        "doc_20260401092629_f3b52aa5",
+        "doc_20260401092629_f470103f"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260401092629_f470103f",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1826
+    },
+    {
+      "sample_id": "sop-001",
+      "query": "皮带轮部品（通用）作业指导书 目录包含哪些章节",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401092629_f470103f"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401092629_1239f70f",
+        "doc_20260401092629_8d318fde",
+        "doc_20260401092629_f28bca02",
+        "doc_20260401092629_f3b52aa5",
+        "doc_20260401092629_f470103f"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260401092629_f470103f",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1821
+    },
+    {
+      "sample_id": "sop-002",
+      "query": "作业指导书 SOP 皮带轮固定架组压装止动螺丝安装 Step1 做什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401092629_f470103f"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401092629_f3b52aa5",
+        "doc_20260401092629_f470103f"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260401092629_f470103f",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1834
+    },
+    {
+      "sample_id": "sop-003",
+      "query": "FAW05-1000P-X1000-Y2000 系列 主手臂部品 作业指导书 从动手臂梁滑块（含油嘴）安装 Step3 要求是什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401092629_f3b52aa5"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401092629_8d318fde",
+        "doc_20260401092629_f3b52aa5"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260401092629_f3b52aa5",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1847
+    },
+    {
+      "sample_id": "sop-004",
+      "query": "电机齿轮安装SOP 斜齿轮加温 设定时间和温度是多少",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260331021041_adff1740"
+      ],
+      "hit_doc_ids": [
+        "doc_20260331021041_adff1740",
+        "doc_20260331062759_0867e1df",
+        "doc_20260401092629_1d17b38c",
+        "doc_20260401092629_8d318fde",
+        "doc_20260401092630_00587936"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260331021041_adff1740",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1820
+    },
+    {
+      "sample_id": "sop-005",
+      "query": "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260330055115_c20cfc5a"
+      ],
+      "hit_doc_ids": [
+        "doc_20260330055115_2056c1bf",
+        "doc_20260330055115_c20cfc5a",
+        "doc_20260330055116_f9c87da8",
+        "doc_20260331062759_086deec1"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.75,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260330055115_c20cfc5a",
+      "top1_score": 0.9838709677419354,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1840
+    },
+    {
+      "sample_id": "fine-001",
+      "query": "700014 围栏急停报警 恢复后还不消失应该重点查什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_after_sales",
+      "top1_doc_id": "doc_20260321070337_445684f4",
+      "top1_score": 0.9621212121212123,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1849
+    },
+    {
+      "sample_id": "fine-002",
+      "query": "电镀镜光表面 A面 表面积1000以下 麻点允许数量",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401084714_b7ed464a"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401084714_b7ed464a"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260401084714_b7ed464a",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1859
+    },
+    {
+      "sample_id": "fine-003",
+      "query": "齿轮与齿条的间隙应控制在多少",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260331021041_adff1740"
+      ],
+      "hit_doc_ids": [
+        "doc_20260331021041_adff1740",
+        "doc_20260331081535_5d30086d",
+        "doc_20260401092629_8d318fde",
+        "doc_20260401092629_f3b52aa5"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260331021041_adff1740",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1780
+    },
+    {
+      "sample_id": "fine-004",
+      "query": "摇臂钻床异常响声时怎么处理",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260330055115_c20cfc5a"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4",
+        "doc_20260330055115_c20cfc5a"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260330055115_c20cfc5a",
+      "top1_score": 0.9838709677419354,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1754
+    },
+    {
+      "sample_id": "fine-005",
+      "query": "接触式移动供电系统至少多久检测一次",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260331081535_5d30086d"
+      ],
+      "hit_doc_ids": [
+        "doc_20260331081535_5d30086d"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.6666666666666666,
+      "requester_department_id": "dept_assembly",
+      "top1_doc_id": "doc_20260331081535_5d30086d",
+      "top1_score": 0.9765625000000001,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1756
+    },
+    {
+      "sample_id": "semantic-001",
+      "query": "刀具管理系统支持哪些基础数据管理",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260326071937_37f67e8c",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1762
+    },
+    {
+      "sample_id": "semantic-002",
+      "query": "为什么刀具管理系统要支持 3D 模型多视角展示",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260326071937_37f67e8c",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1811
+    },
+    {
+      "sample_id": "semantic-003",
+      "query": "为什么不能直接做大而全 V1",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401085300_13d0ce46"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.6666666666666666,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260401085300_13d0ce46",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1800
+    },
+    {
+      "sample_id": "broad-001",
+      "query": "DFMS 智能助手有哪些呈现形态",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260326064202_f5b7a9ae"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326064202_f5b7a9ae"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260326064202_f5b7a9ae",
+      "top1_score": 0.9919354838709679,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1759
+    },
+    {
+      "sample_id": "broad-002",
+      "query": "V1 当前冻结边界包括哪些内容",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260401085300_13d0ce46"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260401085300_13d0ce46",
+      "top1_score": 0.9765625000000001,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1777
+    },
+    {
+      "sample_id": "broad-003",
+      "query": "刀具管理系统主要有哪些能力",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 1.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 1.0,
+      "expected_doc_coverage": 1.0,
+      "expected_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326071937_37f67e8c"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 1.0,
+      "requester_department_id": "dept_digitalization",
+      "top1_doc_id": "doc_20260326071937_37f67e8c",
+      "top1_score": 0.9841269841269842,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1850
+    }
+  ],
+  "errors": [],
+  "config": {
+    "api_base": "http://localhost:8020",
+    "samples_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/eval/retrieval_samples.yaml",
+    "top_k": 5
+  }
+}

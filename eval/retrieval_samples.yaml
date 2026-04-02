@@ -6,9 +6,18 @@
 # production query logs.
 #
 # Seed-set limitation:
-# - This first verified set intentionally excludes cross-dept supplemental cases.
+# - The original 19 verified samples intentionally excluded cross-dept supplemental cases.
 # - Current evaluator logs in as a single `sys_admin` user, so it cannot verify
 #   department-scoped auth / supplemental behavior yet.
+#
+# Cross-dept supplemental samples (cross-001 through cross-012):
+# - These samples have `supplemental_expected: true` to represent scenarios where
+#   the answer requires documents from a department other than the requester's.
+# - query → expected_doc_ids mapping is verified against the live index.
+# - `requester_department_id` is a LABEL only — NOT real auth simulation.
+# - Status is `verified` for index hit, but auth behavior remains PROVISIONAL
+#   until real department-scoped retrieval is enforced.
+# - See individual sample `note` fields for evidence boundaries.
 
 samples:
   # exact / code-like
@@ -50,6 +59,72 @@ samples:
     status: verified
     source: synthetic
     note: "已按当前索引验证：FAW05 皮带轮部品 SOP 的 Step3 扭矩条目"
+
+  # SOP / WI explicit coverage
+  - id: sop-001
+    query: "皮带轮部品（通用）作业指导书 目录包含哪些章节"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401092629_f470103f"]
+    expected_chunk_type: section_summary
+    expected_terms: ["目录", "产品总览", "皮带轮、滚珠轴承安装", "皮带轮固定架组压装"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "显式 SOP 文档类型覆盖：皮带轮部品（通用）作业指导书目录页"
+
+  - id: sop-002
+    query: "作业指导书 SOP 皮带轮固定架组压装止动螺丝安装 Step1 做什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401092629_f470103f"]
+    expected_chunk_type: clause
+    expected_terms: ["止动螺丝安装", "Step1", "手扳压力机", "专用治具"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "显式 SOP 文档类型覆盖：皮带轮部品 SOP 的 Step1 操作条目"
+
+  - id: sop-003
+    query: "FAW05-1000P-X1000-Y2000 系列 主手臂部品 作业指导书 从动手臂梁滑块（含油嘴）安装 Step3 要求是什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401092629_f3b52aa5"]
+    expected_chunk_type: clause
+    expected_terms: ["从动手臂梁滑块", "含油嘴", "Step3", "定位面方向同侧"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "显式 SOP 文档类型覆盖：主手臂部品作业指导书中的滑块安装步骤"
+
+  - id: sop-004
+    query: "电机齿轮安装SOP 斜齿轮加温 设定时间和温度是多少"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331021041_adff1740"]
+    expected_chunk_type: clause
+    expected_terms: ["斜齿轮加温", "1小时", "250°"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "显式 SOP 文档类型覆盖：电机齿轮安装 SOP 的加温参数条目"
+
+  - id: sop-005
+    query: "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260330055115_c20cfc5a"]
+    expected_chunk_type: clause
+    expected_terms: ["WI-SJ-052", "4.25", "卸下钻头", "切断电源"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "显式 WI 文档类型覆盖：摇臂钻床安全操作规范的下班收尾条目"
 
   # fine-grained clause
   - id: fine-001
@@ -196,3 +271,220 @@ samples:
     status: verified
     source: synthetic
     note: "已按当前索引验证：刀具系统技术要求文档的总体能力说明"
+
+  # ── cross-department supplemental expected ──
+  # These samples test scenarios where the answer requires documents from
+  # a different department than the requester's.
+  #
+  # Evidence boundary:
+  # - query → expected_doc_ids mapping is verified against the live index
+  # - requester_department_id is a LABEL, not a real auth simulation
+  # - supplemental_expected=true reflects the *intended* behavior when
+  #   department-scoped retrieval is enforced: the requester's own-dept
+  #   results would be insufficient, so supplemental recall SHOULD fire
+  # - Status: index-verified, auth-provisional (see note on each sample)
+
+  - id: cross-001
+    query: "电机齿轮安装斜齿轮加温设定时间和温度是多少"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331021041_adff1740"]
+    expected_chunk_type: clause
+    expected_terms: ["斜齿轮加温", "1小时", "250°", "烘箱"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260331021041_adff1740 (电机齿轮安装SOP) as top1.
+      auth-provisional: after-sales personnel repairing a motor/gearbox unit would need the assembly SOP
+      to understand proper heating parameters; this doc logically belongs to dept_assembly.
+      supplemental_expected=true because from after-sales perspective, the assembly SOP is
+      a cross-department reference needed for repair guidance.
+
+  - id: cross-002
+    query: "皮带轮固定架组压装止动螺丝安装 Step3 扭矩是多少"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401092629_f470103f"]
+    expected_chunk_type: clause
+    expected_terms: ["皮带轮固定架组压装", "止动螺丝安装", "Step3", "4.5N"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260401092629_f470103f (FAW05 皮带轮部品SOP) in top-k.
+      auth-provisional: after-sales field service would need this assembly SOP for disassembly/reassembly
+      during on-site repair. The SOP logically belongs to dept_assembly.
+      supplemental_expected=true because after-sales has no own-dept SOP covering this procedure.
+
+  - id: cross-003
+    query: "从动手臂梁滑块含油嘴安装 Step3 定位面方向要求"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401092629_f3b52aa5"]
+    expected_chunk_type: clause
+    expected_terms: ["从动手臂梁滑块", "含油嘴", "Step3", "定位面方向同侧"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260401092629_f3b52aa5 (主手臂部品SOP) in top-k.
+      auth-provisional: after-sales servicing the main arm would need the assembly SOP for proper
+      reassembly of the slider. The SOP logically belongs to dept_assembly.
+      supplemental_expected=true because this is a dept_assembly document needed by dept_after_sales.
+
+  - id: cross-004
+    query: "DFMS智能助手的业务目标和产品目标分别是什么"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326064202_f5b7a9ae"]
+    expected_chunk_type: section_summary
+    expected_terms: ["业务目标", "产品目标", "DFMS", "智能助手"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260326064202_f5b7a9ae (RAG架构汇报版) as top1.
+      auth-provisional: assembly workers using the DFMS system would ask about its capabilities and goals.
+      The architecture document logically belongs to dept_digitalization.
+      supplemental_expected=true because the DFMS architecture plan is a cross-department reference.
+
+  - id: cross-005
+    query: "刀具管理系统刀具基础数据包括哪些内容"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["刀具基础数据", "刀具ID", "刀具类型", "3D模型", "供应商信息"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260326071937_37f67e8c (刀具系统技术要求) as top1.
+      auth-provisional: assembly operators using the tool management system would need to understand
+      what data it manages. The system spec document logically belongs to dept_digitalization.
+      supplemental_expected=true because it is a dept_digitalization document needed by dept_assembly.
+
+  - id: cross-006
+    query: "V1版本当前冻结边界包括哪些内容"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401085300_13d0ce46"]
+    expected_chunk_type: section_summary
+    expected_terms: ["当前冻结边界", "固定底座", "轻量关键词"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260401085300_13d0ce46 (V1_PLAN) as top1.
+      auth-provisional: after-sales team wanting to understand system roadmap would need this plan.
+      The V1_PLAN logically belongs to dept_digitalization.
+      supplemental_expected=true because it is a dept_digitalization document needed by dept_after_sales.
+
+  - id: cross-007
+    query: "电镀镜光表面A面表面积1000以下麻点允许数量"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401084714_b7ed464a"]
+    expected_chunk_type: clause
+    expected_terms: ["表4", "A面", "≤1000", "麻点"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260401084714_b7ed464a (电镀检验标准) as top1.
+      auth-provisional: IT team configuring quality inspection modules would need to understand
+      the inspection standards. The quality standard logically belongs to dept_assembly.
+      supplemental_expected=true because it is a dept_assembly document needed by dept_digitalization.
+
+  - id: cross-008
+    query: "接触式移动供电系统最低多久检测一次"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331081535_5d30086d"]
+    expected_chunk_type: clause
+    expected_terms: ["接触式移动供电系统", "最低一年一次", "定期检测"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260331081535_5d30086d (滑触线施工手册) in top-k.
+      auth-provisional: IT team maintaining the equipment management system would need to understand
+      maintenance schedules. The construction manual logically belongs to dept_assembly.
+      supplemental_expected=true because it is a dept_assembly document needed by dept_digitalization.
+
+  - id: cross-009
+    query: "700000 面板急停报警现场先查什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700000", "面板急停报警", "现场先查什么"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260321070337_445684f4 (123.txt fault code manual) as top1.
+      auth-provisional: assembly operators encountering an alarm on the production floor would need
+      the fault code manual for initial troubleshooting. The manual logically belongs to dept_after_sales.
+      supplemental_expected=true because it is a dept_after_sales document needed by dept_assembly.
+
+  - id: cross-010
+    query: "摇臂钻床安全操作规范中异常响声怎么处理"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260330055115_c20cfc5a"]
+    expected_chunk_type: clause
+    expected_terms: ["WI-SJ-052", "异常响声", "停止自动进给", "通知维修人员"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260330055115_c20cfc5a (WI-SJ-052) in top-k.
+      auth-provisional: IT team building safety monitoring features would need to understand
+      existing safety procedures. The WI logically belongs to dept_assembly (or cross-dept safety).
+      supplemental_expected=true because it is a dept_assembly document needed by dept_digitalization.
+
+  - id: cross-011
+    query: "为什么不能直接做大而全V1"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401085300_13d0ce46"]
+    expected_chunk_type: section_summary
+    expected_terms: ["大而全 V1", "低耦合", "可连续交付"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260401085300_13d0ce46 (V1_PLAN) as top1.
+      auth-provisional: assembly team wanting to understand the system development approach would
+      need this planning document. The V1_PLAN logically belongs to dept_digitalization.
+      supplemental_expected=true because it is a dept_digitalization document needed by dept_assembly.
+
+  - id: cross-012
+    query: "刀具管理系统为什么需要支持3D模型多视角展示"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["3D模型", "多维度", "多视角"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: >-
+      index-verified: live retrieval returns doc_20260326071937_37f67e8c (刀具系统技术要求) as top1.
+      auth-provisional: after-sales training new operators on the tool management system would need
+      to explain its features. The spec logically belongs to dept_digitalization.
+      supplemental_expected=true because it is a dept_digitalization document needed by dept_after_sales.

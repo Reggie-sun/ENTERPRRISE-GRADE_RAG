@@ -85,6 +85,176 @@ body::after {
   background: rgba(23, 32, 42, 0.3);
 }
 
+/* ============================================
+   登录页 - 克制科技感背景
+   Design: Enterprise minimal · Futuristic but calm
+   可调参数在此区域修改
+   ============================================ */
+:root {
+  /* --- 1. 背景基础色 --- */
+  --login-bg-base: #f7f5f2;             /* 主色：浅灰暖白 */
+  --login-bg-warm: #faf7f3;             /* 过渡色：暖米 */
+
+  /* --- 2. 品牌色（与 logo 暖橙呼应）--- */
+  --login-accent: rgba(182, 70, 47, 1);
+  --login-accent-soft: rgba(182, 70, 47, 0.06);
+  --login-accent-glow: rgba(182, 70, 47, 0.10);
+
+  /* --- 3. 科技感元素透明度（克制但可感知）--- */
+  --login-grid-opacity: 0.045;          /* 网格线透明度 */
+  --login-glow-primary-opacity: 0.22;   /* 主光晕透明度 */
+  --login-glow-secondary-opacity: 0.12; /* 辅助光晕透明度 */
+  --login-noise-opacity: 0.04;          /* 噪点纹理透明度 */
+
+  /* --- 4. 网格参数 --- */
+  --login-grid-size: 52px;              /* 网格间距 */
+  --login-grid-color: rgba(100, 90, 75, var(--login-grid-opacity));
+
+  /* --- 5. 主光晕参数（中心偏右）--- */
+  --login-glow-x: 62%;                  /* 水平位置 */
+  --login-glow-y: 38%;                  /* 垂直位置 */
+  --login-glow-size: 520px;             /* 光晕尺寸 */
+
+  /* --- 6. 辅助光晕参数（左下角，更淡）--- */
+  --login-glow2-x: 25%;
+  --login-glow2-y: 72%;
+  --login-glow2-size: 380px;
+
+  /* --- 7. 卡片阴影层级（elevation）--- */
+  --login-card-shadow:
+    0 1px 2px rgba(77, 42, 16, 0.03),
+    0 4px 8px rgba(77, 42, 16, 0.04),
+    0 12px 28px rgba(77, 42, 16, 0.07),
+    0 28px 56px rgba(77, 42, 16, 0.05);
+  --login-card-shadow-hover:
+    0 2px 4px rgba(77, 42, 16, 0.04),
+    0 8px 16px rgba(77, 42, 16, 0.06),
+    0 20px 40px rgba(77, 42, 16, 0.09),
+    0 36px 72px rgba(77, 42, 16, 0.06);
+}
+
+/* 登录页全屏容器 */
+.login-page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+
+  /* 基础渐变：浅灰暖 → 暖米 → 浅暖灰 */
+  background:
+    linear-gradient(
+      155deg,
+      var(--login-bg-base) 0%,
+      var(--login-bg-warm) 45%,
+      #f5efe4 100%
+    );
+}
+
+/* 超低透明度网格 - 科技感底层（带边缘渐隐） */
+.login-page-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--login-grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--login-grid-color) 1px, transparent 1px);
+  background-size: var(--login-grid-size) var(--login-grid-size);
+  /* 边缘渐隐遮罩：中心可见，四周淡出 */
+  mask-image: radial-gradient(
+    ellipse 80% 75% at 55% 45%,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    transparent 90%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 75% at 55% 45%,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    transparent 90%
+  );
+}
+
+/* 柔和主光晕 - 中心偏右，暖橙品牌色 */
+.login-page-bg::after {
+  content: "";
+  position: absolute;
+  left: var(--login-glow-x);
+  top: var(--login-glow-y);
+  width: var(--login-glow-size);
+  height: var(--login-glow-size);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(182, 70, 47, var(--login-glow-primary-opacity)) 0%,
+    rgba(246, 211, 174, 0.18) 30%,
+    rgba(246, 211, 174, 0.06) 55%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* 辅助光晕层 - 左下角，极淡暖色 */
+.login-page-glow-secondary {
+  position: fixed;
+  z-index: 2;
+  left: var(--login-glow2-x);
+  top: var(--login-glow2-y);
+  width: var(--login-glow2-size);
+  height: var(--login-glow2-size);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(246, 211, 174, var(--login-glow-secondary-opacity)) 0%,
+    rgba(246, 211, 174, 0.05) 40%,
+    transparent 65%
+  );
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* 微弱噪点纹理 - 提升质感（CSS filter 方式） */
+.login-page-noise {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: var(--login-noise-opacity);
+  background: transparent;
+  /* 使用 SVG feTurbulence 生成真实噪点 */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* 登录卡片容器 - 居中 + elevation */
+.login-card-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* 登录卡片 - 毛玻璃 + 多层阴影 */
+.login-card {
+  background: rgba(255, 253, 250, 0.88);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(182, 70, 47, 0.06);
+  border-radius: 20px;
+  box-shadow: var(--login-card-shadow);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.login-card:hover {
+  box-shadow: var(--login-card-shadow-hover);
+  transform: translateY(-2px);
+}
+
 /* 代码/等宽字体样式 */
 .font-mono {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;

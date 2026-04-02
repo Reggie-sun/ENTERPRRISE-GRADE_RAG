@@ -38,10 +38,12 @@ conda-run = conda run -n $(CONDA_ENV)
 ifneq ($(TERM),dumb)
   _CYN  := \033[36m
   _GRN  := \033[32m
+  _RED  := \033[31m
   _RST  := \033[0m
 else
   _CYN  :=
   _GRN  :=
+  _RED  :=
   _RST  :=
 endif
 
@@ -69,7 +71,7 @@ dev-frontend:
 
 # ── Test targets ─────────────────────────────────────────
 
-.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval
+.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval eval-baseline show-chunk-config
 
 ## Run all tests (backend unit + frontend lint)
 test: test-backend test-frontend
@@ -99,6 +101,22 @@ test-smoke-v02:
 eval-retrieval:
 	@printf "$(_CYN)▸ Running retrieval evaluation …$(_RST)\n"
 	$(conda-run) python scripts/eval_retrieval.py --api-base http://localhost:$(API_PORT)
+
+## Run retrieval evaluation and save as tagged baseline
+## Usage: make eval-baseline TAG=before_change
+eval-baseline:
+	@if [ -z "$(TAG)" ]; then \
+		printf "$(_RED)ERROR: TAG is required. Usage: make eval-baseline TAG=name$(_RST)\n"; \
+		exit 1; \
+	fi
+	@printf "$(_CYN)▸ Running eval baseline with tag '$(TAG)' …$(_RST)\n"
+	$(conda-run) python scripts/eval_retrieval.py --api-base http://localhost:$(API_PORT) --results-dir eval/results --experiment-name $(TAG)
+	@printf "$(_GRN)▸ Baseline saved to eval/results/$(TAG)_*.json$(_RST)\n"
+
+## Show current chunk configuration
+show-chunk-config:
+	@printf "$(_CYN)▸ Current chunk configuration$(_RST)\n"
+	$(conda-run) python -c "from backend.app.core.config import get_settings; s=get_settings(); print(f'  chunk_size_chars: {s.chunk_size_chars}'); print(f'  chunk_overlap_chars: {s.chunk_overlap_chars}'); print(f'  chunk_min_chars: {s.chunk_min_chars}')"
 
 # ── Lint targets ─────────────────────────────────────────
 
@@ -162,7 +180,9 @@ help:
 	@printf "  $(_CYN)test-frontend$(_RST)    Run frontend lint\n"
 	@printf "  $(_CYN)test-smoke$(_RST)       Run v0.1 smoke test (needs running API)\n"
 	@printf "  $(_CYN)test-smoke-v02$(_RST)   Run v0.2 smoke test (needs running API)\n"
-	@printf "  $(_CYN)eval-retrieval$(_RST)  Run retrieval evaluation (needs running API)\n"
+	@printf "  $(_CYN)eval-retrieval$(_RST)   Run retrieval evaluation (needs running API)\n"
+	@printf "  $(_CYN)eval-baseline$(_RST)    Run eval and save as baseline (TAG=name)\n"
+	@printf "  $(_CYN)show-chunk-config$(_RST) Show current chunk parameters\n"
 	@printf "\n"
 	@printf "  $(_CYN)lint$(_RST)             Lint frontend + backend\n"
 	@printf "  $(_CYN)build$(_RST)            Production build (frontend + Docker)\n"

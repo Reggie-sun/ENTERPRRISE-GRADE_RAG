@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_49d94dab84a34089",
+  "trace_id": "trc_retrieval_fd8b34264ca94950",
+  "request_id": "req_retrieval_9db80bbc24274f5e",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T07:44:13.403529Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "刀具管理系统为什么需要支持3D模型多视角展示",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "刀具管理系统为什么需要支持3D模型多视角展示",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "型、刀具寿命等信息，导入到参数管理模块，并由参数管理模块发送到调刀界面，调刀人员根据界面提示的信息，对刀具进行对刀调试，调试完成后系统将对刀仪数据存入后台数据库，机床端可扫码直接读取。\n\n我方响应：完全满足。系统具备自动化刀具参数管理功能，可从刀具基础数据模块自动同步刀补信息、刀具编号、刀具类型、刀具寿命等核心数据至参数管理模块，无需手动重复录入；调刀界面清晰展示各类参数提示，调刀人员可按提示完成",
+      "score": 0.9919354838709679,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6401972,
+      "lexical_score": 80.8318436686614,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "，导入流程简洁，兼容性强；导入后可实现3D模型多维度、多视角旋转展示，操作人员可通过放大、缩小、旋转等操作，直观查看刀具的整体结构、细节尺寸，便于工艺设计、刀具选型及调试操作。【附图8：2D/3D图形导入界面及3D模型多视角展示示意图】\n\n（6）刀具装配接口：自带各厂家不同类型的刀具组装接口名称与参数，用于各组件间的匹配组装；\n\n我方响应：完全满足。系统内置各主流厂家不同类型的刀具组装接口名称及参",
+      "score": 0.9841269841269842,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.66528183,
+      "lexical_score": 71.67957219226096,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "存数据，包括刀具ID、存放层位、剩余寿命、使用状态等，确保系统与立体库数据一致，实现全方位管控。【附图28：机器人状态监控及库存数据同步示意图】\n\n（4）与垂直升降库集成：刀具管理系统可直接接管垂直升降库的物料管理、库位管理、出/入库控制，在刀具管理系统中可直接查询物料信息，输出物料数据报表，无需跨系统操作，方便库房管理人员在一套系统中管理所有物料；\n\n我方响应：完全满足。系统具备标准集成接口，可",
+      "score": 0.953125,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.63703656,
+      "lexical_score": 69.98346626418103,
+      "fused_score": 0.03125
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-11",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "CAM 软件内实现模拟加工。\n\n我方响应：完全满足。系统可与Mastercam、UG等主流CAM软件无缝集成，编程人员在CAM软件内可直接调用刀具管理系统数据库中的刀具参数（几何参数、刀补信息等）与3D实体模型，无需手动输入参数或导入模型，可直接在CAM软件内完成模拟加工，提升编程效率和模拟准确性。【附图31：CAM软件调用系统刀具参数及3D模型示意图】\n\n2）刀具管理系统维护刀具几何参数、碰撞数",
+      "score": 0.9339644693782141,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6064999,
+      "lexical_score": 74.03787204879447,
+      "fused_score": 0.030621785881252923
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理\n\n（1）刀具基础数据（ID、名称、描述）、刀具类型、刀具几何参数 2D 图形、3D 模型，供应商信息等数据的管理。\n\n我方响应：完全满足。系统具备完善的刀具基础数",
+      "score": 0.9326563958916899,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.63872397,
+      "lexical_score": 55.7081308323408,
+      "fused_score": 0.03057889822595705
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "刀具管理系统为什么需要支持3D模型多视角展示",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "刀具管理系统为什么需要支持3D模型多视角展示",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-7",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6401972,
+          "lexical_score": 80.8318436686614,
+          "fused_score": 0.03252247488101534,
+          "final_score": 0.9919354838709679,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6402，词法 80.8318，融合 0.0325。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.66528183,
+          "lexical_score": 71.67957219226096,
+          "fused_score": 0.032266458495966696,
+          "final_score": 0.9841269841269842,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6653，词法 71.6796，融合 0.0323。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.63703656,
+          "lexical_score": 69.98346626418103,
+          "fused_score": 0.03125,
+          "final_score": 0.953125,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6370，词法 69.9835，融合 0.0312。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-11",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6064999,
+          "lexical_score": 74.03787204879447,
+          "fused_score": 0.030621785881252923,
+          "final_score": 0.9339644693782141,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6065，词法 74.0379，融合 0.0306。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.63872397,
+          "lexical_score": 55.7081308323408,
+          "fused_score": 0.03057889822595705,
+          "final_score": 0.9326563958916899,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6387，词法 55.7081，融合 0.0306。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6401972,
+        "lexical_score": 80.8318436686614,
+        "fused_score": 0.03252247488101534,
+        "final_score": 0.9919354838709679,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6402，词法 80.8318，融合 0.0325。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.66528183,
+        "lexical_score": 71.67957219226096,
+        "fused_score": 0.032266458495966696,
+        "final_score": 0.9841269841269842,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6653，词法 71.6796，融合 0.0323。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.63703656,
+        "lexical_score": 69.98346626418103,
+        "fused_score": 0.03125,
+        "final_score": 0.953125,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6370，词法 69.9835，融合 0.0312。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-11",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6064999,
+        "lexical_score": 74.03787204879447,
+        "fused_score": 0.030621785881252923,
+        "final_score": 0.9339644693782141,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6065，词法 74.0379，融合 0.0306。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.63872397,
+        "lexical_score": 55.7081308323408,
+        "fused_score": 0.03057889822595705,
+        "final_score": 0.9326563958916899,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6387，词法 55.7081，融合 0.0306。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-7",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

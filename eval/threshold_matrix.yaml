@@ -1,0 +1,56 @@
+# Threshold Experiment Matrix
+#
+# PROVISIONAL — This matrix is for Phase 1B-A experiment infrastructure validation,
+# NOT for final threshold calibration.
+#
+# Usage:
+#   python scripts/eval_retrieval.py --threshold-matrix eval/threshold_matrix.yaml
+#
+# Current limitation:
+#   The verified sample set has 0 supplemental_expected=true cases.
+#   Threshold calibration cannot produce statistically meaningful supplemental
+#   precision/recall until positive supplemental cases are verified.
+#
+# The experiments below serve to validate the experiment pipeline and observe
+# how threshold changes affect diagnostic fields and conservative trigger counts.
+
+experiments:
+  # Current defaults (control group)
+  - name: "current_defaults"
+    thresholds:
+      top1_threshold: 0.55
+      avg_top_n_threshold: 0.45
+      fine_query_top1_threshold: 0.85
+      fine_query_avg_top_n_threshold: 0.60
+
+  # Slightly more aggressive supplemental triggering
+  - name: "lower_thresholds"
+    thresholds:
+      top1_threshold: 0.45
+      avg_top_n_threshold: 0.35
+      fine_query_top1_threshold: 0.75
+      fine_query_avg_top_n_threshold: 0.50
+
+  # Much more aggressive supplemental triggering
+  - name: "aggressive_supplemental"
+    thresholds:
+      top1_threshold: 0.35
+      avg_top_n_threshold: 0.25
+      fine_query_top1_threshold: 0.65
+      fine_query_avg_top_n_threshold: 0.40
+
+  # Very conservative — supplemental almost never triggers
+  - name: "conservative_no_supplemental"
+    thresholds:
+      top1_threshold: 0.95
+      avg_top_n_threshold: 0.90
+      fine_query_top1_threshold: 0.99
+      fine_query_avg_top_n_threshold: 0.95
+
+  # Focus on fine query thresholds only
+  - name: "stricter_fine_query_only"
+    thresholds:
+      top1_threshold: 0.55
+      avg_top_n_threshold: 0.45
+      fine_query_top1_threshold: 0.95
+      fine_query_avg_top_n_threshold: 0.75

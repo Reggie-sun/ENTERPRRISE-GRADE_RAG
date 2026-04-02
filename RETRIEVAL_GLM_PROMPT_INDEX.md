@@ -2,6 +2,12 @@
 
 这组文档是给 GLM 用的“分阶段执行包”。
 
+默认前提：
+
+- 你本机的 `~/.claude/Claude.md` 已经提供仓库定位、通用协作约束和基础工作习惯
+- 因此这里的阶段 prompt 可以尽量只保留“这次任务特有的信息”
+- 不需要每次都重复写“你现在在仓库 … 工作”或长篇“请先阅读以下文件”，除非你要把 prompt 发给一个不共享这些全局上下文的模型环境
+
 使用方式：
 
 1. 不要一次把所有阶段都丢给 GLM。
@@ -42,7 +48,8 @@
 
 ### Phase 1B
 
-- 基于内部真源校准 supplemental 阈值，补齐诊断和回归。
+- `1B-A`：先补实验能力、diagnostics 一致性、关键回归和实验记录。
+- `1B-B`：在补齐 `supplemental_expected=true` verified 样本，并具备部门隔离视角的评估能力后，再做 supplemental 阈值定版。
 
 ### Phase 2A
 
@@ -66,4 +73,23 @@
 
 - 如果你要 GLM 先做一个最稳的起手式，就先给它 [RETRIEVAL_PHASE1A_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_GLM_PROMPT.md)。
 - 如果第一轮 Phase 1A 交付只完成了 scaffold，但默认运行方式、账号、部门上下文或 `chunk_type` 评分仍有缺口，就先给它 [RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md) 再进入 Phase 1B。
+- 如果你要进入 Phase 1B，先确认当前是在做 `1B-A` 还是 `1B-B`：
+  - 如果 verified 样本里 `supplemental_expected=true` 仍为 0，就先做 `1B-A`
+  - 如果 verified 样本已经补齐，但评估仍跑在 `sys_admin` 全量视角、没有部门隔离，就先补 `1B-B` 的前置条件
+  - 只有 cross-dept verified samples 和部门隔离评估能力都具备后，才进入真正的 `1B-B`
 - 如果你要 GLM 先做文档和脚手架而不是动检索逻辑，就先给它 Phase 1A 或 Phase 2A。
+
+---
+
+## Prompt 风格建议
+
+如果你的全局 Claude 配置已经稳定提供仓库上下文，推荐使用“瘦 prompt”：
+
+- 保留：当前 blocker、这次任务、不要做的事、最后要输出什么
+- 省略：重复的仓库路径声明、重复的通用读文件清单
+
+只有在以下情况，才建议写回“完整 prompt”：
+
+- prompt 会被转发到不共享你本机全局上下文的模型环境
+- 你希望强制模型重新聚焦某几个关键文件
+- 你发现模型有明显跳读、漏读或跑偏

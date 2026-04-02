@@ -20,13 +20,20 @@ python scripts/eval_retrieval.py --username your_user --password your_pass
 
 ## 重要限制说明
 
-### 部门评估边界
+### 部门评估边界（当前状态 2026-04-02）
 
 **当前 `requester_department_id` 只是样本标签，不是真实的权限模拟。**
 
-- `by_department` 分组是基于样本标签的分组，**不等于真实权限视角**
-- `cross-dept supplemental` 的结果应标记为 **provisional**（暂定）
-- 如需真实部门权限评估，需要实现完整的 auth profile 映射系统
+四个 blocker（三个递进 + 一个验证）导致部门级 supplemental 评估不可用：
+
+1. **文档 metadata blocker**：已抽检 `data/documents/doc_20260321070337_445684f4.json`，确认 `department_ids=[]`、`visibility=private`。`RetrievalScopePolicy` 依赖 `department_ids` 判断本部门文档，当该字段为空时，本部门池 (`department_document_ids`) 为空。**注意**：尚未全量检查所有文档，但基于代码逻辑推断，当前本地 eval corpus 无法支撑部门级检索隔离闭环。
+2. **身份层 blocker**：`backend/app/bootstrap/identity_bootstrap.json` 包含 13 个部门（已确认），**不包含 eval 样本中使用的 `dept_after_sales` 和 `dept_assembly`**。这两个部门仅存在于测试专用 bootstrap 中。`dept_digitalization` 存在于生产 bootstrap 中。
+3. **eval harness blocker**：当前脚本以 `sys_admin`（`data_scope=global`）运行，`_should_use_department_priority_routes()` 返回 `False`，部门优先检索逻辑不被调用。`requester_department_id` 只是样本标签，不映射到真实非全局 auth 身份。**注意**：`RetrievalRequest` 不含 `department_id` 字段——部门视角来自登录后的 `auth_context` / token，而非请求体。因此当前 eval 无法代表真实部门视角。
+
+4. **测试验证 blocker**：`backend/tests/test_retrieval_diagnostics.py` 当前 **4 failed, 6 passed**。4 个失败均为 401 Unauthorized（测试未注入 auth context），不应表述为"预期通过"。
+
+修复顺序：Blocker 1 → Blocker 2 → Blocker 3。Blocker 4 为测试验证问题，不阻塞功能但阻塞回归验证。
+详见 `RETRIEVAL_PHASE1B_GLM_PROMPT.md`。
 
 ### chunk_type 评分是启发式推断
 
@@ -183,3 +190,19 @@ expected_doc_coverage = len(hit_docs ∩ expected_doc_ids) / len(expected_doc_id
 - `by_supplemental_expected`: 按是否期望触发 supplemental 分组
 
 > **注意**：`by_department` 和 `cross-dept supplemental` 的结果应视为 provisional，因为当前脚本没有以不同部门身份登录进行检索。
+
+### 10. 跨部门补充召回样本（supplemental_expected=true）
+
+当前样本集包含 `supplemental_expected: true` 的样本（cross-001 至 cross-012），用于测试跨部门补充召回场景。
+
+**验证边界说明：**
+
+- **文档命中层面已验证**：每条样本的 `query → expected_doc_ids` 映射已通过 live retrieval 调用确认正确。
+- **部门权限层面仍是 provisional**：`requester_department_id` 只是样本标签，不等于真实权限模拟。当前评估脚本以 `sys_admin` 身份登录，无法模拟部门级别的检索隔离。
+- **supplemental 触发判定为预期值**：标记 `supplemental_expected: true` 是基于文档内容与部门归属的逻辑判断——当部门隔离生效时，requester 所在部门的主文档不足以回答 query，应触发跨部门补充召回。
+- **真实闭环条件**：需要补齐 auth profile 映射和部门级检索隔离后，才能验证 supplemental 是否真正在正确时机触发。
+
+这意味着：
+- 当前评估可以报告这些样本的 top1 命中率和 topk recall（在 sys_admin 全量视角下应接近 100%）
+- supplemental precision/recall 的计算需要等到部门级检索隔离生效后才有意义
+- 当前阶段这些样本主要用于记录预期行为和建立评估基线

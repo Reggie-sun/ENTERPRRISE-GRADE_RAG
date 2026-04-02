@@ -317,7 +317,7 @@ samples:
 
 ### 3.0 重建索引与回滚预案（Phase 2 Gate）
 
-**优先级：P1 | Gate**
+**优先级：P1 | Gate | ✅ DONE**
 
 #### 目标
 
@@ -326,23 +326,30 @@ samples:
 
 #### 建议文件
 
-- [OPS_SMOKE_TEST.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/OPS_SMOKE_TEST.md)
-- [Makefile](/home/reggie/vscode_folder/Enterprise-grade_RAG/Makefile)
-- [scripts/](/home/reggie/vscode_folder/Enterprise-grade_RAG/scripts/)
+- [OPS_CHUNK_REBUILD_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/OPS_CHUNK_REBUILD_RUNBOOK.md) ✅ NEW
+- [Makefile](/home/reggie/vscode_folder/Enterprise-grade_RAG/Makefile) — 新增 targets
+- [scripts/](/home/reggie/vscode_folder/Enterprise-grade_RAG/scripts/) — 新增脚本
 
 #### 至少要明确
 
-- [ ] 改 chunk 是否需要全量重建 embedding
-- [ ] Qdrant / metadata / chunks 的重建顺序
-- [ ] snapshot 或备份方式
-- [ ] 回滚入口
-- [ ] 重建后怎么用样本集验证
+- [x] 改 chunk 是否需要全量重建 embedding
+- [x] Qdrant / metadata / chunks 的重建顺序
+- [x] snapshot 或备份方式
+- [x] 回滚入口
+- [x] 重建后怎么用样本集验证
+
+#### 新增命令入口
+
+- [x] `make eval-baseline TAG=name` — 保存带标签的 eval baseline
+- [x] `make show-chunk-config` — 显示当前 chunk 参数
+- [x] `python scripts/rebuild_documents.py --document-list docs.txt` — 批量重建编排
+- [x] `python scripts/compare_eval_results.py before.json after.json` — eval 结果对比
 
 #### 验收标准
 
-- [ ] 有书面 runbook
-- [ ] 有可执行命令或脚本入口
-- [ ] 重建前后有同一批样本对比结果
+- [x] 有书面 runbook ([OPS_CHUNK_REBUILD_RUNBOOK.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/OPS_CHUNK_REBUILD_RUNBOOK.md))
+- [x] 有可执行命令或脚本入口
+- [x] 重建前后有同一批样本对比结果（已通过 `eval-baseline` 机制支持）
 
 ---
 

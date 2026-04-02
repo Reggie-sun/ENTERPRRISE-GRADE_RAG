@@ -2796,3 +2796,395 @@ def test_retrieval_service_uses_internal_system_config_quality_thresholds_for_su
     assert response.diagnostic.primary_recall_stage.quality_avg_threshold == pytest.approx(0.69)
     assert response.diagnostic.supplemental_triggered is True
     assert response.diagnostic.supplemental_recall_stage.trigger_basis == "department_low_quality"
+
+
+# ── Phase 1B-A: Supplemental diagnostics consistency ────────
+
+
+def test_supplemental_diagnostics_department_sufficient_populates_all_quality_fields(tmp_path: Path) -> None:
+    """When department is sufficient, all diagnostic quality fields should be populated consistently."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 3,
+            "retrieval_quality_top1_threshold": 0.55,
+            "retrieval_quality_avg_threshold": 0.45,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.95, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "High quality content", "source_path": "/tmp/d1.txt"}),
+            SimpleNamespace(id="p2", score=0.92, payload={"chunk_id": "c2", "document_id": "doc_dept_2", "document_name": "d2.txt", "text": "Good quality content", "source_path": "/tmp/d2.txt"}),
+            SimpleNamespace(id="p3", score=0.88, payload={"chunk_id": "c3", "document_id": "doc_dept_3", "document_name": "d3.txt", "text": "Decent quality content", "source_path": "/tmp/d3.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    # Use a semantic/broad query to get coarse granularity (not fine) so default thresholds apply
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="explain the overall process for handling equipment maintenance", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert response.diagnostic is not None
+    d = response.diagnostic
+    # department_sufficient: supplemental NOT triggered
+    assert d.supplemental_triggered is False
+    assert d.supplemental_recall_stage.triggered is False
+    # trigger_basis should explain why supplemental was NOT triggered
+    assert d.supplemental_recall_stage.trigger_basis == "department_sufficient"
+
+    # All quality diagnostic fields should be populated
+    assert d.primary_recall_stage.threshold is not None
+    assert d.primary_recall_stage.effective_count is not None
+    assert d.primary_recall_stage.top1_score is not None
+    assert d.primary_recall_stage.avg_top_n_score is not None
+    assert d.primary_recall_stage.quality_top1_threshold is not None
+    assert d.primary_recall_stage.quality_avg_threshold is not None
+    assert d.primary_recall_stage.whether_sufficient is True
+
+    # Quality thresholds should match settings defaults (for coarse queries)
+    assert d.primary_recall_stage.quality_top1_threshold == pytest.approx(0.55)
+    assert d.primary_recall_stage.quality_avg_threshold == pytest.approx(0.45)
+
+    # Top-level diagnostic should also have these
+    assert d.primary_threshold is not None
+    assert d.primary_effective_count is not None
+    assert d.primary_threshold == d.primary_recall_stage.threshold
+
+
+def test_supplemental_diagnostics_department_insufficient_populates_trigger_basis(tmp_path: Path) -> None:
+    """When department is insufficient, trigger_basis should be department_insufficient."""
+    settings = build_test_settings(tmp_path)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1"],
+                global_document_ids=["doc_global_1", "doc_global_2"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.95, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "Content", "source_path": "/tmp/d1.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="test query", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert response.diagnostic is not None
+    d = response.diagnostic
+    assert d.supplemental_triggered is True
+    assert d.supplemental_recall_stage.triggered is True
+    assert d.supplemental_recall_stage.trigger_basis == "department_insufficient"
+    assert d.supplemental_reason is not None
+    assert "below_threshold" in d.supplemental_reason
+
+    # Quality fields should still be populated
+    assert d.primary_recall_stage.top1_score is not None
+    assert d.primary_recall_stage.avg_top_n_score is not None
+    assert d.primary_recall_stage.quality_top1_threshold is not None
+    assert d.primary_recall_stage.quality_avg_threshold is not None
+
+
+def test_supplemental_diagnostics_department_low_quality_populates_quality_fields(tmp_path: Path) -> None:
+    """When department has enough results but low quality, trigger_basis should be department_low_quality."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_quality_top1_threshold": 0.75,
+            "retrieval_quality_avg_threshold": 0.65,
+            "retrieval_fine_query_quality_top1_threshold": 0.85,
+            "retrieval_fine_query_quality_avg_threshold": 0.70,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    # Department has 3 results (enough for top_k=3), but scores are low
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.60, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "Low quality", "source_path": "/tmp/d1.txt"}),
+            SimpleNamespace(id="p2", score=0.55, payload={"chunk_id": "c2", "document_id": "doc_dept_2", "document_name": "d2.txt", "text": "Low quality", "source_path": "/tmp/d2.txt"}),
+            SimpleNamespace(id="p3", score=0.50, payload={"chunk_id": "c3", "document_id": "doc_dept_3", "document_name": "d3.txt", "text": "Low quality", "source_path": "/tmp/d3.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    # Use a broad/semantic query to get coarse granularity (not fine) so default thresholds apply
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="explain clearly what to do about the issue", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert response.diagnostic is not None
+    d = response.diagnostic
+    assert d.supplemental_triggered is True
+    assert d.supplemental_recall_stage.trigger_basis == "department_low_quality"
+    assert "quality" in d.supplemental_reason.lower()
+
+    # Quality fields should reflect the configured thresholds
+    assert d.primary_recall_stage.quality_top1_threshold == pytest.approx(0.75)
+    assert d.primary_recall_stage.quality_avg_threshold == pytest.approx(0.65)
+
+    # Primary top1 and avg scores should be below thresholds (this is what triggered supplemental)
+    assert d.primary_recall_stage.top1_score is not None
+    assert d.primary_recall_stage.avg_top_n_score is not None
+
+
+def test_supplemental_diagnostics_fine_query_uses_stricter_thresholds(tmp_path: Path) -> None:
+    """Fine-grained queries should use stricter quality thresholds for supplemental evaluation."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_quality_top1_threshold": 0.55,
+            "retrieval_quality_avg_threshold": 0.45,
+            "retrieval_fine_query_quality_top1_threshold": 0.85,
+            "retrieval_fine_query_quality_avg_top_n_threshold": 0.60,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+
+    # Department has enough results with medium quality scores.
+    # For a normal query (top1=0.72 > 0.55), this would NOT trigger supplemental.
+    # For a fine query (top1=0.72 < 0.85), this WOULD trigger supplemental.
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.72, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "E204 fault code recovery", "source_path": "/tmp/d1.txt"}),
+            SimpleNamespace(id="p2", score=0.68, payload={"chunk_id": "c2", "document_id": "doc_dept_2", "document_name": "d2.txt", "text": "E204 maintenance steps", "source_path": "/tmp/d2.txt"}),
+            SimpleNamespace(id="p3", score=0.65, payload={"chunk_id": "c3", "document_id": "doc_dept_3", "document_name": "d3.txt", "text": "E204 alarm guide", "source_path": "/tmp/d3.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    # Fine query: E204故障代码处理步骤 (exact-like, should be classified as fine)
+    response_fine = retrieval_service.search(
+        request=RetrievalRequest(query="E204故障代码处理步骤", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert response_fine.diagnostic is not None
+    # Fine query should use stricter thresholds
+    assert response_fine.diagnostic.primary_recall_stage.quality_top1_threshold == pytest.approx(0.85)
+    assert response_fine.diagnostic.primary_recall_stage.quality_avg_threshold == pytest.approx(0.60)
+    # top1_score (0.72) < fine_query_top1_threshold (0.85) → supplemental triggered
+    assert response_fine.diagnostic.supplemental_triggered is True
+    assert response_fine.diagnostic.supplemental_recall_stage.trigger_basis == "department_low_quality"
+
+
+def test_supplemental_diagnostics_truncate_to_top_k_false_uses_rerank_top_n_threshold(tmp_path: Path) -> None:
+    """When truncate_to_top_k=False, diagnostic threshold should be rerank_top_n, not top_k."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n": 3,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3", "doc_dept_4"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+
+    diagnostic: dict[str, object] = {}
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id=f"p{i}", score=0.95 - i * 0.02, payload={"chunk_id": f"c{i}", "document_id": f"doc_dept_{i}", "document_name": f"d{i}.txt", "text": "Content", "source_path": f"/tmp/d{i}.txt"})
+            for i in range(4)
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    retrieval_service.search_candidates(
+        request=RetrievalRequest(query="test query"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+        truncate_to_top_k=False,
+        diagnostic=diagnostic,
+    )
+
+    # With truncate_to_top_k=False, threshold should be rerank_top_n=3
+    # 4 results >= 3, so supplemental should be skipped
+    assert diagnostic["primary_threshold"] == 3
+    assert diagnostic["primary_effective_count"] == 4
+    assert diagnostic["supplemental_triggered"] is False
+    assert diagnostic["supplemental_trigger_basis"] == "department_sufficient"
+
+
+def test_supplemental_diagnostics_quality_thresholds_from_system_config_override_defaults(tmp_path: Path) -> None:
+    """Internal retrieval controls from system config should override settings defaults."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "retrieval_quality_top1_threshold": 0.55,
+            "retrieval_quality_avg_threshold": 0.45,
+        }
+    )
+    ensure_data_directories(settings)
+    settings.system_config_path.parent.mkdir(parents=True, exist_ok=True)
+    settings.system_config_path.write_text(
+        json.dumps(
+            {
+                "_internal_retrieval_controls": {
+                    "supplemental_quality_thresholds": {
+                        "top1_threshold": 0.70,
+                        "avg_top_n_threshold": 0.60,
+                        "fine_query_top1_threshold": 0.90,
+                        "fine_query_avg_top_n_threshold": 0.75,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.75, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "Content", "source_path": "/tmp/d1.txt"}),
+            SimpleNamespace(id="p2", score=0.72, payload={"chunk_id": "c2", "document_id": "doc_dept_2", "document_name": "d2.txt", "text": "Content", "source_path": "/tmp/d2.txt"}),
+            SimpleNamespace(id="p3", score=0.68, payload={"chunk_id": "c3", "document_id": "doc_dept_3", "document_name": "d3.txt", "text": "Content", "source_path": "/tmp/d3.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="explain the process steps", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    # Thresholds should come from system config, not settings defaults
+    assert response.diagnostic is not None
+    assert response.diagnostic.primary_recall_stage.quality_top1_threshold == pytest.approx(0.70)
+    assert response.diagnostic.primary_recall_stage.quality_avg_threshold == pytest.approx(0.60)
+
+    # top1=0.75 >= 0.70 and avg=0.717 >= 0.60 → department_sufficient
+    assert response.diagnostic.supplemental_triggered is False
+
+
+def test_supplemental_diagnostics_consistent_across_structured_diagnostic_and_raw(tmp_path: Path) -> None:
+    """Raw diagnostic dict and structured RetrievalDiagnostic should have consistent values."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={"retrieval_quality_top1_threshold": 0.70, "retrieval_quality_avg_threshold": 0.60}
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1"],
+                global_document_ids=["doc_global_1", "doc_global_2"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    retrieval_service.vector_store = SimpleNamespace(
+        search=lambda query_vector, **kwargs: [
+            SimpleNamespace(id="p1", score=0.65, payload={"chunk_id": "c1", "document_id": "doc_dept_1", "document_name": "d1.txt", "text": "Content", "source_path": "/tmp/d1.txt"}),
+        ]
+    )
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="test query", top_k=3),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    d = response.diagnostic
+    assert d is not None
+
+    # Top-level fields should match sub-stage fields
+    assert d.primary_threshold == d.primary_recall_stage.threshold
+    assert d.primary_effective_count == d.primary_recall_stage.effective_count
+    assert d.supplemental_triggered == d.supplemental_recall_stage.triggered
+    assert d.supplemental_reason == d.supplemental_recall_stage.reason
+
+    # Recall counts should be present
+    assert isinstance(d.recall_counts, dict)
+    assert "department_fused_count" in d.recall_counts or "department_after_ocr" in d.recall_counts
