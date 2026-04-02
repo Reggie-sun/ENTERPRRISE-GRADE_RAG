@@ -1,0 +1,198 @@
+# Retrieval Evaluation Samples
+#
+# `status: verified` means the query + expected_doc_ids were checked against the
+# current indexed corpus and live `/api/v1/retrieval/search` outputs.
+# `source: synthetic` still means the query is curated rather than copied from
+# production query logs.
+#
+# Seed-set limitation:
+# - This first verified set intentionally excludes cross-dept supplemental cases.
+# - Current evaluator logs in as a single `sys_admin` user, so it cannot verify
+#   department-scoped auth / supplemental behavior yet.
+
+samples:
+  # exact / code-like
+  - id: exact-001
+    query: "700000 面板急停报警 现场先查什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700000", "面板急停报警", "现场先查什么"]
+    supplemental_expected: false
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：123.txt 中 700000 面板急停报警条目"
+
+  - id: exact-002
+    query: "700018 B轴夹紧放松信号异常 怎么处理"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700018", "B轴", "夹紧放松信号异常"]
+    supplemental_expected: false
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：123.txt 中 700018 B 轴报警条目"
+
+  - id: exact-003
+    query: "皮带轮固定架组压装止动螺丝安装 Step3 扭矩是多少"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401092629_f470103f"]
+    expected_chunk_type: clause
+    expected_terms: ["皮带轮固定架组压装", "止动螺丝安装", "Step3", "4.5N"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：FAW05 皮带轮部品 SOP 的 Step3 扭矩条目"
+
+  # fine-grained clause
+  - id: fine-001
+    query: "700014 围栏急停报警 恢复后还不消失应该重点查什么"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700014", "围栏急停报警", "安全继电器"]
+    supplemental_expected: false
+    requester_department_id: "dept_after_sales"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：123.txt 中 700014 围栏急停报警条目"
+
+  - id: fine-002
+    query: "电镀镜光表面 A面 表面积1000以下 麻点允许数量"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401084714_b7ed464a"]
+    expected_chunk_type: clause
+    expected_terms: ["表4", "A面", "≤1000", "麻点"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：电镀检验标准表 4 的 A 面缺陷接收条目"
+
+  - id: fine-003
+    query: "齿轮与齿条的间隙应控制在多少"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331021041_adff1740"]
+    expected_chunk_type: clause
+    expected_terms: ["齿轮与齿条", "0.15mm-0.3mm", "间隙"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：电机齿轮安装 SOP 的间隙控制条目"
+
+  - id: fine-004
+    query: "摇臂钻床异常响声时怎么处理"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260330055115_c20cfc5a"]
+    expected_chunk_type: clause
+    expected_terms: ["异常响声", "停止自动进给", "通知维修人员处理"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：WI-SJ-052 中 4.14 / 4.22 的异常处理条目"
+
+  - id: fine-005
+    query: "接触式移动供电系统至少多久检测一次"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331081535_5d30086d"]
+    expected_chunk_type: clause
+    expected_terms: ["接触式移动供电系统", "最低一年一次", "定期检测"]
+    supplemental_expected: false
+    requester_department_id: "dept_assembly"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：滑触线施工手册中的定期检测要求"
+
+  # semantic explanation
+  - id: semantic-001
+    query: "刀具管理系统支持哪些基础数据管理"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["基础数据管理", "刀具ID", "3D模型"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：刀具系统技术要求文档 4.10.2 基础数据管理章节"
+
+  - id: semantic-002
+    query: "为什么刀具管理系统要支持 3D 模型多视角展示"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["3D模型", "多维度", "多视角"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：刀具系统技术要求文档关于 3D 模型展示的说明"
+
+  - id: semantic-003
+    query: "为什么不能直接做大而全 V1"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401085300_13d0ce46"]
+    expected_chunk_type: section_summary
+    expected_terms: ["大而全 V1", "低耦合", "可连续交付"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：V1_PLAN 中“为什么不能直接做大而全 V1”章节"
+
+  # broad summary
+  - id: broad-001
+    query: "DFMS 智能助手有哪些呈现形态"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326064202_f5b7a9ae"]
+    expected_chunk_type: section_summary
+    expected_terms: ["呈现形态", "企业微信移动入口", "知识运营后台"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：RAG 架构汇报版中 2.3 呈现形态章节"
+
+  - id: broad-002
+    query: "V1 当前冻结边界包括哪些内容"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401085300_13d0ce46"]
+    expected_chunk_type: section_summary
+    expected_terms: ["当前冻结边界", "固定底座", "轻量关键词"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：V1_PLAN 中“当前冻结边界”章节"
+
+  - id: broad-003
+    query: "刀具管理系统主要有哪些能力"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["刀具管理系统", "功能完善", "操作便捷"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: verified
+    source: synthetic
+    note: "已按当前索引验证：刀具系统技术要求文档的总体能力说明"

@@ -1,0 +1,53 @@
+# Baseline Configuration Snapshot
+# ─────────────────────────────────────────────
+# STATUS: template/manual — 此文件中的值部分为手工填写，部分为 TBD 占位符。
+# 它记录检索评估基准配置的预期结构，并非从运行时自动导出的真实快照。
+# 每次实验前请对照实际运行时配置更新此文件，以避免配置漂移。
+# ─────────────────────────────────────────────
+
+snapshot:
+  created_at: "2026-04-02"
+  description: "Phase 1A retrieval evaluation baseline (template/manual)"
+  snapshot_type: "template"  # template/manual — not auto-exported from runtime
+
+git:
+  commit_hash: "c3733af"          # TODO: update after commit
+  branch: "feature/retrieval-priority"
+
+data:
+  index_version: "TBD"            # TODO: fill in current Qdrant collection version
+  dataset_version: "TBD"          # TODO: fill in current document set version
+
+supplemental_quality_thresholds:
+  top1_threshold: 0.55            # 本部门主召回 top1 分低于此阈值允许触发补充召回
+  avg_top_n_threshold: 0.45       # 本部门主召回前 N 平均分低于此阈值允许触发补充召回
+  fine_query_top1_threshold: 0.85 # 细粒度查询更严格：top1 低于此值触发补充召回
+  fine_query_avg_top_n_threshold: 0.60  # 细粒度查询更严格：前 N 平均分低于此值触发补充召回
+
+chunk_parameters:
+  chunk_size_chars: 800
+  chunk_overlap_chars: 120
+  chunk_min_chars: 200
+
+retrieval_config:
+  dynamic_weighting_enabled: false
+  top_k_default: 5
+  rerank_top_n: 3
+  truncate_to_top_k: true
+
+hybrid_weights:
+  exact_vector: 0.3
+  exact_lexical: 0.7
+  semantic_vector: 0.7
+  semantic_lexical: 0.3
+  mixed_vector: 0.5
+  mixed_lexical: 0.5
+
+rerank:
+  default_strategy: "heuristic"   # heuristic / provider
+  provider: "TBD"                 # TODO: fill in configured rerank provider
+  fallback_enabled: true
+
+query_classifier:
+  exact_signal_threshold: 2
+  semantic_signal_threshold: 2

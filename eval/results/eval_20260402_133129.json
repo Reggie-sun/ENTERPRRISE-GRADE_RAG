@@ -1,0 +1,601 @@
+{
+  "summary": {
+    "total_samples": 13,
+    "evaluated_at": "2026-04-02T05:31:29.916464+00:00",
+    "metrics": {
+      "top1_accuracy": 0.0,
+      "top1_partial_hit_rate": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage_avg": 0.0,
+      "supplemental_precision": null,
+      "supplemental_recall": 0.0,
+      "conservative_trigger_count": 0,
+      "supplemental_true_negatives": 11,
+      "heuristic_chunk_type_full_match_rate": 0.38461538461538464,
+      "heuristic_chunk_type_partial_match_rate": 0.46153846153846156,
+      "term_coverage_avg": 0.19230769230769232
+    },
+    "by_query_type": {
+      "exact": {
+        "count": 6,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "semantic": {
+        "count": 7,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      }
+    },
+    "by_department": {
+      "maintenance": {
+        "count": 5,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "production": {
+        "count": 2,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "quality": {
+        "count": 4,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "safety": {
+        "count": 2,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      }
+    },
+    "by_granularity": {
+      "fine": {
+        "count": 6,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "coarse": {
+        "count": 7,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      }
+    },
+    "by_supplemental_expected": {
+      "False": {
+        "count": 11,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      },
+      "True": {
+        "count": 2,
+        "top1_accuracy": 0.0,
+        "topk_recall": 0.0,
+        "expected_doc_coverage_avg": 0.0
+      }
+    }
+  },
+  "scores": [
+    {
+      "sample_id": "exact-001",
+      "query": "PLC_A01 故障代码 E003",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-maint-001"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4",
+        "doc_20260325082415_f1a51433",
+        "doc_20260331062759_086deec1"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.5,
+      "requester_department_id": "maintenance",
+      "top1_doc_id": "doc_20260321070337_445684f4",
+      "top1_score": 0.5,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1906
+    },
+    {
+      "sample_id": "exact-002",
+      "query": "SOP-WI-2024-003 步骤 5 操作要求",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-sop-wi-003"
+      ],
+      "hit_doc_ids": [
+        "doc_20260331021041_adff1740",
+        "doc_20260401053010_1c8fa34f",
+        "doc_20260401085300_13d0ce46",
+        "doc_20260401092629_f3b52aa5",
+        "doc_20260401092629_f470103f"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "production",
+      "top1_doc_id": "doc_20260401092629_f470103f",
+      "top1_score": 0.8961038961038961,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1944
+    },
+    {
+      "sample_id": "exact-003",
+      "query": "QDR-2024-FAULT-017 处置方案",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-qdr-017"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4",
+        "doc_20260325063225_27028cac",
+        "doc_20260325093238_d5edec1e",
+        "doc_20260326071937_37f67e8c",
+        "doc_20260401085048_7020bac5"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "quality",
+      "top1_doc_id": "doc_20260326071937_37f67e8c",
+      "top1_score": 0.5,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1820
+    },
+    {
+      "sample_id": "fine-001",
+      "query": "离心泵密封泄漏的判定标准是什么",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-equip-012"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.5,
+      "requester_department_id": "maintenance",
+      "top1_doc_id": "doc_20260321070337_445684f4",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1860
+    },
+    {
+      "sample_id": "fine-002",
+      "query": "A级油漆表面缺陷允许的最大面积",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-quality-008"
+      ],
+      "hit_doc_ids": [
+        "doc_20260401084714_b7ed464a",
+        "doc_20260401084714_fa3b8bf6"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "quality",
+      "top1_doc_id": "doc_20260401084714_b7ed464a",
+      "top1_score": 1.0,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1919
+    },
+    {
+      "sample_id": "fine-003",
+      "query": "动火作业许可证的有效期和延期规定",
+      "query_type": "exact",
+      "expected_granularity": "fine",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-safety-002"
+      ],
+      "hit_doc_ids": [
+        "doc_20260325053354_d093bd3e",
+        "doc_20260330055115_c20cfc5a",
+        "doc_20260331062759_086deec1",
+        "doc_20260331081535_5d30086d",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "clause",
+      "heuristic_chunk_type_score": {
+        "expected": "clause",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": true
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.5,
+      "requester_department_id": "safety",
+      "top1_doc_id": "doc_20260330055115_c20cfc5a",
+      "top1_score": 0.9404648956356736,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1903
+    },
+    {
+      "sample_id": "semantic-001",
+      "query": "为什么要做首件检验",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-quality-003"
+      ],
+      "hit_doc_ids": [
+        "doc_20260325063225_27028cac",
+        "doc_20260325063225_ae80909a",
+        "doc_20260401085048_2d4a4c4f",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "quality",
+      "top1_doc_id": "doc_20260401085300_13d0ce46",
+      "top1_score": 0.8462495216226559,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1837
+    },
+    {
+      "sample_id": "semantic-002",
+      "query": "5S管理和精益生产有什么关系",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-lean-001"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326064202_f5b7a9ae",
+        "doc_20260326071937_37f67e8c",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "production",
+      "top1_doc_id": "doc_20260326064202_f5b7a9ae",
+      "top1_score": 0.9765625000000001,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1894
+    },
+    {
+      "sample_id": "semantic-003",
+      "query": "设备预防性维护和事后维修的区别",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-maint-005"
+      ],
+      "hit_doc_ids": [
+        "doc_20260330055115_c20cfc5a",
+        "doc_20260331062759_086deec1",
+        "doc_20260331081535_5d30086d",
+        "doc_20260401023359_0e157e08"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "maintenance",
+      "top1_doc_id": "doc_20260331081535_5d30086d",
+      "top1_score": 0.9462481962481962,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1967
+    },
+    {
+      "sample_id": "broad-001",
+      "query": "工厂有哪些应急预案",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-safety-010",
+        "doc-emergency-001"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326064202_f5b7a9ae",
+        "doc_20260326071937_37f67e8c",
+        "doc_20260330055115_c20cfc5a",
+        "doc_20260331081535_5d30086d"
+      ],
+      "chunk_type_expected": "doc_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "doc_summary",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.0,
+      "requester_department_id": "safety",
+      "top1_doc_id": "doc_20260326071937_37f67e8c",
+      "top1_score": 0.9684979838709676,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1839
+    },
+    {
+      "sample_id": "broad-002",
+      "query": "质量管理体系包含哪些文件",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-qms-001"
+      ],
+      "hit_doc_ids": [
+        "doc_20260326064202_f5b7a9ae",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "doc_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "doc_summary",
+        "actual": "section_summary",
+        "full_match": false,
+        "partial_match": false
+      },
+      "supplemental_expected": false,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": true,
+      "conservative_trigger": false,
+      "term_coverage": 0.3333333333333333,
+      "requester_department_id": "quality",
+      "top1_doc_id": "doc_20260401085300_13d0ce46",
+      "top1_score": 0.961166253101737,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1890
+    },
+    {
+      "sample_id": "cross-001",
+      "query": "全厂紧急疏散流程",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-safety-001",
+        "doc-admin-015"
+      ],
+      "hit_doc_ids": [
+        "doc_20260327001645_07fd1ab7",
+        "doc_20260330055115_c20cfc5a",
+        "doc_20260331062759_086deec1",
+        "doc_20260401023359_ace477d5",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": true,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": false,
+      "conservative_trigger": false,
+      "term_coverage": 0.3333333333333333,
+      "requester_department_id": "maintenance",
+      "top1_doc_id": "doc_20260401023359_ace477d5",
+      "top1_score": 0.5,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1839
+    },
+    {
+      "sample_id": "cross-002",
+      "query": "化学品泄漏的部门协同处置流程",
+      "query_type": "semantic",
+      "expected_granularity": "coarse",
+      "top1_accuracy": 0.0,
+      "top1_partial_hit": 0.0,
+      "topk_recall": 0.0,
+      "expected_doc_coverage": 0.0,
+      "expected_doc_ids": [
+        "doc-safety-005",
+        "doc-env-003"
+      ],
+      "hit_doc_ids": [
+        "doc_20260321070337_445684f4",
+        "doc_20260326054237_2605c799",
+        "doc_20260326071937_37f67e8c",
+        "doc_20260401085048_c4fc9f78",
+        "doc_20260401085300_13d0ce46"
+      ],
+      "chunk_type_expected": "section_summary",
+      "heuristic_chunk_type_score": {
+        "expected": "section_summary",
+        "actual": "section_summary",
+        "full_match": true,
+        "partial_match": false
+      },
+      "supplemental_expected": true,
+      "supplemental_triggered": false,
+      "supplemental_tp": false,
+      "supplemental_tn": false,
+      "conservative_trigger": false,
+      "term_coverage": 0.3333333333333333,
+      "requester_department_id": "maintenance",
+      "top1_doc_id": "doc_20260401085300_13d0ce46",
+      "top1_score": 0.9049450549450548,
+      "result_count": 5,
+      "diagnostic_trigger_basis": null,
+      "_department_auth_simulated": false,
+      "latency_ms": 1858
+    }
+  ],
+  "errors": [],
+  "config": {
+    "api_base": "http://localhost:8020",
+    "samples_path": "/home/reggie/vscode_folder/Enterprise-grade_RAG/eval/retrieval_samples.yaml",
+    "top_k": 5
+  }
+}

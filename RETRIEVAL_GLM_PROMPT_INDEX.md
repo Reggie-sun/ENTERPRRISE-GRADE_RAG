@@ -14,11 +14,12 @@
 ## 推荐顺序
 
 1. [RETRIEVAL_PHASE1A_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_GLM_PROMPT.md)
-2. [RETRIEVAL_PHASE1B_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1B_GLM_PROMPT.md)
-3. [RETRIEVAL_PHASE2A_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE2A_GLM_PROMPT.md)
-4. [RETRIEVAL_PHASE2B_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE2B_GLM_PROMPT.md)
-5. [RETRIEVAL_PHASE3_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE3_GLM_PROMPT.md)
-6. [RETRIEVAL_PHASE4_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE4_GLM_PROMPT.md)
+2. [RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md)
+3. [RETRIEVAL_PHASE1B_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1B_GLM_PROMPT.md)
+4. [RETRIEVAL_PHASE2A_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE2A_GLM_PROMPT.md)
+5. [RETRIEVAL_PHASE2B_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE2B_GLM_PROMPT.md)
+6. [RETRIEVAL_PHASE3_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE3_GLM_PROMPT.md)
+7. [RETRIEVAL_PHASE4_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE4_GLM_PROMPT.md)
 
 ---
 
@@ -64,4 +65,5 @@
 ## 建议
 
 - 如果你要 GLM 先做一个最稳的起手式，就先给它 [RETRIEVAL_PHASE1A_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_GLM_PROMPT.md)。
+- 如果第一轮 Phase 1A 交付只完成了 scaffold，但默认运行方式、账号、部门上下文或 `chunk_type` 评分仍有缺口，就先给它 [RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md](/home/reggie/vscode_folder/Enterprise-grade_RAG/RETRIEVAL_PHASE1A_PATCH_GLM_PROMPT.md) 再进入 Phase 1B。
 - 如果你要 GLM 先做文档和脚手架而不是动检索逻辑，就先给它 Phase 1A 或 Phase 2A。

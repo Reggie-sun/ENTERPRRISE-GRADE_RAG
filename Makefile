@@ -69,7 +69,7 @@ dev-frontend:
 
 # ── Test targets ─────────────────────────────────────────
 
-.PHONY: test test-backend test-frontend test-smoke test-smoke-v02
+.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval
 
 ## Run all tests (backend unit + frontend lint)
 test: test-backend test-frontend
@@ -93,6 +93,12 @@ test-smoke:
 test-smoke-v02:
 	@printf "$(_CYN)▸ Running smoke test v0.2 …$(_RST)\n"
 	bash scripts/smoke_test_v02.sh
+
+## Run retrieval evaluation against curated samples (requires running API)
+## Override credentials: AUTH_USERNAME=x AUTH_PASSWORD=y make eval-retrieval
+eval-retrieval:
+	@printf "$(_CYN)▸ Running retrieval evaluation …$(_RST)\n"
+	$(conda-run) python scripts/eval_retrieval.py --api-base http://localhost:$(API_PORT)
 
 # ── Lint targets ─────────────────────────────────────────
 
@@ -156,6 +162,7 @@ help:
 	@printf "  $(_CYN)test-frontend$(_RST)    Run frontend lint\n"
 	@printf "  $(_CYN)test-smoke$(_RST)       Run v0.1 smoke test (needs running API)\n"
 	@printf "  $(_CYN)test-smoke-v02$(_RST)   Run v0.2 smoke test (needs running API)\n"
+	@printf "  $(_CYN)eval-retrieval$(_RST)  Run retrieval evaluation (needs running API)\n"
 	@printf "\n"
 	@printf "  $(_CYN)lint$(_RST)             Lint frontend + backend\n"
 	@printf "  $(_CYN)build$(_RST)            Production build (frontend + Docker)\n"

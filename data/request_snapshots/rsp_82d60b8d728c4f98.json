@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_82d60b8d728c4f98",
+  "trace_id": "trc_retrieval_a6c05f0d01e14f6b",
+  "request_id": "req_retrieval_dfa4f64fb14d449c",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:52:11.112669Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "接触式移动供电系统使用前有哪些安全注意事项",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "接触式移动供电系统使用前有哪些安全注意事项",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "400A\n60A\nG\nA、B、C、D四款可供选择。\n滚轮式移动供电系统\n137\nH\n30A\n不定点式固定供电系统\n137\n一鸟酒\n200A\n非接触式供电系统提案\n138\n20A\n100A\n5\n6\n\n能够大幅节约架设空间\n回转台等特殊路线\n有效利用工厂空间\n也能轻松架设\nHIGH-TRO-REEL(张力型)\nTRO-REEL\n0\nTRO-REEL\nHIGH-TRO-REEL(张力型)\nyjism\n7",
+      "score": 0.9919354838709679,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6824465,
+      "lexical_score": 76.92762098339583,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "坠落事故。\n务必遵守\n-\n否则可能导致接触不良以及坠落事故。\n依照维护保养日程的安排加以实施。\n务必遵守\n●在更换集电子时，将导线与负荷连接时，务必在确认本体的相（R.S.T）后，进行\n接线。\n否则，可能会因火花而引起火灾。\n1\n2\n\n室内·室外兼用\n接触式移动供电系统（TRO-REEL、TROLLEY-WIRE（300A,500A))安全说明\n维护保养日程\n本产品的故障处理和维修作业需专业电气工",
+      "score": 0.9692307692307693,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7185056,
+      "lexical_score": 57.59325568472828,
+      "fused_score": 0.03177805800756621
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-0",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "Panasonic\nPanasonic\n接触式移动供电系统\nTRO-REELHS(非张力型)室内专用\nHIGH-TRO-REEL(非张力型)室内专用\nTRO-REEL室内，室外用\nHIGH-TRO-REEL（张力型）室内专用\nTROLLEY-WIRE室内，室外用\n给移动设备提供电力及信号的\n高信赖传送系统。\n接触式移动供电系统\nPanasonic\n0\n松下电器株式会社\n*规格变更恕不另行通知\n-\n",
+      "score": 0.961166253101737,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.64630437,
+      "lexical_score": 76.35832205326965,
+      "fused_score": 0.0315136476426799
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-21",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "O\nO\n×\n必要额定电流=2.6A×1.25=32.5A\n1:1个末端紧固绝缘子可以张紧的最大距离为50米。\n因此，下一个额定电流的商品是最合适的。\n(100米~150米的线长度问题请咨询本公司)\n2：线路长度超过100m时请使用中间紧固绝缘子。\n3：扩展部件请按照下述使用方式。\n商品名\n本体\n集电臂\n“90A的情况\n：每50米\nTRO-REEL HS(非张力型)\n90A\n60A串联型\n“300A",
+      "score": 0.9317863805970149,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6142247,
+      "lexical_score": 57.86101245077417,
+      "fused_score": 0.03055037313432836
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "所选择电压、电流、极数。请同时考虑“使用场所\n10(01\n90A\n60A/90A\n60A\n90A\n150A\n200A\n60A\n150A\n200A\n300A\nSUS150A\n90A\n300A\n500A\n和采用条件”和“移动电路系统的用途和采用条件的标准”，以\n室内\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\n及每个接触式移动供电系统的经济性，选择最合适的类型。\n室外\n×\n×\n×\n×\n×\n",
+      "score": 0.8978354978354978,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.60572743,
+      "lexical_score": 49.34093181488352,
+      "fused_score": 0.029437229437229435
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "接触式移动供电系统使用前有哪些安全注意事项",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "接触式移动供电系统使用前有哪些安全注意事项",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-14",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6824465,
+          "lexical_score": 76.92762098339583,
+          "fused_score": 0.03252247488101534,
+          "final_score": 0.9919354838709679,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6824，词法 76.9276，融合 0.0325。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.7185056,
+          "lexical_score": 57.59325568472828,
+          "fused_score": 0.03177805800756621,
+          "final_score": 0.9692307692307693,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7185，词法 57.5933，融合 0.0318。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-0",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.64630437,
+          "lexical_score": 76.35832205326965,
+          "fused_score": 0.0315136476426799,
+          "final_score": 0.961166253101737,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6463，词法 76.3583，融合 0.0315。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-21",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6142247,
+          "lexical_score": 57.86101245077417,
+          "fused_score": 0.03055037313432836,
+          "final_score": 0.9317863805970149,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6142，词法 57.8610，融合 0.0306。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.60572743,
+          "lexical_score": 49.34093181488352,
+          "fused_score": 0.029437229437229435,
+          "final_score": 0.8978354978354978,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6057，词法 49.3409，融合 0.0294。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6824465,
+        "lexical_score": 76.92762098339583,
+        "fused_score": 0.03252247488101534,
+        "final_score": 0.9919354838709679,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6824，词法 76.9276，融合 0.0325。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.7185056,
+        "lexical_score": 57.59325568472828,
+        "fused_score": 0.03177805800756621,
+        "final_score": 0.9692307692307693,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7185，词法 57.5933，融合 0.0318。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-0",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.64630437,
+        "lexical_score": 76.35832205326965,
+        "fused_score": 0.0315136476426799,
+        "final_score": 0.961166253101737,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6463，词法 76.3583，融合 0.0315。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-21",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6142247,
+        "lexical_score": 57.86101245077417,
+        "fused_score": 0.03055037313432836,
+        "final_score": 0.9317863805970149,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6142，词法 57.8610，融合 0.0306。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.60572743,
+        "lexical_score": 49.34093181488352,
+        "fused_score": 0.029437229437229435,
+        "final_score": 0.8978354978354978,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6057，词法 49.3409，融合 0.0294。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-14",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

@@ -1,0 +1,525 @@
+{
+  "snapshot_id": "rsp_72e3248c575d4878",
+  "trace_id": "trc_retrieval_8767566f996641b7",
+  "request_id": "req_retrieval_576b1dde0a594daa",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:28:34.106330Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "5S管理和精益生产有什么关系",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "5S管理和精益生产有什么关系",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维\n\n它决定这个系统能不能真正进入企业现场，而不只是做一个演示版本。\n\n---\n\n## 5. 关键业务场景架构\n\n### 5.1 场景一：系统使用辅助\n\n员工在 DF",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5022893,
+      "lexical_score": 15.873404438986231,
+      "fused_score": 0.032018442622950824
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：完全满足（#重要项）。系统可结合机床下一批次生产任务的刀具需求，自动分析上一批次加工使用的刀具，筛选出下一批次不再使用的刀具，生成卸刀清单，指导操作人员及时卸刀，为下一批次生产做好准备，提升生产连续性。【附图48：卸刀清单生成示意图】\n\n5. 机床刀具断刀，机床实时把异常信号传回系统，系统弹窗预警，自动触发 “备刀预案 ”。\n\n我方响应：完全满足（#重要项）。当机床刀具出现断刀情况时，机床可通过",
+      "score": 0.9420289855072463,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.47261822,
+      "lexical_score": 18.61268038696788,
+      "fused_score": 0.030886196246139225
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。",
+      "score": 0.9185914855072463,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.48594207,
+      "lexical_score": 14.03478516518679,
+      "fused_score": 0.030117753623188408
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "接下来的计划，不应该从“零开始搭系统”写，而应该从“基于已跑通链路逐步扩功能”写。\n\n---\n\n## 4. 低耦合拆分原则\n\n后续所有版本都按下面的边界拆：\n\n### 4.1 认证权限单独收口\n\n- 用户、部门、角色、授权关系是独立领域\n- 不能把部门权限直接散落在问答、检索、SOP、前端页面里各写一份\n\n### 4.2 文档主数据和检索副本分开\n\n- 文档主数据单独管理\n- 检索索引只保留检索和",
+      "score": 0.910650623885918,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.47418326,
+      "lexical_score": 15.123051078385927,
+      "fused_score": 0.029857397504456328
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "，导入流程简洁，兼容性强；导入后可实现3D模型多维度、多视角旋转展示，操作人员可通过放大、缩小、旋转等操作，直观查看刀具的整体结构、细节尺寸，便于工艺设计、刀具选型及调试操作。【附图8：2D/3D图形导入界面及3D模型多视角展示示意图】\n\n（6）刀具装配接口：自带各厂家不同类型的刀具组装接口名称与参数，用于各组件间的匹配组装；\n\n我方响应：完全满足。系统内置各主流厂家不同类型的刀具组装接口名称及参",
+      "score": 0.8829611248966087,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.49865904,
+      "lexical_score": 12.557658952786309,
+      "fused_score": 0.028949545078577336
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "5S管理和精益生产有什么关系",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "5S管理和精益生产有什么关系",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-16",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401024730_ddf5bbed",
+          "chunk_id": "doc_20260401024730_ddf5bbed-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-35",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_1c8fa34f",
+          "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5022893,
+          "lexical_score": 15.873404438986231,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5023，词法 15.8734，融合 0.0320。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.47261822,
+          "lexical_score": 18.61268038696788,
+          "fused_score": 0.030886196246139225,
+          "final_score": 0.9420289855072463,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4726，词法 18.6127，融合 0.0309。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.48594207,
+          "lexical_score": 14.03478516518679,
+          "fused_score": 0.030117753623188408,
+          "final_score": 0.9185914855072463,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4859，词法 14.0348，融合 0.0301。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.47418326,
+          "lexical_score": 15.123051078385927,
+          "fused_score": 0.029857397504456328,
+          "final_score": 0.910650623885918,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4742，词法 15.1231，融合 0.0299。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.49865904,
+          "lexical_score": 12.557658952786309,
+          "fused_score": 0.028949545078577336,
+          "final_score": 0.8829611248966087,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4987，词法 12.5577，融合 0.0289。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5022893,
+        "lexical_score": 15.873404438986231,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5023，词法 15.8734，融合 0.0320。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.47261822,
+        "lexical_score": 18.61268038696788,
+        "fused_score": 0.030886196246139225,
+        "final_score": 0.9420289855072463,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4726，词法 18.6127，融合 0.0309。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.48594207,
+        "lexical_score": 14.03478516518679,
+        "fused_score": 0.030117753623188408,
+        "final_score": 0.9185914855072463,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4859，词法 14.0348，融合 0.0301。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.47418326,
+        "lexical_score": 15.123051078385927,
+        "fused_score": 0.029857397504456328,
+        "final_score": 0.910650623885918,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4742，词法 15.1231，融合 0.0299。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.49865904,
+        "lexical_score": 12.557658952786309,
+        "fused_score": 0.028949545078577336,
+        "final_score": 0.8829611248966087,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4987，词法 12.5577，融合 0.0289。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-16",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401024730_ddf5bbed",
+        "chunk_id": "doc_20260401024730_ddf5bbed-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-35",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_1c8fa34f",
+        "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

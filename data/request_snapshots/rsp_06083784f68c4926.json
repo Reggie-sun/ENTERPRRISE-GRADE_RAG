@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_06083784f68c4926",
+  "trace_id": "trc_retrieval_f2816bb15e4e4a0a",
+  "request_id": "req_retrieval_ab22818ed9bb47a6",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:29:04.661699Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "为什么要做首件检验",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "为什么要做首件检验",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "主契约收口\n\n目标：\n\n- 在继续扩企业微信、数据库真源、metrics/exporter 之前，先把当前 V1 已经对外可见的主契约冻结下来\n- 防止后续继续加功能时，把 `documents / retrieval / chat / sops / system-config / logs / ops` 的字段语义再次打散\n\n为什么现在做：\n\n- `v0.4.5` 的 OCR / hybrid ",
+      "score": 0.8462495216226559,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5037677,
+      "lexical_score": 12.778319810320237,
+      "fused_score": 0.027745885954841176
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325063225_ae80909a-chunk-15",
+      "document_id": "doc_20260325063225_ae80909a",
+      "document_name": "zoom5.txt",
+      "snippet": "screen and just show me what you were doing, and I can.\n好的，你可以输入你的问题，然后如果是关于代码的内容，你就可以分享你的屏幕，直接给我看看你在做什么，我就可以了。\nProvide some guidance.\n提供一些指导。\nOkay, why not some rather strange questions such as why o",
+      "score": 0.5,
+      "source_path": "document://doc_20260325063225_ae80909a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 16.571257380121295,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-34",
+      "document_id": "doc_20260401085048_2d4a4c4f",
+      "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+      "snippet": "状 分 析 试 样\n    分 析 试 样 是 由 有 一 定 的 形 状 和 大 小 的 屑 状 试 样 组 成 。 它 是 通 过 钻 、 切 、 车 、 冲 等 方 法 制 取 的 。 屑 状\n试 样 不 应 从 受 切 割 火 焰 的 热 影 响 的 部 位 取 得 。\n    制 样 过 程 中 所 使 用 的 工 具 、 机 械 、 容 器 应 该 预 先 进 行 清 洗 ， 以 防 ",
+      "score": 0.5,
+      "source_path": "document://doc_20260401085048_2d4a4c4f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5234028,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325063225_27028cac-chunk-4",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "degree, is it computer science or is it like software?\n好的，伙计们，好的，那么你们的学位是计算机科学还是类似软件的？\nLike, what's it called?\n那叫什么名字呢？\nA little beautiful.\n有点漂亮。\nCheck back.\n回头看看。\nDegree is your a degree in, like, co",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260325063225_27028cac/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 16.13432332616251,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-106",
+      "document_id": "doc_20260401085048_2d4a4c4f",
+      "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+      "snippet": "几 何 形 状 ，使 用 适 当 的 机 械 加 工 工 具 来 制 备 原 始 样 品 ， 如 可 使 用 车 、 铣 、 锯 、 切 和\n套 料 加 工 等 方 法 。\n    从 铸 态 产 品 或 锻 件 上 制 取 分 析 试 样 时 ，应 该 在 中 心 部 位 取 此 处 的 氢 较 为 密 集\n    从 长 锻 件 上 取 样 时 ， 应 该 先 用 锯 或 切 割 砂 轮 在 ",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401085048_2d4a4c4f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.52220154,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "为什么要做首件检验",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "为什么要做首件检验",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260325063225_27028cac",
+          "chunk_id": "doc_20260325063225_27028cac-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_e827beca",
+          "chunk_id": "doc_20260401085048_e827beca-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325071124_aab0f0ef",
+          "chunk_id": "doc_20260325071124_aab0f0ef-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-91",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-33",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-152",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-32",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_44927c8a",
+          "chunk_id": "doc_20260401085048_44927c8a-chunk-16",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5037677,
+          "lexical_score": 12.778319810320237,
+          "fused_score": 0.027745885954841176,
+          "final_score": 0.8462495216226559,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5038，词法 12.7783，融合 0.0277。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260325063225_ae80909a",
+          "chunk_id": "doc_20260325063225_ae80909a-chunk-15",
+          "document_name": "zoom5.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 16.571257380121295,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.5713，融合 0.0164。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-34",
+          "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5234028,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5234，融合 0.0164。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260325063225_27028cac",
+          "chunk_id": "doc_20260325063225_27028cac-chunk-4",
+          "document_name": "zom1.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 16.13432332616251,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.1343，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-106",
+          "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.52220154,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5222，融合 0.0161。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5037677,
+        "lexical_score": 12.778319810320237,
+        "fused_score": 0.027745885954841176,
+        "final_score": 0.8462495216226559,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5038，词法 12.7783，融合 0.0277。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260325063225_ae80909a",
+        "chunk_id": "doc_20260325063225_ae80909a-chunk-15",
+        "document_name": "zoom5.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 16.571257380121295,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.5713，融合 0.0164。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-34",
+        "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5234028,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5234，融合 0.0164。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260325063225_27028cac",
+        "chunk_id": "doc_20260325063225_27028cac-chunk-4",
+        "document_name": "zom1.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 16.13432332616251,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.1343，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-106",
+        "document_name": "GB∕T 20066#钢和铁 化学成分测定用的取样和制样方法.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.52220154,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5222，融合 0.0161。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260325063225_27028cac",
+        "chunk_id": "doc_20260325063225_27028cac-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_e827beca",
+        "chunk_id": "doc_20260401085048_e827beca-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325071124_aab0f0ef",
+        "chunk_id": "doc_20260325071124_aab0f0ef-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-91",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-33",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-152",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-32",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_44927c8a",
+        "chunk_id": "doc_20260401085048_44927c8a-chunk-16",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

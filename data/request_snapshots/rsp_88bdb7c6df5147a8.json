@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_88bdb7c6df5147a8",
+  "trace_id": "trc_retrieval_a02dfbdcea6b489b",
+  "request_id": "req_retrieval_75f685b87d5743b9",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:28:41.562705Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "全厂紧急疏散流程",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "全厂紧急疏散流程",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401023359_ace477d5-chunk-119",
+      "document_id": "doc_20260401023359_ace477d5",
+      "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+      "snippet": "8\nDate of manufacture\n制造年份\n02/2023\nVoltage\n工作电压\nAC220V~50Hz\nWeight\n重量\n550kg\nPneumatic\n压缩空气压力\n0.5MPa\nAxis X/YIZ\nX/Y/Z轴\nS530/S800/S1400mm\nAxis A/B/C\nA/B/C轴\n-1-/90°\nMade in China\nARBURG(Pinghu)Co.,Ltd\n阿博",
+      "score": 0.5,
+      "source_path": "document://doc_20260401023359_ace477d5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 9.62181423689729,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062759_086deec1-chunk-70",
+      "document_id": "doc_20260331062759_086deec1",
+      "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+      "snippet": "警示标\n\n吊装指示位置与中心点吊装指示位置与中心点\n\n厂内调试\n\n电源开启程序\n\n确定与注塑机讯号连接完好之后开启电源开关\n\n检查设备气路连接是否完好\n\n开启电源后，手控器进入主画面\n\n进入监视画面，检测注塑机检测信号是否正常\n\n手控器按键说明：\n\n①急停按钮；\n\n②启动按钮；\n\n③停止按钮；\n\n④Fn功能按钮；\n\n⑤屏幕显示区；\n\n注塑机控制箱显示说明\n\na.点击欧规67按钮；\n\nb.点击手动画",
+      "score": 0.5,
+      "source_path": "document://doc_20260331062759_086deec1/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5145045,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+      "document_id": "doc_20260327001645_07fd1ab7",
+      "document_name": "sop_pdf_smoke.txt",
+      "snippet": "数字化部巡检流程\n1. 检查数据库连接状态。\n2. 检查任务调度服务。\n3. 记录异常并升级。",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260327001645_07fd1ab7/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 9.52670725752133,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.50578094,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-58",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "r/Enterprise-grade_RAG/backend/app/services/sop_service.py) 不再直接自己扫目录和写 JSON\n- [sop_version_service.py](/home/reggie/vscode_folder/Enterprise-grade_RAG/backend/app/services/sop_version_service.py) 不再直",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 9.126754886875023,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "全厂紧急疏散流程",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "全厂紧急疏散流程",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-85",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-59",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_0e157e08",
+          "chunk_id": "doc_20260401023359_0e157e08-chunk-91",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_0e157e08",
+          "chunk_id": "doc_20260401023359_0e157e08-chunk-49",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_e833627e",
+          "chunk_id": "doc_20260401053010_e833627e-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-60",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-63",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-119",
+          "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 9.62181423689729,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.6218，融合 0.0164。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331062759_086deec1",
+          "chunk_id": "doc_20260331062759_086deec1-chunk-70",
+          "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5145045,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5145，融合 0.0164。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260327001645_07fd1ab7",
+          "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+          "document_name": "sop_pdf_smoke.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 9.52670725752133,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.5267，融合 0.0161。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.50578094,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5058，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-58",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 9.126754886875023,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.1268，融合 0.0159。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-119",
+        "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 9.62181423689729,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.6218，融合 0.0164。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331062759_086deec1",
+        "chunk_id": "doc_20260331062759_086deec1-chunk-70",
+        "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5145045,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5145，融合 0.0164。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260327001645_07fd1ab7",
+        "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+        "document_name": "sop_pdf_smoke.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 9.52670725752133,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.5267，融合 0.0161。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.50578094,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5058，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-58",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 9.126754886875023,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 9.1268，融合 0.0159。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-85",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-59",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_0e157e08",
+        "chunk_id": "doc_20260401023359_0e157e08-chunk-91",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_0e157e08",
+        "chunk_id": "doc_20260401023359_0e157e08-chunk-49",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_e833627e",
+        "chunk_id": "doc_20260401053010_e833627e-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-60",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-63",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

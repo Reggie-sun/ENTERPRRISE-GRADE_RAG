@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_7d8649cc637748c4",
+  "trace_id": "trc_retrieval_b5c671449c33499d",
+  "request_id": "req_retrieval_d8db1546d2a24766",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T06:02:58.350247Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "电机齿轮安装SOP 电机安装后验收要求是什么",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "电机齿轮安装SOP 电机安装后验收要求是什么",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设",
+      "score": 1.0,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.7599739,
+      "lexical_score": 36.54467080380273,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331062308_21e15fba-chunk-11",
+      "document_id": "doc_20260331062308_21e15fba",
+      "document_name": "400W绝对值A+C装配SOP.docx",
+      "snippet": "将螺丝4-M5*20穿入C轴电机法兰并穿入连接部品孔中；\n\n螺丝全部预缩紧，调节完后再锁紧，紧固扭矩参照《WI-SJ-005》。\n\n伺服电机安装\n\n电机安装前取下方键，电机安装方向(电源线向上)；\n\n将螺丝2-M5*20穿入绝对值同服电机并穿入连接部品孔中；\n\n螺丝全部拧紧，使用4的内六角扳手将螺丝锁紧(符合交叉先预紧再拧紧，拧紧量要小，每次为 1/4-1/2 圈左右，一直拧到所需要的预紧力为止)",
+      "score": 0.9185914855072463,
+      "source_path": "document://doc_20260331062308_21e15fba/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6498804,
+      "lexical_score": 27.394003235250022,
+      "fused_score": 0.030117753623188408
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331071329_36c0ab64-chunk-3",
+      "document_id": "doc_20260331071329_36c0ab64",
+      "document_name": "滚珠丝杠装配SOP.docx",
+      "snippet": "如图。\n\n若高低误差过大请将丝杠固定座拆下来打磨丝杠螺母座安装面，直到合格为止，若水平误差过大请敲击丝杠螺母两端直到合格位置为止。\n\n内容(丝杠螺母固定座分中精度检测)\n\n检棒分中≤0.20mm。\n\n检棒旋转180°复测精度，与不旋转误差不得大于≤0.020mm。\n\n紧固扭矩参照《WI-SJ-005》。\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致。\n\n拆掉滑板，完成后用台钻扩销孔",
+      "score": 0.9097437030490498,
+      "source_path": "document://doc_20260331071329_36c0ab64/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.65498,
+      "lexical_score": 26.48477985470026,
+      "fused_score": 0.029827662395050816
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331062308_21e15fba-chunk-10",
+      "document_id": "doc_20260331062308_21e15fba",
+      "document_name": "400W绝对值A+C装配SOP.docx",
+      "snippet": "4*16\t3\n11020104001\t弹垫\tM4\t3\n11030104001\t平垫\tM4\t3\n\n电机线缆支架安装\n\n将螺丝2-M4*8穿入电机线缆支架，并穿入连接部品孔中；\n\n并用3的内六角扳手锁紧，紧固扭矩参照《WI-SJ-005》。\n\n电缆支架安装\n\n将螺丝2-M4*12穿入电缆支架并穿入连接部品孔中；\n\n并用3的内六角扳手锁紧，紧固扭矩参照《WI-SJ-005》。\n\n配线固定钮安装\n\n电机线",
+      "score": 0.9061399647887324,
+      "source_path": "document://doc_20260331062308_21e15fba/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.6303135,
+      "lexical_score": 29.751765379654646,
+      "fused_score": 0.029709507042253523
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401084930_f891ddb2-chunk-0",
+      "document_id": "doc_20260401084930_f891ddb2",
+      "document_name": "皮带装配S0P.docx",
+      "snippet": "皮带装配SOP-生技部皮带装配SOP-生技部\n\nΩ型\n\n惰轮安装1\n\n涂油\n\n同步带惰轮轴承面涂油（蓝色部分）。\n\n刷子沾润滑油脂（美孚力士EP0）刷轴承孔一圈。\n\n轴承压装\n\n治具匹配详见现场清单列表。\n\n调试液压力机对准轴承孔中心。\n\n安装前后轴承端面平行并紧密配合。\n\n再将惰轮轴穿进轴承中如上图。\n\n使用卡簧钳安装轴用弹性挡圈。\n\n试运转轴承运转灵活性、无振动、无卡滞等不良现象。\n\n惰轮安装",
+      "score": 0.8905583972719522,
+      "source_path": "document://doc_20260401084930_f891ddb2/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.63509196,
+      "lexical_score": 27.81423971657609,
+      "fused_score": 0.02919863597612958
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "电机齿轮安装SOP 电机安装后验收要求是什么",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "电机齿轮安装SOP 电机安装后验收要求是什么",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062308_21e15fba",
+          "chunk_id": "doc_20260331062308_21e15fba-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_8d318fde",
+          "chunk_id": "doc_20260401092629_8d318fde-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330075201_24a4a12e",
+          "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_8d318fde",
+          "chunk_id": "doc_20260401092629_8d318fde-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062308_21e15fba",
+          "chunk_id": "doc_20260331062308_21e15fba-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084930_f891ddb2",
+          "chunk_id": "doc_20260401084930_f891ddb2-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-31",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_086deec1",
+          "chunk_id": "doc_20260331062759_086deec1-chunk-31",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.7599739,
+          "lexical_score": 36.54467080380273,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7600，词法 36.5447，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331062308_21e15fba",
+          "chunk_id": "doc_20260331062308_21e15fba-chunk-11",
+          "document_name": "400W绝对值A+C装配SOP.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6498804,
+          "lexical_score": 27.394003235250022,
+          "fused_score": 0.030117753623188408,
+          "final_score": 0.9185914855072463,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6499，词法 27.3940，融合 0.0301。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260331071329_36c0ab64",
+          "chunk_id": "doc_20260331071329_36c0ab64-chunk-3",
+          "document_name": "滚珠丝杠装配SOP.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.65498,
+          "lexical_score": 26.48477985470026,
+          "fused_score": 0.029827662395050816,
+          "final_score": 0.9097437030490498,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6550，词法 26.4848，融合 0.0298。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331062308_21e15fba",
+          "chunk_id": "doc_20260331062308_21e15fba-chunk-10",
+          "document_name": "400W绝对值A+C装配SOP.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.6303135,
+          "lexical_score": 29.751765379654646,
+          "fused_score": 0.029709507042253523,
+          "final_score": 0.9061399647887324,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6303，词法 29.7518，融合 0.0297。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401084930_f891ddb2",
+          "chunk_id": "doc_20260401084930_f891ddb2-chunk-0",
+          "document_name": "皮带装配S0P.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.63509196,
+          "lexical_score": 27.81423971657609,
+          "fused_score": 0.02919863597612958,
+          "final_score": 0.8905583972719522,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6351，词法 27.8142，融合 0.0292。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.7599739,
+        "lexical_score": 36.54467080380273,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7600，词法 36.5447，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331062308_21e15fba",
+        "chunk_id": "doc_20260331062308_21e15fba-chunk-11",
+        "document_name": "400W绝对值A+C装配SOP.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6498804,
+        "lexical_score": 27.394003235250022,
+        "fused_score": 0.030117753623188408,
+        "final_score": 0.9185914855072463,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6499，词法 27.3940，融合 0.0301。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260331071329_36c0ab64",
+        "chunk_id": "doc_20260331071329_36c0ab64-chunk-3",
+        "document_name": "滚珠丝杠装配SOP.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.65498,
+        "lexical_score": 26.48477985470026,
+        "fused_score": 0.029827662395050816,
+        "final_score": 0.9097437030490498,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6550，词法 26.4848，融合 0.0298。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331062308_21e15fba",
+        "chunk_id": "doc_20260331062308_21e15fba-chunk-10",
+        "document_name": "400W绝对值A+C装配SOP.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.6303135,
+        "lexical_score": 29.751765379654646,
+        "fused_score": 0.029709507042253523,
+        "final_score": 0.9061399647887324,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6303，词法 29.7518，融合 0.0297。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401084930_f891ddb2",
+        "chunk_id": "doc_20260401084930_f891ddb2-chunk-0",
+        "document_name": "皮带装配S0P.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.63509196,
+        "lexical_score": 27.81423971657609,
+        "fused_score": 0.02919863597612958,
+        "final_score": 0.8905583972719522,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6351，词法 27.8142，融合 0.0292。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062308_21e15fba",
+        "chunk_id": "doc_20260331062308_21e15fba-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_8d318fde",
+        "chunk_id": "doc_20260401092629_8d318fde-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330075201_24a4a12e",
+        "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_8d318fde",
+        "chunk_id": "doc_20260401092629_8d318fde-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062308_21e15fba",
+        "chunk_id": "doc_20260331062308_21e15fba-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084930_f891ddb2",
+        "chunk_id": "doc_20260401084930_f891ddb2-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-31",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_086deec1",
+        "chunk_id": "doc_20260331062759_086deec1-chunk-31",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

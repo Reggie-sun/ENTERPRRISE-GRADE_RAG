@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_3989b4dff9464488",
+  "trace_id": "trc_retrieval_b6d847d78fb3409a",
+  "request_id": "req_retrieval_f0b46d97d8b647d1",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:29:10.554419Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "工厂有哪些应急预案",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "工厂有哪些应急预案",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：完全满足（#重要项）。系统可结合机床下一批次生产任务的刀具需求，自动分析上一批次加工使用的刀具，筛选出下一批次不再使用的刀具，生成卸刀清单，指导操作人员及时卸刀，为下一批次生产做好准备，提升生产连续性。【附图48：卸刀清单生成示意图】\n\n5. 机床刀具断刀，机床实时把异常信号传回系统，系统弹窗预警，自动触发 “备刀预案 ”。\n\n我方响应：完全满足（#重要项）。当机床刀具出现断刀情况时，机床可通过",
+      "score": 0.9684979838709676,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.54288197,
+      "lexical_score": 13.980308997734113,
+      "fused_score": 0.031754032258064516
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "3P\n4P\n1P\n3P\n4P\n1P\n1P\n（镀金工厂、涂装工厂、药品工厂等）\n(1)电动机负载\n产生腐蚀性气体的场所\n×\n×\n×\n×\n×\n×\n×\n×\nTRO-REEL HS\n•\n•\n•\n•\n••\n•\n负载的额定电流小于50A时\n（污水处理广、药品加工厂等）\n（非张力型)\n适用的额定电流=负载的额定电流×1.25以上\n产生油雾的场所\n×\nHIGH-TRO-REEL\n（非张力型)\nの\n•\n•\n•\n•\n",
+      "score": 0.9261559696342305,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.51771784,
+      "lexical_score": 14.449357584309688,
+      "fused_score": 0.03036576949620428
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "问题回答\n- 引用来源\n\n#### 2. 报警 / 工单联动助手\n\n这是最能体现现场价值的呈现形态。\n\n最终会表现为：\n\n- 当系统出现报警时，直接给出建议摘要\n- 在工单详情中显示处理建议和知识来源\n- 把“查资料”变成“直接拿方案”\n\n用户最终看到的是：\n\n- 报警原因建议\n- 建议处理步骤\n- 参考手册\n- 注意事项\n\n#### 3. 生产数据分析助手\n\n这是面向管理层和业务人员的呈现形态。",
+      "score": 0.8673860427591771,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5137417,
+      "lexical_score": 10.56982729743153,
+      "fused_score": 0.028438886647841874
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "所选择电压、电流、极数。请同时考虑“使用场所\n10(01\n90A\n60A/90A\n60A\n90A\n150A\n200A\n60A\n150A\n200A\n300A\nSUS150A\n90A\n300A\n500A\n和采用条件”和“移动电路系统的用途和采用条件的标准”，以\n室内\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\nO\n及每个接触式移动供电系统的经济性，选择最合适的类型。\n室外\n×\n×\n×\n×\n×\n",
+      "score": 0.5,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 15.18608386257739,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4",
+      "score": 0.5,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5515845,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "工厂有哪些应急预案",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "工厂有哪些应急预案",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260325063225_c48ffb9f",
+          "chunk_id": "doc_20260325063225_c48ffb9f-chunk-22",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325063225_c48ffb9f",
+          "chunk_id": "doc_20260325063225_c48ffb9f-chunk-20",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325063225_27028cac",
+          "chunk_id": "doc_20260325063225_27028cac-chunk-25",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-63",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325063225_ae80909a",
+          "chunk_id": "doc_20260325063225_ae80909a-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_fb598ba4",
+          "chunk_id": "doc_20260401053010_fb598ba4-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.54288197,
+          "lexical_score": 13.980308997734113,
+          "fused_score": 0.031754032258064516,
+          "final_score": 0.9684979838709676,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5429，词法 13.9803，融合 0.0318。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.51771784,
+          "lexical_score": 14.449357584309688,
+          "fused_score": 0.03036576949620428,
+          "final_score": 0.9261559696342305,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5177，词法 14.4494，融合 0.0304。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5137417,
+          "lexical_score": 10.56982729743153,
+          "fused_score": 0.028438886647841874,
+          "final_score": 0.8673860427591771,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5137，词法 10.5698，融合 0.0284。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 15.18608386257739,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 15.1861，融合 0.0164。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5515845,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5516，融合 0.0164。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.54288197,
+        "lexical_score": 13.980308997734113,
+        "fused_score": 0.031754032258064516,
+        "final_score": 0.9684979838709676,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5429，词法 13.9803，融合 0.0318。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.51771784,
+        "lexical_score": 14.449357584309688,
+        "fused_score": 0.03036576949620428,
+        "final_score": 0.9261559696342305,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5177，词法 14.4494，融合 0.0304。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-1",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5137417,
+        "lexical_score": 10.56982729743153,
+        "fused_score": 0.028438886647841874,
+        "final_score": 0.8673860427591771,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5137，词法 10.5698，融合 0.0284。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-17",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 15.18608386257739,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 15.1861，融合 0.0164。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5515845,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5516，融合 0.0164。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260325063225_c48ffb9f",
+        "chunk_id": "doc_20260325063225_c48ffb9f-chunk-22",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325063225_c48ffb9f",
+        "chunk_id": "doc_20260325063225_c48ffb9f-chunk-20",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325063225_27028cac",
+        "chunk_id": "doc_20260325063225_27028cac-chunk-25",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-63",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325063225_ae80909a",
+        "chunk_id": "doc_20260325063225_ae80909a-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_fb598ba4",
+        "chunk_id": "doc_20260401053010_fb598ba4-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

@@ -1,8 +1,7 @@
-import { LockKeyhole } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Card, Input, Layout } from '@/components';
-import { formatAuthError, normalizeNextPath, useAuth, useAuthReasonText } from '@/auth';
+import { formatAuthError, normalizeNextPath, useAuth } from '@/auth';
 
 export function LoginPage() {
   const [searchParams] = useSearchParams();
@@ -13,12 +12,10 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const reason = searchParams.get('reason');
   const nextPath = useMemo(
     () => normalizeNextPath(searchParams.get('next')),
     [searchParams],
   );
-  const reasonText = useAuthReasonText(reason);
 
   if (isAuthenticated) {
     return <Navigate to={nextPath} replace />;
@@ -43,19 +40,13 @@ export function LoginPage() {
     <Layout>
       <div className="grid min-h-[70vh] place-items-center">
         <Card className="w-full max-w-[560px] border-[rgba(182,70,47,0.14)] bg-[rgba(255,248,240,0.88)] shadow-[0_24px_54px_rgba(77,42,16,0.12)]">
-          <div className="inline-flex rounded-3xl bg-[rgba(182,70,47,0.1)] p-4 text-accent-deep">
-            <LockKeyhole className="h-6 w-6" />
+          <div className="mb-2 flex justify-center">
+            <img
+              src="/welli-login-logo-v2.png"
+              alt="WELLI 伟立知识库"
+              className="h-auto w-full max-w-[360px] rounded-2xl"
+            />
           </div>
-          <h2 className="m-0 mt-5 text-2xl font-semibold text-ink">账号登录</h2>
-          <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-            请输入已开通的账号信息。登录成功后，系统会自动回到你刚才准备访问的页面。
-          </p>
-
-          {reasonText ? (
-            <div className="mt-4 rounded-2xl border border-[rgba(182,70,47,0.12)] bg-[rgba(255,255,255,0.8)] px-4 py-3 text-sm leading-relaxed text-accent-deep">
-              {reasonText}
-            </div>
-          ) : null}
 
           {error ? (
             <div className="mt-4 rounded-2xl border border-[rgba(182,70,47,0.12)] bg-[rgba(255,255,255,0.8)] px-4 py-3 text-sm leading-relaxed text-accent-deep">
@@ -63,7 +54,7 @@ export function LoginPage() {
             </div>
           ) : null}
 
-          <form className="mt-5 grid gap-4" onSubmit={handleSubmit}>
+          <form className="mt-3 grid gap-4" onSubmit={handleSubmit}>
             <Input
               label="用户名"
               value={username}
@@ -85,7 +76,7 @@ export function LoginPage() {
           </form>
 
           <div className="mt-5 rounded-2xl bg-[rgba(255,255,255,0.74)] p-4 text-sm leading-relaxed text-ink-soft">
-            如需开通账号、重置密码或调整权限，请联系平台管理员。
+            如需开通账号、重置密码或调整权限，请联系数字化部孙瑞杰。
           </div>
         </Card>
       </div>

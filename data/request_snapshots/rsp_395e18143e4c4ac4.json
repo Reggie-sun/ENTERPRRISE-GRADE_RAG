@@ -1,0 +1,525 @@
+{
+  "snapshot_id": "rsp_395e18143e4c4ac4",
+  "trace_id": "trc_retrieval_32e5e9fd42c34f56",
+  "request_id": "req_retrieval_183f5f1d0e844805",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:28:55.187433Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "SOP-WI-2024-003 步骤 5 操作要求",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "SOP-WI-2024-003 步骤 5 操作要求",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401092629_f470103f-chunk-1",
+      "document_id": "doc_20260401092629_f470103f",
+      "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+      "snippet": "训遵守操作规范\n\nStep3\n皮带轮轴穿入皮带轮固定架、\n对准孔\n依次穿入垫圈、皮带轮组、垫圈\n；\n准备压装前；\n\n皮带轮\n部品\n\n[Slide 6]\n\n皮带轮固定\n架组压装、止动螺丝安装\n6\n\nStep1\n调试手扳压力机对准工件中心轴承孔\n；（\n上下空转手轮确保正常）\n放\n入专用治具（详见现场配套规格清单）并使用手扳压力机压入；\n取出专用治具；\n目测工件与轴承端面平行并紧密配合；\n周围清洁，",
+      "score": 0.8961038961038961,
+      "source_path": "document://doc_20260401092629_f470103f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.56816375,
+      "lexical_score": 12.282710628267829,
+      "fused_score": 0.02938045560996381
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+      "document_id": "doc_20260401053010_1c8fa34f",
+      "document_name": "WL-SJ-020#皮带安装张力标准#A1.docx",
+      "snippet": "皮带安装张力标准\t文件编号\tWL-SJ-020\n版本号\tA/1\n页次\t8\n生效日期\t2022-11-17\n目的\n现场皮带张力安装标准化\n适用范围\n所有标准机型以皮带传动设计。\n职责\n3.1 生产技术部负责同步带张力数据现场验证、张力标准的输出和修改；\n3.2 生产管理部按照标准执行操作；\n3.3 品质保障部按照标准执行检验；\n各机型张力要求：\n4.1标准参数（注：安装频率值采用：直接取整，四舍五入",
+      "score": 0.8593253968253967,
+      "source_path": "document://doc_20260401053010_1c8fa34f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5523029,
+      "lexical_score": 13.205226935321189,
+      "fused_score": 0.02817460317460317
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设",
+      "score": 0.5,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 18.549254712749804,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-16",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "续也复用同一逻辑\n\n5. 前端登录态和导航控制\n\n- 增加登录页\n- 增加登录态持久化\n- 根据角色控制导航和页面可见入口\n- 未登录、无权限、Token 过期分别提示\n\n6. 部门管理员边界控制\n\n- 部门管理员只可操作本部门内容\n- 系统管理员拥有全局入口\n- 普通员工只保留查看和检索能力\n\n7. 权限回归测试\n\n- 覆盖登录成功与失败\n- 覆盖 Token 过期\n- 覆盖跨部门访问被拒绝\n-",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 16.891621637611795,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+      "document_id": "doc_20260401092629_f3b52aa5",
+      "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+      "snippet": "带轮部品（手臂同步带惰轮）确保光滑；\n\nStep2\n皮带一端绕入皮带轮\n部品（手臂同步带惰轮）\n并平整摆放在从动压板内（一半）；\n\nStep3\n皮带\n另\n一端\n绕入皮带轮\n部品（手臂同步带惰轮）\n并平整摆放在从动压板内（一半）\n；\nFAW05-1000P-X1000-Y2000\n系列\n-\n主手臂\n【注】：上岗必须经过培训遵守操作规范\n\n[Slide 23]\n\n皮带夹板\n2\n安装\n23\n\nSt",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401092629_f3b52aa5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.56653684,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "SOP-WI-2024-003 步骤 5 操作要求",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "SOP-WI-2024-003 步骤 5 操作要求",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260326063420_0ae34377",
+          "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_2056c1bf",
+          "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_8d318fde",
+          "chunk_id": "doc_20260401092629_8d318fde-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331071329_36c0ab64",
+          "chunk_id": "doc_20260331071329_36c0ab64-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328034931_6d36c484",
+          "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-16",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401092629_f470103f",
+          "chunk_id": "doc_20260401092629_f470103f-chunk-1",
+          "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.56816375,
+          "lexical_score": 12.282710628267829,
+          "fused_score": 0.02938045560996381,
+          "final_score": 0.8961038961038961,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5682，词法 12.2827，融合 0.0294。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401053010_1c8fa34f",
+          "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+          "document_name": "WL-SJ-020#皮带安装张力标准#A1.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5523029,
+          "lexical_score": 13.205226935321189,
+          "fused_score": 0.02817460317460317,
+          "final_score": 0.8593253968253967,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5523，词法 13.2052，融合 0.0282。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 18.549254712749804,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 18.5493，融合 0.0164。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-16",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 16.891621637611795,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.8916，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+          "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.56653684,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5665，融合 0.0161。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401092629_f470103f",
+        "chunk_id": "doc_20260401092629_f470103f-chunk-1",
+        "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.56816375,
+        "lexical_score": 12.282710628267829,
+        "fused_score": 0.02938045560996381,
+        "final_score": 0.8961038961038961,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5682，词法 12.2827，融合 0.0294。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401053010_1c8fa34f",
+        "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+        "document_name": "WL-SJ-020#皮带安装张力标准#A1.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5523029,
+        "lexical_score": 13.205226935321189,
+        "fused_score": 0.02817460317460317,
+        "final_score": 0.8593253968253967,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5523，词法 13.2052，融合 0.0282。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 18.549254712749804,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 18.5493，融合 0.0164。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-16",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 16.891621637611795,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 16.8916，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+        "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.56653684,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5665，融合 0.0161。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260326063420_0ae34377",
+        "chunk_id": "doc_20260326063420_0ae34377-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_2056c1bf",
+        "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_8d318fde",
+        "chunk_id": "doc_20260401092629_8d318fde-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331071329_36c0ab64",
+        "chunk_id": "doc_20260331071329_36c0ab64-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328034931_6d36c484",
+        "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-16",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

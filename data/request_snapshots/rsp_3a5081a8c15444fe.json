@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_3a5081a8c15444fe",
+  "trace_id": "trc_retrieval_8fce97b3d5d14719",
+  "request_id": "req_retrieval_9b18d696b2c44da3",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:31:29.913729Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "化学品泄漏的部门协同处置流程",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "化学品泄漏的部门协同处置流程",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-15",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "码\n- 后续如果进入真实上线阶段，需继续补：\n  密码重置、账号停用、批量导入、首次改密，以及与企业现有身份系统对接的能力\n\n测试与验收：\n\n- 覆盖登录成功、登录失败、Token 过期、无权限访问\n- 覆盖不同角色进入同一页面的数据差异\n- 覆盖问答、检索、文档列表三个入口的部门过滤一致性\n\n建议按 issue 拆分：\n\n1. 用户、部门、角色基础模型\n\n- 新增用户、部门、角色三类基础模型\n-",
+      "score": 0.9049450549450548,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5014914,
+      "lexical_score": 14.39301194235641,
+      "fused_score": 0.02967032967032967
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-11",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "场先查什么？回答：先看冷却泵是否运行、过滤器是否堵塞，再看 A 轴进出水管是否折弯、堵塞或漏液。\n- 问题：具体怎么处理？回答：清洗过滤器，排查管路堵塞；确认流量开关动作；必要时拆检流量传感器或恢复管路密封。\n- 问题：什么状态下才能恢复？回答：冷却泵运行正常、流量开关信号恢复、A 轴连续运行时不再报流量不足，才可继续使用。\n\n#### 700012 A 轴转台泄漏\n- 信号地址：`DB2.DBX",
+      "score": 0.8593253968253967,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.4763626,
+      "lexical_score": 13.87213588579535,
+      "fused_score": 0.02817460317460317
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401085048_c4fc9f78-chunk-18",
+      "document_id": "doc_20260401085048_c4fc9f78",
+      "document_name": "GB∕T 3639-2009#冷拔或冷轧精密无缝钢管.pdf",
+      "snippet": "叉Ⅲ０·览遗』１\n８检验规则\n８·｜检查和验收\n钢管的检查和验收由供方质遏技术监督部门进行°\n８·２组批规则\n钢管按批检查和验收°每批应由同一牌号、同一炉号、同一规格和同一热处理制度（炉次）或同一交\n货状态的钢管组成°每批钢管的数凰应不大于５００根°\n０，３复验和判定规则\n钢管的复验和判定规则应符合ＧＢ／Ｔ２１０２的规定·\n９包装耐标志和质量证明书\n钢管的包装｀标志和质旦证明书应符合ＧＢ／Ｔ２１０",
+      "score": 0.8473856839668146,
+      "source_path": "document://doc_20260401085048_c4fc9f78/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.47506517,
+      "lexical_score": 13.55980526999541,
+      "fused_score": 0.027783137179239824
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：刀具归还对刀及维修记录界面示意图】\n\n（4）报废刀具需通过系统生成 “报废 ” 标识，注明报废日期、原因、图片及判定人；报废刀具处置回收或再利用，过程需在系统中完整记录存档。\n\n我方响应：完全满足。刀具报废时，需通过系统生成“报废”标识，明确录入报废日期、报废原因、报废图片及判定人信息，确保报废流程规范；报废刀具的处置回收或再利用过程，可在系统中完整记录存档，实现报废刀具全流程可追溯，便于后续审",
+      "score": 0.5,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 18.46167353268973,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": 0.5,
+      "source_path": "document://doc_20260326054237_2605c799/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5240444,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "化学品泄漏的部门协同处置流程",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "化学品泄漏的部门协同处置流程",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-14",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-12",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-74",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-104",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-67",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-40",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-15",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5014914,
+          "lexical_score": 14.39301194235641,
+          "fused_score": 0.02967032967032967,
+          "final_score": 0.9049450549450548,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5015，词法 14.3930，融合 0.0297。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-11",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.4763626,
+          "lexical_score": 13.87213588579535,
+          "fused_score": 0.02817460317460317,
+          "final_score": 0.8593253968253967,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4764，词法 13.8721，融合 0.0282。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401085048_c4fc9f78",
+          "chunk_id": "doc_20260401085048_c4fc9f78-chunk-18",
+          "document_name": "GB∕T 3639-2009#冷拔或冷轧精密无缝钢管.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.47506517,
+          "lexical_score": 13.55980526999541,
+          "fused_score": 0.027783137179239824,
+          "final_score": 0.8473856839668146,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4751，词法 13.5598，融合 0.0278。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 18.46167353268973,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 18.4617，融合 0.0164。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260326054237_2605c799",
+          "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+          "document_name": "sop_document_flow_smoke.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5240444,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5240，融合 0.0164。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-15",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5014914,
+        "lexical_score": 14.39301194235641,
+        "fused_score": 0.02967032967032967,
+        "final_score": 0.9049450549450548,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5015，词法 14.3930，融合 0.0297。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-11",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.4763626,
+        "lexical_score": 13.87213588579535,
+        "fused_score": 0.02817460317460317,
+        "final_score": 0.8593253968253967,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4764，词法 13.8721，融合 0.0282。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401085048_c4fc9f78",
+        "chunk_id": "doc_20260401085048_c4fc9f78-chunk-18",
+        "document_name": "GB∕T 3639-2009#冷拔或冷轧精密无缝钢管.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.47506517,
+        "lexical_score": 13.55980526999541,
+        "fused_score": 0.027783137179239824,
+        "final_score": 0.8473856839668146,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4751，词法 13.5598，融合 0.0278。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 18.46167353268973,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 18.4617，融合 0.0164。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260326054237_2605c799",
+        "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+        "document_name": "sop_document_flow_smoke.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5240444,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5240，融合 0.0164。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-14",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-12",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-74",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-104",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-67",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-40",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

@@ -1,0 +1,512 @@
+{
+  "snapshot_id": "rsp_69f31631f9f54e10",
+  "trace_id": "trc_retrieval_c5ea347df2524fe5",
+  "request_id": "req_retrieval_21de53c50ff24096",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:28:24.594439Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "QDR-2024-FAULT-017 处置方案",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "QDR-2024-FAULT-017 处置方案",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：刀具归还对刀及维修记录界面示意图】\n\n（4）报废刀具需通过系统生成 “报废 ” 标识，注明报废日期、原因、图片及判定人；报废刀具处置回收或再利用，过程需在系统中完整记录存档。\n\n我方响应：完全满足。刀具报废时，需通过系统生成“报废”标识，明确录入报废日期、报废原因、报废图片及判定人信息，确保报废流程规范；报废刀具的处置回收或再利用过程，可在系统中完整记录存档，实现报废刀具全流程可追溯，便于后续审",
+      "score": 0.5,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 10.867244324505071,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先用浓度计实测数值；2. 偏稀就补原液，偏浓就补水；3. 搅拌均匀后再测一次；4. 连续抽检稳定后再批量加工。\n- 问题：这个报警说明什么？回答：切削液浓度超出工艺要求，可能影响冷却、防锈和刀具寿命。\n- 问题：现场先查什么？回答：先用浓度计实测当前浓度，再看最近补液记录，确认是偏浓还是偏稀。\n- 问题：具体怎么处理？回答：如果",
+      "score": 0.5,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.4797453,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401085048_7020bac5-chunk-40",
+      "document_id": "doc_20260401085048_7020bac5",
+      "document_name": "GB∕T 3094-2012#冷拔异型钢管.pdf",
+      "snippet": "3094—2012\n表A.4（续）\n基本尺寸\n截面面积\n理论重量\n惯性矩\n截面模数\nA\nB\nS\nF\nG\nJx$\nJ,\nWx\nW,\ncm²$\nkg/m\ncm4\nmm\ncm³$\n45\n15\n2.017\n1.583\n0.688\n2\n3.936\n0.917\n1.750\n1.254\n0.984\n1\n1.264\n3.423\n1.011\n1.369\n50\n25\n1.5\n1.857\n1.458\n1.804\n4.9",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401085048_7020bac5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 8.852715850023596,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325093238_d5edec1e-chunk-0",
+      "document_id": "doc_20260325093238_d5edec1e",
+      "document_name": "upload_stuck_probe.txt",
+      "snippet": "upload stuck probe\n2026-03-25",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260325093238_d5edec1e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.47469354,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260325063225_27028cac-chunk-24",
+      "document_id": "doc_20260325063225_27028cac",
+      "document_name": "zom1.txt",
+      "snippet": "is the goal of, yeah, and also, you know, you make a lot of money, you build solutions, you sell solutions, and make a lot of money, so that is the.\n所以这就是目标，是的，而且，你知道的，你赚了很多钱，你建立解决方案，你销售解决方案，并且赚了很多钱，所",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260325063225_27028cac/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 8.030157155234786,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "QDR-2024-FAULT-017 处置方案",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "QDR-2024-FAULT-017 处置方案",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325063225_27028cac",
+          "chunk_id": "doc_20260325063225_27028cac-chunk-21",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_1d17b38c",
+          "chunk_id": "doc_20260401092629_1d17b38c-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_086deec1",
+          "chunk_id": "doc_20260331062759_086deec1-chunk-84",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-30",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-35",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-44",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-33",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_0e157e08",
+          "chunk_id": "doc_20260401023359_0e157e08-chunk-63",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 10.867244324505071,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 10.8672，融合 0.0164。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.4797453,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4797，融合 0.0164。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401085048_7020bac5",
+          "chunk_id": "doc_20260401085048_7020bac5-chunk-40",
+          "document_name": "GB∕T 3094-2012#冷拔异型钢管.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 8.852715850023596,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 8.8527，融合 0.0161。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260325093238_d5edec1e",
+          "chunk_id": "doc_20260325093238_d5edec1e-chunk-0",
+          "document_name": "upload_stuck_probe.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.47469354,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4747，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260325063225_27028cac",
+          "chunk_id": "doc_20260325063225_27028cac-chunk-24",
+          "document_name": "zom1.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 8.030157155234786,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 8.0302，融合 0.0159。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 10.867244324505071,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 10.8672，融合 0.0164。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.4797453,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4797，融合 0.0164。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401085048_7020bac5",
+        "chunk_id": "doc_20260401085048_7020bac5-chunk-40",
+        "document_name": "GB∕T 3094-2012#冷拔异型钢管.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 8.852715850023596,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 8.8527，融合 0.0161。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260325093238_d5edec1e",
+        "chunk_id": "doc_20260325093238_d5edec1e-chunk-0",
+        "document_name": "upload_stuck_probe.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.47469354,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4747，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260325063225_27028cac",
+        "chunk_id": "doc_20260325063225_27028cac-chunk-24",
+        "document_name": "zom1.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 8.030157155234786,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 8.0302，融合 0.0159。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325063225_27028cac",
+        "chunk_id": "doc_20260325063225_27028cac-chunk-21",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_1d17b38c",
+        "chunk_id": "doc_20260401092629_1d17b38c-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_086deec1",
+        "chunk_id": "doc_20260331062759_086deec1-chunk-84",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-30",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-35",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-44",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-33",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_0e157e08",
+        "chunk_id": "doc_20260401023359_0e157e08-chunk-63",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

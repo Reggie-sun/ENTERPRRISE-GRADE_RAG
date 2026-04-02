@@ -1,0 +1,525 @@
+{
+  "snapshot_id": "rsp_59bb441d92d7477d",
+  "trace_id": "trc_retrieval_a26e6f141adf4175",
+  "request_id": "req_retrieval_2ee2fac5153748af",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:51:51.090013Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "WI-SJ-052 4.22 设备异常现象怎么处理",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "WI-SJ-052 4.22 设备异常现象怎么处理",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-28",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "是否正常。\n- 问题：具体怎么处理？回答：检查液压泵和压力设定；检查主轴夹紧回路接头、阀块和密封；确认液压油液位正常且没有明显泄漏。\n- 问题：什么状态下才能恢复？回答：紧刀压力达到标准、刀具夹持稳定、重复装刀不再报码，才允许主轴运转。\n\n#### 700156 主轴热位移补偿值过大\n- 信号地址：`DB2.DBX195.0`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX195.0`，报",
+      "score": 0.9533577533577533,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5872232,
+      "lexical_score": 19.40897358113996,
+      "fused_score": 0.03125763125763126
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-36",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "：`DB2.DBX189.1`\n- 诊断判定：在 PLC 诊断页核对 `DB2.DBX189.1`，报警成立时该输入点通常为 `1`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先看测头指示灯和电池电压；2. 更换新电池；3. 重新校准测头并做触发测试；4. 连续触发正常后再投入使用。\n- 问题：这个报警说明什么？回",
+      "score": 0.8618905472636815,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5769335,
+      "lexical_score": 17.487793101128176,
+      "fused_score": 0.028258706467661692
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "输入模块。\n- 具体排查顺序：1. 先看电柜空调、风扇和滤网；2. 检查柜门是否关严、风道是否堵住；3. 温度回落后再上负载；4. 仍升温就继续查散热系统。\n- 问题：这个报警说明什么？回答：电柜内部温度过高，电气元件工作环境超限。\n- 问题：现场先查什么？回答：先看电柜空调是否运行、风扇是否转动，再检查滤网是否堵塞和环境温度是否过高。\n- 问题：具体怎么处理？回答：清洗空调滤网和散热通道；确认空",
+      "score": 0.8473856839668146,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5693841,
+      "lexical_score": 18.484284846829308,
+      "fused_score": 0.027783137179239824
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-27",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "`，恢复后应回到 `0`；如果机械状态已经恢复但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先确认机械当前位置到底是夹紧还是放松；2. 核对 `DB2.DBX188.6` 是否出现双信号或都不成立；3. 分别触发两个传感器验证是否互斥；4. 仍异常就查接线和输入模块。\n- 问题：这个报警说明什么？回答：主轴松刀和紧刀信号逻辑不对，常见情况是双信号同时存在或都不",
+      "score": 0.8297794117647058,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.56274307,
+      "lexical_score": 18.786101998082398,
+      "fused_score": 0.027205882352941177
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260321070337_445684f4-chunk-29",
+      "document_id": "doc_20260321070337_445684f4",
+      "document_name": "123.txt",
+      "snippet": "但输入点仍未变，优先检查传感器、接线和 PLC 输入模块。\n- 具体排查顺序：1. 先看温度传感器是否在线；2. 再查补偿参数是否丢失或异常；3. 重新初始化补偿功能；4. 仍不正常就恢复备份参数或转技术支持。\n- 问题：这个报警说明什么？回答：主轴热位移补偿功能本身出现故障，系统无法正常计算或应用补偿。\n- 问题：现场先查什么？回答：先看相关温度传感器是否在线，再查补偿参数、NC 侧状态和是否有",
+      "score": 0.8244748858447488,
+      "source_path": "document://doc_20260321070337_445684f4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5671503,
+      "lexical_score": 18.21261878681053,
+      "fused_score": 0.027031963470319637
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "WI-SJ-052 4.22 设备异常现象怎么处理",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "WI-SJ-052 4.22 设备异常现象怎么处理",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-51",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-21",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-24",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_086deec1",
+          "chunk_id": "doc_20260331062759_086deec1-chunk-114",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-20",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-28",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5872232,
+          "lexical_score": 19.40897358113996,
+          "fused_score": 0.03125763125763126,
+          "final_score": 0.9533577533577533,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5872，词法 19.4090，融合 0.0313。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-36",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5769335,
+          "lexical_score": 17.487793101128176,
+          "fused_score": 0.028258706467661692,
+          "final_score": 0.8618905472636815,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5769，词法 17.4878，融合 0.0283。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5693841,
+          "lexical_score": 18.484284846829308,
+          "fused_score": 0.027783137179239824,
+          "final_score": 0.8473856839668146,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5694，词法 18.4843，融合 0.0278。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-27",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.56274307,
+          "lexical_score": 18.786101998082398,
+          "fused_score": 0.027205882352941177,
+          "final_score": 0.8297794117647058,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5627，词法 18.7861，融合 0.0272。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-29",
+          "document_name": "123.txt",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5671503,
+          "lexical_score": 18.21261878681053,
+          "fused_score": 0.027031963470319637,
+          "final_score": 0.8244748858447488,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5672，词法 18.2126，融合 0.0270。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-28",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5872232,
+        "lexical_score": 19.40897358113996,
+        "fused_score": 0.03125763125763126,
+        "final_score": 0.9533577533577533,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5872，词法 19.4090，融合 0.0313。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-36",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5769335,
+        "lexical_score": 17.487793101128176,
+        "fused_score": 0.028258706467661692,
+        "final_score": 0.8618905472636815,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5769，词法 17.4878，融合 0.0283。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5693841,
+        "lexical_score": 18.484284846829308,
+        "fused_score": 0.027783137179239824,
+        "final_score": 0.8473856839668146,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5694，词法 18.4843，融合 0.0278。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-27",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.56274307,
+        "lexical_score": 18.786101998082398,
+        "fused_score": 0.027205882352941177,
+        "final_score": 0.8297794117647058,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5627，词法 18.7861，融合 0.0272。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-29",
+        "document_name": "123.txt",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5671503,
+        "lexical_score": 18.21261878681053,
+        "fused_score": 0.027031963470319637,
+        "final_score": 0.8244748858447488,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5672，词法 18.2126，融合 0.0270。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-51",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-21",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-24",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_086deec1",
+        "chunk_id": "doc_20260331062759_086deec1-chunk-114",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-20",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

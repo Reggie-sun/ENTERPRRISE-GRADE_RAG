@@ -1,0 +1,525 @@
+{
+  "snapshot_id": "rsp_a22b1e4980c24091",
+  "trace_id": "trc_retrieval_df4704b219314197",
+  "request_id": "req_retrieval_afd044670e154cf7",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-02T05:31:16.785465Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_sys_admin_demo",
+    "username": "sys.admin.demo",
+    "role_id": "sys_admin",
+    "department_id": "dept_general_manager_office"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "动火作业许可证的有效期和延期规定",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "动火作业许可证的有效期和延期规定",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4",
+      "score": 0.9404648956356736,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5315234,
+      "lexical_score": 12.066050112097173,
+      "fused_score": 0.030834914611005692
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-62",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "员工端基于当前文档生成并下载 SOP 草稿\n- `fast / accurate` 两档问答\n- 轻记忆\n- 基本日志、基本配置\n- 并发控制、超时、降级、忙时提示\n- `vLLM` 主路径稳定\n\n建议延期到 `V1+1` 也可接受的项：\n\n- 复杂审批流\n- 高级富文本在线编辑\n- 跨部门协同编辑\n- 双索引 / 双 chunk 规则\n- 更大模型默认主力化\n- 企业微信侧边栏 / 工作台深度集",
+      "score": 0.9040976460331299,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.47905642,
+      "lexical_score": 15.677747542449517,
+      "fused_score": 0.02964254577157803
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-491",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "utter St., #1 940\n沁n Francisco, CA 94108\n\n免责声明\n许多读者发现阅读这本 书让他们可以更好的应对并减轻他 们的病症 。\n但是这本 书并不是一本独 立的 自我帮助的书， 不能用它来代替 适当的医学、\n心理或物理治疗和医学诊断或者是家庭自我治疗的指导和 监督。 怀斯 －安\n德森 治疗法的 目的 是让患者能够做到 不依靠别人就可以自己减少或 消除症\n状。 要想获",
+      "score": 0.5,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 17.334355171131858,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "坠落事故。\n务必遵守\n-\n否则可能导致接触不良以及坠落事故。\n依照维护保养日程的安排加以实施。\n务必遵守\n●在更换集电子时，将导线与负荷连接时，务必在确认本体的相（R.S.T）后，进行\n接线。\n否则，可能会因火花而引起火灾。\n1\n2\n\n室内·室外兼用\n接触式移动供电系统（TRO-REEL、TROLLEY-WIRE（300A,500A))安全说明\n维护保养日程\n本产品的故障处理和维修作业需专业电气工",
+      "score": 0.5,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": 0.5459452,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331062759_086deec1-chunk-73",
+      "document_id": "doc_20260331062759_086deec1",
+      "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+      "snippet": "部端木托托住；定位销固定两个引拔部斜齿条定位孔，用电锤打φ4孔，并插入直销（铁锤敲打确保平行齿条端面）；固定上机座上机座与木托固定；X横行部端木托托住；\n\n搬运注意事项\n\n搬运时将机器活动处固定牢靠，确认吊环螺栓是否已拧紧。\n\n搬运过程中注意重心,禁止人员在机器人下方作业。\n\n假如有任何必要的理由要将机器人必须移动或重新安装,要与造商请求协助。\n\n如果未遵守此项强制规定,而导致任何人员及设备的损伤",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260331062759_086deec1/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": null,
+      "vector_score": null,
+      "lexical_score": 15.247118869927858,
+      "fused_score": 0.015873015873015872
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "动火作业许可证的有效期和延期规定",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": false,
+    "primary_threshold": null,
+    "primary_effective_count": null,
+    "supplemental_triggered": false,
+    "supplemental_reason": null,
+    "recall_counts": {
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "动火作业许可证的有效期和延期规定",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": false,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": null,
+      "whether_sufficient": true,
+      "top1_score": null,
+      "avg_top_n_score": null,
+      "quality_top1_threshold": null,
+      "quality_avg_threshold": null
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": null,
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": null
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260330055115_2056c1bf",
+          "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-217",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-252",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_e827beca",
+          "chunk_id": "doc_20260401085048_e827beca-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_c4fc9f78",
+          "chunk_id": "doc_20260401085048_c4fc9f78-chunk-13",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055116_f9c87da8",
+          "chunk_id": "doc_20260330055116_f9c87da8-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5315234,
+          "lexical_score": 12.066050112097173,
+          "fused_score": 0.030834914611005692,
+          "final_score": 0.9404648956356736,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5315，词法 12.0661，融合 0.0308。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-62",
+          "document_name": "V1_PLAN.md",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.47905642,
+          "lexical_score": 15.677747542449517,
+          "fused_score": 0.02964254577157803,
+          "final_score": 0.9040976460331299,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4791，词法 15.6777，融合 0.0296。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-491",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 17.334355171131858,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 17.3344，融合 0.0164。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": 0.5459452,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5459，融合 0.0164。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331062759_086deec1",
+          "chunk_id": "doc_20260331062759_086deec1-chunk-73",
+          "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+          "source_scope": null,
+          "department_hit": false,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 15.247118869927858,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 15.2471，融合 0.0159。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5315234,
+        "lexical_score": 12.066050112097173,
+        "fused_score": 0.030834914611005692,
+        "final_score": 0.9404648956356736,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5315，词法 12.0661，融合 0.0308。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-62",
+        "document_name": "V1_PLAN.md",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.47905642,
+        "lexical_score": 15.677747542449517,
+        "fused_score": 0.02964254577157803,
+        "final_score": 0.9040976460331299,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4791，词法 15.6777，融合 0.0296。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-491",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 17.334355171131858,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 17.3344，融合 0.0164。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": 0.5459452,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5459，融合 0.0164。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331062759_086deec1",
+        "chunk_id": "doc_20260331062759_086deec1-chunk-73",
+        "document_name": "FA05系列阿博格#单臂式（反装)#A0.docx",
+        "source_scope": null,
+        "department_hit": false,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 15.247118869927858,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；词法 15.2471，融合 0.0159。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260330055115_2056c1bf",
+        "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-217",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-252",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_e827beca",
+        "chunk_id": "doc_20260401085048_e827beca-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_c4fc9f78",
+        "chunk_id": "doc_20260401085048_c4fc9f78-chunk-13",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055116_f9c87da8",
+        "chunk_id": "doc_20260330055116_f9c87da8-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}
