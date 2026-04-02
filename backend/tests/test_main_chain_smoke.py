@@ -26,6 +26,7 @@ from backend.app.services.retrieval_service import RetrievalService, get_retriev
 from backend.tests.test_document_ingestion import build_test_settings as build_document_settings
 from backend.tests.test_retrieval_chat import build_test_settings as build_retrieval_settings
 from backend.tests.test_retrieval_chat import parse_sse_events
+from backend.tests.test_sop_generation_service import _build_identity_service as _build_default_identity_service
 
 
 # ---------------------------------------------------------------------------
@@ -41,6 +42,23 @@ def _login_headers(client: TestClient, *, username: str, password: str) -> dict[
     resp = client.post("/api/v1/auth/login", json={"username": username, "password": password})
     assert resp.status_code == 200, f"login failed: {resp.status_code} {resp.text}"
     return {"Authorization": f"Bearer {resp.json()['access_token']}"}
+
+
+def _build_authenticated_client(
+    tmp_path: Path,
+    settings: Settings,
+    *,
+    username: str = "sys.admin",
+    password: str = "sys-admin-pass",
+) -> TestClient:
+    identity_service = _build_default_identity_service(tmp_path)
+    settings.identity_bootstrap_path = identity_service.settings.identity_bootstrap_path
+    auth_service = AuthService(settings, identity_service=identity_service)
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    client = TestClient(app)
+    client.headers.update(_login_headers(client, username=username, password=password))
+    return client
 
 
 def _build_authz_env(tmp_path: Path):
@@ -154,7 +172,7 @@ class TestUploadAndIngestContract:
         ensure_data_directories(settings)
         document_service = DocumentService(settings)
         app.dependency_overrides[get_document_service] = lambda: document_service
-        client = TestClient(app)
+        client = _build_authenticated_client(tmp_path, settings)
 
         try:
             resp = client.post(
@@ -178,7 +196,7 @@ class TestUploadAndIngestContract:
         ensure_data_directories(settings)
         document_service = DocumentService(settings)
         app.dependency_overrides[get_document_service] = lambda: document_service
-        client = TestClient(app)
+        client = _build_authenticated_client(tmp_path, settings)
 
         try:
             create_resp = client.post(
@@ -220,7 +238,7 @@ class TestRetrievalContract:
         retrieval_service = RetrievalService(settings)
         app.dependency_overrides[get_document_service] = lambda: document_service
         app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
-        client = TestClient(app)
+        client = _build_authenticated_client(tmp_path, settings)
 
         try:
             # 先上传文档确保有数据
@@ -269,7 +287,7 @@ class TestChatContract:
         app.dependency_overrides[get_document_service] = lambda: document_service
         app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
         app.dependency_overrides[get_chat_service] = lambda: chat_service
-        client = TestClient(app)
+        client = _build_authenticated_client(tmp_path, settings)
 
         try:
             upload_resp = client.post(
@@ -311,7 +329,7 @@ class TestChatContract:
         app.dependency_overrides[get_document_service] = lambda: document_service
         app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
         app.dependency_overrides[get_chat_service] = lambda: chat_service
-        client = TestClient(app)
+        client = _build_authenticated_client(tmp_path, settings)
 
         try:
             upload_resp = client.post(

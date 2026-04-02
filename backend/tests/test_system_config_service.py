@@ -10,6 +10,7 @@ from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefiniti
 from backend.app.schemas.system_config import (
     ConcurrencyControlsConfig,
     DegradeControlsConfig,
+    InternalRetrievalControlsConfig,
     ModelRoutingConfig,
     PromptBudgetConfig,
     QueryModeConfig,
@@ -90,6 +91,17 @@ def test_system_config_service_returns_default_query_profiles_when_file_missing(
     assert payload.prompt_budget.memory_prompt_tokens == 360
     assert payload.updated_at is None
     assert payload.updated_by is None
+
+
+def test_system_config_service_returns_default_internal_retrieval_controls_when_file_missing(tmp_path: Path) -> None:
+    service = SystemConfigService(_build_settings(tmp_path))
+
+    controls = service.get_internal_retrieval_controls()
+
+    assert controls.supplemental_quality_thresholds.top1_threshold == 0.55
+    assert controls.supplemental_quality_thresholds.avg_top_n_threshold == 0.45
+    assert controls.supplemental_quality_thresholds.fine_query_top1_threshold == 0.85
+    assert controls.supplemental_quality_thresholds.fine_query_avg_top_n_threshold == 0.60
 
 
 def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -> None:
@@ -185,6 +197,102 @@ def test_system_config_service_persists_updated_query_profiles(tmp_path: Path) -
     assert accurate_profile.lexical_top_k == 24
     assert accurate_profile.rerank_top_n == 6
     assert accurate_profile.timeout_budget_seconds == 20.0
+
+
+def test_system_config_service_preserves_internal_retrieval_controls_on_public_update(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    repository = FilesystemSystemConfigRepository(settings.system_config_path)
+    repository.write(
+        {
+            "_internal_retrieval_controls": {
+                "supplemental_quality_thresholds": {
+                    "top1_threshold": 0.72,
+                    "avg_top_n_threshold": 0.69,
+                    "fine_query_top1_threshold": 0.91,
+                    "fine_query_avg_top_n_threshold": 0.77,
+                }
+            }
+        }
+    )
+    service = SystemConfigService(settings, repository=repository)
+
+    service.update_config(
+        SystemConfigUpdateRequest(
+            query_profiles=QueryProfilesConfig(
+                fast=QueryModeConfig(
+                    top_k_default=6,
+                    candidate_multiplier=3,
+                    lexical_top_k=12,
+                    rerank_top_n=4,
+                    timeout_budget_seconds=10.0,
+                ),
+                accurate=QueryModeConfig(
+                    top_k_default=10,
+                    candidate_multiplier=5,
+                    lexical_top_k=24,
+                    rerank_top_n=6,
+                    timeout_budget_seconds=20.0,
+                ),
+            ),
+            model_routing=ModelRoutingConfig(
+                fast_model="Qwen/Fast-7B",
+                accurate_model="Qwen/Accurate-14B",
+                sop_generation_model="Qwen/SOP-14B",
+            ),
+            reranker_routing=RerankerRoutingConfig(
+                provider="openai_compatible",
+                default_strategy="provider",
+                model="Qwen/Reranker-Prod",
+                timeout_seconds=9.5,
+                failure_cooldown_seconds=22.0,
+            ),
+            degrade_controls=DegradeControlsConfig(),
+            retry_controls=RetryControlsConfig(),
+            concurrency_controls=ConcurrencyControlsConfig(),
+            prompt_budget=PromptBudgetConfig(),
+        ),
+        auth_context=_build_auth_context(),
+    )
+
+    stored = repository.read()
+    assert stored is not None
+    assert stored["_internal_retrieval_controls"] == {
+        "supplemental_quality_thresholds": {
+            "top1_threshold": 0.72,
+            "avg_top_n_threshold": 0.69,
+            "fine_query_top1_threshold": 0.91,
+            "fine_query_avg_top_n_threshold": 0.77,
+        }
+    }
+    controls = service.get_internal_retrieval_controls()
+    assert controls.supplemental_quality_thresholds.top1_threshold == 0.72
+    assert controls.supplemental_quality_thresholds.avg_top_n_threshold == 0.69
+
+
+def test_system_config_service_falls_back_to_defaults_for_invalid_internal_retrieval_controls(tmp_path: Path) -> None:
+    settings = _build_settings(tmp_path)
+    repository = FilesystemSystemConfigRepository(settings.system_config_path)
+    repository.write(
+        {
+            "_internal_retrieval_controls": {
+                "supplemental_quality_thresholds": {
+                    "top1_threshold": 0.72,
+                    "avg_top_n_threshold": 0.69,
+                    "fine_query_top1_threshold": 0.68,
+                    "fine_query_avg_top_n_threshold": 0.55,
+                }
+            }
+        }
+    )
+    service = SystemConfigService(settings, repository=repository)
+
+    controls = service.get_internal_retrieval_controls()
+
+    assert isinstance(controls, InternalRetrievalControlsConfig)
+    assert controls.supplemental_quality_thresholds.top1_threshold == 0.55
+    assert controls.supplemental_quality_thresholds.avg_top_n_threshold == 0.45
+    assert controls.supplemental_quality_thresholds.fine_query_top1_threshold == 0.85
+    assert controls.supplemental_quality_thresholds.fine_query_avg_top_n_threshold == 0.60
 
 
 def test_system_config_service_rejects_non_sys_admin_access(tmp_path: Path) -> None:

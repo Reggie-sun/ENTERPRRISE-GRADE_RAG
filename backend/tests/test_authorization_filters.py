@@ -258,6 +258,30 @@ def _build_employee_auth_context(client, document_service):
 # ---------------------------------------------------------------------------
 
 
+def test_core_business_endpoints_require_authentication(authz_env) -> None:
+    client, _, _ = authz_env
+
+    responses = [
+        client.get("/api/v1/documents?page=1&page_size=20"),
+        client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("manual.txt", b"Alarm E102 handling guide.", "text/plain")},
+        ),
+        client.post(
+            "/api/v1/documents/upload",
+            files={"file": ("manual.txt", b"Alarm E102 handling guide.", "text/plain")},
+        ),
+        client.post("/api/v1/retrieval/search", json={"query": "Alarm E102", "top_k": 3}),
+        client.post("/api/v1/chat/ask", json={"question": "Alarm E102", "top_k": 3}),
+        client.get("/api/v1/ingest/jobs/job_missing"),
+    ]
+
+    for response in responses:
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Authentication credentials were not provided."
+
+
 def test_document_list_filters_by_department_for_employee(authz_env) -> None:
     client, _, _ = authz_env
     sys_admin_headers = _login_headers(client, "sys.admin.demo", "sys-admin-demo-pass")

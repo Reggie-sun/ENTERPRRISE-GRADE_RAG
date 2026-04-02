@@ -124,13 +124,15 @@ def test_sop_generate_topic_requires_authentication(tmp_path) -> None:
     assert response.json()["error"]["status_code"] == 401
 
 
-def test_documents_contract_validation_error_uses_structured_envelope(tmp_path) -> None:
-    client = TestClient(app)
+def test_documents_contract_validation_error_uses_structured_envelope(authz_env) -> None:
+    client, _document_service, _retrieval_scope_policy = authz_env
+    headers = _login_headers(client, "employee.demo", "employee-demo-pass")
 
     response = client.post(
         "/api/v1/documents",
         data={"created_by": "u001"},
         files={"file": ("manual.txt", b"Alarm E102 handling guide.", "text/plain")},
+        headers=headers,
     )
 
     assert response.status_code == 422

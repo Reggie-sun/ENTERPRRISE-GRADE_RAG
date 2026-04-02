@@ -1,8 +1,8 @@
 import { MessageSquareText, Sparkles } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
-import { Button, Card, StatusPill, Textarea, EvidenceSourceSummary } from '@/components';
+import { Button, Card, StatusPill, Textarea } from '@/components';
 import {
   ApiError,
   askQuestion,
@@ -10,7 +10,6 @@ import {
   formatApiError,
   type ChatResponse,
   type ChatStreamMeta,
-  type Citation,
   type QueryMode,
 } from '@/api';
 import { getOrCreateStoredSessionId, rememberDocument, rememberQuestion } from '@/portal/portalStorage';
@@ -42,7 +41,6 @@ export function PortalChatPage() {
   const [error, setError] = useState('');
   const activeRequestRef = useRef<{ controller: AbortController; reason: 'superseded' | 'unmounted' | 'startup-timeout' | null } | null>(null);
   const requestVersionRef = useRef(0);
-  const hasCitations = Boolean(data?.citations.length);
 
   useEffect(() => {
     if (searchQuestion) {
@@ -171,7 +169,8 @@ export function PortalChatPage() {
         return;
       }
       persistResponse(response);
-    } catch (err) {
+    } catch (error) {
+      let resolvedError: unknown = error;
       if (requestVersionRef.current !== requestVersion) {
         return;
       }
@@ -179,7 +178,8 @@ export function PortalChatPage() {
       const shouldFallback =
         !sawStreamEvent &&
         (fallbackRequested ||
-          (err instanceof ApiError && (err.kind === 'timeout' || err.kind === 'network' || err.kind === 'parse')));
+          (resolvedError instanceof ApiError &&
+            (resolvedError.kind === 'timeout' || resolvedError.kind === 'network' || resolvedError.kind === 'parse')));
       if (shouldFallback && abortReason !== 'superseded' && abortReason !== 'unmounted') {
         try {
           const fallbackResponse = await askQuestion(requestPayload);
@@ -189,14 +189,14 @@ export function PortalChatPage() {
           persistResponse(fallbackResponse);
           return;
         } catch (fallbackError) {
-          err = fallbackError;
+          resolvedError = fallbackError;
         }
       }
       if (abortReason === 'superseded' || abortReason === 'unmounted') {
         return;
       }
       setStatus('error');
-      setError(formatApiError(err, '智能问答'));
+      setError(formatApiError(resolvedError, '智能问答'));
     } finally {
       window.clearTimeout(startupTimer);
       clearActiveRequest();
@@ -206,7 +206,7 @@ export function PortalChatPage() {
   return (
     <div className="grid gap-5">
       <section className="grid grid-cols-12 gap-5">
-        <Card className={`${hasCitations ? 'col-span-8' : 'col-span-12'} max-lg:col-span-12`}>
+        <Card className="col-span-12">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold text-accent-deep">
@@ -214,10 +214,10 @@ export function PortalChatPage() {
                 智能问答
               </div>
               <h2 className="m-0 mt-4 text-2xl font-semibold text-ink md:text-3xl">
-                输入问题后，系统会直接返回带引用的回答。
+                输入问题后，系统会直接返回回答。
               </h2>
               <p className="m-0 mt-2 max-w-[64ch] text-sm leading-relaxed text-ink-soft md:text-base">
-                首屏只保留提问、回答和引用来源。当前会话会自动承接最近几轮上下文，如需完全切换话题，刷新页面即可重置。
+                首屏只保留提问和回答。当前会话会自动承接最近几轮上下文，如需完全切换话题，刷新页面即可重置。
               </p>
             </div>
             <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>
@@ -307,50 +307,6 @@ export function PortalChatPage() {
             )}
           </div>
         </Card>
-
-        {hasCitations ? (
-          <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
-            <h3 className="m-0 text-xl font-semibold text-ink">引用来源</h3>
-            <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-              回答基于下列文档片段生成。你可以继续查看原文确认细节。
-            </p>
-            <div className="mt-4 grid gap-3">
-              {data?.citations.map((item: Citation) => (
-                <article
-                  key={item.chunk_id}
-                  className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)] p-4"
-                >
-                  <p className="m-0 font-semibold text-ink break-all">{item.document_name}</p>
-                  <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-                    {item.snippet.length > 180 ? `${item.snippet.slice(0, 180)}...` : item.snippet}
-                  </p>
-                  <EvidenceSourceSummary
-                    retrievalStrategy={item.retrieval_strategy}
-                    ocrUsed={item.ocr_used}
-                    parserName={item.parser_name}
-                    pageNo={item.page_no}
-                    ocrConfidence={item.ocr_confidence}
-                    qualityScore={item.quality_score}
-                  />
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Link
-                      to={`/portal/library?doc_id=${encodeURIComponent(item.document_id)}`}
-                      className="rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-semibold text-accent-deep no-underline"
-                    >
-                      查看资料
-                    </Link>
-                    <Link
-                      to={`/portal/sop?doc_id=${encodeURIComponent(item.document_id)}`}
-                      className="rounded-full bg-[rgba(23,32,42,0.06)] px-3 py-1.5 text-sm font-semibold text-ink no-underline"
-                    >
-                      去 SOP 中心
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </Card>
-        ) : null}
       </section>
     </div>
   );

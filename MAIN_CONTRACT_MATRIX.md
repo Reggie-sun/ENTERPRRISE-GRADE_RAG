@@ -32,6 +32,19 @@
   - `page_size`
   - `items`
 
+### 认证与访问
+
+- `GET /api/v1/health` 与 `POST /api/v1/auth/login` 属于公开入口
+- 本文第 2-5 节列出的主业务路由默认都要求 `Bearer` 认证，除非某个接口在文档里明确另行说明
+- `GET /api/v1/auth/bootstrap` 不属于稳定匿名契约；只有在显式开启 `auth_identity_bootstrap_public_enabled=true` 时才允许未登录访问
+- `GET /api/v1/auth/users/{user_id}` 需要认证，且只允许 `sys_admin` 或用户本人访问
+
+### 资源引用字段
+
+- `storage_path` 与 `source_path` 是稳定字段名
+- 它们的值语义是“对外安全的资源引用”，而不是“本地文件系统真实路径”
+- 调用方必须接受这类值可能是 `asset://...`、`document://...`、`/api/v1/...` 这类可公开引用形式，而不是磁盘绝对路径
+
 ### 错误包
 
 - 主业务接口统一保留兼容字段 `detail`
@@ -207,6 +220,9 @@
 - `top_k`
 - `mode`
 - `results`
+
+响应顶层诊断字段：
+- `diagnostic`
 
 每条 `results[]` 的稳定字段：
 - `chunk_id`

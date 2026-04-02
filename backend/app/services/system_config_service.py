@@ -1,6 +1,7 @@
 """系统配置服务模块。提供运行时可调的查询档位、重排序路由和降级控制等配置。"""
 from datetime import datetime, timezone
 from functools import lru_cache
+import logging
 from typing import Any
 
 from fastapi import HTTPException, status
@@ -12,6 +13,7 @@ from ..schemas.query_profile import QueryMode, QueryPurpose
 from ..schemas.system_config import (
     ConcurrencyControlsConfig,
     DegradeControlsConfig,
+    InternalRetrievalControlsConfig,
     ModelRoutingConfig,
     PromptBudgetConfig,
     QueryModeConfig,
@@ -22,8 +24,12 @@ from ..schemas.system_config import (
     SystemConfigUpdateRequest,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class SystemConfigService:
+    INTERNAL_RETRIEVAL_CONTROLS_KEY = "_internal_retrieval_controls"
+
     def __init__(
         self,
         settings: Settings | None = None,
@@ -39,6 +45,32 @@ class SystemConfigService:
 
     def get_effective_config(self) -> SystemConfigResponse:
         return self._load_config()
+
+    def get_internal_retrieval_controls(self) -> InternalRetrievalControlsConfig:
+        defaults = self._build_default_internal_retrieval_controls()
+        stored = self._read_raw_payload()
+        if not stored:
+            return defaults
+
+        raw_controls = stored.get(self.INTERNAL_RETRIEVAL_CONTROLS_KEY)
+        if raw_controls is None:
+            return defaults
+        if not isinstance(raw_controls, dict):
+            logger.warning(
+                "system config internal retrieval controls ignored because payload is not a mapping: %r",
+                type(raw_controls).__name__,
+            )
+            return defaults
+
+        try:
+            merged = self._deep_merge(defaults.model_dump(mode="json"), raw_controls)
+            return InternalRetrievalControlsConfig.model_validate(merged)
+        except Exception:
+            logger.warning(
+                "system config internal retrieval controls are invalid; falling back to defaults",
+                exc_info=True,
+            )
+            return defaults
 
     def update_config(
         self,
@@ -64,7 +96,11 @@ class SystemConfigService:
             updated_at=datetime.now(timezone.utc),
             updated_by=auth_context.user.user_id,
         )
-        self.repository.write(record.model_dump(mode="json"))
+        stored = self._read_raw_payload() or {}
+        serialized_record = record.model_dump(mode="json")
+        if self.INTERNAL_RETRIEVAL_CONTROLS_KEY in stored:
+            serialized_record[self.INTERNAL_RETRIEVAL_CONTROLS_KEY] = stored[self.INTERNAL_RETRIEVAL_CONTROLS_KEY]
+        self.repository.write(serialized_record)
         return record
 
     def get_query_mode_settings(self, mode: QueryMode) -> QueryModeConfig:
@@ -101,7 +137,7 @@ class SystemConfigService:
 
     def _load_config(self) -> SystemConfigResponse:
         defaults = self._build_default_config()
-        stored = self.repository.read()
+        stored = self._read_raw_payload()
         if not stored:
             return defaults
         merged = self._deep_merge(defaults.model_dump(mode="json"), stored)
@@ -153,6 +189,30 @@ class SystemConfigService:
                 memory_prompt_tokens=self.settings.chat_memory_max_prompt_tokens,
             ),
         )
+
+    def _build_default_internal_retrieval_controls(self) -> InternalRetrievalControlsConfig:
+        return InternalRetrievalControlsConfig.model_validate(
+            {
+                "supplemental_quality_thresholds": {
+                    "top1_threshold": self.settings.retrieval_quality_top1_threshold,
+                    "avg_top_n_threshold": self.settings.retrieval_quality_avg_threshold,
+                    "fine_query_top1_threshold": self.settings.retrieval_fine_query_quality_top1_threshold,
+                    "fine_query_avg_top_n_threshold": self.settings.retrieval_fine_query_quality_avg_threshold,
+                }
+            }
+        )
+
+    def _read_raw_payload(self) -> dict[str, Any] | None:
+        stored = self.repository.read()
+        if stored is None:
+            return None
+        if not isinstance(stored, dict):
+            logger.warning(
+                "system config repository returned a non-mapping payload; ignoring stored config type=%r",
+                type(stored).__name__,
+            )
+            return None
+        return stored
 
     @staticmethod
     def _ensure_sys_admin(auth_context: AuthContext) -> None:

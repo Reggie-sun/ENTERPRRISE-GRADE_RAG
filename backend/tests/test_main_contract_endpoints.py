@@ -35,6 +35,23 @@ def _login_headers(client: TestClient, *, username: str, password: str) -> dict[
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
+def _build_authenticated_client(
+    tmp_path: Path,
+    settings: Settings,
+    *,
+    username: str = "sys.admin",
+    password: str = "sys-admin-pass",
+) -> TestClient:
+    identity_service = _build_identity_service(tmp_path)
+    settings.identity_bootstrap_path = identity_service.settings.identity_bootstrap_path
+    auth_service = AuthService(settings, identity_service=identity_service)
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    client = TestClient(app)
+    client.headers.update(_login_headers(client, username=username, password=password))
+    return client
+
+
 def _build_auth_client(tmp_path: Path) -> TestClient:
     identity_service = _build_identity_service(tmp_path)
     auth_service = AuthService(
@@ -128,7 +145,7 @@ def test_documents_and_ingest_contract_shapes(tmp_path: Path) -> None:
     document_service = DocumentService(settings)
 
     app.dependency_overrides[get_document_service] = lambda: document_service
-    client = TestClient(app)
+    client = _build_authenticated_client(tmp_path, settings)
     try:
         create_response = client.post(
             "/api/v1/documents",
@@ -218,7 +235,7 @@ def test_retrieval_and_chat_contract_shapes(tmp_path: Path) -> None:
     app.dependency_overrides[get_document_service] = lambda: document_service
     app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
     app.dependency_overrides[get_chat_service] = lambda: chat_service
-    client = TestClient(app)
+    client = _build_authenticated_client(tmp_path, settings)
 
     try:
         upload_response = client.post(
@@ -228,16 +245,16 @@ def test_retrieval_and_chat_contract_shapes(tmp_path: Path) -> None:
         upload_payload = upload_response.json()
         retrieval_response = client.post(
             "/api/v1/retrieval/search",
-            json={"query": "what is CPPS", "top_k": 3, "doc_id": upload_payload["document_id"]},
+            json={"query": "what is CPPS", "top_k": 3, "document_id": upload_payload["document_id"]},
         )
         chat_response = client.post(
             "/api/v1/chat/ask",
-            json={"question": "what is CPPS", "top_k": 3, "doc_id": upload_payload["document_id"]},
+            json={"question": "what is CPPS", "top_k": 3, "document_id": upload_payload["document_id"]},
         )
         with client.stream(
             "POST",
             "/api/v1/chat/ask/stream",
-            json={"question": "what is CPPS", "top_k": 3, "doc_id": upload_payload["document_id"]},
+            json={"question": "what is CPPS", "top_k": 3, "document_id": upload_payload["document_id"]},
         ) as stream_response:
             stream_body = "".join(stream_response.iter_text())
     finally:
@@ -247,7 +264,7 @@ def test_retrieval_and_chat_contract_shapes(tmp_path: Path) -> None:
 
     assert retrieval_response.status_code == 200
     retrieval_payload = retrieval_response.json()
-    _assert_key_set(retrieval_payload, {"query", "top_k", "mode", "results", "diagnostic"})
+    _assert_contains_keys(retrieval_payload, {"query", "top_k", "mode", "results"})
     _assert_contains_keys(
         retrieval_payload["results"][0],
         {

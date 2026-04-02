@@ -1,10 +1,13 @@
 import json
+from datetime import UTC, datetime
 
 from fastapi.testclient import TestClient
+import pytest
 
 from backend.app.core.config import Settings
 from backend.app.main import app
 from backend.app.services.auth_service import AuthService, get_auth_service
+from backend.app.services.auth_runtime_store import InMemoryAuthRuntimeStore
 from backend.app.services.identity_service import IdentityService, get_identity_service
 
 
@@ -81,7 +84,7 @@ def _build_identity_service(tmp_path) -> IdentityService:
     return IdentityService(Settings(_env_file=None, identity_bootstrap_path=bootstrap_path))
 
 
-def _build_auth_service(tmp_path) -> tuple[IdentityService, AuthService]:
+def _build_auth_service(tmp_path, *, runtime_store: InMemoryAuthRuntimeStore | None = None, **settings_overrides) -> tuple[IdentityService, AuthService]:
     identity_service = _build_identity_service(tmp_path)
     auth_service = AuthService(
         Settings(
@@ -90,8 +93,10 @@ def _build_auth_service(tmp_path) -> tuple[IdentityService, AuthService]:
             auth_token_secret="test-auth-secret",
             auth_token_issuer="test-auth-issuer",
             auth_token_expire_minutes=60,
+            **settings_overrides,
         ),
         identity_service=identity_service,
+        runtime_store=runtime_store,
     )
     return identity_service, auth_service
 
@@ -252,28 +257,56 @@ def test_auth_profile_exposes_query_isolation_toggle(tmp_path) -> None:
     assert response.json()["department_query_isolation_enabled"] is False
 
 
-def test_auth_revoke_is_per_process(tmp_path) -> None:
-    """v0.3 已知行为：两个 AuthService 实例之间吊销不共享。
-    V1.1 迁移到 Redis 后此测试需改为验证共享语义。"""
-    identity_service, auth_service_a = _build_auth_service(tmp_path)
-    _, auth_service_b = _build_auth_service(tmp_path)
+def test_auth_revoke_is_shared_for_services_using_same_runtime_store(tmp_path) -> None:
+    runtime_store = InMemoryAuthRuntimeStore()
+    identity_service, auth_service_a = _build_auth_service(tmp_path, runtime_store=runtime_store)
+    _, auth_service_b = _build_auth_service(tmp_path, runtime_store=runtime_store)
 
     user = identity_service.get_auth_user("user_employee_demo")
     token, _ = auth_service_a.issue_access_token(user)
+    payload = auth_service_a._decode_token(token)
 
-    auth_service_a.revoke_token(
-        auth_service_a._decode_token(token).jti
-    )
+    auth_service_a.revoke_token(payload.jti, expires_at=datetime.fromtimestamp(payload.exp, tz=UTC))
 
-    # 实例 A 应拒绝
-    import pytest
-
-    with pytest.raises(Exception):  # HTTPException
+    with pytest.raises(Exception):
         auth_service_a.build_auth_context(token)
+    with pytest.raises(Exception):
+        auth_service_b.build_auth_context(token)
 
-    # 实例 B 仍接受（内存不共享）
-    context = auth_service_b.build_auth_context(token)
-    assert context.user.user_id == "user_employee_demo"
+
+def test_auth_login_throttles_repeated_failures(tmp_path) -> None:
+    identity_service, auth_service = _build_auth_service(
+        tmp_path,
+        auth_login_max_attempts=2,
+        auth_login_window_seconds=60,
+        auth_login_block_seconds=120,
+    )
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    client = TestClient(app)
+
+    try:
+        first_response = client.post(
+            "/api/v1/auth/login",
+            json={"username": "employee.demo", "password": "wrong-password"},
+        )
+        second_response = client.post(
+            "/api/v1/auth/login",
+            json={"username": "employee.demo", "password": "wrong-password"},
+        )
+        blocked_response = client.post(
+            "/api/v1/auth/login",
+            json={"username": "employee.demo", "password": "employee-demo-pass"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert first_response.status_code == 401
+    assert second_response.status_code == 429
+    assert second_response.json()["detail"] == "Too many failed login attempts. Retry later."
+    assert second_response.headers["retry-after"] == "120"
+    assert blocked_response.status_code == 429
+    assert blocked_response.headers["retry-after"] == "120"
 
 
 def test_auth_token_format_is_base64_hmac(tmp_path) -> None:

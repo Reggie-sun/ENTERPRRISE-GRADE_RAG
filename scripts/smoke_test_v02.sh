@@ -8,6 +8,8 @@ API_BASE_URL="${API_BASE_URL:-http://127.0.0.1:8020}"
 API_V1="${API_BASE_URL%/}/api/v1"
 TENANT_ID="${TENANT_ID:-wl}"
 CREATED_BY="${CREATED_BY:-smoke-v02-script}"
+AUTH_USERNAME="${AUTH_USERNAME:-sys.admin.demo}"
+AUTH_PASSWORD="${AUTH_PASSWORD:-sys-admin-demo-pass}"
 POLL_INTERVAL_SECONDS="${POLL_INTERVAL_SECONDS:-2}"
 POLL_TIMEOUT_SECONDS="${POLL_TIMEOUT_SECONDS:-240}"
 CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-30}"
@@ -57,7 +59,7 @@ keyword: ${PREFIX}
 generated_at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 
-echo "[STEP] 1/7 health check: ${API_V1}/health"
+echo "[STEP] 1/8 health check: ${API_V1}/health"
 HEALTH_JSON="$(curl_json "${API_V1}/health")"
 validate_json "${HEALTH_JSON}" "health check"
 HEALTH_STATUS="$(echo "${HEALTH_JSON}" | jq -r '.status // empty')"
@@ -68,8 +70,23 @@ if [[ "${HEALTH_STATUS}" != "ok" ]]; then
 fi
 echo "[PASS] health check ok"
 
-echo "[STEP] 2/7 batch create documents: ${API_V1}/documents/batch"
+echo "[STEP] 2/8 login: ${API_V1}/auth/login"
+LOGIN_JSON="$(curl_json -X POST "${API_V1}/auth/login" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg username "${AUTH_USERNAME}" --arg password "${AUTH_PASSWORD}" '{username: $username, password: $password}')")"
+validate_json "${LOGIN_JSON}" "login"
+ACCESS_TOKEN="$(echo "${LOGIN_JSON}" | jq -r '.access_token // empty')"
+if [[ -z "${ACCESS_TOKEN}" ]]; then
+  echo "[FAIL] login failed"
+  echo "${LOGIN_JSON}"
+  exit 1
+fi
+AUTH_HEADER=(-H "Authorization: Bearer ${ACCESS_TOKEN}")
+echo "[PASS] login ok: ${AUTH_USERNAME}"
+
+echo "[STEP] 3/8 batch create documents: ${API_V1}/documents/batch"
 BATCH_JSON="$(curl_json -X POST "${API_V1}/documents/batch" \
+  "${AUTH_HEADER[@]}" \
   -F "files=@${FILE_A};type=text/plain" \
   -F "files=@${FILE_B};type=text/plain" \
   -F "tenant_id=${TENANT_ID}" \
@@ -104,7 +121,7 @@ poll_job_until_completed() {
   local start_ts now_ts elapsed status stage progress job_json
   start_ts="$(date +%s)"
   while true; do
-    job_json="$(curl_json "${API_V1}/ingest/jobs/${job_id}")"
+    job_json="$(curl_json "${AUTH_HEADER[@]}" "${API_V1}/ingest/jobs/${job_id}")"
     validate_json "${job_json}" "poll ingest job ${job_id}"
     status="$(echo "${job_json}" | jq -r '.status // empty')"
     stage="$(echo "${job_json}" | jq -r '.stage // empty')"
@@ -131,13 +148,13 @@ poll_job_until_completed() {
   done
 }
 
-echo "[STEP] 3/7 poll ingest jobs until completed"
+echo "[STEP] 4/8 poll ingest jobs until completed"
 poll_job_until_completed "${JOB_ID_A}" "job_a"
 poll_job_until_completed "${JOB_ID_B}" "job_b"
 echo "[PASS] both jobs completed"
 
-echo "[STEP] 4/7 document list filter check"
-LIST_JSON="$(curl_json "${API_V1}/documents?page=1&page_size=20&keyword=${PREFIX}")"
+echo "[STEP] 5/8 document list filter check"
+LIST_JSON="$(curl_json "${AUTH_HEADER[@]}" "${API_V1}/documents?page=1&page_size=20&keyword=${PREFIX}")"
 validate_json "${LIST_JSON}" "document list filter"
 LIST_TOTAL="$(echo "${LIST_JSON}" | jq -r '.total // 0')"
 LIST_MATCH_A="$(echo "${LIST_JSON}" | jq -r --arg d "${DOC_ID_A}" '[.items[] | select(.document_id == $d)] | length')"
@@ -150,8 +167,8 @@ if (( LIST_TOTAL < 2 )) || (( LIST_MATCH_A < 1 )) || (( LIST_MATCH_B < 1 )); the
 fi
 echo "[PASS] list/filter returned both docs"
 
-echo "[STEP] 5/7 preview check for doc_a"
-PREVIEW_JSON="$(curl_json "${API_V1}/documents/${DOC_ID_A}/preview?max_chars=500")"
+echo "[STEP] 6/8 preview check for doc_a"
+PREVIEW_JSON="$(curl_json "${AUTH_HEADER[@]}" "${API_V1}/documents/${DOC_ID_A}/preview?max_chars=500")"
 validate_json "${PREVIEW_JSON}" "document preview"
 PREVIEW_TYPE="$(echo "${PREVIEW_JSON}" | jq -r '.preview_type // empty')"
 PREVIEW_TEXT="$(echo "${PREVIEW_JSON}" | jq -r '.text_content // empty')"
@@ -167,8 +184,8 @@ if ! grep -q "${PREFIX}" <<<"${PREVIEW_TEXT}"; then
 fi
 echo "[PASS] preview check ok"
 
-echo "[STEP] 6/7 rebuild vectors for doc_a"
-REBUILD_JSON="$(curl_json -X POST "${API_V1}/documents/${DOC_ID_A}/rebuild")"
+echo "[STEP] 7/8 rebuild vectors for doc_a"
+REBUILD_JSON="$(curl_json -X POST "${AUTH_HEADER[@]}" "${API_V1}/documents/${DOC_ID_A}/rebuild")"
 validate_json "${REBUILD_JSON}" "rebuild vectors"
 REBUILD_STATUS="$(echo "${REBUILD_JSON}" | jq -r '.status // empty')"
 REBUILD_JOB_ID="$(echo "${REBUILD_JSON}" | jq -r '.job_id // empty')"
@@ -180,8 +197,8 @@ fi
 poll_job_until_completed "${REBUILD_JOB_ID}" "rebuild_job_a"
 echo "[PASS] rebuild completed"
 
-echo "[STEP] 7/7 delete doc_b and verify status"
-DELETE_JSON="$(curl_json -X DELETE "${API_V1}/documents/${DOC_ID_B}")"
+echo "[STEP] 8/8 delete doc_b and verify status"
+DELETE_JSON="$(curl_json -X DELETE "${AUTH_HEADER[@]}" "${API_V1}/documents/${DOC_ID_B}")"
 validate_json "${DELETE_JSON}" "delete document"
 DELETE_STATUS="$(echo "${DELETE_JSON}" | jq -r '.status // empty')"
 if [[ "${DELETE_STATUS}" != "deleted" ]]; then
@@ -190,7 +207,7 @@ if [[ "${DELETE_STATUS}" != "deleted" ]]; then
   exit 1
 fi
 
-DETAIL_JSON="$(curl_json "${API_V1}/documents/${DOC_ID_B}")"
+DETAIL_JSON="$(curl_json "${AUTH_HEADER[@]}" "${API_V1}/documents/${DOC_ID_B}")"
 validate_json "${DETAIL_JSON}" "document detail after delete"
 DETAIL_STATUS="$(echo "${DETAIL_JSON}" | jq -r '.status // empty')"
 if [[ "${DETAIL_STATUS}" != "deleted" ]]; then

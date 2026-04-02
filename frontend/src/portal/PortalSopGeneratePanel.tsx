@@ -390,6 +390,7 @@ export function PortalSopGeneratePanel() {
       }
       persistDraft(payload);
     } catch (error) {
+      let resolvedError: unknown = error;
       if (requestVersionRef.current !== requestVersion) {
         return;
       }
@@ -397,7 +398,8 @@ export function PortalSopGeneratePanel() {
       const shouldFallback =
         !sawStreamEvent &&
         (fallbackRequested ||
-          (error instanceof ApiError && (error.kind === 'timeout' || error.kind === 'network' || error.kind === 'parse')));
+          (resolvedError instanceof ApiError &&
+            (resolvedError.kind === 'timeout' || resolvedError.kind === 'network' || resolvedError.kind === 'parse')));
       if (shouldFallback && abortReason !== 'superseded' && abortReason !== 'unmounted') {
         try {
           const fallbackPayload = await generateSopByDocument(requestPayload);
@@ -407,14 +409,14 @@ export function PortalSopGeneratePanel() {
           persistDraft(fallbackPayload);
           return;
         } catch (fallbackError) {
-          error = fallbackError;
+          resolvedError = fallbackError;
         }
       }
       if (abortReason === 'superseded' || abortReason === 'unmounted') {
         return;
       }
       setGenerateStatus('error');
-      setGenerateMessage(formatApiError(error, 'SOP 草稿生成'));
+      setGenerateMessage(formatApiError(resolvedError, 'SOP 草稿生成'));
       setStreamProgress((prev) => completeStreamProgress(prev));
     } finally {
       window.clearTimeout(startupTimer);

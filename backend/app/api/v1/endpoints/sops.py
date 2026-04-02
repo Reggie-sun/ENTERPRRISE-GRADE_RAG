@@ -18,7 +18,7 @@ from ....schemas.sop_version import (
     SopVersionDetailResponse,
     SopVersionListResponse,
 )
-from ....services.auth_service import get_current_auth_context, get_optional_auth_context
+from ....services.auth_service import get_current_auth_context
 from ....services.sop_generation_service import SopGenerationService, get_sop_generation_service
 from ....services.sop_service import SopService, get_sop_service
 from ....services.sop_version_service import SopVersionService, get_sop_version_service
@@ -39,7 +39,7 @@ def list_sops(
     process_name: str | None = Query(default=None),
     scenario_name: str | None = Query(default=None),
     sop_status: SopStatus | None = Query(default=None, alias="status"),
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     sop_service: SopService = Depends(get_sop_service),
 ) -> SopListResponse:
     return sop_service.list_sops(
@@ -186,7 +186,7 @@ def save_sop(
 )
 def get_sop(
     sop_id: str,
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     sop_service: SopService = Depends(get_sop_service),
 ) -> SopDetailResponse:
     return sop_service.get_sop(sop_id, auth_context=auth_context)
@@ -229,7 +229,7 @@ def get_sop_version_detail(
 )
 def get_sop_preview(
     sop_id: str,
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     sop_service: SopService = Depends(get_sop_service),
 ) -> SopPreviewResponse:
     return sop_service.get_sop_preview(sop_id, auth_context=auth_context)
@@ -242,7 +242,7 @@ def get_sop_preview(
 )
 def get_sop_preview_file(
     sop_id: str,
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     sop_service: SopService = Depends(get_sop_service),
 ) -> Response:
     payload = sop_service.get_sop_preview_file(sop_id, auth_context=auth_context)
@@ -268,7 +268,7 @@ def get_sop_preview_file(
 def download_sop(
     sop_id: str,
     format: SopDownloadFormat = Query(...),
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     sop_service: SopService = Depends(get_sop_service),
 ) -> Response:
     payload = sop_service.get_sop_download(sop_id, download_format=format, auth_context=auth_context)

@@ -8,9 +8,11 @@ from backend.app.core.config import Settings, ensure_data_directories
 from backend.app.main import app
 from backend.app.schemas.retrieval import RetrievedChunk
 from backend.app.schemas.sop_generation import SopGenerateByDocumentRequest
+from backend.app.services.auth_service import AuthService, get_auth_service
 from backend.app.services.chat_service import ChatService, get_chat_service
 from backend.app.services.document_service import DocumentService, get_document_service
 from backend.app.services.event_log_service import EventLogService
+from backend.app.services.identity_service import get_identity_service
 from backend.app.services.retrieval_service import RetrievalService, get_retrieval_service
 from backend.app.services.sop_generation_service import SopGenerationService
 from backend.tests.test_sop_generation_service import (
@@ -50,6 +52,29 @@ def _build_settings(tmp_path: Path, **overrides) -> Settings:
         event_log_dir=data_dir / "event_logs",
         **overrides,
     )
+
+
+def _login_headers(client: TestClient, *, username: str, password: str) -> dict[str, str]:
+    response = client.post("/api/v1/auth/login", json={"username": username, "password": password})
+    assert response.status_code == 200
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+def _build_authenticated_client(
+    settings: Settings,
+    tmp_path: Path,
+    *,
+    username: str = "sys.admin",
+    password: str = "sys-admin-pass",
+) -> TestClient:
+    identity_service = _build_identity_service(tmp_path)
+    settings.identity_bootstrap_path = identity_service.settings.identity_bootstrap_path
+    auth_service = AuthService(settings, identity_service=identity_service)
+    app.dependency_overrides[get_identity_service] = lambda: identity_service
+    app.dependency_overrides[get_auth_service] = lambda: auth_service
+    client = TestClient(app)
+    client.headers.update(_login_headers(client, username=username, password=password))
+    return client
 
 
 def test_event_log_service_appends_and_lists_recent(tmp_path: Path) -> None:
@@ -95,7 +120,7 @@ def test_chat_ask_endpoint_writes_event_log(tmp_path: Path) -> None:
     app.dependency_overrides[get_document_service] = lambda: document_service
     app.dependency_overrides[get_retrieval_service] = lambda: retrieval_service
     app.dependency_overrides[get_chat_service] = lambda: chat_service
-    client = TestClient(app)
+    client = _build_authenticated_client(settings, tmp_path)
 
     try:
         upload_response = client.post(
@@ -130,7 +155,7 @@ def test_document_create_and_delete_write_event_logs(tmp_path: Path) -> None:
     document_service = DocumentService(settings, event_log_service=event_log_service)
 
     app.dependency_overrides[get_document_service] = lambda: document_service
-    client = TestClient(app)
+    client = _build_authenticated_client(settings, tmp_path)
 
     try:
         create_response = client.post(

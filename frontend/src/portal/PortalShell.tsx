@@ -1,4 +1,4 @@
-import { BookOpenText, Library, LogOut, MessageSquare, Shield, UserRound } from 'lucide-react';
+import { BookOpenText, LogOut, MessageSquare, Shield } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
 import { Layout } from '@/components';
@@ -6,8 +6,6 @@ import { Layout } from '@/components';
 const navItems = [
   { to: '/portal', label: '智能问答', icon: MessageSquare },
   { to: '/portal/sop', label: 'SOP 中心', icon: BookOpenText },
-  { to: '/portal/library', label: '知识库', icon: Library },
-  { to: '/portal/me', label: '我的', icon: UserRound },
 ];
 
 export function PortalShell() {

@@ -41,6 +41,7 @@ from ..schemas.document import (
     DocumentSummary,  # 文档摘要（列表项）。
     DocumentUploadResponse,  # 同步上传响应。
     IngestJobRecord,  # 入库任务记录。
+    IngestJobStatus,  # 入库任务状态类型。
     IngestJobStatusResponse,  # 入库任务状态响应。
     Visibility,  # 文档可见性：private / department / public / role。
 )
@@ -48,6 +49,7 @@ from ..schemas.ops import OpsStuckIngestJobSummary  # 运维接口：卡住的�
 from .asset_store import AssetStore  # 文件资产存储（本地文件系统管理）。
 from .event_log_service import EventLogService, get_event_log_service  # 事件日志服务。
 from .ingestion_service import DocumentIngestionService  # 文档入库服务（解析/OCR/切块/向量化）。
+from .public_resource_refs import build_document_resource_ref, sanitize_source_path
 from .retrieval_scope_policy import (  # noqa: F401 — 向后兼容重新导出
     DepartmentPriorityRetrievalScope,
     RetrievalScopePolicy,
@@ -524,7 +526,7 @@ class DocumentService:
 
     # ===== 入库任务管理 =====
 
-    def queue_ingest_job(self, job_id: str) -> IngestJobStatusResponse:
+    def queue_ingest_job(self, job_id: str, *, auth_context: AuthContext | None = None) -> IngestJobStatusResponse:
         """重新排队一个入库任务。
 
         如果任务已在处理中或已完成，直接返回当前状态。
@@ -533,6 +535,7 @@ class DocumentService:
         """
         job_record = self._load_job_record(job_id)
         document_record = self._load_document_record(job_record.doc_id)
+        self._ensure_can_manage_document(document_record, auth_context)
 
         if job_record.status in PROCESSING_JOB_STATUSES:
             return self._to_ingest_job_status_response(job_record)
@@ -645,13 +648,13 @@ class DocumentService:
 
     # ===== 旧版同步上传接口（向后兼容） =====
 
-    async def save_upload(self, upload: UploadFile) -> DocumentUploadResponse:
+    async def save_upload(self, upload: UploadFile, *, auth_context: AuthContext | None = None) -> DocumentUploadResponse:
         """同步上传入口（旧版兼容）。
 
         直接在当前进程完成入库，返回完整的解析结果。
-        不创建 DocumentRecord 元数据记录，仅返回入库产物信息。
+        登录态下会额外写入最小文档/任务元数据，保证后续检索与问答仍受同一权限边界约束。
         """
-        filename, _, content = await self._read_upload_content(upload)
+        filename, suffix, content = await self._read_upload_content(upload)
         document_id = uuid4().hex
         target_name = f"{document_id}__{_sanitize_filename(filename)}"
         storage_path = self.asset_store.save_upload(
@@ -679,6 +682,17 @@ class DocumentService:
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail=str(exc),
             ) from exc
+
+        if auth_context is not None:
+            self._persist_sync_upload_record(
+                document_id=document_id,
+                filename=filename,
+                suffix=suffix,
+                storage_path=storage_path,
+                content=content,
+                final_status=ingestion_result.final_status,
+                auth_context=auth_context,
+            )
 
         return DocumentUploadResponse(
             document_id=document_id,
@@ -941,9 +955,11 @@ class DocumentService:
             )
             raise
 
-    def get_ingest_job(self, job_id: str) -> IngestJobStatusResponse:
+    def get_ingest_job(self, job_id: str, *, auth_context: AuthContext | None = None) -> IngestJobStatusResponse:
         """查询入库任务状态。"""
         record = self._load_job_record(job_id)
+        document_record = self._load_document_record(record.doc_id)
+        self._ensure_can_read_document(document_record, auth_context)
         return self._to_ingest_job_status_response(record)
 
     def _get_latest_ingest_status(self, latest_job_id: str | None) -> str | None:
@@ -999,7 +1015,7 @@ class DocumentService:
                     filename=record.file_name,
                     size_bytes=self.asset_store.size_bytes(record.storage_path),
                     parse_supported=f".{record.source_type.lower()}" in SUPPORTED_PARSE_SUFFIXES,
-                    storage_path=record.storage_path,
+                    storage_path=sanitize_source_path(document_id=record.doc_id, source_path=record.storage_path),
                     status=record.status,
                     ingest_status=latest_ingest_status,
                     latest_job_id=record.latest_job_id,
@@ -1024,7 +1040,7 @@ class DocumentService:
                         filename=filename,
                         size_bytes=path.stat().st_size,
                         parse_supported=path.suffix.lower() in SUPPORTED_PARSE_SUFFIXES,
-                        storage_path=str(path),
+                        storage_path=build_document_resource_ref(document_id, resource="source"),
                         status="uploaded",  # 无元数据时统一标记为 uploaded
                         ingest_status=None,
                         latest_job_id=None,
@@ -1714,6 +1730,65 @@ class DocumentService:
         """将 source_type 规范化为带点号的扩展名。例如 "pdf" → ".pdf"。"""
         normalized = source_type.strip().lower().lstrip(".")
         return f".{normalized}" if normalized else ""
+
+    def _persist_sync_upload_record(
+        self,
+        *,
+        document_id: str,
+        filename: str,
+        suffix: str,
+        storage_path: str,
+        content: bytes,
+        final_status: str,
+        auth_context: AuthContext,
+    ) -> None:
+        """为受保护的同步上传入口补齐最小文档/任务元数据。"""
+        now = datetime.now(timezone.utc)
+        job_id = self._generate_entity_id("job")
+        document_status: DocumentLifecycleStatus = "partial_failed" if final_status == "partial_failed" else "active"
+        ingest_status: IngestJobStatus = "partial_failed" if final_status == "partial_failed" else "completed"
+        department_id = auth_context.department.department_id
+        document_record = DocumentRecord(
+            doc_id=document_id,
+            tenant_id=auth_context.user.tenant_id,
+            file_name=filename,
+            file_hash=hashlib.sha256(content).hexdigest(),
+            source_type=suffix.lstrip(".") or "unknown",
+            department_id=department_id,
+            department_ids=[department_id],
+            retrieval_department_ids=[],
+            category_id=None,
+            role_ids=[],
+            owner_id=None,
+            visibility="private",
+            classification="internal",
+            tags=[],
+            source_system="sync_upload",
+            status=document_status,
+            current_version=1,
+            latest_job_id=job_id,
+            storage_path=storage_path,
+            uploaded_by=auth_context.user.user_id,
+            created_by=auth_context.user.user_id,
+            created_at=now,
+            updated_at=now,
+        )
+        ingest_job = IngestJobRecord(
+            job_id=job_id,
+            doc_id=document_id,
+            version=1,
+            file_name=filename,
+            status=ingest_status,
+            stage="completed" if ingest_status == "completed" else "completed_with_warning",
+            progress=100,
+            retry_count=0,
+            error_code=None,
+            error_message=None,
+            created_at=now,
+            updated_at=now,
+        )
+        self._save_document_record(document_record)
+        self._save_job_record(ingest_job)
 
     def _load_text_preview_content(
         self,

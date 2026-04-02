@@ -343,6 +343,18 @@ def _build_client(tmp_path: Path) -> tuple[TestClient, EventLogService, RequestT
     return TestClient(app), event_log_service, request_trace_service, request_snapshot_service, rerank_canary_service
 
 
+def test_ops_summary_requires_authentication(tmp_path: Path) -> None:
+    client, _event_log_service, _request_trace_service, _request_snapshot_service, _rerank_canary_service = _build_client(tmp_path)
+
+    try:
+        response = client.get("/api/v1/ops/summary")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication credentials were not provided."
+
+
 def _persist_document_with_job(
     tmp_path: Path,
     *,

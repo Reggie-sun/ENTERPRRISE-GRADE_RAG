@@ -80,6 +80,18 @@ npm run dev
 
 ## 3. 最小验证
 
+主业务接口默认要求 `Bearer` 认证，只有 `GET /api/v1/health` 和 `POST /api/v1/auth/login` 属于公开入口。
+
+本地联调可先拿一个 demo token：
+
+```bash
+curl -X POST http://127.0.0.1:8020/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"sys.admin.demo","password":"sys-admin-demo-pass"}'
+```
+
+返回里的 `access_token` 可直接拿去调用 `documents / ingest / retrieval / chat / sops / logs / ops / system-config` 这些主业务接口。
+
 ### 3.1 后端健康检查
 
 ```bash
@@ -125,6 +137,7 @@ curl http://192.168.10.200:8000/v1/models
 
 - `3000` 的 React 页面是当前主前端
 - `8020/demo` 只用于后端单页联调和快速 smoke test
+- 进入 `3000` 主前端后，先登录再做上传 / 检索 / 问答；本地默认可用 demo 账号是 `sys.admin.demo / sys-admin-demo-pass`
 
 ### 3.4 一键 smoke test（v0.1.2 主链路）
 
@@ -137,6 +150,7 @@ bash scripts/smoke_test.sh
 脚本覆盖链路：
 
 - `GET /api/v1/health`
+- `POST /api/v1/auth/login`
 - `POST /api/v1/documents`（异步创建 job）
 - `GET /api/v1/ingest/jobs/{job_id}`（轮询到 `completed`）
 - `POST /api/v1/retrieval/search`（`document_id` 过滤）
@@ -148,9 +162,16 @@ bash scripts/smoke_test.sh
 API_BASE_URL=http://127.0.0.1:8020 \
 TENANT_ID=wl \
 TOP_K=3 \
+AUTH_USERNAME=sys.admin.demo \
+AUTH_PASSWORD=sys-admin-demo-pass \
 POLL_TIMEOUT_SECONDS=180 \
 bash scripts/smoke_test.sh
 ```
+
+说明：
+
+- 脚本会先调用 `POST /api/v1/auth/login` 再访问受保护接口
+- 默认使用本地 bootstrap demo 账号；如果你在当前环境禁用了这组账号，直接覆盖 `AUTH_USERNAME / AUTH_PASSWORD` 即可
 
 ### 3.5 一键 smoke test（v0.2 文档管理）
 
@@ -163,6 +184,7 @@ bash scripts/smoke_test_v02.sh
 脚本覆盖链路：
 
 - `GET /api/v1/health`
+- `POST /api/v1/auth/login`
 - `POST /api/v1/documents/batch`（批量上传）
 - `GET /api/v1/ingest/jobs/{job_id}`（轮询两个 job 到 `completed`）
 - `GET /api/v1/documents`（关键字筛选）
@@ -175,9 +197,16 @@ bash scripts/smoke_test_v02.sh
 ```bash
 API_BASE_URL=http://127.0.0.1:8020 \
 TENANT_ID=wl \
+AUTH_USERNAME=sys.admin.demo \
+AUTH_PASSWORD=sys-admin-demo-pass \
 POLL_TIMEOUT_SECONDS=240 \
 bash scripts/smoke_test_v02.sh
 ```
+
+说明：
+
+- 脚本会先登录，再跑文档列表 / 预览 / 重建 / 删除这些受保护接口
+- 默认 demo 账号可覆盖为你当前环境实际可用的账号密码
 
 ## 4. 常见故障
 
@@ -226,17 +255,38 @@ curl http://192.168.10.200:8000/v1/models
 
 如果不通，优先处理服务器 vLLM。
 
-### 4.4 上传后检索不到内容
+### 4.4 接口直接返回 `401`
+
+先确认是不是拿了 token 但没带上：
+
+```bash
+curl http://127.0.0.1:8020/api/v1/documents
+```
+
+如果返回 `401`，这是预期行为，因为主业务接口默认需要 `Authorization: Bearer <token>`。
+
+先重新登录：
+
+```bash
+curl -X POST http://127.0.0.1:8020/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"sys.admin.demo","password":"sys-admin-demo-pass"}'
+```
+
+然后带上返回的 `access_token` 再访问业务接口。
+
+### 4.5 上传后检索不到内容
 
 先看 job 是否真的完成：
 
 ```bash
-curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
+curl -H "Authorization: Bearer <token>" \
+  http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
 ```
 
 如果还没到 `completed`，不要先怀疑前端。
 
-### 4.5 页面打不开 / 前端空白
+### 4.6 页面打不开 / 前端空白
 
 按这个顺序排查：
 
@@ -245,15 +295,15 @@ curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>
 3. 前端代理是否正确：`cat frontend/.env`，确认 `VITE_API_TARGET=http://127.0.0.1:8020`
 4. 后端是否可达：`curl http://127.0.0.1:8020/api/v1/health`
 
-### 4.6 worker 未启动（任务卡 queued）
+### 4.7 worker 未启动（任务卡 queued）
 
 按这个顺序排查：
 
 1. `ps -ef | rg "celery -A backend.app.worker.celery_app:celery_app worker"`
-2. `curl http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>`
+2. `curl -H "Authorization: Bearer <token>" http://127.0.0.1:8020/api/v1/ingest/jobs/<job_id>`
 3. `redis-cli -u redis://192.168.10.200:6379/0 ping`
 
-### 4.7 向量入库失败 / 检索为空
+### 4.8 向量入库失败 / 检索为空
 
 按这个顺序排查：
 

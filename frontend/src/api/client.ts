@@ -108,7 +108,7 @@ function extractFilenameFromDisposition(disposition: string | null, fallback: st
       return utf8Match[1];
     }
   }
-  const filenameMatch = disposition.match(/filename=\"?([^\";]+)\"?/i);
+  const filenameMatch = disposition.match(/filename="?([^";]+)"?/i);
   return filenameMatch?.[1] || fallback;
 }
 

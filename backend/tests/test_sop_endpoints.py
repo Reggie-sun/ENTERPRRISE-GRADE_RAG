@@ -36,6 +36,18 @@ def _login_headers(client: TestClient, *, username: str, password: str) -> dict[
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
+def test_sop_list_endpoint_requires_authentication(tmp_path: Path) -> None:
+    client, _ = _build_client(tmp_path)
+
+    try:
+        response = client.get("/api/v1/sops?page=1&page_size=20")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication credentials were not provided."
+
+
 def test_sop_list_endpoint_filters_to_accessible_department(tmp_path: Path) -> None:
     client, _ = _build_client(tmp_path)
 

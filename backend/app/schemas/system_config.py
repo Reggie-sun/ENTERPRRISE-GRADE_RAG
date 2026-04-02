@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class QueryModeConfig(BaseModel):
@@ -60,6 +60,31 @@ class PromptBudgetConfig(BaseModel):
     max_prompt_tokens: int = Field(default=2200, ge=256, le=32_000)  # 主契约稳定字段：prompt 预算。
     reserved_completion_tokens: int = Field(default=512, ge=64, le=8_192)  # 主契约稳定字段：completion 预留。
     memory_prompt_tokens: int = Field(default=360, ge=64, le=4_096)  # 主契约稳定字段：memory 预算。
+
+
+class SupplementalQualityThresholdsConfig(BaseModel):
+    """检索 supplemental 质量阈值内部配置。"""
+
+    top1_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
+    avg_top_n_threshold: float = Field(default=0.45, ge=0.0, le=1.0)
+    fine_query_top1_threshold: float = Field(default=0.85, ge=0.0, le=1.0)
+    fine_query_avg_top_n_threshold: float = Field(default=0.60, ge=0.0, le=1.0)
+
+    @model_validator(mode="after")
+    def validate_fine_query_thresholds(self) -> "SupplementalQualityThresholdsConfig":
+        if self.fine_query_top1_threshold < self.top1_threshold:
+            raise ValueError("fine_query_top1_threshold cannot be smaller than top1_threshold.")
+        if self.fine_query_avg_top_n_threshold < self.avg_top_n_threshold:
+            raise ValueError("fine_query_avg_top_n_threshold cannot be smaller than avg_top_n_threshold.")
+        return self
+
+
+class InternalRetrievalControlsConfig(BaseModel):
+    """仅供服务层使用的检索内部配置。"""
+
+    supplemental_quality_thresholds: SupplementalQualityThresholdsConfig = Field(
+        default_factory=SupplementalQualityThresholdsConfig,
+    )
 
 
 class SystemConfigUpdateRequest(BaseModel):

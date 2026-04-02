@@ -8,7 +8,7 @@ from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让检
 from ....schemas.query_profile import QueryProfile
 from ....schemas.rerank_canary import RerankCanaryListResponse
 from ....schemas.retrieval import RetrievalRerankCompareResponse, RetrievalRequest, RetrievalResponse  # 导入检索接口的请求和响应模型。
-from ....services.auth_service import get_current_auth_context, get_optional_auth_context  # 导入可选鉴权依赖，兼容当前开发工作台。
+from ....services.auth_service import get_current_auth_context
 from ....services.event_log_service import EventLogService, get_event_log_service
 from ....services.query_profile_service import QueryProfileService
 from ....services.request_snapshot_service import RequestSnapshotService, get_request_snapshot_service
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/retrieval", tags=["retrieval"])  # 创建 retrieval 
 @router.post("/search", response_model=RetrievalResponse)  # 声明 POST /retrieval/search 接口。
 def search_documents(  # 定义文档检索接口函数。
     request: RetrievalRequest,  # 从请求体里接收 query 和 top_k。
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),  # 已登录时按部门过滤检索结果。
+    auth_context: AuthContext = Depends(get_current_auth_context),  # 检索主链路默认要求登录，避免匿名绕过租户与部门边界。
     retrieval_service: RetrievalService = Depends(get_retrieval_service),  # 通过依赖注入获取检索服务实例。
     event_log_service: EventLogService = Depends(get_event_log_service),
     request_snapshot_service: RequestSnapshotService = Depends(get_request_snapshot_service),
@@ -112,9 +112,14 @@ def search_documents(  # 定义文档检索接口函数。
 @router.post("/rerank-compare", response_model=RetrievalRerankCompareResponse)  # 声明 POST /retrieval/rerank-compare 接口。
 def compare_rerank_routes(  # 对同一批检索候选执行当前默认 rerank 路由与 heuristic 基线对比。
     request: RetrievalRequest,
-    auth_context: AuthContext | None = Depends(get_optional_auth_context),
+    auth_context: AuthContext = Depends(get_current_auth_context),
     retrieval_service: RetrievalService = Depends(get_retrieval_service),
 ) -> RetrievalRerankCompareResponse:
+    if not auth_context.role.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have access to rerank compare diagnostics.",
+        )
     return retrieval_service.compare_rerank(request, auth_context=auth_context)
 
 
