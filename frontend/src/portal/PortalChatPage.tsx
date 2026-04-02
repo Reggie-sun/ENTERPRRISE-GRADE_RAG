@@ -1,8 +1,8 @@
-import { MessageSquareText, Sparkles } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { MessageSquareText } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
-import { Button, Card, StatusPill, Textarea } from '@/components';
+import { getRoleExperience, useAuth } from '@/auth';
+import { Button, Card, EvidenceSourceSummary, StatusPill, Textarea } from '@/components';
 import {
   ApiError,
   askQuestion,
@@ -10,6 +10,7 @@ import {
   formatApiError,
   type ChatResponse,
   type ChatStreamMeta,
+  type Citation,
   type QueryMode,
 } from '@/api';
 import { getOrCreateStoredSessionId, rememberDocument, rememberQuestion } from '@/portal/portalStorage';
@@ -28,7 +29,6 @@ const QUERY_MODE_OPTIONS: Array<{
 export function PortalChatPage() {
   const { profile } = useAuth();
   const experience = getRoleExperience(profile);
-  const scopeSummary = getDepartmentScopeSummary(profile);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuestion = searchParams.get('q');
   const suggestedDefaultQuestion = experience.suggestedQuestions[0] ?? '';
@@ -41,6 +41,7 @@ export function PortalChatPage() {
   const [error, setError] = useState('');
   const activeRequestRef = useRef<{ controller: AbortController; reason: 'superseded' | 'unmounted' | 'startup-timeout' | null } | null>(null);
   const requestVersionRef = useRef(0);
+  const shouldShowSources = status === 'success' && Boolean(data?.citations.length);
 
   useEffect(() => {
     if (searchQuestion) {
@@ -207,40 +208,7 @@ export function PortalChatPage() {
     <div className="grid gap-5">
       <section className="grid grid-cols-12 gap-5">
         <Card className="col-span-12">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold text-accent-deep">
-                <MessageSquareText className="h-4 w-4" />
-                智能问答
-              </div>
-              <h2 className="m-0 mt-4 text-2xl font-semibold text-ink md:text-3xl">
-                输入问题后，系统会直接返回回答。
-              </h2>
-              <p className="m-0 mt-2 max-w-[64ch] text-sm leading-relaxed text-ink-soft md:text-base">
-                首屏只保留提问和回答。当前会话会自动承接最近几轮上下文，如需完全切换话题，刷新页面即可重置。
-              </p>
-            </div>
-            <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>
-              {status === 'idle' && '等待提问'}
-              {status === 'loading' && '回答生成中'}
-              {status === 'success' && '回答已生成'}
-              {status === 'error' && '问答失败'}
-            </StatusPill>
-          </div>
-
-          <div className="mt-5 rounded-[24px] border border-[rgba(182,70,47,0.12)] bg-[rgba(255,248,240,0.72)] p-4">
-            <div className="flex items-start gap-2 text-sm leading-relaxed text-ink-soft">
-              <Sparkles className="mt-0.5 h-4 w-4 flex-none text-accent-deep" />
-              <div className="grid gap-1">
-                <p className="m-0 font-semibold text-ink">当前回答范围</p>
-                <p className="m-0">{scopeSummary}</p>
-                <p className="m-0">{experience.portalHeaderNote}</p>
-                <p className="m-0">如果回答偏泛，优先把问题写成设备、场景、工序或报警条件。</p>
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="mt-5 grid gap-4">
+          <form onSubmit={handleSubmit} className="grid gap-4">
             <Textarea
               label="请输入你的问题"
               value={question}
@@ -260,40 +228,49 @@ export function PortalChatPage() {
                 </button>
               ))}
             </div>
-            <div className="grid gap-2">
-              <div className="text-sm font-semibold text-ink">回答档位</div>
-              <div className="flex flex-wrap gap-2">
-                {QUERY_MODE_OPTIONS.map((item) => {
-                  const active = queryMode === item.value;
-                  return (
-                    <button
-                      key={item.value}
-                      type="button"
-                      className={`
-                        rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200
-                        ${active
-                          ? 'bg-[rgba(182,70,47,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(182,70,47,0.14)]'
-                          : 'bg-[rgba(23,32,42,0.06)] text-ink hover:-translate-y-0.5'
-                        }
-                      `}
-                      onClick={() => setQueryMode(item.value)}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="grid gap-2">
+                <div className="text-sm font-semibold text-ink">回答档位</div>
+                <div className="flex flex-wrap gap-2">
+                  {QUERY_MODE_OPTIONS.map((item) => {
+                    const active = queryMode === item.value;
+                    return (
+                      <button
+                        key={item.value}
+                        type="button"
+                        className={`
+                          rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200
+                          ${active
+                            ? 'bg-[rgba(182,70,47,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(182,70,47,0.14)]'
+                            : 'bg-[rgba(23,32,42,0.06)] text-ink hover:-translate-y-0.5'
+                          }
+                        `}
+                        onClick={() => setQueryMode(item.value)}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="m-0 text-sm leading-relaxed text-ink-soft">
+                  {QUERY_MODE_OPTIONS.find((item) => item.value === queryMode)?.description}
+                </p>
               </div>
-              <p className="m-0 text-sm leading-relaxed text-ink-soft">
-                {QUERY_MODE_OPTIONS.find((item) => item.value === queryMode)?.description}
-              </p>
-            </div>
-            <div className="flex justify-end">
-              <Button type="submit" loading={status === 'loading'} className="min-w-[160px]">
-                <span className="flex items-center gap-2">
-                  <MessageSquareText className="h-4 w-4" />
-                  发起问答
-                </span>
-              </Button>
+
+              <div className="flex flex-wrap items-center justify-end gap-3 self-start max-sm:w-full max-sm:justify-start">
+                <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>
+                  {status === 'idle' && '等待提问'}
+                  {status === 'loading' && '回答生成中'}
+                  {status === 'success' && '回答已生成'}
+                  {status === 'error' && '问答失败'}
+                </StatusPill>
+                <Button type="submit" loading={status === 'loading'} className="min-w-[160px]">
+                  <span className="flex items-center gap-2">
+                    <MessageSquareText className="h-4 w-4" />
+                    发起问答
+                  </span>
+                </Button>
+              </div>
             </div>
           </form>
 
@@ -306,6 +283,47 @@ export function PortalChatPage() {
               </div>
             )}
           </div>
+
+          {shouldShowSources ? (
+            <section className="mt-4 rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)] p-4">
+              <h3 className="m-0 text-base font-semibold text-ink">信息来源</h3>
+              <div className="mt-3 grid gap-3">
+                {data?.citations.map((item: Citation) => (
+                  <article
+                    key={item.chunk_id}
+                    className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.78)] p-4"
+                  >
+                    <p className="m-0 font-semibold text-ink break-all">{item.document_name}</p>
+                    <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+                      {item.snippet.length > 220 ? `${item.snippet.slice(0, 220)}...` : item.snippet}
+                    </p>
+                    <EvidenceSourceSummary
+                      retrievalStrategy={item.retrieval_strategy}
+                      ocrUsed={item.ocr_used}
+                      parserName={item.parser_name}
+                      pageNo={item.page_no}
+                      ocrConfidence={item.ocr_confidence}
+                      qualityScore={item.quality_score}
+                    />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Link
+                        to={`/portal/library?doc_id=${encodeURIComponent(item.document_id)}`}
+                        className="rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-semibold text-accent-deep no-underline"
+                      >
+                        查看资料
+                      </Link>
+                      <Link
+                        to={`/portal/sop?doc_id=${encodeURIComponent(item.document_id)}`}
+                        className="rounded-full bg-[rgba(23,32,42,0.06)] px-3 py-1.5 text-sm font-semibold text-ink no-underline"
+                      >
+                        去 SOP 中心
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </Card>
       </section>
     </div>

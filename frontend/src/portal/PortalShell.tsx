@@ -1,17 +1,18 @@
-import { BookOpenText, LogOut, MessageSquare, Shield } from 'lucide-react';
+import { BookOpenText, Library, LogOut, MessageSquare, Shield, UserRound } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
+import { getRoleExperience, useAuth } from '@/auth';
 import { Layout } from '@/components';
 
 const navItems = [
   { to: '/portal', label: '智能问答', icon: MessageSquare },
   { to: '/portal/sop', label: 'SOP 中心', icon: BookOpenText },
+  { to: '/portal/library', label: '文档中心', icon: Library },
+  { to: '/portal/me', label: '我的', icon: UserRound },
 ];
 
 export function PortalShell() {
   const { profile, canAccessWorkspace, logout } = useAuth();
   const experience = getRoleExperience(profile);
-  const scopeSummary = getDepartmentScopeSummary(profile);
 
   return (
     <Layout>
@@ -41,13 +42,13 @@ export function PortalShell() {
             </nav>
 
             <div className="flex flex-wrap items-center justify-end gap-3">
-              <div className="rounded-2xl bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-ink-soft">
-                <p className="m-0 font-semibold text-ink">{profile?.user.display_name || profile?.user.username}</p>
-                <p className="m-0 mt-1">
-                  {experience.roleLabel} / {profile?.department.department_name}
-                </p>
-                <p className="m-0 mt-2 max-w-[44ch] leading-relaxed">
-                  {scopeSummary}
+              <div className="rounded-2xl bg-[rgba(255,255,255,0.74)] px-3 py-2 text-sm text-ink-soft">
+                <p className="m-0 whitespace-nowrap font-semibold text-ink">
+                  {profile?.user.display_name || profile?.user.username}
+                  <span className="font-normal text-ink-soft">
+                    {' '}
+                    · {experience.roleLabel} / {profile?.department.department_name}
+                  </span>
                 </p>
               </div>
 
