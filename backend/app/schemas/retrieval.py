@@ -63,6 +63,10 @@ class RetrievalPrimaryRecallStage(BaseModel):
     effective_count: int = 0
     threshold: int | None = None
     whether_sufficient: bool = False
+    top1_score: float | None = None
+    avg_top_n_score: float | None = None
+    quality_top1_threshold: float | None = None
+    quality_avg_threshold: float | None = None
 
 
 class RetrievalSupplementalRecallStage(BaseModel):
@@ -71,6 +75,7 @@ class RetrievalSupplementalRecallStage(BaseModel):
     vector_count: int = 0
     lexical_count: int = 0
     fused_count: int = 0
+    trigger_basis: str | None = None
 
 
 class FilteredCandidateSummary(BaseModel):
@@ -120,6 +125,8 @@ class RetrievalDiagnostic(BaseModel):
     # --- query metadata ---
     query: str = ""
     query_type: str | None = None
+    query_granularity: str | None = None
+    requested_mode: str | None = None
     retrieval_mode: str | None = None
     document_id_filter_applied: bool = False
     department_priority_enabled: bool = False

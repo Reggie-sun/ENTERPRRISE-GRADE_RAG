@@ -1,7 +1,7 @@
 import { Building2, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import { BrandLogo, Button, Card, HeroCard, Input, Layout } from '@/components';
+import { Button, Card, HeroCard, Input, Layout } from '@/components';
 import { formatAuthError, normalizeNextPath, useAuth, useAuthReasonText } from '@/auth';
 
 export function LoginPage() {
@@ -44,7 +44,9 @@ export function LoginPage() {
       <div className="grid min-h-[70vh] place-items-center">
         <div className="grid w-full max-w-[1080px] gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <HeroCard>
-            <BrandLogo subtitle="企业知识与标准流程服务平台" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
+              企业知识服务入口
+            </div>
             <h1 className="m-0 mt-5 font-serif text-4xl leading-tight text-ink md:text-5xl">
               欢迎使用伟立机器人知识服务平台
             </h1>
@@ -70,7 +72,7 @@ export function LoginPage() {
             </div>
 
             <div className="mt-6 rounded-3xl bg-[rgba(255,255,255,0.72)] px-5 py-4 text-sm leading-relaxed text-ink-soft">
-              登录成功后会优先进入门户首页；如果当前账号具备管理权限，页面中还会显示对应的管理入口。
+              登录成功后会直接进入智能问答页；如果当前账号具备管理权限，页面中还会显示对应的管理入口。
             </div>
           </HeroCard>
 

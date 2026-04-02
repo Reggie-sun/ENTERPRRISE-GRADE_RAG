@@ -90,7 +90,7 @@ function AccessDeniedPage({ allowedRoles, embedded = false }: { allowedRoles: Us
 
         <Card className="flex flex-wrap items-center gap-3">
           <Button type="button" onClick={() => window.location.assign('/portal')}>
-            返回门户首页
+            返回门户
           </Button>
           <Button type="button" variant="ghost" onClick={() => window.history.back()}>
             返回上一页

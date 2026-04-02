@@ -4,7 +4,6 @@
 
 export { Layout } from './Layout';
 export { Card, HeroCard } from './Card';
-export { BrandLogo } from './BrandLogo';
 export { Button } from './Button';
 export { StatusPill } from './StatusPill';
 export { EvidenceSourceSummary } from './EvidenceSourceSummary';

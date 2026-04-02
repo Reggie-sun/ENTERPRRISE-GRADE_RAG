@@ -4,8 +4,9 @@
 
 核心流程:
   1. classify()       — 对查询文本做 token 分析与信号打分，输出查询分类
-  2. resolve_branch_weights() — 根据分类结果查表获取对应的向量/词法权重
-  3. fixed_branch_weights()   — 当动态权重关闭时，返回固定权重兜底
+  2. infer_granularity() — 对查询粒度做轻量判断，供诊断与结构化检索提示使用
+  3. resolve_branch_weights() — 根据分类结果查表获取对应的向量/词法权重
+  4. fixed_branch_weights()   — 当动态权重关闭时，返回固定权重兜底
 """
 
 from dataclasses import dataclass
@@ -142,6 +143,17 @@ class RetrievalQueryRouter:
             exact_signals=classification.exact_signals,
             semantic_signals=classification.semantic_signals,
         )
+
+    def infer_query_granularity(self, query: str) -> Literal["coarse", "medium", "fine"]:
+        normalized_query = query.strip().lower()
+        tokens = _TOKEN_PATTERN.findall(normalized_query)
+        code_like_tokens = [token for token in tokens if self._is_code_like_token(token)]
+
+        if code_like_tokens or len(tokens) <= 3 or len(normalized_query) <= 12:
+            return "fine"
+        if len(tokens) <= 8 or len(normalized_query) <= 32:
+            return "medium"
+        return "coarse"
 
     def fixed_branch_weights(self) -> HybridBranchWeights:
         return HybridBranchWeights(

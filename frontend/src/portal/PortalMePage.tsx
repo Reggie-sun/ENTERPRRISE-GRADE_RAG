@@ -91,7 +91,7 @@ export function PortalMePage() {
               recentQuestions.map((item) => (
                 <Link
                   key={`${item.question}-${item.askedAt}`}
-                  to={`/portal/chat?q=${encodeURIComponent(item.question)}`}
+                  to={`/portal?q=${encodeURIComponent(item.question)}`}
                   className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:bg-white"
                 >
                   <p className="m-0 font-medium text-ink">{item.question}</p>

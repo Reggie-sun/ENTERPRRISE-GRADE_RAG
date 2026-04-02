@@ -2545,3 +2545,145 @@ def test_retrieval_service_staged_triggers_supplemental_with_rerank_top_n_thresh
     # Department results rank first
     assert results[0].source_scope == "department"
     assert results[1].source_scope == "department"
+
+
+def test_retrieval_service_staged_triggers_supplemental_when_department_quality_is_low(tmp_path: Path) -> None:
+    """Department count can be sufficient, but low-quality top results should still trigger supplemental recall."""
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_1", "doc_dept_2", "doc_dept_3"],
+                global_document_ids=["doc_global_1", "doc_global_2"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(
+        settings,
+        document_service=SpyDocumentService(),
+        retrieval_scope_policy=SpyRetrievalScopePolicy(),
+    )  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = list(document_ids or [])
+        results: list[SimpleNamespace] = []
+        if ids and ids[0].startswith("doc_dept"):
+            scores = [0.50, 0.49, 0.48]
+        else:
+            scores = [0.88, 0.84]
+        for i, doc_id in enumerate(ids):
+            results.append(
+                SimpleNamespace(
+                    id=f"point-{doc_id}",
+                    score=scores[min(i, len(scores) - 1)],
+                    payload={
+                        "chunk_id": f"chunk-{doc_id}",
+                        "document_id": doc_id,
+                        "document_name": f"{doc_id}.txt",
+                        "text": f"Content from {doc_id}",
+                        "source_path": f"/tmp/{doc_id}.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="解释一下cpps", top_k=3, mode="fast"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert vector_route_calls == [["doc_dept_1", "doc_dept_2", "doc_dept_3"], ["doc_global_1", "doc_global_2"]]
+    assert response.diagnostic is not None
+    assert response.diagnostic.supplemental_triggered is True
+    assert response.diagnostic.supplemental_recall_stage.trigger_basis == "department_low_quality"
+    assert response.diagnostic.primary_recall_stage.top1_score == pytest.approx(0.50)
+    assert response.diagnostic.query_stage.requested_mode == "fast"
+
+
+def test_retrieval_service_staged_triggers_supplemental_for_fine_query_even_when_count_is_sufficient(tmp_path: Path) -> None:
+    settings = build_test_settings(tmp_path)
+    settings.retrieval_strategy_default = "hybrid"
+    settings.retrieval_dynamic_weighting_enabled = False
+    settings.retrieval_hybrid_fixed_vector_weight = 1.0
+    settings.retrieval_hybrid_fixed_lexical_weight = 1.0
+    settings.query_fast_candidate_multiplier = 4
+    settings.query_fast_lexical_top_k_default = 20
+    settings.query_fast_rerank_top_n = 5
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=[f"doc_dept_{index}" for index in range(1, 6)],
+                global_document_ids=[f"doc_global_{index}" for index in range(1, 4)],
+            )
+
+        def get_document_retrievability_map(self, document_ids, auth_context):
+            return {document_id: True for document_id in document_ids}
+
+    retrieval_service = RetrievalService(
+        settings,
+        document_service=SpyDocumentService(),
+        retrieval_scope_policy=SpyRetrievalScopePolicy(),
+    )  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[tuple[int, list[str]]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        ids = list(document_ids or [])
+        vector_route_calls.append((limit, ids))
+        if ids and ids[0].startswith("doc_dept"):
+            scores = [0.8249, 0.56, 0.54, 0.53, 0.52]
+        else:
+            scores = [0.92, 0.88, 0.84]
+        results: list[SimpleNamespace] = []
+        for i, doc_id in enumerate(ids):
+            results.append(
+                SimpleNamespace(
+                    id=f"point-{doc_id}",
+                    score=scores[min(i, len(scores) - 1)],
+                    payload={
+                        "chunk_id": f"chunk-{doc_id}",
+                        "document_id": doc_id,
+                        "document_name": f"{doc_id}.txt",
+                        "text": f"Content from {doc_id}",
+                        "source_path": f"/tmp/{doc_id}.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+    retrieval_service.lexical_retriever = SimpleNamespace(search=lambda query, **kwargs: [])
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="解释一下cpps", top_k=5, mode="fast"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert len(vector_route_calls) == 2
+    supplemental_limit, supplemental_ids = vector_route_calls[1]
+    assert supplemental_ids == ["doc_global_1", "doc_global_2", "doc_global_3"]
+    assert supplemental_limit >= 5
+    assert response.diagnostic is not None
+    assert response.diagnostic.query_stage.query_granularity == "fine"
+    assert response.diagnostic.primary_recall_stage.whether_sufficient is False
+    assert response.diagnostic.supplemental_triggered is True
+    assert response.diagnostic.supplemental_recall_stage.trigger_basis == "department_low_quality"

@@ -19,6 +19,9 @@ import type {
 // ---------- 中文标签映射 ----------
 
 const QUERY_TYPE_TEXT: Record<string, string> = {
+  fixed: '固定权重',
+  exact: '精确匹配',
+  mixed: '混合意图',
   keyword: '关键词',
   semantic: '语义',
   hybrid_query: '混合查询',
@@ -71,7 +74,7 @@ function normalizeQueryStage(diagnostic: RetrievalDiagnostic): RetrievalQuerySta
     normalized_query: null,
     query_type: diagnostic.query_type,
     query_granularity: diagnostic.query_granularity ?? null,
-    requested_mode: null,
+    requested_mode: diagnostic.requested_mode ?? null,
     effective_mode: diagnostic.retrieval_mode,
   };
 }
@@ -101,7 +104,14 @@ function normalizePrimaryRecallStage(diagnostic: RetrievalDiagnostic): Retrieval
     fused_count: pickCount(counts, 'department_fused_count', 'fused_count', 'total_candidates'),
     effective_count: effectiveCount,
     threshold,
-    whether_sufficient: threshold == null ? !diagnostic.supplemental_triggered : effectiveCount >= threshold,
+    whether_sufficient:
+      threshold == null
+        ? !diagnostic.supplemental_triggered
+        : effectiveCount >= threshold && !diagnostic.supplemental_triggered,
+    top1_score: diagnostic.primary_top1_score ?? null,
+    avg_top_n_score: diagnostic.primary_avg_top_n_score ?? null,
+    quality_top1_threshold: diagnostic.quality_top1_threshold ?? null,
+    quality_avg_threshold: diagnostic.quality_avg_threshold ?? null,
   };
 }
 
@@ -112,6 +122,7 @@ function normalizeSupplementalRecallStage(
   return diagnostic.supplemental_recall_stage ?? {
     triggered: diagnostic.supplemental_triggered,
     reason: diagnostic.supplemental_reason,
+    trigger_basis: diagnostic.supplemental_trigger_basis ?? null,
     vector_count: pickCount(counts, 'supplemental_vector_count'),
     lexical_count: pickCount(counts, 'supplemental_lexical_count'),
     fused_count: pickCount(counts, 'supplemental_fused_count'),
@@ -238,6 +249,12 @@ function PrimaryRecallBlock({ stage }: { stage: RetrievalPrimaryRecallStage }) {
       {stage.threshold !== null && stage.threshold !== undefined && (
         <DiagRow label="阈值" value={stage.threshold} />
       )}
+      <div className="mt-2 flex flex-wrap gap-2">
+        <DiagMetric label="Top1 分" value={stage.top1_score} />
+        <DiagMetric label="TopN 平均分" value={stage.avg_top_n_score} />
+        <DiagMetric label="Top1 阈值" value={stage.quality_top1_threshold} />
+        <DiagMetric label="平均分阈值" value={stage.quality_avg_threshold} />
+      </div>
       <DiagRow
         label="是否充足"
         value={
@@ -258,6 +275,7 @@ function SupplementalRecallBlock({ stage }: { stage: RetrievalSupplementalRecall
           {stage.triggered ? '已触发' : '未触发'}
         </StatusPill>
       </div>
+      {stage.trigger_basis && <DiagRow label="触发依据" value={stage.trigger_basis} />}
       {stage.reason && <DiagRow label="触发原因" value={stage.reason} />}
       {stage.triggered && (
         <div className="grid grid-cols-3 gap-3 max-md:grid-cols-1">
@@ -265,6 +283,44 @@ function SupplementalRecallBlock({ stage }: { stage: RetrievalSupplementalRecall
           <DiagRow label="词法召回" value={stage.lexical_count} />
           <DiagRow label="融合后" value={stage.fused_count} />
         </div>
+      )}
+    </DiagBlock>
+  );
+}
+
+function SupplementalOutcomeBlock({ items, triggered }: { items: ResultExplainability[]; triggered: boolean }) {
+  if (!triggered) {
+    return null;
+  }
+  const supplementalVisible = items.filter(
+    (item) =>
+      item.selected_via === 'supplemental' ||
+      item.selected_via === 'global' ||
+      item.selected_via === 'both' ||
+      item.supplemental_hit,
+  );
+  const departmentVisible = items.filter(
+    (item) =>
+      item.selected_via === 'department' ||
+      item.selected_via === 'both' ||
+      item.department_hit,
+  );
+
+  return (
+    <DiagBlock title="补充召回结果去向">
+      <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
+        <DiagRow label="最终 Top K 中的补充结果" value={supplementalVisible.length} />
+        <DiagRow label="最终 Top K 中的本部门结果" value={departmentVisible.length} />
+      </div>
+      {supplementalVisible.length === 0 ? (
+        <p className="m-0 mt-2 text-sm text-ink-soft">
+          补充召回已经执行，但跨部门候选没有进入最终 Top K。
+          这通常表示主路结果在融合排序后的最终分仍然更高。
+        </p>
+      ) : (
+        <p className="m-0 mt-2 text-sm text-ink-soft">
+          补充召回已进入最终结果。你可以在“结果可解释性”里继续看这些条目的来源标签和分数。
+        </p>
       )}
     </DiagBlock>
   );
@@ -484,6 +540,7 @@ export function RetrievalDiagnosticPanel({ diagnostic }: RetrievalDiagnosticPane
 
       {/* Block 3: Supplemental Recall */}
       <SupplementalRecallBlock stage={srs} />
+      <SupplementalOutcomeBlock items={explainItems} triggered={srs.triggered} />
 
       {/* Block 4: Filter Summary */}
       <FilterSummaryBlock stage={fs} />

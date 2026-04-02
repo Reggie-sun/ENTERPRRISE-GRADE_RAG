@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_70f05e1f6b4d495c8e2ae2d71629dae9",
+  "user_id": "user_sys_admin_demo",
+  "username": "sys.admin.demo",
+  "department_id": "dept_general_manager_office",
+  "updated_at": "2026-04-02T00:24:51.430256Z",
+  "turns": [
+    {
+      "turn_id": "turn_d88cedd593ea",
+      "asked_at": "2026-04-02T00:24:51.430219Z",
+      "question": "设备报警后第一步应该检查什么？",
+      "answer": "根据提供的上下文，设备报警后的第一步应该是查看数控系统上的报警码。这是从使用方法中的第一步得出的结论。具体步骤如下：\n\n1. 先看数控系统上的报警码。\n2. 按本手册找到对应的报警条目。\n3. 看“这个报警说明什么”，然后按照“现场先查什么”、“诊断判定”和“怎么处理”的指示进行操作。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

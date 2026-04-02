@@ -20,6 +20,7 @@ import {
   searchDocuments,
   updateSystemConfig,
   type RerankCanaryListResponse,
+  type QueryMode,
   type RetrievalRerankCompareResponse,
   type RetrievalResponse,
   type RetrievedChunk,
@@ -51,6 +52,16 @@ const JOB_STATE_TEXT: Record<string, string> = {
   partial_failed: '部分失败',
 };
 
+const QUERY_MODE_OPTIONS: Array<{
+  value: QueryMode;
+  label: string;
+  description: string;
+  defaultTopK: number;
+}> = [
+  { value: 'fast', label: '快速', description: '优先响应速度，适合先看命中方向。', defaultTopK: 5 },
+  { value: 'accurate', label: '准确', description: '优先证据质量，适合认真核对召回效果。', defaultTopK: 8 },
+];
+
 // 面板状态类型。
 type PanelStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -74,6 +85,7 @@ export function RetrievalPanel({
   // 表单状态。
   const [query, setQuery] = useState('这份文档主要讲了什么？');
   const [topK, setTopK] = useState(5);
+  const [queryMode, setQueryMode] = useState<QueryMode>('fast');
 
   // 面板状态。
   const [status, setStatus] = useState<PanelStatus>('idle');
@@ -111,12 +123,14 @@ export function RetrievalPanel({
   const buildRequest = () => ({
     query: query.trim(),
     top_k: topK,
+    mode: queryMode,
     document_id: normalizedDocId || undefined,
   });
 
   const buildSampleRequest = (sample: NonNullable<RerankCanaryListResponse['items']>[number]) => ({
     query: sample.query.trim(),
     top_k: topK,
+    mode: queryMode,
     document_id: normalizedDocId || sample.target_id || undefined,
   });
 
@@ -347,6 +361,34 @@ export function RetrievalPanel({
           onChange={(e) => setQuery(e.target.value)}
           required
         />
+
+        <div className="grid gap-2">
+          <div className="text-sm font-semibold text-ink">请求模式</div>
+          <div className="flex flex-wrap gap-2">
+            {QUERY_MODE_OPTIONS.map((option) => {
+              const selected = queryMode === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={[
+                    'rounded-2xl border px-4 py-3 text-left transition-all duration-200',
+                    selected
+                      ? 'border-[rgba(182,70,47,0.38)] bg-[rgba(182,70,47,0.1)] text-accent-deep'
+                      : 'border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.68)] text-ink hover:bg-white',
+                  ].join(' ')}
+                  onClick={() => {
+                    setQueryMode(option.value);
+                    setTopK(option.defaultTopK);
+                  }}
+                >
+                  <div className="text-sm font-semibold">{option.label}</div>
+                  <div className="mt-1 text-xs text-ink-soft">{option.description}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* 两列布局：Top K 和按钮 */}
         <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">

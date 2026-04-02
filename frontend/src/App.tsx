@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { RequireAuth, useAuth } from '@/auth';
 import { AppShell } from '@/app/AppShell';
 import { UploadWorkspaceProvider } from '@/app/UploadWorkspaceContext';
@@ -16,7 +16,6 @@ import {
 } from '@/pages';
 import {
   PortalChatPage,
-  PortalHomePage,
   PortalLibraryPage,
   PortalMePage,
   PortalShell,
@@ -57,6 +56,11 @@ function RootRedirect() {
   return <Navigate to={isAuthenticated ? '/portal' : '/login'} replace />;
 }
 
+function PortalChatRedirect() {
+  const location = useLocation();
+  return <Navigate to={{ pathname: '/portal', search: location.search }} replace />;
+}
+
 export default function App() {
   return (
     <Routes>
@@ -65,8 +69,8 @@ export default function App() {
 
       <Route element={<RequireAuth />}>
         <Route path="portal" element={<PortalShell />}>
-          <Route index element={<PortalHomePage />} />
-          <Route path="chat" element={<PortalChatPage />} />
+          <Route index element={<PortalChatPage />} />
+          <Route path="chat" element={<PortalChatRedirect />} />
           <Route path="sop" element={<PortalSopPage />} />
           <Route path="library" element={<PortalLibraryPage />} />
           <Route path="me" element={<PortalMePage />} />

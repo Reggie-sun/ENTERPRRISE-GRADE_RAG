@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_608ad19f51c54962b32b9e83abf3b95f",
+  "user_id": "user_roster_10565",
+  "username": "10565",
+  "department_id": "dept_production_technology",
+  "updated_at": "2026-04-01T09:14:29.584820Z",
+  "turns": [
+    {
+      "turn_id": "turn_11c8e12fd2e8",
+      "asked_at": "2026-04-01T09:14:29.584771Z",
+      "question": "总解释一下cpps",
+      "answer": "你提供的上下文中并没有关于\"CPS\"的具体定义或解释。根据上下文中的描述，CPS可能是指某种梳妆片或者拖链连接座的一部分，具体涉及到其扣入方式以及紧固螺丝的方法。但是，没有足够的信息来给出一个完整的解释。\n\n如果你有更多关于CPS的背景信息或者其他相关文档，可以提供更详细的解答。否则，基于现有信息，只能推测CPS可能是一种特定的工业部件或工具，用于某些机械装配过程中的特定功能。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    }
+  ]
+}

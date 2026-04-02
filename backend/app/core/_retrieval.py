@@ -37,6 +37,10 @@ class _RetrievalSettings(BaseSettings):
     # 查询分类器的信号阈值
     retrieval_query_classifier_exact_signal_threshold: int = Field(default=2, ge=1, le=10)     # 判定为精确查询的信号阈值
     retrieval_query_classifier_semantic_signal_threshold: int = Field(default=2, ge=1, le=10)  # 判定为语义查询的信号阈值
+    retrieval_quality_top1_threshold: float = Field(default=0.55, ge=0.0, le=1.0)              # 本部门主召回 top1 分低于该阈值时允许触发补充召回
+    retrieval_quality_avg_threshold: float = Field(default=0.45, ge=0.0, le=1.0)               # 本部门主召回前 N 平均分低于该阈值时允许触发补充召回
+    retrieval_fine_query_quality_top1_threshold: float = Field(default=0.85, ge=0.0, le=1.0)   # 细粒度/缩写类查询更严格：top1 低于该阈值时触发补充召回
+    retrieval_fine_query_quality_avg_threshold: float = Field(default=0.60, ge=0.0, le=1.0)    # 细粒度/缩写类查询更严格：前 N 平均分低于该阈值时触发补充召回
 
     # ── Lexical 词法检索配置 ─────────────────────────────────────────────────
     retrieval_lexical_chinese_tokenizer: str = "jieba_search"               # 中文分词器类型

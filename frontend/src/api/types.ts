@@ -1008,11 +1008,16 @@ export interface RetrievalPrimaryRecallStage {
   effective_count: number;
   threshold: number | null;
   whether_sufficient: boolean;
+  top1_score?: number | null;
+  avg_top_n_score?: number | null;
+  quality_top1_threshold?: number | null;
+  quality_avg_threshold?: number | null;
 }
 
 export interface RetrievalSupplementalRecallStage {
   triggered: boolean;
   reason: string | null;
+  trigger_basis?: string | null;
   vector_count: number;
   lexical_count: number;
   fused_count: number;
@@ -1063,6 +1068,7 @@ export interface RetrievalDiagnostic {
   query: string;
   query_type: string | null;
   query_granularity?: string | null;
+  requested_mode?: string | null;
   retrieval_mode: string | null;
   document_id_filter_applied: boolean;
   department_priority_enabled: boolean;
@@ -1070,8 +1076,13 @@ export interface RetrievalDiagnostic {
   backfilled_chunk_count?: number;
   primary_threshold: number | null;
   primary_effective_count: number | null;
+  primary_top1_score?: number | null;
+  primary_avg_top_n_score?: number | null;
+  quality_top1_threshold?: number | null;
+  quality_avg_threshold?: number | null;
   supplemental_triggered: boolean;
   supplemental_reason: string | null;
+  supplemental_trigger_basis?: string | null;
   recall_counts: Record<string, number>;
   filter_counts: Record<string, number>;
   final_result_count: number;

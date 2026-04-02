@@ -1,0 +1,532 @@
+{
+  "snapshot_id": "rsp_dca5231acddf4eb0",
+  "trace_id": "trc_retrieval_d5ecd03ce4a64b0d",
+  "request_id": "req_retrieval_b90ce9f7c2244312",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-01T09:35:10.213713Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "解释一下cpps",
+    "top_k": 5,
+    "mode": "fast",
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-16",
+      "document_id": "doc_20260401084714_fa3b8bf6",
+      "document_name": "全球的尺寸和公差的规定.pdf",
+      "snippet": "的位置、方向和形状要求\n对基准A 的位置、方向和形状要求\n独立轮廓度标注\n\nA B C2.5\n0.5 A B C\n对基准A、B和C位置要求\n对基准A 、B和C形状和方向要求\nA B C2.5\n0.5 A B\n基准B是表面\n对基准A、B和C位置要求\n对基准A、B和C形状和方向要求\n基准B是轴线\n3）\n4）\nA B C2.5\n0.5 A B\n对基准C的位置、方向和形状要求\n对基准A、B 的位置、方向和",
+      "score": 0.8249269005847952,
+      "source_path": "/app/data/uploads/doc_20260401084714_fa3b8bf6__document.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.39466166,
+      "lexical_score": 4.930264481134383,
+      "fused_score": 0.027046783625730993
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-74",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "brid 检索结果优于当前 vector-only 基线\n- 当前用户所在部门的命中结果优先出现，全局可见结果作为补充，而不是严格只查本部门\n- 同一 chunk 被两路都召回时，结果去重后仍能通过 `source_scope` 解释来源\n- `document_id` 限定下，hybrid 不会串文档\n- 关键词分支不可用时，系统自动退回 vector-only，不影响主流程可用性\n- 问答与 ",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260401085300_13d0ce46__V1_PLAN.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 9.094202740095955,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-67",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "ckend/app/core/config.py`\n- `backend/app/services/system_config_service.py`\n\n目标：\n\n- 在不改动异步入库主链路的前提下，把当前“模型级 provider + 启发式兜底”的代码路径收口成可默认启用、可观测、可回滚的正式在线重排能力\n\n当前代码已完成：\n\n- 在现有 `RerankerClient` 上接入可配置 pro",
+      "score": 0.5,
+      "source_path": "/app/data/uploads/doc_20260401085300_13d0ce46__V1_PLAN.md",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.43610764,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-32",
+      "document_id": "doc_20260401084714_fa3b8bf6",
+      "document_name": "全球的尺寸和公差的规定.pdf",
+      "snippet": "E SPECIFIED\nPERFECT FORM REQUIRED FOR FEATURES OF SIZE AT MMC.\nTRUE POSITION TOLERANCES AND RELATED DATUMS APPLY\nAT CONDITION OF SIZE INDICATED IN FEATURE CONTROL\nFRAME. ALL OTHER GEOMETRIC TOLERANCES",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260401084714_fa3b8bf6__document.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 7.148484618280887,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "3P\n4P\n1P\n3P\n4P\n1P\n1P\n（镀金工厂、涂装工厂、药品工厂等）\n(1)电动机负载\n产生腐蚀性气体的场所\n×\n×\n×\n×\n×\n×\n×\n×\nTRO-REEL HS\n•\n•\n•\n•\n••\n•\n负载的额定电流小于50A时\n（污水处理广、药品加工厂等）\n（非张力型)\n适用的额定电流=负载的额定电流×1.25以上\n产生油雾的场所\n×\nHIGH-TRO-REEL\n（非张力型)\nの\n•\n•\n•\n•\n",
+      "score": 0.4919354838709677,
+      "source_path": "/app/data/uploads/doc_20260331081535_5d30086d__DH54.pdf",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.425238,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "解释一下cpps",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": "fast",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 19,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.8249,avg_top_n=0.5618)_below_thresholds(0.85,0.60)",
+    "recall_counts": {
+      "department_vector_count": 10,
+      "department_lexical_count": 11,
+      "department_fused_count": 20,
+      "department_after_ocr": 19,
+      "supplemental_vector_count": 6,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "解释一下cpps",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": "fast",
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 10,
+      "lexical_count": 11,
+      "fused_count": 20,
+      "effective_count": 19,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.8249269005847952,
+      "avg_top_n_score": 0.561759573665346,
+      "quality_top1_threshold": 0.85,
+      "quality_avg_threshold": 0.6
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.8249,avg_top_n=0.5618)_below_thresholds(0.85,0.60)",
+      "vector_count": 6,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085048_c4fc9f78",
+          "chunk_id": "doc_20260401085048_c4fc9f78-chunk-6",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-65",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-36",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-21",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-41",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-16",
+          "document_name": "全球的尺寸和公差的规定.pdf",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.39466166,
+          "lexical_score": 4.930264481134383,
+          "fused_score": 0.027046783625730993,
+          "final_score": 0.8249269005847952,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.3947，词法 4.9303，融合 0.0270。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-74",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 9.094202740095955,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 9.0942，融合 0.0164。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-67",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.43610764,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4361，融合 0.0164。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-32",
+          "document_name": "全球的尺寸和公差的规定.pdf",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 7.148484618280887,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 7.1485，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.425238,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4252，融合 0.0161。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-16",
+        "document_name": "全球的尺寸和公差的规定.pdf",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.39466166,
+        "lexical_score": 4.930264481134383,
+        "fused_score": 0.027046783625730993,
+        "final_score": 0.8249269005847952,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.3947，词法 4.9303，融合 0.0270。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-74",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 9.094202740095955,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 9.0942，融合 0.0164。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-67",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.43610764,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4361，融合 0.0164。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-32",
+        "document_name": "全球的尺寸和公差的规定.pdf",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 7.148484618280887,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 7.1485，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.425238,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4252，融合 0.0161。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085048_c4fc9f78",
+        "chunk_id": "doc_20260401085048_c4fc9f78-chunk-6",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-65",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-36",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-21",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-41",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

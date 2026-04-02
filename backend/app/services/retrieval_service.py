@@ -150,12 +150,15 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         normalized_document_id = request.document_id.strip() if request.document_id else None
         if diagnostic is not None:
             diagnostic["raw_query"] = request.query
+            diagnostic["requested_mode"] = str(request.mode) if request.mode is not None else None
             diagnostic["retrieval_mode"] = None
             diagnostic["document_id_filter_applied"] = normalized_document_id is not None
             if hasattr(self, "query_router") and self.query_router is not None:
                 try:
                     bw = self.query_router.resolve_branch_weights(request.query)
                     diagnostic["query_type"] = bw.query_type
+                    if hasattr(self.query_router, "infer_query_granularity"):
+                        diagnostic["query_granularity"] = self.query_router.infer_query_granularity(request.query)
                     diagnostic["branch_weights"] = {
                         "vector_weight": bw.vector_weight,
                         "lexical_weight": bw.lexical_weight,
@@ -560,7 +563,15 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             fused_count=primary_fused_count,
             effective_count=effective_count,
             threshold=primary_threshold,
-            whether_sufficient=(not supplemental_triggered) if primary_threshold is None else effective_count >= primary_threshold,
+            whether_sufficient=(
+                not supplemental_triggered
+                if primary_threshold is None
+                else (effective_count >= primary_threshold and not supplemental_triggered)
+            ),
+            top1_score=RetrievalService._as_float(diagnostic.get("primary_top1_score")),
+            avg_top_n_score=RetrievalService._as_float(diagnostic.get("primary_avg_top_n_score")),
+            quality_top1_threshold=RetrievalService._as_float(diagnostic.get("quality_top1_threshold")),
+            quality_avg_threshold=RetrievalService._as_float(diagnostic.get("quality_avg_threshold")),
         )
         supplemental_recall_stage = RetrievalSupplementalRecallStage(
             triggered=supplemental_triggered,
@@ -568,6 +579,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             vector_count=RetrievalService._pick_count(recall_counts, "supplemental_vector_count", "supplemental_vector"),
             lexical_count=RetrievalService._pick_count(recall_counts, "supplemental_lexical_count", "supplemental_lexical"),
             fused_count=RetrievalService._pick_count(recall_counts, "supplemental_fused_count", "supplemental_recall"),
+            trigger_basis=RetrievalService._as_optional_str(diagnostic.get("supplemental_trigger_basis")),
         )
         filter_stage = RetrievalFilterStage(
             ocr_quality_filtered_count=RetrievalService._pick_count(filter_counts, "ocr_quality_filtered_count", "ocr_quality_filtered", "ocr_quality"),
@@ -587,6 +599,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         return RetrievalDiagnostic(
             query=query_text,
             query_type=RetrievalService._as_optional_str(diagnostic.get("query_type")),
+            query_granularity=RetrievalService._as_optional_str(diagnostic.get("query_granularity")),
+            requested_mode=str(request.mode) if request.mode is not None else None,
             retrieval_mode=retrieval_mode,
             document_id_filter_applied=bool(diagnostic.get("document_id_filter_applied", False)),
             department_priority_enabled=department_priority_enabled,
@@ -882,35 +896,75 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             document_ids=scope.department_document_ids,
         )
         self._mark_candidates_source_scope(department_candidates, source_scope="department")
+        department_vector_count = sum(1 for c in department_candidates if c.vector_score is not None)
+        department_lexical_count = sum(1 for c in department_candidates if c.lexical_score is not None)
+        department_fused_count = len(department_candidates)
 
         # Apply OCR quality governance to department candidates to get effective count
         department_after_ocr, _ocr_filtered = self._apply_ocr_quality_governance(department_candidates)
         department_effective_count = len(department_after_ocr)
-
         required = self._required_primary_results(profile, truncate_to_top_k)
+        primary_top1_score, primary_avg_top_n_score = self._summarize_primary_quality(
+            department_after_ocr,
+            retrieval_mode=department_mode,
+            branch_weights=department_branch_weights,
+            window_size=required,
+        )
+        query_granularity = (
+            str(diagnostic.get("query_granularity") or "").strip().lower()
+            if diagnostic is not None
+            else ""
+        )
+        quality_top1_threshold = self.settings.retrieval_quality_top1_threshold
+        quality_avg_threshold = self.settings.retrieval_quality_avg_threshold
+        if query_granularity == "fine":
+            quality_top1_threshold = max(
+                quality_top1_threshold,
+                self.settings.retrieval_fine_query_quality_top1_threshold,
+            )
+            quality_avg_threshold = max(
+                quality_avg_threshold,
+                self.settings.retrieval_fine_query_quality_avg_threshold,
+            )
+        low_quality = (
+            primary_top1_score is not None and primary_top1_score < quality_top1_threshold
+        ) or (
+            primary_avg_top_n_score is not None and primary_avg_top_n_score < quality_avg_threshold
+        )
 
-        if department_effective_count >= required:
-            # Department has sufficient results — skip supplemental route entirely
+        if department_effective_count >= required and not low_quality:
+            # Department has sufficient and good-quality results — skip supplemental route entirely
             logger.info(
-                "staged_retrieval stage=department_only department_effective=%d required=%d supplemental=skipped",
+                "staged_retrieval stage=department_only department_effective=%d required=%d top1=%.4f avg_top_n=%.4f supplemental=skipped",
                 department_effective_count,
                 required,
+                primary_top1_score or 0.0,
+                primary_avg_top_n_score or 0.0,
             )
             if diagnostic is not None:
                 diagnostic["primary_threshold"] = required
                 diagnostic["primary_effective_count"] = department_effective_count
                 diagnostic["supplemental_triggered"] = False
                 diagnostic["supplemental_reason"] = "department_sufficient"
+                diagnostic["supplemental_trigger_basis"] = "department_sufficient"
+                diagnostic["primary_top1_score"] = primary_top1_score
+                diagnostic["primary_avg_top_n_score"] = primary_avg_top_n_score
+                diagnostic["quality_top1_threshold"] = quality_top1_threshold
+                diagnostic["quality_avg_threshold"] = quality_avg_threshold
                 diagnostic["recall_counts"] = {
-                    "department_vector": sum(1 for c in department_candidates if c.vector_score is not None),
+                    "department_vector_count": department_vector_count,
+                    "department_lexical_count": department_lexical_count,
+                    "department_fused_count": department_fused_count,
                     "department_after_ocr": department_effective_count,
                 }
             return department_candidates, department_mode, department_branch_weights
 
         # --- Stage 2: supplemental route ---
-        remaining_needed = required - department_effective_count
-        # Allow moderate headroom for supplemental recall to account for post-filter attrition
-        supplemental_limit = min(limit, max(remaining_needed + required, 1))
+        remaining_needed = max(required - department_effective_count, 0)
+        if department_effective_count < required:
+            supplemental_limit = min(limit, max(remaining_needed + required, 1))
+        else:
+            supplemental_limit = min(limit, max(required * 2, required, 1))
 
         global_candidates, global_mode, global_branch_weights = self._collect_scoped_candidates(
             query=query,
@@ -920,23 +974,45 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             document_ids=scope.global_document_ids,
         )
         self._mark_candidates_source_scope(global_candidates, source_scope="global")
+        supplemental_vector_count = sum(1 for c in global_candidates if c.vector_score is not None)
+        supplemental_lexical_count = sum(1 for c in global_candidates if c.lexical_score is not None)
+        supplemental_fused_count = len(global_candidates)
 
         logger.info(
-            "staged_retrieval stage=supplemental department_effective=%d required=%d supplemental_recall=%d",
+            "staged_retrieval stage=supplemental department_effective=%d required=%d top1=%.4f avg_top_n=%.4f supplemental_limit=%d supplemental_recall=%d",
             department_effective_count,
             required,
+            primary_top1_score or 0.0,
+            primary_avg_top_n_score or 0.0,
+            supplemental_limit,
             len(global_candidates),
         )
 
         if diagnostic is not None:
+            trigger_basis = "department_insufficient" if department_effective_count < required else "department_low_quality"
             diagnostic["primary_threshold"] = required
             diagnostic["primary_effective_count"] = department_effective_count
             diagnostic["supplemental_triggered"] = True
-            diagnostic["supplemental_reason"] = f"department_effective({department_effective_count})_below_threshold({required})"
+            if trigger_basis == "department_insufficient":
+                diagnostic["supplemental_reason"] = f"department_effective({department_effective_count})_below_threshold({required})"
+            else:
+                diagnostic["supplemental_reason"] = (
+                    f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f})"
+                    f"_below_thresholds({quality_top1_threshold:.2f},{quality_avg_threshold:.2f})"
+                )
+            diagnostic["supplemental_trigger_basis"] = trigger_basis
+            diagnostic["primary_top1_score"] = primary_top1_score
+            diagnostic["primary_avg_top_n_score"] = primary_avg_top_n_score
+            diagnostic["quality_top1_threshold"] = quality_top1_threshold
+            diagnostic["quality_avg_threshold"] = quality_avg_threshold
             diagnostic["recall_counts"] = {
-                "department_vector": sum(1 for c in department_candidates if c.vector_score is not None),
+                "department_vector_count": department_vector_count,
+                "department_lexical_count": department_lexical_count,
+                "department_fused_count": department_fused_count,
                 "department_after_ocr": department_effective_count,
-                "supplemental_recall": len(global_candidates),
+                "supplemental_vector_count": supplemental_vector_count,
+                "supplemental_lexical_count": supplemental_lexical_count,
+                "supplemental_fused_count": supplemental_fused_count,
             }
 
         retrieval_mode = "hybrid" if "hybrid" in {department_mode, global_mode} else "qdrant"
@@ -959,6 +1035,30 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if truncate_to_top_k:
             return profile.top_k
         return profile.rerank_top_n
+
+    def _summarize_primary_quality(
+        self,
+        candidates: list[_RetrievalCandidate],
+        *,
+        retrieval_mode: str,
+        branch_weights: HybridBranchWeights | None,
+        window_size: int,
+    ) -> tuple[float | None, float | None]:
+        if not candidates:
+            return None, None
+
+        normalized_scores = [
+            self._response_score(
+                float(candidate.score),
+                retrieval_mode=retrieval_mode,
+                branch_weights=branch_weights,
+            )
+            for candidate in candidates
+        ]
+        top1_score = normalized_scores[0]
+        safe_window = max(1, min(window_size, len(normalized_scores)))
+        avg_top_n_score = sum(normalized_scores[:safe_window]) / safe_window
+        return top1_score, avg_top_n_score
 
     def _apply_ocr_quality_governance(
         self,

@@ -2,7 +2,7 @@ import { MessageSquareText, Sparkles } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { getDepartmentScopeSummary, getRoleExperience, useAuth } from '@/auth';
-import { Button, Card, HeroCard, StatusPill, Textarea, EvidenceSourceSummary } from '@/components';
+import { Button, Card, StatusPill, Textarea, EvidenceSourceSummary } from '@/components';
 import {
   ApiError,
   askQuestion,
@@ -42,6 +42,7 @@ export function PortalChatPage() {
   const [error, setError] = useState('');
   const activeRequestRef = useRef<{ controller: AbortController; reason: 'superseded' | 'unmounted' | 'startup-timeout' | null } | null>(null);
   const requestVersionRef = useRef(0);
+  const hasCitations = Boolean(data?.citations.length);
 
   useEffect(() => {
     if (searchQuestion) {
@@ -205,38 +206,41 @@ export function PortalChatPage() {
   return (
     <div className="grid gap-5">
       <section className="grid grid-cols-12 gap-5">
-        <HeroCard className="col-span-8 max-lg:col-span-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
-            Intelligent Q&A
+        <Card className={`${hasCitations ? 'col-span-8' : 'col-span-12'} max-lg:col-span-12`}>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold text-accent-deep">
+                <MessageSquareText className="h-4 w-4" />
+                智能问答
+              </div>
+              <h2 className="m-0 mt-4 text-2xl font-semibold text-ink md:text-3xl">
+                输入问题后，系统会直接返回带引用的回答。
+              </h2>
+              <p className="m-0 mt-2 max-w-[64ch] text-sm leading-relaxed text-ink-soft md:text-base">
+                首屏只保留提问、回答和引用来源。当前会话会自动承接最近几轮上下文，如需完全切换话题，刷新页面即可重置。
+              </p>
+            </div>
+            <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>
+              {status === 'idle' && '等待提问'}
+              {status === 'loading' && '回答生成中'}
+              {status === 'success' && '回答已生成'}
+              {status === 'error' && '问答失败'}
+            </StatusPill>
           </div>
-          <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
-            直接提问题，系统会给出流式回答并附上参考来源。
-          </h2>
-          <p className="m-0 mt-3 max-w-[62ch] text-base leading-relaxed text-ink-soft">
-            这里不展示模型名、检索模式和调试分数，只保留客户真正需要理解的信息：
-            回答内容、参考出处，以及回答当前基于什么权限范围生成。
-          </p>
-          <p className="m-0 mt-3 text-sm leading-relaxed text-ink-soft">
-            当前会话会自动承接最近几轮上下文，适合连续追问；如需完全切换话题，刷新页面即可重置。
-          </p>
-        </HeroCard>
 
-        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
-          <div className="flex items-center gap-2 text-accent-deep">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-semibold">当前回答范围</span>
+          <div className="mt-5 rounded-[24px] border border-[rgba(182,70,47,0.12)] bg-[rgba(255,248,240,0.72)] p-4">
+            <div className="flex items-start gap-2 text-sm leading-relaxed text-ink-soft">
+              <Sparkles className="mt-0.5 h-4 w-4 flex-none text-accent-deep" />
+              <div className="grid gap-1">
+                <p className="m-0 font-semibold text-ink">当前回答范围</p>
+                <p className="m-0">{scopeSummary}</p>
+                <p className="m-0">{experience.portalHeaderNote}</p>
+                <p className="m-0">如果回答偏泛，优先把问题写成设备、场景、工序或报警条件。</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 grid gap-3 text-sm leading-relaxed text-ink-soft">
-            <p className="m-0">{scopeSummary}</p>
-            <p className="m-0">{experience.portalHeaderNote}</p>
-            <p className="m-0">如果回答偏泛，优先把问题写成设备、场景、工序或报警条件。</p>
-          </div>
-        </Card>
-      </section>
 
-      <section className="grid grid-cols-12 gap-5">
-        <Card className="col-span-8 max-lg:col-span-12">
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={handleSubmit} className="mt-5 grid gap-4">
             <Textarea
               label="请输入你的问题"
               value={question}
@@ -283,14 +287,8 @@ export function PortalChatPage() {
                 {QUERY_MODE_OPTIONS.find((item) => item.value === queryMode)?.description}
               </p>
             </div>
-            <div className="flex items-center justify-between gap-3">
-              <StatusPill tone={status === 'error' ? 'error' : status === 'success' ? 'ok' : status === 'loading' ? 'warn' : 'default'}>
-                {status === 'idle' && '等待提问'}
-                {status === 'loading' && '回答生成中'}
-                {status === 'success' && '回答已生成'}
-                {status === 'error' && '问答失败'}
-              </StatusPill>
-              <Button type="submit" loading={status === 'loading'}>
+            <div className="flex justify-end">
+              <Button type="submit" loading={status === 'loading'} className="min-w-[160px]">
                 <span className="flex items-center gap-2">
                   <MessageSquareText className="h-4 w-4" />
                   发起问答
@@ -303,21 +301,21 @@ export function PortalChatPage() {
             {error ? (
               <p className="m-0 whitespace-pre-wrap leading-relaxed text-accent-deep">{error}</p>
             ) : (
-              <div className="min-h-40 whitespace-pre-wrap text-base leading-8 text-ink">
+              <div className="min-h-[280px] whitespace-pre-wrap text-base leading-8 text-ink">
                 {data?.answer || '回答会在这里以流式方式逐步展示。'}
               </div>
             )}
           </div>
         </Card>
 
-        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
-          <h3 className="m-0 text-xl font-semibold text-ink">引用来源</h3>
-          <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
-            回答基于下列文档片段生成。你可以继续查看原文确认细节。
-          </p>
-          <div className="mt-4 grid gap-3">
-            {data?.citations.length ? (
-              data.citations.map((item: Citation) => (
+        {hasCitations ? (
+          <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+            <h3 className="m-0 text-xl font-semibold text-ink">引用来源</h3>
+            <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
+              回答基于下列文档片段生成。你可以继续查看原文确认细节。
+            </p>
+            <div className="mt-4 grid gap-3">
+              {data?.citations.map((item: Citation) => (
                 <article
                   key={item.chunk_id}
                   className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)] p-4"
@@ -349,14 +347,10 @@ export function PortalChatPage() {
                     </Link>
                   </div>
                 </article>
-              ))
-            ) : (
-              <div className="rounded-2xl bg-[rgba(255,255,255,0.72)] p-4 text-sm leading-relaxed text-ink-soft">
-                回答完成后，这里会显示对应的参考来源。
-              </div>
-            )}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        ) : null}
       </section>
     </div>
   );

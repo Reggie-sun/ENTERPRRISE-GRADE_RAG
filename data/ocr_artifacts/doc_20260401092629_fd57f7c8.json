@@ -1,0 +1,72 @@
+{
+  "document_id": "doc_20260401092629_fd57f7c8",
+  "file_name": "FCW05-1100-X1600-Y900#开放式全伺服机械手（反装-2吸2夹）单臂式（装配SOP)#A0).pdf",
+  "source_path": "/app/data/uploads/doc_20260401092629_fd57f7c8__FCW05-1100-X1600-Y900_-2_2_SOP_A0.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 10,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\nAuto Robot For Plastic Injection Molding Machine\n注塑机专用机械手臂\n开放式全伺服机械手\nFCW05-1100-X1600-Y900\n装配作业指导书 (机械篇)\n单臂式（反装-2 吸2夹）\n一生技部\n伟立机器人\nWELLLIH ROBOTS",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.8050402998924255
+    },
+    {
+      "text": "Auto Robot For Plastic Injection Molding Machine",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9613313674926758
+    },
+    {
+      "text": "注塑机专用机械手臂",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9981743693351746
+    },
+    {
+      "text": "开放式全伺服机械手",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9995171427726746
+    },
+    {
+      "text": "FCW05-1100-X1600-Y900",
+      "page_no": 1,
+      "line_no": 5,
+      "confidence": 0.9987290501594543
+    },
+    {
+      "text": "装配作业指导书 (机械篇)",
+      "page_no": 1,
+      "line_no": 6,
+      "confidence": 0.9367380738258362
+    },
+    {
+      "text": "单臂式（反装-2 吸2夹）",
+      "page_no": 1,
+      "line_no": 7,
+      "confidence": 0.8919833302497864
+    },
+    {
+      "text": "一生技部",
+      "page_no": 1,
+      "line_no": 8,
+      "confidence": 0.9968131184577942
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": 1,
+      "line_no": 9,
+      "confidence": 0.9998449087142944
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": 1,
+      "line_no": 10,
+      "confidence": 0.994627833366394
+    }
+  ]
+}
