@@ -12,6 +12,8 @@
 4. schema / API / 边界检查
 5. 测试与验证检查
 
+命中 `AGENTS.md` 中的 `Auto Enforcement` / 自动触发规则时，不得跳过 `/review`。
+
 ## 2. 审查重点
 
 ### schema / API / 边界

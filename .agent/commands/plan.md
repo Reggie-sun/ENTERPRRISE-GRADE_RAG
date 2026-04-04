@@ -49,6 +49,7 @@
 
 - plan 输出后默认等待确认
 - 未确认前禁止改代码
+- 命中 `AGENTS.md` 中的 `Auto Enforcement` / 自动触发规则时，不得跳过 `/plan`
 - retrieval 改动必须说明当前处于：
   - baseline
   - supplemental
