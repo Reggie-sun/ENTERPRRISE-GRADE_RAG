@@ -1,8 +1,3 @@
-# Bug Spec Template
-
-> 用于 bug 修复。  
-> 结构固定为 `Report / Analyze / Fix Plan / Verify`，只保留最小必要字段。
-
 # Bug: [Bug 名称]
 
 ## 1. Report
@@ -66,12 +61,10 @@
 
 ### Retrieval / Eval 专项分析
 
-如果这是 retrieval 或 eval 相关 bug，再补充：
-
-- 样本是否为 verified：
+- 样本是否 verified：
 - baseline 是否真实：
-- 问题属于样本、评估脚本，还是检索逻辑：
-- 是否涉及 supplemental / chunk / router / rerank 顺序误判：
+- 问题属于样本、eval 脚本，还是 retrieval 逻辑：
+- 是否涉及 baseline / supplemental / chunk / router / rerank 顺序误判：
 
 ## 3. Fix Plan
 
@@ -89,16 +82,16 @@
 
 - [ ] 不涉及稳定主契约
 - [ ] 涉及稳定主契约，已列出受影响字段 / 语义
-- [ ] 需要同步更新文档 / 测试 / 前端 API 类型
+- [ ] 需要同步更新测试 / frontend API / 文档
 
 ### 修复步骤
 
-1. 修复点 1
+1. 
    - 文件：
    - 改动：
    - 为什么这是最小修复：
 
-2. 修复点 2
+2. 
    - 文件：
    - 改动：
    - 为什么这是最小修复：
@@ -121,8 +114,8 @@
 
 ### 自动化验证
 
-- 后端：
-- 前端：
+- pytest：
+- lint / build：
 - smoke：
 - eval：
 
@@ -132,6 +125,6 @@
 
 ### 收尾输出
 
-- [ ] 结论写清楚改了什么
-- [ ] 结论写清楚验证了什么
-- [ ] 结论写清楚还有什么风险或缺口
+- [ ] 说明改了什么
+- [ ] 说明验证了什么
+- [ ] 说明风险是什么

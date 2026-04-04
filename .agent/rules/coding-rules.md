@@ -90,6 +90,8 @@
 
 - `retrieval / chat / SOP` 默认保持同一套 retrieval 主逻辑。
 - 不要为单个 endpoint 临时分叉 supplemental 或 rerank 规则。
+- ingestion / chunk 修改不能破坏 retrieval 行为基线。
+- rerank 只能放在 baseline、supplemental、chunk、router 之后。
 
 ## 6. 后端改动规则
 

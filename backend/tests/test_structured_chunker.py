@@ -235,50 +235,41 @@ class TestShouldUseNegativeCases:
 class TestShouldUseStepStyleText:
     """验证 Step 风格文本的 should_use() 行为。"""
 
-    def test_should_use_accepts_step_style_text_with_sop_filename(self) -> None:
-        """Step 风格文本在文件名包含 SOP 时应触发（条件放宽）。
+    def test_should_use_rejects_step_style_text_even_with_sop_filename_currently(self) -> None:
+        """Step 风格文本即使文件名包含 SOP，当前也不会触发。
 
         当前实现：Step 风格的条目不计入 clause_hits（因为 _CLAUSE_PATTERN 不识别），
-        但如果文件名包含 SOP/WI，可以走放宽条件。
+        因此即使 filename_signal=True，也无法满足 clause >= 2 的放宽条件。
         """
         chunker = SOPStructuredChunker()
         text = make_step_style_text()
-        # 文件名包含 SOP，走放宽条件
         result = chunker.should_use(text=text, filename="皮带轮部品作业指导书SOP.docx")
-        # 实际行为：heading_hits 可能为 3（目的、适用范围、职责），但 Step 不计入 clause
-        # 需要根据实际实现断言
-        # 如果 filename 包含 SOP，heading >= 2 且 clause >= 2 时触发
-        # Step 不被识别为 clause，所以 clause_hits 可能为 0
-        # 这个测试记录当前行为
-        assert isinstance(result, bool), "should_use 应返回布尔值"
+        assert result is False, "当前实现下，Step 风格文本即使文件名含 SOP 也不触发结构化分块"
 
-    def test_should_use_step_style_text_without_sop_filename(self) -> None:
-        """Step 风格文本在文件名不含 SOP 时的行为。
+    def test_should_use_rejects_step_style_text_without_sop_filename(self) -> None:
+        """Step 风格文本在文件名不含 SOP 时当前不会触发。
 
         当前实现：Step 条目不计入 clause_hits，可能无法满足 clause >= 4 的要求。
         """
         chunker = SOPStructuredChunker()
         text = make_step_style_text()
         result = chunker.should_use(text=text, filename="作业指导书.txt")
-        # Step 不被识别为 clause，clause_hits 可能为 0
-        # 需要根据实际行为断言
-        assert isinstance(result, bool), "should_use 应返回布尔值"
+        assert result is False, "当前实现下，Step 风格文本在普通文件名下不触发结构化分块"
 
 
 class TestShouldUseSopTitleOnly:
     """验证标题有 SOP 但正文结构不完全符合的文本。"""
 
-    def test_should_use_sop_title_only_text(self) -> None:
-        """标题有 SOP，条款格式为纯数字（非 X.Y）时的行为。
+    def test_should_use_rejects_sop_title_only_text_without_x_y_clauses(self) -> None:
+        """标题有 SOP，但正文只有纯数字条款时当前不会触发。
 
         当前实现：纯数字条款（如 "1." "2."）不被 _CLAUSE_PATTERN 识别，
-        但文件名如果包含 SOP，可能走放宽条件。
+        因此即使文件名包含 SOP，也无法满足 clause >= 2 的放宽条件。
         """
         chunker = SOPStructuredChunker()
         text = make_sop_title_only_text()
         result = chunker.should_use(text=text, filename="电机齿轮安装SOP.txt")
-        # 实际行为需要根据实现断言
-        assert isinstance(result, bool), "should_use 应返回布尔值"
+        assert result is False, "当前实现下，纯数字条款的 SOP 标题文本不会触发结构化分块"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -338,26 +329,17 @@ class TestStepStyleLinesDoNotBecomeClauseChunks:
         """
         chunker = SOPStructuredChunker()
         text = make_step_style_text()
+        filename = "皮带轮部品SOP.docx"
 
-        # 先检查 should_use 是否触发
-        if not chunker.should_use(text=text, filename="皮带轮部品SOP.docx"):
-            # 如果 should_use 返回 False，则不会走结构化分块
-            pytest.skip("should_use 返回 False，Step 风格文本未触发结构化分块")
+        should_use = chunker.should_use(text=text, filename=filename)
+        assert should_use is False, "当前实现下，Step 风格文本不会触发结构化分块"
 
-        chunks = chunker.split(document_id="test-doc", text=text, filename="皮带轮部品SOP.docx")
+        chunks = chunker.split(document_id="test-doc", text=text, filename=filename)
+        assert chunks == [], "当前实现下，未触发结构化分块的 Step 文本不会产出结构化 chunk"
 
         # 检查是否有 clause 类型的 chunk
         clause_chunks = [c for c in chunks if c.chunk_type == "clause"]
-
-        # 当前实现：Step 不被识别，所以可能没有 clause chunk
-        # 或者可能以其他方式被分组
-        # 这个测试记录当前行为
-        # 如果有 clause chunk，检查它们是否包含 Step 内容
-        for chunk in clause_chunks:
-            # 如果有 clause chunk，它们的 clause_no 不应该是 Step 格式
-            if chunk.clause_no:
-                assert not chunk.clause_no.lower().startswith("step"), \
-                    f"当前实现不应将 Step 识别为条款号，但得到: {chunk.clause_no}"
+        assert clause_chunks == [], "当前实现下，Step 风格文本不会生成 clause 类型的结构化 chunk"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -497,32 +479,25 @@ class TestSectionSummaryRetrievalTextCurrentlyIncludesChildClauseContent:
         section_summaries = [c for c in chunks if c.chunk_type == "section_summary"]
         clause_chunks = [c for c in chunks if c.chunk_type == "clause"]
 
-        if not section_summaries or not clause_chunks:
-            pytest.skip("需要 section_summary 和 clause chunk 才能验证重叠")
+        assert section_summaries, "该基线样本文本应生成 section_summary chunk"
+        assert clause_chunks, "该基线样本文本应生成 clause chunk"
 
-        # 找到一个 section_summary 和它包含的 clause
+        found_overlap = False
         for section in section_summaries:
-            # 找到属于这个 section 的 clause
             child_clauses = [c for c in clause_chunks if c.parent_id == section.chunk_id]
-
             if not child_clauses:
                 continue
 
-            # 验证 section_summary 的 retrieval_text 包含了 clause 的内容关键词
-            # 这是当前实现的行为，可能导致检索时 clause query 被 summary 抢走
-            for clause in child_clauses[:1]:  # 只检查第一个子条款
-                # 检查 retrieval_text 是否有重叠
-                # 当前实现：section_summary 的 text 包含 clause 的内容摘要
-                section_text = section.retrieval_text or section.text
-                clause_text = clause.retrieval_text or clause.text
+            clause = child_clauses[0]
+            section_text = section.retrieval_text or section.text
+            assert clause.text in section.text, \
+                "当前实现下，section_summary 的 text 应直接包含子 clause 的正文"
+            assert clause.text in section_text, \
+                "当前实现下，section_summary 的 retrieval_text 应直接包含子 clause 的正文"
+            found_overlap = True
+            break
 
-                # 检查是否有明显的内容重叠
-                # 提取 clause 中的关键信息（如条款号）
-                if clause.clause_no:
-                    # 当前实现：section 的 section 字段包含条款号范围
-                    # 如 "4.13-4.18"，而 clause 的 clause_no 是 "4.13"
-                    # 这是当前实现的证据
-                    pass  # 这个测试主要是记录行为，不做硬性断言
+        assert found_overlap, "至少应存在一组 section_summary / child clause 内容重叠的证据"
 
     def test_section_and_clause_have_overlapping_content(self) -> None:
         """验证 section_summary 和 clause 存在内容重叠（当前实现风险）。
@@ -537,8 +512,8 @@ class TestSectionSummaryRetrievalTextCurrentlyIncludesChildClauseContent:
         section_summaries = [c for c in chunks if c.chunk_type == "section_summary"]
         clause_chunks = [c for c in chunks if c.chunk_type == "clause"]
 
-        if not section_summaries or not clause_chunks:
-            pytest.skip("需要两种 chunk 才能验证重叠")
+        assert section_summaries, "该基线样本文本应生成 section_summary chunk"
+        assert clause_chunks, "该基线样本文本应生成 clause chunk"
 
         # 验证当前实现：section_summary 的 text 包含 clause 的摘要
         # 这可能导致 fine-grained clause query 命中 section_summary 而非 clause

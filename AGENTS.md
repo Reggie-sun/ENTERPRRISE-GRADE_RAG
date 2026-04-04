@@ -1,170 +1,428 @@
 # Enterprise-grade_RAG Agent Guide
 
-本仓库使用一套“最小可用”的本地 coding agent workflow。
+本仓库使用一套最小可用、单一主线的 coding agent workflow。
 
-目标只有三件事：
+## 1. 控制面
 
-- 先读代码和现有文档，再行动。
-- 复杂改动先做 `/plan` 和 spec，再编码。
-- 改完后按 `/review` 思路自检，并明确说明：
-  - 改了什么
-  - 验证了什么
-  - 还有什么风险
-
-这套 workflow 只保留 ECC 里最核心的 `/plan` 与 `/code-review` 思路，并结合本仓库实际结构重写。**不引入复杂 hooks、MCP、memory、security scanning 体系。**
-
-## 1. 以哪些文件为准
+`AGENTS.md` 是唯一规则源（Single Source of Truth）。
 
 优先级从高到低：
 
 1. `MAIN_CONTRACT_MATRIX.md`
 2. `RETRIEVAL_OPTIMIZATION_PLAN.md`
 3. `RETRIEVAL_OPTIMIZATION_BACKLOG.md`
-4. `.agent/rules/coding-rules.md`
-5. `.agent/context/repo-map.md`
+4. `AGENTS.md`
+5. `.agent/rules/coding-rules.md`
+6. `.agent/context/repo-map.md`
+7. `.agent/commands/*.md`
+8. `.agent/specs/*.md`
 
-如果 `.agent/` 下的模板和其他上游目录写法不一致，以本文件和 `.agent/` 为准，不要照搬外部 workflow 结构。
+`.claude` 和 `.codex` 只能作为工具适配层，不得再定义业务规则或 workflow 主线。
 
-## 1.1 职责分层
+## 2. 工作原则
 
-只保留一条主线：
+- 先读代码、文档和 repo-map，再行动。
+- 小改动可直接执行，但仍要先读相关文件。
+- 中大改动必须先 `/plan`。
+- 复杂改动必须先写 spec。
+- 改动必须优先最小必要修改。
+- 禁止无关重构、跨模块乱改、顺手清理无关问题。
+- 如果发现实现、测试、文档不一致，必须明确指出。
 
-- `AGENTS.md`
-  - 唯一总纲。定义工作原则、硬约束、输出格式。
-- `.agent/`
-  - 唯一 workflow 内容层。只放：
-    - `commands/plan.md`
-    - `commands/review.md`
-    - `specs/feature-template.md`
-    - `specs/bug-template.md`
-    - `rules/coding-rules.md`
-    - `context/repo-map.md`
-- `.claude/`
-  - 只允许保留 Claude 运行时配置或本地偏好。
-  - 不应再承载另一套独立 workflow 主线。
-- `.codex/`
-  - 只允许保留 Codex 工具配置、MCP 启动脚本、技能目录。
-  - 不应再定义与 `AGENTS.md` 冲突的项目规则。
+## Lite Mode（快速模式）
 
-## 2. 默认工作方式
+Lite Mode 只用于低风险、小范围、单模块改动，用来降低使用成本，但不是绕过约束的通道。
 
-### 简单改动
+### 允许进入 Lite Mode 的条件
 
-适用场景：
+只有同时满足以下条件，才允许跳过 spec，直接进入实现：
 
-- 单文件或少量文件的小修复
-- 明确局部行为修正
-- 文档更新
-- 不涉及契约、核心 retrieval、chunk、rerank、ingestion、auth 边界
+- 改动范围小，通常为 1 到 3 个相关文件
+- 目标明确，是局部修复、文案修正、局部行为微调或纯前端展示修正
+- 不涉及稳定主契约
+- 不新增 endpoint、不新增公共字段、不改变字段语义
+- 不影响 `retrieval / ingestion / chunk / router / rerank / supplemental`
+- 不需要 backfill、rebuild、迁移、回滚预案
+- 不需要前后端跨层联动改造
+- 不涉及权限、scope、system-config 真源、worker 行为
 
-默认做法：
+### 禁止使用 Lite Mode 的情况
 
-1. 先读相关代码和文档。
-2. 直接做最小必要改动。
-3. 运行最小但真实的验证。
-4. 输出变更、验证和风险。
+满足任一情况，必须退出 Lite Mode，回到标准主线：
 
-### 复杂改动
+- 需要改 schema、API、frontend API 类型或 client
+- 需要改 retrieval、ingestion、chunk、rerank、router、eval
+- 需要改系统配置真源、认证、权限、部门隔离
+- 需要改动超过一个模块边界
+- 对风险、影响面、回滚方式不确定
+- 发现实现、测试、文档存在不一致
 
-满足以下任一情况，默认先 `/plan`，并先写 spec：
+### Lite Mode 下仍然强制执行的动作
 
-- 涉及稳定主契约或可能改动稳定字段语义
-- 涉及 `retrieval / chat / system-config / ingestion / auth / scope` 核心链路
-- 涉及 chunk、rerank、router、hybrid、supplemental 判定
-- 横跨后端、前端、worker、脚本或评估体系
-- 需要数据重建、backfill、迁移或回滚预案
-- 容易引发“实现 / 测试 / 文档”三者不一致
+即使进入 Lite Mode，也仍然必须：
 
-spec 只保留两种模板：
+- 先读相关代码、相关文档、相关测试
+- 明确本次改动的边界
+- 做最小必要改动
+- 运行最小但真实的验证
+- 完成 `/review`
+- 在结论中说明：
+  - 改了什么
+  - 验证了什么
+  - 风险是什么
+
+### Lite Mode 退出规则
+
+如果实现过程中发现实际影响超出预期，必须立刻停止继续编码，切回标准主线：
+
+`spec → plan → implement → review`
+
+## 3. 唯一 workflow 主线
+
+统一主线：
+
+`spec → plan → implement → review`
+
+### 3.1 spec 使用条件
+
+满足任一条件必须先写 spec：
+
+- 新功能
+- 跨模块改动
+- 影响稳定主契约
+- 影响 `retrieval / chat / system-config / ingestion / auth`
+- 影响 chunk / rerank / router / hybrid / supplemental
+- 需要 backfill / rebuild / rollback
+
+spec 只允许使用：
 
 - `.agent/specs/feature-template.md`
 - `.agent/specs/bug-template.md`
 
-不强制引入额外 spec 子目录结构；只要本轮任务先写出完整 spec 内容即可。
+### 3.2 `/plan` 强制条件
 
-复杂改动的 spec 内容最少要覆盖：
+满足任一条件必须先 `/plan`：
 
-- Requirements
-- Design
-- Tasks
-- Implementation Checklist
+- 中大改动
+- 多文件联动
+- API / schema / frontend 需要同步
+- retrieval 相关改动
+- 风险、范围、回滚不清楚
 
-## 3. 本仓库硬约束
+### 3.3 `/review` 强制条件
 
-- `MAIN_CONTRACT_MATRIX.md` 是硬约束。
-- 不要擅自扩稳定主契约，不要改稳定字段语义，尤其是：
-  - `POST /api/v1/retrieval/search`
-  - `POST /api/v1/chat/ask`
-  - `GET /api/v1/system-config`
-  - `PUT /api/v1/system-config`
-- 如果改动可能碰到 contract，先核对 `MAIN_CONTRACT_MATRIX.md`，再行动。
-- 如果发现实现、测试、文档三者不一致，要明确指出具体不一致点。
-- 不允许大规模无关重构。
-- 不要顺手清理无关 warning、搬动无关模块或改命名风格。
-- 不要跨模块乱改。优先在当前问题所属模块内闭环：
-  - API / schema / service
-  - retrieval
-  - ingestion
-  - rerank
-  - frontend API / 页面
+所有非文档代码改动默认必须 `/review`。
+尤其是：
+
+- API / schema 变更
+- retrieval / ingestion / chunk / rerank 变更
+- 前后端联动变更
+- 权限 / scope 变更
+
+## 强制读取规则（Mandatory Reads）
+
+按模块修改前，必须先读对应文件。**未读取前禁止修改。**
+
+### 1. Retrieval 模块
+
+涉及以下任一内容时，先读：
+
+- `retrieval`
+- `supplemental`
+- `router / hybrid`
+- `rerank`
+- `eval`
+- `retrieval diagnostics`
+
+必须先读：
+
+- `MAIN_CONTRACT_MATRIX.md`
+- `RETRIEVAL_OPTIMIZATION_PLAN.md`
+- `RETRIEVAL_OPTIMIZATION_BACKLOG.md`
+- `eval/README.md`
+- `eval/retrieval_samples.yaml`
+- `scripts/eval_retrieval.py`
+- `backend/app/services/retrieval_service.py`
+
+按需补读：
+
+- `backend/app/services/retrieval_query_router.py`
+- `backend/app/services/query_profile_service.py`
+- `backend/app/services/retrieval_scope_policy.py`
+- `backend/app/rag/rerankers/client.py`
+- `backend/tests/test_retrieval_chat.py`
+- `backend/tests/test_retrieval_query_router.py`
+- `backend/tests/test_retrieval_diagnostics.py`
+
+**未完成上述读取前，禁止修改 retrieval 逻辑。**
+
+### 2. Ingestion / Chunk 模块
+
+涉及以下任一内容时，先读：
+
+- 文档入库
+- parser
+- chunk
+- rebuild
+- embeddings 入库链路
+
+必须先读：
+
+- `MAIN_CONTRACT_MATRIX.md`
+- `RETRIEVAL_OPTIMIZATION_PLAN.md`
+- `RETRIEVAL_OPTIMIZATION_BACKLOG.md`
+- `backend/app/services/document_service.py`
+- `backend/app/services/ingestion_service.py`
+- `backend/app/rag/chunkers/text_chunker.py`
+- `backend/app/rag/chunkers/structured_chunker.py`
+- `scripts/rebuild_documents.py`
+
+按需补读：
+
+- `backend/app/rag/parsers/document_parser.py`
+- `OPS_CHUNK_REBUILD_RUNBOOK.md`
+- `eval/README.md`
+- `scripts/eval_retrieval.py`
+
+**未完成上述读取前，禁止修改 ingestion / chunk。**
+
+### 3. API / Contract 模块
+
+涉及以下任一内容时，先读：
+
+- endpoint
+- request / response 字段
+- 错误包
+- system-config
+- chat / retrieval 主接口
+
+必须先读：
+
+- `MAIN_CONTRACT_MATRIX.md`
+- 对应 endpoint 文件
+- 对应 schema 文件
+- `frontend/src/api/types.ts`
+- `frontend/src/api/client.ts`
+- `backend/tests/test_main_contract_endpoints.py`
+- `backend/tests/test_main_contract_errors.py`
+
+按需补读：
+
+- 对应 service 文件
+- 对应页面 / panel 文件
+- 相关文档或 runbook
+
+**未完成上述读取前，禁止修改 API / contract。**
+
+### 4. Schema 模块
+
+涉及 schema、字段、模型、错误包时，必须先读：
+
+- 对应 schema 文件
+- 对应 endpoint 文件
+- 对应 service 文件
+- `frontend/src/api/types.ts`
+- `frontend/src/api/client.ts`
+
+如果该 schema 属于稳定主契约面，再额外必须读：
+
+- `MAIN_CONTRACT_MATRIX.md`
+- `backend/tests/test_main_contract_endpoints.py`
+- `backend/tests/test_main_contract_errors.py`
+
+**未完成上述读取前，禁止修改 schema。**
+
+### 5. 不确定归属时
+
+如果无法判断改动属于哪个模块：
+
+- 先停止修改
+- 先补读 `.agent/context/repo-map.md`
+- 再按“影响最大模块”执行 Mandatory Reads
+- 如果仍不清楚，必须先 `/plan`
 
 ## 4. Retrieval 专项约束
 
-默认遵守下面这条顺序：
+retrieval 改动必须遵守固定顺序，禁止跳级修改：
 
-1. 先评估样本与 baseline
-2. 再做 supplemental 阈值校准
-3. 再做 chunk 优化
-4. 再碰 router / hybrid
-5. 最后才动 rerank 默认路由
+1. baseline
+2. supplemental
+3. chunk
+4. router
+5. rerank
 
-与 retrieval 优化相关时，默认先看：
+即：
+
+- 先评估样本和 baseline
+- 再做 supplemental 阈值校准
+- 再做 chunk 优化
+- 再碰 router / hybrid
+- 最后才动 rerank 默认路由
+
+### 4.1 必读依赖
+
+涉及 retrieval 时，默认先读：
 
 - `eval/README.md`
 - `eval/retrieval_samples.yaml`
 - `scripts/eval_retrieval.py`
-- `eval/results/` 下最新结果
+- `eval/results/` 最新结果
+- `RETRIEVAL_OPTIMIZATION_PLAN.md`
+- `RETRIEVAL_OPTIMIZATION_BACKLOG.md`
 
-额外 guardrails：
+### 4.2 强约束
 
-- 在样本仍是 `draft`、`synthetic`、`placeholder` 时，不要直接进入 Phase 1B 阈值调优。
-- 如果评估结果几乎全 0，先检查：
+- 样本仍是 `draft` / `synthetic` / `placeholder` 时，不允许直接进入 Phase 1B 阈值调优。
+- 评估结果几乎全 0 时，先排查：
   - `expected_doc_ids` 是否和真实索引一致
-  - 样本是否还是 synthetic placeholder
-  - 是样本集问题还是检索逻辑问题
+  - 样本是否还是 placeholder
+  - 问题属于样本、eval 脚本，还是 retrieval 逻辑
 - 不要把启发式字段当成 ground truth。
-- 不要把 placeholder baseline 说成真实运行时快照。
-- `retrieval / chat / SOP` 默认保持同一套 retrieval 判定逻辑，不要临时分叉。
+- `retrieval / chat / SOP` 必须保持同一套 retrieval 主逻辑。
+- ingestion / chunk 改动不能破坏 retrieval 现有行为基线。
+- rerank 不能先动，除非 baseline、supplemental、chunk、router 已经稳定。
 
-## 5. 命令与模板
+## 失败保护（Failure Guard）
 
-- `/plan` 规则：`.agent/commands/plan.md`
-- `/review` 规则：`.agent/commands/review.md`
-- feature spec 模板：`.agent/specs/feature-template.md`
-- bug spec 模板：`.agent/specs/bug-template.md`
-- 仓库结构地图：`.agent/context/repo-map.md`
-- 编码规则：`.agent/rules/coding-rules.md`
+以下情况视为异常状态。进入异常状态后，默认停止继续开发，先恢复证据链，再决定是否继续实现。
 
-## 6. 交付要求
+### 1. 异常情况定义
 
-任何非纯文档改动，交付时都必须说清楚：
+#### eval 异常
+
+满足任一情况即视为 eval 异常：
+
+- `scripts/eval_retrieval.py` 运行失败
+- eval 输出结构异常、结果不可解析
+- 指标大面积归零，但无法证明是预期结果
+- 当前结果与样本、索引、配置明显不匹配
+
+#### retrieval 退化
+
+满足任一情况即视为 retrieval 退化：
+
+- baseline 相比，核心命中指标明显下降
+- top1 / topk 命中出现持续回退
+- 原本稳定 query 在同样配置下出现明显劣化
+- chat / SOP 引用质量因 retrieval 改动明显变差
+
+#### placeholder 样本
+
+满足任一情况即视为样本不可用：
+
+- 样本仍是 `draft`
+- 样本仍是 `synthetic`
+- 样本仍是 `placeholder`
+- `expected_doc_ids` 无法和真实索引对应
+
+#### baseline 不可复现
+
+满足任一情况即视为 baseline 不可复现：
+
+- baseline 配置来源不清楚
+- baseline 结果无法复跑
+- baseline 对应样本集不明确
+- baseline 与当前索引 / 配置 / 数据版本不一致
+
+### 2. 必须停止开发的条件
+
+满足以下任一条件，必须停止继续改代码：
+
+- eval 异常，且未确认是脚本问题还是逻辑问题
+- retrieval 退化，且原因尚未定位
+- 使用 placeholder / synthetic 样本进行阈值或排序调优
+- baseline 不可复现却继续拿来做对比
+- ingestion / chunk 改动后 retrieval 明显退化
+- 试图通过先调 rerank 去掩盖 baseline、supplemental、chunk、router 问题
+
+### 3. 停止后禁止做的事
+
+进入 Failure Guard 后，禁止：
+
+- 继续调阈值“碰碰运气”
+- 继续扩改动范围
+- 先改 rerank 掩盖问题
+- 在样本和 baseline 不可信的前提下继续优化 retrieval
+
+### 4. 恢复流程
+
+进入异常状态后，按以下顺序恢复：
+
+1. 停止新增改动
+2. 记录当前异常：
+   - 现象
+   - 涉及样本
+   - 涉及配置
+   - 涉及索引 / 数据版本
+3. 先判断异常来源属于哪一类：
+   - 样本问题
+   - eval 脚本问题
+   - baseline 问题
+   - retrieval 逻辑问题
+   - ingestion / chunk 连带问题
+4. 修复证据链：
+   - 样本不可信，先修样本
+   - baseline 不可复现，先重建 baseline
+   - eval 不可用，先修 eval
+5. 在同一批样本、同一配置、同一索引条件下重新跑：
+   - baseline
+   - 当前版本
+6. 只有在证据链恢复后，才允许继续开发
+
+### 5. 恢复后的继续条件
+
+只有同时满足以下条件，才允许退出 Failure Guard：
+
+- eval 可稳定运行
+- baseline 可复现
+- 样本不是 placeholder / synthetic / draft 主体
+- 当前版本相对 baseline 的变化可解释
+- retrieval 没有出现未解释的退化
+
+未满足以上条件，必须继续停机排查，不得进入下一阶段优化。
+
+## 5. 主契约保护
+
+`MAIN_CONTRACT_MATRIX.md` 是硬约束。
+
+禁止擅自扩或改以下稳定主契约：
+
+- `POST /api/v1/retrieval/search`
+- `POST /api/v1/chat/ask`
+- `GET /api/v1/system-config`
+- `PUT /api/v1/system-config`
+
+如果改动可能碰到主契约，必须同时检查：
+
+- endpoint
+- schema
+- frontend `api/types.ts`
+- frontend `api/client.ts`
+- 主契约测试
+- 相关文档
+
+禁止只改其中一层。
+
+## 6. 模块隔离要求
+
+默认按模块闭环修改，不要跨模块乱改：
+
+- retrieval 改动优先收敛在 `services/retrieval_*`、`rag/`、eval
+- ingestion 改动优先收敛在 `document_service.py`、`ingestion_service.py`、chunk / parser / rebuild
+- rerank 改动优先收敛在 `rerankers/client.py`、router、相关测试与 eval
+- API / schema 改动优先收敛在 endpoint + schema + frontend API type/client
+
+## 7. 输出格式
+
+每次修改完成后，必须明确说明：
 
 - 改了什么
 - 验证了什么
-- 还有什么风险或缺口
+- 风险是什么
 
-如果只是文档修改，要明确说明：
+如果是文档改动，要明确写：
 
 - 这次是文档改动
 - 没有跑代码测试
 
-如果没有完成某部分验证，也必须直接说明原因，不要把“未验证”写成“已通过”。
-
-## 7. 收口原则
-
-后续如果继续收口本仓库配置，默认方向是：
-
-- 保留 `AGENTS.md` + `.agent/` 作为唯一 workflow 主线
-- 删除或归档 `.claude/` 里重复的 spec orchestration、hook、system prompt
-- 删除 `.codex/` 里与正式 skill 目录重复的占位说明文件
-- 保留 `.codex/config.toml`、`.codex/bin/*` 这类纯工具配置
+如果没有完成验证，必须直接说明原因，不能写成“已通过”。
