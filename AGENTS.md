@@ -25,6 +25,27 @@
 
 如果 `.agent/` 下的模板和其他上游目录写法不一致，以本文件和 `.agent/` 为准，不要照搬外部 workflow 结构。
 
+## 1.1 职责分层
+
+只保留一条主线：
+
+- `AGENTS.md`
+  - 唯一总纲。定义工作原则、硬约束、输出格式。
+- `.agent/`
+  - 唯一 workflow 内容层。只放：
+    - `commands/plan.md`
+    - `commands/review.md`
+    - `specs/feature-template.md`
+    - `specs/bug-template.md`
+    - `rules/coding-rules.md`
+    - `context/repo-map.md`
+- `.claude/`
+  - 只允许保留 Claude 运行时配置或本地偏好。
+  - 不应再承载另一套独立 workflow 主线。
+- `.codex/`
+  - 只允许保留 Codex 工具配置、MCP 启动脚本、技能目录。
+  - 不应再定义与 `AGENTS.md` 冲突的项目规则。
+
 ## 2. 默认工作方式
 
 ### 简单改动
@@ -61,6 +82,13 @@ spec 只保留两种模板：
 
 不强制引入额外 spec 子目录结构；只要本轮任务先写出完整 spec 内容即可。
 
+复杂改动的 spec 内容最少要覆盖：
+
+- Requirements
+- Design
+- Tasks
+- Implementation Checklist
+
 ## 3. 本仓库硬约束
 
 - `MAIN_CONTRACT_MATRIX.md` 是硬约束。
@@ -73,6 +101,12 @@ spec 只保留两种模板：
 - 如果发现实现、测试、文档三者不一致，要明确指出具体不一致点。
 - 不允许大规模无关重构。
 - 不要顺手清理无关 warning、搬动无关模块或改命名风格。
+- 不要跨模块乱改。优先在当前问题所属模块内闭环：
+  - API / schema / service
+  - retrieval
+  - ingestion
+  - rerank
+  - frontend API / 页面
 
 ## 4. Retrieval 专项约束
 
@@ -125,3 +159,12 @@ spec 只保留两种模板：
 - 没有跑代码测试
 
 如果没有完成某部分验证，也必须直接说明原因，不要把“未验证”写成“已通过”。
+
+## 7. 收口原则
+
+后续如果继续收口本仓库配置，默认方向是：
+
+- 保留 `AGENTS.md` + `.agent/` 作为唯一 workflow 主线
+- 删除或归档 `.claude/` 里重复的 spec orchestration、hook、system prompt
+- 删除 `.codex/` 里与正式 skill 目录重复的占位说明文件
+- 保留 `.codex/config.toml`、`.codex/bin/*` 这类纯工具配置

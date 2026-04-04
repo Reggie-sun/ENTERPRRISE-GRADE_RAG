@@ -118,6 +118,11 @@
 - 不顺手清理与本任务无关的 warning。
 - 不顺手搬目录、改命名、统一风格。
 - 如果现有模式能复用，优先复用，不要引入新框架式抽象。
+- 不要跨模块乱改。优先在当前问题所属模块内闭环：
+  - retrieval 改动先收敛在 `services/retrieval_*`、`rag/`、eval 相关文件
+  - ingestion 改动先收敛在 `document_service.py`、`ingestion_service.py`、chunk / parser / rebuild 脚本
+  - rerank 改动先收敛在 `rerankers/client.py`、query router、相关测试与 eval
+  - API / schema 变更先收敛在 endpoint + schema + frontend API type/client
 
 ## 9. 验证要求
 
