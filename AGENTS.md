@@ -119,6 +119,164 @@ spec 只允许使用：
 - 前后端联动变更
 - 权限 / scope 变更
 
+## 自动触发规则（Auto Enforcement）
+
+命中以下任一改动类型时，必须自动进入对应 workflow，不得靠主观判断跳过。
+
+### 1. Retrieval 改动
+
+如果修改了以下任一内容，即视为命中 retrieval 改动：
+
+- `backend/app/services/retrieval_service.py`
+- `backend/app/services/retrieval_query_router.py`
+- `backend/app/services/query_profile_service.py`
+- `backend/app/services/retrieval_scope_policy.py`
+- `backend/app/rag/rerankers/client.py`
+- `eval/README.md`
+- `eval/retrieval_samples.yaml`
+- `scripts/eval_retrieval.py`
+- retrieval / router / rerank / diagnostics 相关测试
+
+则必须：
+
+- 先完成 Retrieval 对应的 Mandatory Reads
+- 默认进入 `/plan`
+- 按复杂改动判断是否需要 feature spec 或 bug spec
+- 完成 `/review`
+- 运行 eval，或明确说明当前为什么无法运行 eval
+
+并且禁止：
+
+- 未读 `eval/README.md`、`eval/retrieval_samples.yaml`、`scripts/eval_retrieval.py` 就修改 retrieval
+- 跳过 baseline / samples / backlog
+- 先动 rerank
+- 用 rerank 掩盖 retrieval / chunk / router 问题
+
+### 2. Ingestion / Chunk 改动
+
+如果修改了以下任一内容，即视为命中 ingestion / chunk 改动：
+
+- `backend/app/services/document_service.py`
+- `backend/app/services/ingestion_service.py`
+- `backend/app/rag/chunkers/text_chunker.py`
+- `backend/app/rag/chunkers/structured_chunker.py`
+- `backend/app/rag/parsers/document_parser.py`
+- `scripts/rebuild_documents.py`
+
+则必须：
+
+- 先完成 Ingestion / Chunk 对应的 Mandatory Reads
+- 默认进入 `/plan`
+- 如果影响切块策略、重建流程、入库边界，必须先写 spec
+- 完成 `/review`
+- 把 retrieval 作为回归面检查
+
+并且禁止：
+
+- 只改 chunk 不看 retrieval 回归
+- 在 baseline 不清楚时推进 chunk 调优
+- 不说明 rebuild / rollback / 验证方式就修改入库链路
+
+### 3. API / Schema 改动
+
+如果修改了以下任一内容，即视为命中 API / schema 改动：
+
+- `backend/app/api/v1/endpoints/*`
+- `backend/app/schemas/*`
+- `frontend/src/api/types.ts`
+- `frontend/src/api/client.ts`
+- 主契约相关测试
+
+则必须：
+
+- 先完成 API / Contract 或 Schema 对应的 Mandatory Reads
+- 若涉及稳定主契约，必须 `/plan`
+- 若涉及多层联动或行为变更，必须先写 spec
+- 完成 `/review`
+- 同步检查 frontend API 类型和 client
+
+并且禁止：
+
+- 只改 endpoint 不改 schema
+- 只改 schema 不查 frontend
+- 碰稳定主契约却不核对 `MAIN_CONTRACT_MATRIX.md`
+
+### 4. Lite 场景
+
+如果改动同时满足以下条件，则可进入 Lite Mode：
+
+- 文件少，通常 1 到 3 个
+- 不涉及 retrieval / ingestion / chunk / router / rerank / supplemental
+- 不涉及 schema / API / auth / system-config / worker
+- 不跨模块边界
+
+即使进入 Lite Mode，也仍然必须：
+
+- 先读相关代码和测试
+- 做最小必要改动
+- 完成 `/review`
+- 做最小真实验证
+- 在结论中说明改了什么、验证了什么、风险是什么
+
+并且禁止：
+
+- 把 retrieval / schema / ingestion 改动伪装成 lite 改动
+- Lite Mode 下跳过 `/review`
+- Lite Mode 下跳过验证
+
+## 执行提醒（Execution Hints）
+
+开始修改前，先做这 5 个判断：
+
+1. 这次改动是否命中 retrieval / ingestion / API / schema？
+2. 如果命中，是否已经完成对应 Mandatory Reads？
+3. 这次改动是否已经达到必须 `/plan` 的条件？
+4. 这次改动是否已经达到必须写 spec 的条件？
+5. 这次改动完成后，是否必须 `/review`、是否必须跑 eval / smoke / frontend 校验？
+
+默认规则：
+
+- 不确定是否需要 `/plan`：先 `/plan`
+- 不确定是否需要 spec：先按复杂改动处理
+- 不确定是否需要读取文件：先读再改
+- 不确定是否能跳过 `/review`：不能跳过
+
+## 防绕过规则（Anti-bypass Rules）
+
+以下行为视为绕过 workflow，默认禁止：
+
+### 1. Retrieval 防绕过
+
+- 不允许直接修改 retrieval 逻辑而不读取 eval / samples / backlog
+- 不允许直接修改 retrieval 逻辑而不做 eval，或不说明 eval 阻塞原因
+- 不允许在 baseline 不可复现时继续做 retrieval 优化
+- 不允许使用 placeholder / synthetic 样本直接做调优
+
+### 2. Schema / API 防绕过
+
+- 不允许 schema 改动不检查 frontend
+- 不允许 endpoint 改动不检查 schema
+- 不允许稳定主契约改动不核对 `MAIN_CONTRACT_MATRIX.md`
+- 不允许只改一层而假设其他层会自动兼容
+
+### 3. Review 防绕过
+
+- 不允许任何非文档代码改动跳过 `/review`
+- 不允许以 Lite Mode 为理由跳过 `/review`
+- 不允许以“只是小修”为理由跳过边界 / 契约 / 回归检查
+
+### 4. Rerank 防绕过
+
+- 不允许先改 rerank 再回头解释 retrieval / chunk / router 问题
+- 不允许用 rerank 掩盖 baseline、supplemental、chunk、router 未稳定的问题
+- 不允许在 retrieval 已退化时继续通过 rerank 做表面修饰
+
+### 5. 范围防绕过
+
+- 不允许借一次局部任务顺手做无关重构
+- 不允许跨模块扩散改动却不升级为 `/plan` 或 spec
+- 不允许在影响面不清楚时继续直接编码
+
 ## 强制读取规则（Mandatory Reads）
 
 按模块修改前，必须先读对应文件。**未读取前禁止修改。**

@@ -12,6 +12,15 @@ python scripts/eval_retrieval.py
 # 覆盖账号密码（支持环境变量）
 AUTH_USERNAME=your_user AUTH_PASSWORD=your_pass make eval-retrieval
 python scripts/eval_retrieval.py --username your_user --password your_pass
+
+# 查看 1B-B ACL seed 计划（默认 dry-run，本地 JSON 方案会同时预演缺失 stub 的创建）
+python scripts/seed_retrieval_eval_acl.py --create-missing-local-json
+
+# 将 ACL seed 应用到本地 JSON metadata（缺失记录可从 uploads 自动补 stub）
+python scripts/seed_retrieval_eval_acl.py --apply-local-json --create-missing-local-json
+
+# 将 ACL seed 应用到 PostgreSQL metadata store
+python scripts/seed_retrieval_eval_acl.py --apply-postgres
 ```
 
 **默认账号**：`sys.admin.demo` / `sys-admin-demo-pass`（与 `LOCAL_DEV_RUNBOOK.md` 一致）
@@ -20,20 +29,47 @@ python scripts/eval_retrieval.py --username your_user --password your_pass
 
 ## 重要限制说明
 
-### 部门评估边界（当前状态 2026-04-02）
+### 部门评估前置条件（当前状态 2026-04-04）
 
-**当前 `requester_department_id` 只是样本标签，不是真实的权限模拟。**
+**当前 `requester_department_id` 仍然是样本逻辑标签，但仓库内已经补齐了两层内部桥接：**
 
-四个 blocker（三个递进 + 一个验证）导致部门级 supplemental 评估不可用：
+1. **真实 auth profile 映射**：`eval/retrieval_auth_profiles.yaml` 将
+   - `dept_after_sales` → `dept_installation_service`
+   - `dept_assembly` → `dept_production_technology`
+   - `dept_digitalization` → `dept_digitalization`
 
-1. **文档 metadata blocker**：已抽检 `data/documents/doc_20260321070337_445684f4.json`，确认 `department_ids=[]`、`visibility=private`。`RetrievalScopePolicy` 依赖 `department_ids` 判断本部门文档，当该字段为空时，本部门池 (`department_document_ids`) 为空。**注意**：尚未全量检查所有文档，但基于代码逻辑推断，当前本地 eval corpus 无法支撑部门级检索隔离闭环。
-2. **身份层 blocker**：`backend/app/bootstrap/identity_bootstrap.json` 包含 13 个部门（已确认），**不包含 eval 样本中使用的 `dept_after_sales` 和 `dept_assembly`**。这两个部门仅存在于测试专用 bootstrap 中。`dept_digitalization` 存在于生产 bootstrap 中。
-3. **eval harness blocker**：当前脚本以 `sys_admin`（`data_scope=global`）运行，`_should_use_department_priority_routes()` 返回 `False`，部门优先检索逻辑不被调用。`requester_department_id` 只是样本标签，不映射到真实非全局 auth 身份。**注意**：`RetrievalRequest` 不含 `department_id` 字段——部门视角来自登录后的 `auth_context` / token，而非请求体。因此当前 eval 无法代表真实部门视角。
+   并映射到真实可登录 demo 账号。`scripts/eval_retrieval.py` 会优先用这些账号发起检索请求，因此部门视角来自真实 `auth_context` / token，而不是 request body。
 
-4. **测试验证 blocker**：`backend/tests/test_retrieval_diagnostics.py` 当前 **4 failed, 6 passed**。4 个失败均为 401 Unauthorized（测试未注入 auth context），不应表述为"预期通过"。
+2. **eval ACL seed**：`eval/retrieval_document_acl_seed.yaml` + `scripts/seed_retrieval_eval_acl.py` 提供了一套可控的 metadata seed，用于把 cross-dept 样本涉及文档的
+   - `department_id`
+   - `department_ids`
+   - `retrieval_department_ids`
+   - `visibility`
 
-修复顺序：Blocker 1 → Blocker 2 → Blocker 3。Blocker 4 为测试验证问题，不阻塞功能但阻塞回归验证。
-详见 `RETRIEVAL_PHASE1B_GLM_PROMPT.md`。
+   补到运行中的 metadata store（本地 JSON 或 PostgreSQL）。
+
+**这意味着 1B-B 的仓库内前置条件已经补齐，但 supplemental 指标是否真的可校准，仍取决于你是否把 ACL seed 应用到了正在运行的 metadata store。**
+
+当前判断线如下：
+
+- **auth 侧已接通**：`scripts/eval_retrieval.py` 可按样本逻辑部门切换到真实的部门级 demo 身份。
+- **metadata 侧已有 seed**：仓库里已经有 cross-dept 相关文档的部门归属与检索补充授权配置。
+- **仍需环境执行**：如果运行中的 API 还在读未 seed 的 metadata，`supplemental_precision / recall` 仍然会继续失真。
+
+因此推荐顺序是：
+
+1. 先运行 `python scripts/seed_retrieval_eval_acl.py --create-missing-local-json` 做 dry-run。
+2. 再按你的 metadata 后端选择：
+   - `--apply-local-json --create-missing-local-json`
+   - 或 `--apply-postgres --dry-run` / `--apply-postgres`
+3. 然后重新运行 `make eval-retrieval`。
+
+### 仍然存在的限制
+
+- `requester_department_id` 仍是逻辑样本标签，不会变成 API 稳定字段。
+- `RetrievalRequest` 仍然**没有** `department_id` 字段；真实部门视角只来自登录后的 `auth_context` / token。
+- 如果当前 API 没启动、或 active metadata store 还没应用 ACL seed，supplemental 指标仍然不能当最终校准结果使用。
+- `backend/tests/test_retrieval_diagnostics.py` 当前仍是 **4 failed, 6 passed**，这组测试还不能当作 1B-B 回归验证闭环。
 
 ### chunk_type 评分是启发式推断
 
@@ -189,7 +225,7 @@ expected_doc_coverage = len(hit_docs ∩ expected_doc_ids) / len(expected_doc_id
 - `by_granularity`: 按 `expected_granularity` 分组
 - `by_supplemental_expected`: 按是否期望触发 supplemental 分组
 
-> **注意**：`by_department` 和 `cross-dept supplemental` 的结果应视为 provisional，因为当前脚本没有以不同部门身份登录进行检索。
+> **注意**：`by_department` 仍是逻辑标签分组；当 auth profile mapping 生效时，报告中还会额外输出 `by_auth_department`（真实 token 部门）分组。
 
 ### 10. 跨部门补充召回样本（supplemental_expected=true）
 
@@ -198,11 +234,11 @@ expected_doc_coverage = len(hit_docs ∩ expected_doc_ids) / len(expected_doc_id
 **验证边界说明：**
 
 - **文档命中层面已验证**：每条样本的 `query → expected_doc_ids` 映射已通过 live retrieval 调用确认正确。
-- **部门权限层面仍是 provisional**：`requester_department_id` 只是样本标签，不等于真实权限模拟。当前评估脚本以 `sys_admin` 身份登录，无法模拟部门级别的检索隔离。
-- **supplemental 触发判定为预期值**：标记 `supplemental_expected: true` 是基于文档内容与部门归属的逻辑判断——当部门隔离生效时，requester 所在部门的主文档不足以回答 query，应触发跨部门补充召回。
-- **真实闭环条件**：需要补齐 auth profile 映射和部门级检索隔离后，才能验证 supplemental 是否真正在正确时机触发。
+- **部门权限层面已有仓库内 bridge**：当前评估脚本可通过 `eval/retrieval_auth_profiles.yaml` 使用真实部门级 demo 身份登录。
+- **supplemental 触发判定仍依赖 metadata seed**：标记 `supplemental_expected: true` 仍然是基于文档内容与部门归属的逻辑判断；要让它变成可校准指标，运行中的 metadata store 必须先应用 `eval/retrieval_document_acl_seed.yaml`。
+- **真实闭环条件**：auth profile mapping + ACL seed 都生效后，才能验证 supplemental 是否真正在正确时机触发。
 
 这意味着：
-- 当前评估可以报告这些样本的 top1 命中率和 topk recall（在 sys_admin 全量视角下应接近 100%）
-- supplemental precision/recall 的计算需要等到部门级检索隔离生效后才有意义
-- 当前阶段这些样本主要用于记录预期行为和建立评估基线
+- 当前评估仍然可以报告这些样本的 top1 命中率和 topk recall
+- supplemental precision/recall 只有在 active metadata store 已 seed 时才有意义
+- 当前阶段这些样本既用于记录预期行为，也用于 1B-B 的 auth / metadata 闭环验证

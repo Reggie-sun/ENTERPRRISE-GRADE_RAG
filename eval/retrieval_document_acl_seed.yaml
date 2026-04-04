@@ -1,0 +1,82 @@
+documents:
+  - doc_id: doc_20260321070337_445684f4
+    file_name_hint: 123.txt
+    department_id: dept_installation_service
+    retrieval_department_ids:
+      - dept_production_technology
+    visibility: private
+    note: fault-code manual logically belongs to after-sales / installation service; assembly needs it as supplemental
+
+  - doc_id: doc_20260326064202_f5b7a9ae
+    file_name_hint: RAG.md
+    department_id: dept_digitalization
+    retrieval_department_ids:
+      - dept_production_technology
+    visibility: private
+    note: architecture plan belongs to digitalization; assembly references it as supplemental
+
+  - doc_id: doc_20260326071937_37f67e8c
+    file_name_hint: document.docx
+    department_id: dept_digitalization
+    retrieval_department_ids:
+      - dept_installation_service
+      - dept_production_technology
+    visibility: private
+    note: tool-system spec belongs to digitalization; both after-sales and assembly need it as supplemental
+
+  - doc_id: doc_20260330055115_c20cfc5a
+    file_name_hint: WI-SJ-052_A0.docx
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_digitalization
+    visibility: private
+    note: safety WI belongs to assembly / production technology; digitalization references it as supplemental
+
+  - doc_id: doc_20260331021041_adff1740
+    file_name_hint: SOP.docx
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_installation_service
+    visibility: private
+    note: motor gear assembly SOP belongs to assembly / production technology; after-sales needs it as supplemental
+
+  - doc_id: doc_20260331081535_5d30086d
+    file_name_hint: DH54.pdf
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_digitalization
+    visibility: private
+    note: trolley-wire construction manual belongs to assembly / production technology; digitalization references it as supplemental
+
+  - doc_id: doc_20260401084714_b7ed464a
+    file_name_hint: document.docx
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_digitalization
+    visibility: private
+    note: inspection standard belongs to assembly / production technology; digitalization references it as supplemental
+
+  - doc_id: doc_20260401085300_13d0ce46
+    file_name_hint: V1_PLAN.md
+    department_id: dept_digitalization
+    retrieval_department_ids:
+      - dept_installation_service
+      - dept_production_technology
+    visibility: private
+    note: V1 plan belongs to digitalization; after-sales and assembly both reference it as supplemental
+
+  - doc_id: doc_20260401092629_f3b52aa5
+    file_name_hint: FAW05-1000P-X1000-Y2000_SOP.pptx
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_installation_service
+    visibility: private
+    note: main-arm SOP belongs to assembly / production technology; after-sales references it as supplemental
+
+  - doc_id: doc_20260401092629_f470103f
+    file_name_hint: FAW05_SOP.pptx
+    department_id: dept_production_technology
+    retrieval_department_ids:
+      - dept_installation_service
+    visibility: private
+    note: pulley SOP belongs to assembly / production technology; after-sales references it as supplemental

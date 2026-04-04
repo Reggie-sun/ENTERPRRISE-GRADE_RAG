@@ -1,0 +1,18 @@
+profiles:
+  dept_after_sales:
+    username: installation.employee.demo
+    password: installation-employee-demo-pass
+    auth_department_id: dept_installation_service
+    note: logical after-sales samples run as a real installation-service employee token
+
+  dept_assembly:
+    username: production.technology.employee.demo
+    password: production-technology-employee-demo-pass
+    auth_department_id: dept_production_technology
+    note: logical assembly samples run as a real production-technology employee token
+
+  dept_digitalization:
+    username: employee.demo
+    password: employee-demo-pass
+    auth_department_id: dept_digitalization
+    note: reuse the existing digitalization employee demo account

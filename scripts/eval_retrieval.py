@@ -17,7 +17,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 
 import requests
 import yaml
@@ -27,7 +27,7 @@ DEFAULT_API_BASE = "http://localhost:8020"
 DEFAULT_SAMPLES = PROJECT_ROOT / "eval" / "retrieval_samples.yaml"
 DEFAULT_RESULTS_DIR = PROJECT_ROOT / "eval" / "results"
 DEFAULT_EXPERIMENTS_DIR = PROJECT_ROOT / "eval" / "experiments"
-DEFAULT_EXPERIMENTS_DIR = PROJECT_ROOT / "eval" / "experiments"
+DEFAULT_AUTH_PROFILES = PROJECT_ROOT / "eval" / "retrieval_auth_profiles.yaml"
 
 # Default credentials aligned with LOCAL_DEV_RUNBOOK.md
 DEFAULT_USERNAME = "sys.admin.demo"
@@ -46,6 +46,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--threshold-override", type=str, default=None, help="Override internal thresholds (comma-separated key=value pairs)")
     parser.add_argument("--threshold-matrix", type=Path, default=None, help="Path to threshold matrix YAML for running multiple experiments")
     parser.add_argument("--experiment-name", type=str, default=None, help="Tag name for results file (e.g. 'before_change' → baseline_before_change.json). If omitted, uses timestamp.")
+    parser.add_argument(
+        "--auth-profiles",
+        type=Path,
+        default=DEFAULT_AUTH_PROFILES,
+        help=(
+            "Internal YAML that maps sample requester_department_id labels to real login identities "
+            "(default: %(default)s)."
+        ),
+    )
+    parser.add_argument(
+        "--disable-auth-profile-mapping",
+        action="store_true",
+        help="Force legacy single-account eval mode even if auth profile mapping YAML exists.",
+    )
     return parser.parse_args()
 
 
@@ -208,6 +222,146 @@ def load_samples(path: Path) -> list[dict[str, Any]]:
     return samples
 
 
+def load_auth_profiles(path: Path) -> dict[str, dict[str, str]]:
+    """Load logical-department -> real auth profile mappings."""
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    raw_profiles = data.get("profiles") or {}
+    if not isinstance(raw_profiles, dict):
+        raise ValueError(f"auth profiles YAML must contain a top-level 'profiles' mapping: {path}")
+
+    profiles: dict[str, dict[str, str]] = {}
+    for logical_department_id, raw_profile in raw_profiles.items():
+        if not isinstance(raw_profile, dict):
+            raise ValueError(f"auth profile for {logical_department_id!r} must be a mapping")
+        username = str(raw_profile.get("username") or "").strip()
+        password = str(raw_profile.get("password") or "").strip()
+        auth_department_id = str(raw_profile.get("auth_department_id") or "").strip()
+        if not username or not password or not auth_department_id:
+            raise ValueError(
+                f"auth profile {logical_department_id!r} must include non-empty username/password/auth_department_id"
+            )
+        profile: dict[str, str] = {
+            "logical_department_id": str(logical_department_id).strip(),
+            "username": username,
+            "password": password,
+            "auth_department_id": auth_department_id,
+        }
+        note = str(raw_profile.get("note") or "").strip()
+        if note:
+            profile["note"] = note
+        profiles[profile["logical_department_id"]] = profile
+    return profiles
+
+
+def ensure_auth_profile_coverage(
+    samples: list[dict[str, Any]],
+    auth_profiles: dict[str, dict[str, str]],
+) -> None:
+    logical_departments = sorted(
+        {
+            str(sample.get("requester_department_id")).strip()
+            for sample in samples
+            if sample.get("requester_department_id")
+        }
+    )
+    missing = [department_id for department_id in logical_departments if department_id not in auth_profiles]
+    if missing:
+        raise ValueError(
+            "missing auth profile mapping for requester_department_id labels: "
+            + ", ".join(missing)
+        )
+
+
+def build_sample_auth_resolver(
+    *,
+    api_base: str,
+    timeout: int,
+    default_username: str,
+    default_password: str,
+    fallback_token: str,
+    auth_profiles_path: Path,
+    disable_auth_profile_mapping: bool,
+    samples: list[dict[str, Any]],
+) -> tuple[
+    Callable[[dict[str, Any]], tuple[str, dict[str, Any]]],
+    dict[str, Any],
+]:
+    fallback_meta = {
+        "auth_username": default_username,
+        "auth_department_id": None,
+        "auth_profile_id": None,
+        "_department_auth_simulated": False,
+    }
+    if disable_auth_profile_mapping:
+        return (
+            lambda _sample: (fallback_token, dict(fallback_meta)),
+            {
+                "enabled": False,
+                "mode": "single_auth_legacy",
+                "path": None,
+                "profile_count": 0,
+                "note": "auth profile mapping disabled explicitly; all samples reuse the control login identity.",
+            },
+        )
+
+    auth_profiles = load_auth_profiles(auth_profiles_path)
+    if not auth_profiles:
+        return (
+            lambda _sample: (fallback_token, dict(fallback_meta)),
+            {
+                "enabled": False,
+                "mode": "single_auth_legacy",
+                "path": str(auth_profiles_path),
+                "profile_count": 0,
+                "note": "auth profile mapping file missing or empty; all samples reuse the control login identity.",
+            },
+        )
+
+    ensure_auth_profile_coverage(samples, auth_profiles)
+    token_cache: dict[str, str] = {}
+
+    def resolve(sample: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+        logical_department_id = str(sample.get("requester_department_id") or "").strip()
+        if not logical_department_id:
+            return fallback_token, dict(fallback_meta)
+        profile = auth_profiles[logical_department_id]
+        username = profile["username"]
+        token = token_cache.get(username)
+        if token is None:
+            token = login(api_base, username, profile["password"], timeout)
+            token_cache[username] = token
+        return token, {
+            "auth_username": username,
+            "auth_department_id": profile["auth_department_id"],
+            "auth_profile_id": logical_department_id,
+            "_department_auth_simulated": True,
+        }
+
+    return (
+        resolve,
+        {
+            "enabled": True,
+            "mode": "mapped_department_auth",
+            "path": str(auth_profiles_path),
+            "profile_count": len(auth_profiles),
+            "profiles": {
+                logical_department_id: {
+                    "username": profile["username"],
+                    "auth_department_id": profile["auth_department_id"],
+                }
+                for logical_department_id, profile in sorted(auth_profiles.items())
+            },
+            "note": (
+                "sample requester_department_id labels are mapped to real department-scoped login identities. "
+                "Meaningful supplemental calibration still requires the eval ACL seed to be applied to the active metadata store."
+            ),
+        },
+    )
+
+
 # ── Call retrieval ───────────────────────────────────────
 
 def call_retrieval(
@@ -221,6 +375,9 @@ def call_retrieval(
     """Call POST /api/v1/retrieval/search and return response JSON."""
     url = f"{api_base}/api/v1/retrieval/search"
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    # requester_department_id is a sample-side logical label only; real department context comes from auth_context/token.
+    # Keep department_id in the function signature so call sites can keep passing the sample label for logging/debugging,
+    # but do NOT add it to the request payload because that would expand the stable API contract.
     payload: dict[str, Any] = {"query": query, "top_k": top_k}
     resp = requests.post(url, json=payload, headers=headers, timeout=timeout)
     if resp.status_code != 200:
@@ -335,7 +492,9 @@ def score_sample(sample: dict[str, Any], retrieval_result: dict[str, Any]) -> di
         "diagnostic_quality_top1_threshold": quality_top1_threshold,
         "diagnostic_quality_avg_threshold": quality_avg_threshold,
         "diagnostic_trigger_basis": supplemental_trigger_basis,
-        # requester_department_id is a sample label only — NOT a real auth context simulation
+        "auth_username": None,
+        "auth_department_id": None,
+        "auth_profile_id": None,
         "_department_auth_simulated": False,
     }
 
@@ -416,6 +575,9 @@ def aggregate(scores: list[dict[str, Any]]) -> dict[str, Any]:
     summary["by_query_type"] = _group_metrics(scores, "query_type")
     # Group by department
     summary["by_department"] = _group_metrics(scores, "requester_department_id")
+    auth_department_scores = [score for score in scores if score.get("auth_department_id")]
+    if auth_department_scores:
+        summary["by_auth_department"] = _group_metrics(auth_department_scores, "auth_department_id")
     # Group by granularity
     summary["by_granularity"] = _group_metrics(scores, "expected_granularity")
     # Group by supplemental_expected
@@ -452,6 +614,7 @@ def run_evaluation(
     timeout: int,
     threshold_name: str | None = None,
     thresholds_applied: dict[str, float] | None = None,
+    sample_auth_resolver: Callable[[dict[str, Any]], tuple[str, dict[str, Any]]] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     """Run one evaluation pass and return (summary, scores, errors)."""
     scores: list[dict[str, Any]] = []
@@ -464,13 +627,23 @@ def run_evaluation(
         print(f"  {label}", end="", flush=True)
         try:
             start = time.monotonic()
+            resolved_token = token
+            auth_meta = {
+                "auth_username": None,
+                "auth_department_id": None,
+                "auth_profile_id": None,
+                "_department_auth_simulated": False,
+            }
+            if sample_auth_resolver is not None:
+                resolved_token, auth_meta = sample_auth_resolver(sample)
             result = call_retrieval(
-                api_base, token, query, top_k,
+                api_base, resolved_token, query, top_k,
                 department_id=dept, timeout=timeout,
             )
             elapsed_ms = int((time.monotonic() - start) * 1000)
             score = score_sample(sample, result)
             score["latency_ms"] = elapsed_ms
+            score.update(auth_meta)
             scores.append(score)
             tag = "OK" if score["topk_recall"] == 1.0 else "MISS"
             sup_tag = ""
@@ -502,8 +675,17 @@ def print_human_summary(summary: dict[str, Any], errors: list[dict[str, Any]], t
         print("EVALUATION SUMMARY")
     print("=" * 60)
     m = summary["metrics"]
+    auth_profile_mapping = summary.get("auth_profile_mapping") or {}
     print(f"  Total samples:    {summary['total_samples']}")
     print(f"  Errors:           {len(errors)}")
+    print(
+        "  auth_profiles:    "
+        + (
+            f"enabled ({auth_profile_mapping.get('profile_count', 0)} mapped profiles)"
+            if auth_profile_mapping.get("enabled")
+            else "disabled / legacy single-auth mode"
+        )
+    )
     print(f"  top1_accuracy:    {m['top1_accuracy']:.2%}")
     print(f"  top1_partial:     {m['top1_partial_hit_rate']:.2%}")
     print(f"  topk_recall:      {m['topk_recall']:.2%}")
@@ -532,11 +714,21 @@ def print_human_summary(summary: dict[str, Any], errors: list[dict[str, Any]], t
     for dept, metrics in summary.get("by_department", {}).items():
         print(f"    {dept}: n={metrics['count']}  top1={metrics['top1_accuracy']:.2%}  recall={metrics['topk_recall']:.2%}  coverage={metrics['expected_doc_coverage_avg']:.2%}")
 
+    by_auth_department = summary.get("by_auth_department") or {}
+    if by_auth_department:
+        print("\n  BY AUTH DEPARTMENT (real token department used during eval):")
+        for dept, metrics in by_auth_department.items():
+            print(f"    {dept}: n={metrics['count']}  top1={metrics['top1_accuracy']:.2%}  recall={metrics['topk_recall']:.2%}  coverage={metrics['expected_doc_coverage_avg']:.2%}")
+
     # Print limitations notice
     print("\n  LIMITATIONS:")
-    print("    - by_department grouping is based on sample labels, NOT real auth context simulation")
+    if auth_profile_mapping.get("enabled"):
+        print("    - requester_department_id remains a logical sample label; auth_department_id shows the real login department used for the request")
+        print("    - supplemental metrics are only meaningful after the eval ACL seed has been applied to the active metadata store")
+    else:
+        print("    - by_department grouping is based on sample labels; auth profile mapping is disabled or unavailable for this run")
     print("    - chunk_type scores are heuristic (inferred from strategy/scope/text-length), NOT ground-truth")
-    print("    - cross-dept supplemental results should be considered provisional")
+    print("    - cross-dept supplemental results remain provisional until the running metadata store is ACL-seeded for eval")
 
 
 # ── Main ─────────────────────────────────────────────────
@@ -548,16 +740,38 @@ def main() -> int:
     samples = load_samples(args.samples)
     print(f"Loaded {len(samples)} samples from {args.samples}")
 
-    # 2. Login
+    # 2. Control login (used as default auth and for threshold override / matrix control)
     print(f"Logging in to {args.api_base} ...")
     token = login(args.api_base, args.username, args.password, args.timeout)
     print("Login OK.")
 
+    try:
+        sample_auth_resolver, auth_profile_mapping = build_sample_auth_resolver(
+            api_base=args.api_base,
+            timeout=args.timeout,
+            default_username=args.username,
+            default_password=args.password,
+            fallback_token=token,
+            auth_profiles_path=args.auth_profiles,
+            disable_auth_profile_mapping=args.disable_auth_profile_mapping,
+            samples=samples,
+        )
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    if auth_profile_mapping.get("enabled"):
+        print(
+            "Auth profile mapping enabled: "
+            f"{auth_profile_mapping.get('profile_count', 0)} logical departments -> real auth identities"
+        )
+    else:
+        print(f"Auth profile mapping disabled: {auth_profile_mapping.get('note')}")
+
     # Determine experiment mode
     if args.threshold_matrix:
-        return _run_threshold_matrix(args, samples, token)
+        return _run_threshold_matrix(args, samples, token, sample_auth_resolver, auth_profile_mapping)
     elif args.threshold_override:
-        return _run_single_threshold_override(args, samples, token)
+        return _run_single_threshold_override(args, samples, token, sample_auth_resolver, auth_profile_mapping)
 
     # 3. Run single evaluation (no threshold changes)
     summary, scores, errors = run_evaluation(
@@ -566,7 +780,9 @@ def main() -> int:
         token=token,
         top_k=args.top_k,
         timeout=args.timeout,
+        sample_auth_resolver=sample_auth_resolver,
     )
+    summary["auth_profile_mapping"] = auth_profile_mapping
 
     # 4. Output JSON report
     args.results_dir.mkdir(parents=True, exist_ok=True)
@@ -584,6 +800,8 @@ def main() -> int:
             "api_base": args.api_base,
             "samples_path": str(args.samples),
             "top_k": args.top_k,
+            "auth_profiles_path": str(args.auth_profiles),
+            "auth_profile_mapping_enabled": bool(auth_profile_mapping.get("enabled")),
         },
     }
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -595,7 +813,13 @@ def main() -> int:
     return 0 if not errors else 1
 
 
-def _run_single_threshold_override(args: argparse.Namespace, samples: list[dict[str, Any]], token: str) -> int:
+def _run_single_threshold_override(
+    args: argparse.Namespace,
+    samples: list[dict[str, Any]],
+    token: str,
+    sample_auth_resolver: Callable[[dict[str, Any]], tuple[str, dict[str, Any]]] | None,
+    auth_profile_mapping: dict[str, Any],
+) -> int:
     """Run evaluation with a single threshold override."""
     thresholds = parse_threshold_override(args.threshold_override)
     exp_name = args.experiment_name or ",".join(f"{k}={v}" for k, v in thresholds.items())
@@ -618,7 +842,9 @@ def _run_single_threshold_override(args: argparse.Namespace, samples: list[dict[
             timeout=args.timeout,
             threshold_name=exp_name,
             thresholds_applied=thresholds,
+            sample_auth_resolver=sample_auth_resolver,
         )
+        summary["auth_profile_mapping"] = auth_profile_mapping
     finally:
         # Restore original thresholds
         if original_thresholds:
@@ -640,6 +866,8 @@ def _run_single_threshold_override(args: argparse.Namespace, samples: list[dict[
             "api_base": args.api_base,
             "samples_path": str(args.samples),
             "top_k": args.top_k,
+            "auth_profiles_path": str(args.auth_profiles),
+            "auth_profile_mapping_enabled": bool(auth_profile_mapping.get("enabled")),
         },
         "threshold_experiment": {
             "name": exp_name,
@@ -655,7 +883,13 @@ def _run_single_threshold_override(args: argparse.Namespace, samples: list[dict[
     return 0 if not errors else 1
 
 
-def _run_threshold_matrix(args: argparse.Namespace, samples: list[dict[str, Any]], token: str) -> int:
+def _run_threshold_matrix(
+    args: argparse.Namespace,
+    samples: list[dict[str, Any]],
+    token: str,
+    sample_auth_resolver: Callable[[dict[str, Any]], tuple[str, dict[str, Any]]] | None,
+    auth_profile_mapping: dict[str, Any],
+) -> int:
     """Run evaluation across a matrix of threshold combinations."""
     experiments = load_threshold_matrix(args.threshold_matrix)
     original_thresholds = snapshot_current_thresholds(args.api_base, token, args.timeout)
@@ -690,7 +924,9 @@ def _run_threshold_matrix(args: argparse.Namespace, samples: list[dict[str, Any]
                     timeout=args.timeout,
                     threshold_name=name,
                     thresholds_applied=thresholds,
+                    sample_auth_resolver=sample_auth_resolver,
                 )
+                summary["auth_profile_mapping"] = auth_profile_mapping
 
                 all_results.append({
                     "experiment_name": name,
@@ -723,17 +959,16 @@ def _run_threshold_matrix(args: argparse.Namespace, samples: list[dict[str, Any]
         "sample_count": len(samples),
         "top_k": args.top_k,
         "api_base": args.api_base,
+        "auth_profile_mapping": auth_profile_mapping,
         "note": (
-            "PROVISIONAL — Eval runs with sys_admin (data_scope=global), so department-priority retrieval "
-            "and supplemental trigger logic are bypassed. Supplemental precision/recall are not meaningful "
-            "until department-scoped auth and document department_id metadata are in place. "
-            "BLOCKER STATUS (2026-04-02 audit): "
-            "(1) Document metadata: sampled doc has department_ids=[], visibility=private — not fully verified for all docs. "
-            "(2) Identity: dept_after_sales/dept_assembly NOT in production identity_bootstrap.json. "
-            "(3) Eval harness: sys_admin auth means data_scope=global, so _should_use_department_priority_routes() returns False; "
-            "RetrievalRequest has no department_id field (department context comes from auth_context, not request body). "
-            "(4) Diagnostics tests: 4 failed (401), 6 passed — not usable as regression verification until auth mock added. "
-            "See RETRIEVAL_PHASE1B_GLM_PROMPT.md for details."
+            "PROVISIONAL — threshold experiments only become meaningfully calibratable when retrieval requests run under "
+            "department-scoped auth and the active metadata store has been ACL-seeded for eval. "
+            "This run "
+            + (
+                "used mapped department auth profiles. Remaining blocker: apply eval ACL seed to the active metadata store."
+                if auth_profile_mapping.get("enabled")
+                else "did not use mapped department auth profiles, so results still reflect a single-account legacy eval mode."
+            )
         ),
         "experiments": all_results,
         "comparison": _build_comparison_table(all_results),
@@ -742,7 +977,7 @@ def _run_threshold_matrix(args: argparse.Namespace, samples: list[dict[str, Any]
     print(f"\nMatrix report written to {matrix_report_path}")
 
     # Print comparison table
-    _print_comparison_table(all_results)
+    _print_comparison_table(all_results, auth_profile_mapping)
 
     return 0
 
@@ -776,7 +1011,7 @@ def _safe_avg(values: list[float]) -> float | None:
     return sum(values) / len(values) if values else None
 
 
-def _print_comparison_table(all_results: list[dict[str, Any]]) -> None:
+def _print_comparison_table(all_results: list[dict[str, Any]], auth_profile_mapping: dict[str, Any]) -> None:
     """Print a comparison table across experiments."""
     print("\n" + "=" * 80)
     print("THRESHOLD MATRIX COMPARISON (PROVISIONAL)")
@@ -802,15 +1037,13 @@ def _print_comparison_table(all_results: list[dict[str, Any]]) -> None:
             f"{avg_top1:>8}"
         )
 
-    print("\n  NOTE: Results are PROVISIONAL. Current eval runs as sys_admin (data_scope=global),")
-    print("  which bypasses department-priority retrieval and supplemental trigger logic.")
-    print("  Supplemental metrics are not meaningful until department-scoped auth is used.")
-    print("  BLOCKER STATUS (2026-04-02): (1) doc metadata - department_ids empty in sampled docs;")
-    print("  (2) identity - dept_after_sales/dept_assembly NOT in production bootstrap;")
-    print("  (3) harness - sys_admin auth => data_scope=global => department_priority disabled;")
-    print("  RetrievalRequest has no department_id field (dept context from auth_context, not request body).")
-    print("  (4) tests - 4 failed (401), 6 passed.")
-    print("  See RETRIEVAL_PHASE1B_GLM_PROMPT.md for blocker details.")
+    print("\n  NOTE: Results are PROVISIONAL.")
+    if auth_profile_mapping.get("enabled"):
+        print("  This run used mapped department-scoped auth profiles, but supplemental metrics still depend on")
+        print("  the active metadata store having eval ACL seed applied (department_id / retrieval_department_ids).")
+    else:
+        print("  This run did not use mapped department auth profiles, so it still reflects legacy single-account eval mode.")
+    print("  requester_department_id is a logical sample label; real department context comes from auth_context/token.")
 
 
 if __name__ == "__main__":
