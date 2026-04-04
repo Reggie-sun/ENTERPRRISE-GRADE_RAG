@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=int, default=30, help="HTTP request timeout in seconds")
     parser.add_argument("--threshold-override", type=str, default=None, help="Override internal thresholds (comma-separated key=value pairs)")
     parser.add_argument("--threshold-matrix", type=Path, default=None, help="Path to threshold matrix YAML for running multiple experiments")
-    parser.add_argument("--experiment-name", type=str, default=None, help="Experiment name for results file (used with --threshold-override)")
+    parser.add_argument("--experiment-name", type=str, default=None, help="Tag name for results file (e.g. 'before_change' → baseline_before_change.json). If omitted, uses timestamp.")
     return parser.parse_args()
 
 
@@ -571,7 +571,11 @@ def main() -> int:
     # 4. Output JSON report
     args.results_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    report_path = args.results_dir / f"eval_{timestamp}.json"
+    # Use experiment-name for tagged baseline if provided
+    if args.experiment_name:
+        report_path = args.results_dir / f"baseline_{args.experiment_name}.json"
+    else:
+        report_path = args.results_dir / f"eval_{timestamp}.json"
     report = {
         "summary": summary,
         "scores": scores,

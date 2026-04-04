@@ -155,8 +155,10 @@ python scripts/compare_eval_results.py \
 
 | 入口 | 命令 | 说明 |
 |------|------|------|
-| 保存 eval baseline | `make eval-baseline TAG=before_chunk_change` | 保存带标签的 baseline |
-| 批量重建文档 | `python scripts/rebuild_documents.py --document-list docs.txt` | 批量触发重建 |
+| 保存 eval baseline | `make eval-baseline TAG=before_change` | 输出到 `eval/results/baseline_{TAG}.json` |
+| 批量重建文档 | `python scripts/rebuild_documents.py --document-list docs.txt` | 批量触发重建，需认证 |
+| 预演重建（安全） | `python scripts/rebuild_documents.py --dry-run --doc-ids ...` | 仅打印操作，无需 API |
+| 查看重建状态 | `python scripts/rebuild_documents.py --status` | 本地状态无需 API；轮询需 API |
 | 对比 eval 结果 | `python scripts/compare_eval_results.py before.json after.json` | 生成对比报告 |
 | 显示当前 chunk 配置 | `make show-chunk-config` | 显示当前 chunk 参数 |
 
@@ -310,7 +312,8 @@ make dev-api
 
 完成以下验证后，Phase 2A Gate 视为就绪：
 
-- [ ] `make eval-baseline TAG=test` 可正常运行
+- [ ] `make eval-baseline TAG=test` 可正常运行，输出到 `eval/results/baseline_test.json`
+- [ ] `python scripts/rebuild_documents.py --dry-run --doc-ids test_001` 无需 API 即可运行
 - [ ] `make show-chunk-config` 显示当前 chunk 参数
 - [ ] `python scripts/rebuild_documents.py --help` 显示帮助信息
 - [ ] `python scripts/compare_eval_results.py --help` 显示帮助信息

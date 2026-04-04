@@ -236,28 +236,84 @@ def run_wait(args: argparse.Namespace, token: str) -> int:
     return 1
 
 
+def _status_offline(args: argparse.Namespace) -> int:
+    """Show tracked rebuild jobs from local status file without needing API."""
+    status = load_status(args.status_file)
+    jobs = status.get("jobs", [])
+    if not jobs:
+        print("No rebuild jobs tracked. Run rebuild first.")
+        return 0
+
+    print(f"Tracked rebuild jobs (offline, no live polling): {len(jobs)}\n")
+
+    terminal = {"completed", "partial_failed", "dead_letter", "error"}
+    in_flight = {"queued", "pending", "parsing", "ocr_processing", "chunking", "embedding", "indexing"}
+
+    by_status: dict[str, list[dict]] = {}
+    for job in jobs:
+        s = job.get("status", "unknown")
+        by_status.setdefault(s, []).append(job)
+
+    for status_name in sorted(in_flight | terminal):
+        items = by_status.get(status_name, [])
+        if not items:
+            continue
+        print(f"  {status_name}: {len(items)}")
+        for item in items:
+            doc_id = item.get("doc_id", "N/A")
+            job_id = item.get("job_id", "N/A")
+            if status_name == "error":
+                print(f"    {doc_id} → {item.get('error', 'unknown error')}")
+            else:
+                print(f"    {doc_id} → {job_id}")
+
+    in_flight_count = sum(len(by_status.get(s, [])) for s in in_flight)
+    completed_count = sum(len(by_status.get(s, [])) for s in terminal if s != "error")
+    error_count = len(by_status.get("error", []))
+    print(f"\n  Summary: {in_flight_count} in-flight, {completed_count} completed, {error_count} errors")
+    if in_flight_count > 0:
+        print("  (In-flight counts are from last known state; start API for live polling)")
+    return 0
+
+
 def main() -> int:
     args = parse_args()
 
-    if not args.status and not args.wait and not args.dry_run:
-        # Need login for real operations
+    # Dry-run doesn't need API at all - skip login entirely
+    if args.dry_run:
+        return run_rebuild(args, token=None)
+
+    if args.status:
+        # Try login for live polling; fall back to offline local status
+        token = _try_login_quiet(args)
+        return run_status(args, token) if token else _status_offline(args)
+
+    if args.wait:
+        # --wait requires a reachable API for live polling
         print(f"Logging in to {args.api_base} ...")
         token = login(args.api_base, args.username, args.password, args.timeout)
         print("Login OK.")
-    else:
-        # Status/wait also need token for live checks
-        token = None
-        try:
-            token = login(args.api_base, args.username, args.password, args.timeout)
-        except Exception:
-            pass
+        return run_wait(args, token)
 
-    if args.status:
-        return run_status(args, token) if token else 1
-    if args.wait:
-        return run_wait(args, token) if token else 1
-
+    # Real rebuild requires login
+    print(f"Logging in to {args.api_base} ...")
+    token = login(args.api_base, args.username, args.password, args.timeout)
+    print("Login OK.")
     return run_rebuild(args, token)
+
+
+def _try_login_quiet(args: argparse.Namespace) -> str | None:
+    """Attempt login, suppressing error output. Returns token or None."""
+    import io
+    old_stderr = sys.stderr
+    sys.stderr = io.StringIO()
+    try:
+        token = login(args.api_base, args.username, args.password, args.timeout)
+        sys.stderr = old_stderr
+        return token
+    except (Exception, SystemExit):
+        sys.stderr = old_stderr
+        return None
 
 
 if __name__ == "__main__":

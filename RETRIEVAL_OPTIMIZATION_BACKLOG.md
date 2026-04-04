@@ -554,10 +554,10 @@ samples:
 
 ### Now
 
-- [ ] 建 `eval/retrieval_samples.yaml`
-- [ ] 建 `scripts/eval_retrieval.py`
-- [ ] 在 [Makefile](/home/reggie/vscode_folder/Enterprise-grade_RAG/Makefile) 增加 `make eval-retrieval`
-- [ ] 用当前默认阈值跑第一版 baseline
+- [x] 建 `eval/retrieval_samples.yaml`
+- [x] 建 `scripts/eval_retrieval.py`
+- [x] 在 [Makefile](/home/reggie/vscode_folder/Enterprise-grade_RAG/Makefile) 增加 `make eval-retrieval`
+- [x] 用当前默认阈值跑第一版 baseline
 
 ### Next
 
@@ -567,7 +567,7 @@ samples:
 
 ### Later
 
-- [ ] 补重建与回滚预案（Phase 2 Gate）
+- [x] ~~补重建与回滚预案（Phase 2 Gate）~~ → 已在 3.0 完成
 - [ ] 做现有 SOPStructuredChunker 校准
 - [ ] 做通用 chunk 参数扫描
 - [ ] 设计文档类型路由最小版
@@ -590,7 +590,7 @@ samples:
 
 ### Phase 2 完成
 
-- [ ] 重建与回滚预案就位（Gate）
+- [x] 重建与回滚预案就位（Gate）
 - [ ] chunk 调整后 top chunk 更准
 - [ ] citation 更聚焦
 - [ ] SOPStructuredChunker 校准完成，summary/clause 平衡改善

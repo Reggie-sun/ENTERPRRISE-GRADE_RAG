@@ -111,7 +111,7 @@ eval-baseline:
 	fi
 	@printf "$(_CYN)▸ Running eval baseline with tag '$(TAG)' …$(_RST)\n"
 	$(conda-run) python scripts/eval_retrieval.py --api-base http://localhost:$(API_PORT) --results-dir eval/results --experiment-name $(TAG)
-	@printf "$(_GRN)▸ Baseline saved to eval/results/$(TAG)_*.json$(_RST)\n"
+	@printf "$(_GRN)▸ Baseline saved to eval/results/baseline_$(TAG).json$(_RST)\n"
 
 ## Show current chunk configuration
 show-chunk-config:
