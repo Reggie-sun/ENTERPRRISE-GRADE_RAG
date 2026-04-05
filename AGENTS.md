@@ -119,6 +119,52 @@ spec 只允许使用：
 - 前后端联动变更
 - 权限 / scope 变更
 
+## 模型分工（Brain / Executor）
+
+本仓库默认采用“GPT-5.4 当大脑，GLM 当执行器”的协作方式，但不改变主 workflow：
+
+`spec → plan → implement → review`
+
+### GPT-5.4（Brain）
+
+默认负责：
+
+- 先读代码、文档、契约和 repo-map
+- 判断是否需要 spec、`/plan`、`/review`
+- 定义改动边界、影响文件、风险和验收标准
+- 处理高风险决策：
+  - 稳定主契约
+  - retrieval 优化方向
+  - 跨模块改动
+  - 回滚、重建、迁移策略
+- 在实现完成后做最终 review 和继续 / 暂停判断
+
+### GLM（Executor）
+
+默认负责：
+
+- 在已确认的 spec / plan 边界内执行具体编码
+- 落实局部实现、补测试、补文档、补小范围脚本调整
+- 按计划做最小必要改动，不自行扩改动范围
+- 真实记录改了什么、验证了什么、还有什么风险
+
+### 默认协作顺序
+
+1. GPT-5.4 先完成 spec 或 `/plan`
+2. GLM 在明确边界内执行 implement
+3. GPT-5.4 最终执行 `/review` 并给出是否继续的结论
+
+### 默认回切原则
+
+如果 GLM 在执行中发现：
+
+- 影响面超出计划
+- 触碰 contract / retrieval / schema / frontend 联动边界
+- eval、baseline、samples 或验证结果出现异常
+- 需要决定取舍、重构方向、回滚策略
+
+则必须停止继续扩写代码，回切给 GPT-5.4 重新判断。
+
 ## 自动触发规则（Auto Enforcement）
 
 命中以下任一改动类型时，必须自动进入对应 workflow，不得靠主观判断跳过。

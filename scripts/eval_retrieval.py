@@ -113,15 +113,27 @@ def write_internal_thresholds(api_base: str, token: str, thresholds: dict[str, f
     else:
         config_data = {}
 
-    # Build nested structure
-    internal_controls: dict[str, Any] = config_data.get("_internal_retrieval_controls", {})
-    quality_thresholds = internal_controls.get("supplemental_quality_thresholds", {})
-    quality_thresholds.update(thresholds)
-    internal_controls["supplemental_quality_thresholds"] = quality_thresholds
-    config_data["_internal_retrieval_controls"] = internal_controls
+    # Replace the whole threshold block so experiment cleanup can truly restore
+    # an empty/default state instead of leaving the last experiment values behind.
+    internal_controls = config_data.get("_internal_retrieval_controls")
+    if not isinstance(internal_controls, dict):
+        internal_controls = {}
+
+    if thresholds:
+        internal_controls["supplemental_quality_thresholds"] = thresholds
+        config_data["_internal_retrieval_controls"] = internal_controls
+    else:
+        internal_controls.pop("supplemental_quality_thresholds", None)
+        if internal_controls:
+            config_data["_internal_retrieval_controls"] = internal_controls
+        else:
+            config_data.pop("_internal_retrieval_controls", None)
 
     config_path.write_text(json.dumps(config_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"  Written thresholds to {config_path}")
+    if thresholds:
+        print(f"  Written thresholds to {config_path}")
+    else:
+        print(f"  Cleared threshold overrides in {config_path}")
 
 
 def _find_system_config_path(api_base: str, token: str, timeout: int) -> str | None:
@@ -846,11 +858,10 @@ def _run_single_threshold_override(
         )
         summary["auth_profile_mapping"] = auth_profile_mapping
     finally:
-        # Restore original thresholds
-        if original_thresholds:
-            print(f"\nRestoring original thresholds: {original_thresholds}")
-            write_internal_thresholds(args.api_base, token, original_thresholds, args.timeout)
-            time.sleep(0.5)
+        # Restore original thresholds, including the empty/default state.
+        print(f"\nRestoring original thresholds: {original_thresholds}")
+        write_internal_thresholds(args.api_base, token, original_thresholds, args.timeout)
+        time.sleep(0.5)
 
     # Output
     args.results_dir.mkdir(parents=True, exist_ok=True)
@@ -944,10 +955,9 @@ def _run_threshold_matrix(
                     "error": str(e),
                 })
     finally:
-        if original_thresholds:
-            print(f"\nRestoring original thresholds: {original_thresholds}")
-            write_internal_thresholds(args.api_base, token, original_thresholds, args.timeout)
-            time.sleep(0.5)
+        print(f"\nRestoring original thresholds: {original_thresholds}")
+        write_internal_thresholds(args.api_base, token, original_thresholds, args.timeout)
+        time.sleep(0.5)
 
     # Write combined matrix report
     matrix_report_path = DEFAULT_EXPERIMENTS_DIR / f"matrix_{timestamp}.json"

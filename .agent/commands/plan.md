@@ -37,6 +37,19 @@
 - 契约兼容风险
 - 数据 / 重建 / 回滚风险
 
+### 执行分工
+
+- GPT-5.4（Brain）：
+  - 定义目标、边界、风险、验收标准
+  - 判断是否需要 spec、`/plan`、`/review`
+  - 判断是否允许交由 GLM 执行
+- GLM（Executor）：
+  - 只在已确认边界内执行具体编码
+  - 落实局部实现、补测试、补文档
+  - 不自行扩大范围或改高风险方向
+- 回切条件：
+  - 一旦触碰 contract、retrieval 策略、schema / frontend 联动、跨模块扩散、eval 异常或计划失效，必须停止编码并回切 GPT-5.4
+
 ### 验证计划
 
 - pytest：
@@ -50,6 +63,7 @@
 - plan 输出后默认等待确认
 - 未确认前禁止改代码
 - 命中 `AGENTS.md` 中的 `Auto Enforcement` / 自动触发规则时，不得跳过 `/plan`
+- 如果计划交由 GLM 执行，必须在 plan 中写清可改文件、不可触碰边界和回切条件
 - retrieval 改动必须说明当前处于：
   - baseline
   - supplemental

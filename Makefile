@@ -71,7 +71,7 @@ dev-frontend:
 
 # ── Test targets ─────────────────────────────────────────
 
-.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval eval-baseline show-chunk-config
+.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval eval-baseline show-chunk-config check-retrieval-state
 
 ## Run all tests (backend unit + frontend lint)
 test: test-backend test-frontend
@@ -117,6 +117,11 @@ eval-baseline:
 show-chunk-config:
 	@printf "$(_CYN)▸ Current chunk configuration$(_RST)\n"
 	$(conda-run) python -c "from backend.app.core.config import get_settings; s=get_settings(); print(f'  chunk_size_chars: {s.chunk_size_chars}'); print(f'  chunk_overlap_chars: {s.chunk_overlap_chars}'); print(f'  chunk_min_chars: {s.chunk_min_chars}')"
+
+## Check whether retrieval-state.md was updated after baseline / threshold / phase changes
+check-retrieval-state:
+	@printf "$(_CYN)▸ Checking retrieval-state sync …$(_RST)\n"
+	python scripts/check_retrieval_state_sync.py
 
 # ── Lint targets ─────────────────────────────────────────
 
@@ -183,6 +188,7 @@ help:
 	@printf "  $(_CYN)eval-retrieval$(_RST)   Run retrieval evaluation (needs running API)\n"
 	@printf "  $(_CYN)eval-baseline$(_RST)    Run eval and save as baseline (TAG=name)\n"
 	@printf "  $(_CYN)show-chunk-config$(_RST) Show current chunk parameters\n"
+	@printf "  $(_CYN)check-retrieval-state$(_RST) Check retrieval-state.md sync\n"
 	@printf "\n"
 	@printf "  $(_CYN)lint$(_RST)             Lint frontend + backend\n"
 	@printf "  $(_CYN)build$(_RST)            Production build (frontend + Docker)\n"

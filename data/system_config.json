@@ -51,5 +51,13 @@
     "memory_prompt_tokens": 360
   },
   "updated_at": "2026-03-28T09:22:56.993740Z",
-  "updated_by": "user_sys_admin_demo"
+  "updated_by": "user_sys_admin_demo",
+  "_internal_retrieval_controls": {
+    "supplemental_quality_thresholds": {
+      "top1_threshold": 0.55,
+      "avg_top_n_threshold": 0.45,
+      "fine_query_top1_threshold": 0.95,
+      "fine_query_avg_top_n_threshold": 0.7
+    }
+  }
 }
