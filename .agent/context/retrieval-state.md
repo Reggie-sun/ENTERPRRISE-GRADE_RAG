@@ -20,7 +20,7 @@
 ## 1. 当前阶段
 
 - 当前主线：`Phase 1B-B`
-- 当前状态：`supplemental 已进入可校准阶段，但仍未 final tuning completed`
+- 当前状态：`supplemental 触发校准已收口，但 cross-dept hit quality 仍未收口`
 - `Phase 2A / Gate`：已完成
 - `Phase 2B`：只允许 `readiness / audit`，**不允许**正式实现
 - `Phase 3`：未开始
@@ -72,7 +72,7 @@
 
 ### 最新 baseline 报告
 
-- `eval/results/eval_20260405_112755.json`
+- `eval/results/eval_20260405_120952.json`
 
 关键指标：
 
@@ -80,48 +80,47 @@
 - `topk_recall = 61.29%`
 - `expected_doc_coverage_avg = 61.29%`
 - `supplemental_precision = 1.0`
-- `supplemental_recall = 0.5`
+- `supplemental_recall = 1.0`
 - `conservative_trigger_count = 0`
 
 解释：
 
-- 这说明 supplemental 指标已经进入“可校准”状态
-- 但 cross-dept 命中质量仍未稳定，当前不是“1B-B 完成”
+- 这说明 supplemental trigger calibration 已经收口
+- 但 `supplemental_expected=true` 的 `12` 条样本当前仍然 `topk_recall = 0.0`
+- 也就是说，当前不是“1B-B 完成”，只是 trigger blocker 已切换
 
 ---
 
 ## 4. 当前已确认问题
 
-### 4.1 仍有 6 条 cross false negatives
+### 4.1 触发层 false negatives 已清零
 
-最新 baseline 中仍未触发 supplemental 的样本：
+最新 baseline 中：
 
-- `cross-002`
-- `cross-006`
-- `cross-007`
-- `cross-009`
-- `cross-010`
-- `cross-012`
+- `supplemental_expected=true` 的 `12` 条样本已全部触发 supplemental
+- `supplemental_expected=false` 的 `19` 条样本没有保守误触发
 
-### 4.2 当前主问题不是 ACL 缺失，而是 sufficiency 判定
+### 4.2 当前主问题不再是 trigger blocker，而是命中质量 blocker
 
 已确认：
 
 - ACL seed 与 auth profile 对这些样本并不缺失
-- 这些 case 大多被判成 `department_sufficient`
-- 但至少在 `cross-002`、`cross-009` 中，`department_effective_count` 是被同一篇错误文档的多个 chunk 撑满的
+- `department_sufficient / department_low_quality` 的 supplemental 触发现在已经和样本预期对齐
+- 但 supplemental 触发后，融合结果 top-k 仍然被本部门候选主导，`expected_doc_ids` 仍然没有进入 top-k
 
 也就是说，当前更像是：
 
-- `department_effective_count` 统计 chunk 数，而不是唯一文档数
-- “少数本部门错误文档的重复 chunk”会把 primary recall 误判成 sufficient
+- 触发条件已经修正
+- 但 supplemental route 的结果还没有真正改变 cross-dept top-k 命中
+- 当前 blocker 已从“trigger 是否触发”切换到“trigger 后为什么仍然 hit 不到期望文档”
 
-### 4.3 还有 query granularity 偏差
+### 4.3 当前代表性现象
 
-至少 `cross-007` 当前没有走到 fine-query 更严格阈值，说明：
+例如：
 
-- 某些 query 的 `query_granularity` 还会影响 trigger 行为
-- 这不是单纯继续抬阈值就能解决的
+- `cross-002`、`cross-012`：已经触发 supplemental，但 top-k 仍然只有 `doc_20260321070337_445684f4`
+- `cross-007`、`cross-009`、`cross-010`：已经触发 supplemental，但 top-k 仍被本部门多个错误文档占满
+- 所有 `supplemental_expected=true` 样本当前 `topk_recall = 0.0`
 
 ---
 
@@ -129,12 +128,10 @@
 
 如果继续做 `Phase 1B-B`，默认下一步是：
 
-1. 修 `retrieval_service.py` 的 supplemental sufficiency 判定
-   - 至少评估“唯一文档数”而不只是 chunk 数
-2. 补 `test_retrieval_chat.py` 回归
-   - 覆盖“同一篇错误文档多个 chunk 不能把 department 判成 sufficient”
-3. 复跑 `make eval-retrieval`
-4. 再看剩余 false negatives 是否需要继续调阈值
+1. 保持当前 supplemental trigger calibration 结果不回退
+2. 审计 supplemental 触发后为什么 top-k 仍被 department 候选主导
+3. 优先看 `retrieval_service.py` 的 scope 融合 / 截断策略，而不是继续抬触发阈值
+4. 复跑 `make eval-retrieval`，重点看 `supplemental_expected=true` 的 `topk_recall`
 
 ---
 

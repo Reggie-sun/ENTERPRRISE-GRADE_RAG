@@ -40,6 +40,7 @@ from .rerank_canary_service import RerankCanaryService
 from .retrieval_query_router import HybridBranchWeights, RetrievalQueryRouter
 
 logger = logging.getLogger(__name__)
+SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD = 10.0
 
 @dataclass
 class _RetrievalCandidate:
@@ -876,10 +877,9 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         阶段二：仅当本部门有效结果数不足时，才查 supplemental pool（global_document_ids）。
         融合排序：本部门结果优先，补充结果在后。
 
-        "有效结果数"近似为：本部门候选经过 OCR 质量治理后的数量。
-        这个近似的前提是：在部门优先路径里，retrievability 过滤不会大量打掉结果
-        （因为 _can_retrieve_document 只检查租户边界 + role visibility，
-        不做部门隔离过滤）。
+        "有效结果数"仍按本部门候选经过 OCR 质量治理后的 chunk 数计算。
+        但为了避免同一篇弱相关文档的多个 chunk 把 primary sufficiency 误判成“已足够”，
+        会额外结合本部门 top1 lexical 信号做低质量判定。
 
         输入：查询文本、查询向量、查询档位、召回上限、部门优先作用域、是否截断到 top_k。
         输出：(融合后候选列表, 检索模式, 分支权重) 三元组。
@@ -907,7 +907,9 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
 
         # Apply OCR quality governance to department candidates to get effective count
         department_after_ocr, _ocr_filtered = self._apply_ocr_quality_governance(department_candidates)
-        department_effective_count = len(department_after_ocr)
+        department_after_ocr_count = len(department_after_ocr)
+        department_unique_doc_count = self._count_unique_documents(department_after_ocr)
+        department_effective_count = department_after_ocr_count
         required = self._required_primary_results(profile, truncate_to_top_k)
         primary_top1_score, primary_avg_top_n_score = self._summarize_primary_quality(
             department_after_ocr,
@@ -915,6 +917,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             branch_weights=department_branch_weights,
             window_size=required,
         )
+        primary_top1_lexical_score = self._top_candidate_lexical_score(department_after_ocr)
         query_granularity = (
             str(diagnostic.get("query_granularity") or "").strip().lower()
             if diagnostic is not None
@@ -932,20 +935,28 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 quality_avg_threshold,
                 quality_thresholds.fine_query_avg_top_n_threshold,
             )
-        low_quality = (
+        low_quality_by_score = (
             primary_top1_score is not None and primary_top1_score < quality_top1_threshold
         ) or (
             primary_avg_top_n_score is not None and primary_avg_top_n_score < quality_avg_threshold
         )
+        low_quality_by_lexical = (
+            department_mode == "hybrid"
+            and primary_top1_lexical_score is not None
+            and primary_top1_lexical_score < SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD
+        )
+        low_quality = low_quality_by_score or low_quality_by_lexical
 
         if department_effective_count >= required and not low_quality:
             # Department has sufficient and good-quality results — skip supplemental route entirely
             logger.info(
-                "staged_retrieval stage=department_only department_effective=%d required=%d top1=%.4f avg_top_n=%.4f supplemental=skipped",
+                "staged_retrieval stage=department_only department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f supplemental=skipped",
                 department_effective_count,
+                department_unique_doc_count,
                 required,
                 primary_top1_score or 0.0,
                 primary_avg_top_n_score or 0.0,
+                primary_top1_lexical_score or 0.0,
             )
             if diagnostic is not None:
                 diagnostic["primary_threshold"] = required
@@ -961,7 +972,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                     "department_vector_count": department_vector_count,
                     "department_lexical_count": department_lexical_count,
                     "department_fused_count": department_fused_count,
-                    "department_after_ocr": department_effective_count,
+                    "department_after_ocr": department_after_ocr_count,
+                    "department_unique_docs_after_ocr": department_unique_doc_count,
                 }
             return department_candidates, department_mode, department_branch_weights
 
@@ -985,11 +997,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         supplemental_fused_count = len(global_candidates)
 
         logger.info(
-            "staged_retrieval stage=supplemental department_effective=%d required=%d top1=%.4f avg_top_n=%.4f supplemental_limit=%d supplemental_recall=%d",
+            "staged_retrieval stage=supplemental department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f supplemental_limit=%d supplemental_recall=%d",
             department_effective_count,
+            department_unique_doc_count,
             required,
             primary_top1_score or 0.0,
             primary_avg_top_n_score or 0.0,
+            primary_top1_lexical_score or 0.0,
             supplemental_limit,
             len(global_candidates),
         )
@@ -1002,10 +1016,22 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             if trigger_basis == "department_insufficient":
                 diagnostic["supplemental_reason"] = f"department_effective({department_effective_count})_below_threshold({required})"
             else:
-                diagnostic["supplemental_reason"] = (
-                    f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f})"
-                    f"_below_thresholds({quality_top1_threshold:.2f},{quality_avg_threshold:.2f})"
-                )
+                if low_quality_by_score and low_quality_by_lexical:
+                    diagnostic["supplemental_reason"] = (
+                        f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f},"
+                        f"lexical_top1={primary_top1_lexical_score:.4f})_below_thresholds("
+                        f"{quality_top1_threshold:.2f},{quality_avg_threshold:.2f},{SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD:.2f})"
+                    )
+                elif low_quality_by_score:
+                    diagnostic["supplemental_reason"] = (
+                        f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f})"
+                        f"_below_thresholds({quality_top1_threshold:.2f},{quality_avg_threshold:.2f})"
+                    )
+                else:
+                    diagnostic["supplemental_reason"] = (
+                        f"department_lexical_top1({primary_top1_lexical_score:.4f})"
+                        f"_below_threshold({SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD:.2f})"
+                    )
             diagnostic["supplemental_trigger_basis"] = trigger_basis
             diagnostic["primary_top1_score"] = primary_top1_score
             diagnostic["primary_avg_top_n_score"] = primary_avg_top_n_score
@@ -1015,7 +1041,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 "department_vector_count": department_vector_count,
                 "department_lexical_count": department_lexical_count,
                 "department_fused_count": department_fused_count,
-                "department_after_ocr": department_effective_count,
+                "department_after_ocr": department_after_ocr_count,
+                "department_unique_docs_after_ocr": department_unique_doc_count,
                 "supplemental_vector_count": supplemental_vector_count,
                 "supplemental_lexical_count": supplemental_lexical_count,
                 "supplemental_fused_count": supplemental_fused_count,
@@ -1081,6 +1108,23 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         safe_window = max(1, min(window_size, len(normalized_scores)))
         avg_top_n_score = sum(normalized_scores[:safe_window]) / safe_window
         return top1_score, avg_top_n_score
+
+    @staticmethod
+    def _count_unique_documents(candidates: list[_RetrievalCandidate]) -> int:
+        unique_document_ids: set[str] = set()
+        for candidate in candidates:
+            document_id = str(candidate.payload.get("document_id") or "").strip()
+            unique_document_ids.add(document_id or candidate.candidate_id)
+        return len(unique_document_ids)
+
+    @staticmethod
+    def _top_candidate_lexical_score(candidates: list[_RetrievalCandidate]) -> float | None:
+        if not candidates:
+            return None
+        lexical_score = candidates[0].lexical_score
+        if lexical_score is None:
+            return None
+        return float(lexical_score)
 
     def _apply_ocr_quality_governance(
         self,

@@ -8,6 +8,7 @@ import pytest
 
 from backend.app.core.config import Settings, ensure_data_directories  # 导入配置对象和目录初始化函数。
 from backend.app.main import app  # 导入应用实例。
+from backend.app.rag.retrievers import LexicalMatch
 from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefinition, UserRecord
 from backend.app.schemas.chat import ChatRequest
 from backend.app.schemas.retrieval import RetrievalRequest, RetrievalResponse, RetrievedChunk  # 导入检索请求/响应模型，用于直接调用服务层测试过滤逻辑。
@@ -2437,6 +2438,117 @@ def test_retrieval_service_staged_triggers_supplemental_when_department_insuffic
     assert response.results[0].source_scope == "department"
     # Remaining results should be from supplemental pool
     assert all(item.source_scope == "global" for item in response.results[1:])
+
+
+def test_retrieval_service_staged_triggers_supplemental_when_department_chunks_repeat_same_document_with_weak_lexical_match(tmp_path: Path) -> None:
+    """Repeated chunks from one weakly-matched department document should trigger supplemental recall."""
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n": 5,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(
+            self,
+            auth_context: AuthContext | None,
+        ) -> DepartmentPriorityRetrievalScope:
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_dept_wrong"],
+                global_document_ids=["doc_global_1", "doc_global_2", "doc_global_3"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids: list[str], auth_context: AuthContext | None) -> dict[str, bool]:
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(
+        settings,
+        document_service=SpyDocumentService(),
+        retrieval_scope_policy=SpyRetrievalScopePolicy(),
+    )  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+    vector_route_calls: list[list[str]] = []
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        vector_route_calls.append(list(document_ids or []))
+        ids = list(document_ids or [])
+        results: list[SimpleNamespace] = []
+        if ids and ids[0].startswith("doc_dept"):
+            for index in range(5):
+                results.append(
+                    SimpleNamespace(
+                        id=f"point-dept-{index}",
+                        score=0.97 - index * 0.01,
+                        payload={
+                            "chunk_id": f"chunk-dept-{index}",
+                            "document_id": "doc_dept_wrong",
+                            "document_name": "doc_dept_wrong.txt",
+                            "text": f"Wrong department content chunk {index}",
+                            "source_path": "/tmp/doc_dept_wrong.txt",
+                        },
+                    )
+                )
+        else:
+            for index, doc_id in enumerate(ids):
+                results.append(
+                    SimpleNamespace(
+                        id=f"point-global-{index}",
+                        score=0.86 - index * 0.03,
+                        payload={
+                            "chunk_id": f"chunk-global-{index}",
+                            "document_id": doc_id,
+                            "document_name": f"{doc_id}.txt",
+                            "text": f"Supplemental content from {doc_id}",
+                            "source_path": f"/tmp/{doc_id}.txt",
+                        },
+                    )
+                )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+
+    def fake_lexical_search(query, *, limit, document_id=None, document_ids=None):
+        ids = list(document_ids or [])
+        matches: list[LexicalMatch] = []
+        if ids and ids[0].startswith("doc_dept"):
+            for index in range(5):
+                matches.append(
+                    LexicalMatch(
+                        point_id=f"point-dept-{index}",
+                        payload={
+                            "chunk_id": f"chunk-dept-{index}",
+                            "document_id": "doc_dept_wrong",
+                            "document_name": "doc_dept_wrong.txt",
+                            "text": f"Weak lexical overlap chunk {index}",
+                            "source_path": "/tmp/doc_dept_wrong.txt",
+                        },
+                        score=2.0 - index * 0.1,
+                    )
+                )
+        return matches
+
+    retrieval_service.lexical_retriever = SimpleNamespace(search=fake_lexical_search)
+
+    response = retrieval_service.search(
+        request=RetrievalRequest(query="cross department question", top_k=5, mode="fast"),
+        auth_context=_build_auth_context(role_id="employee", department_ids=["dept_rnd"]),
+    )
+
+    assert vector_route_calls == [
+        ["doc_dept_wrong"],
+        ["doc_global_1", "doc_global_2", "doc_global_3"],
+    ]
+    assert response.diagnostic is not None
+    assert response.diagnostic.primary_recall_stage.effective_count == 5
+    assert response.diagnostic.supplemental_triggered is True
+    assert response.diagnostic.supplemental_recall_stage.trigger_basis == "department_low_quality"
+    assert "lexical_top1" in (response.diagnostic.supplemental_reason or "")
+    assert response.results[0].source_scope == "department"
 
 
 def test_retrieval_service_staged_uses_rerank_top_n_when_truncate_is_false(tmp_path: Path) -> None:
