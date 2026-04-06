@@ -35,7 +35,7 @@ from ..schemas.chat import (
 )  # 导入问答请求、响应和引用片段模型。
 from ..schemas.query_profile import QueryProfile
 from ..schemas.query_rewrite import QueryRewriteResult
-from ..schemas.request_trace import RequestTraceStage, RequestTraceStageStatus
+from ..schemas.request_trace import RequestTraceStage, RequestTraceStageName, RequestTraceStageStatus
 from .chat_citation_pipeline import ChatCitationPipeline, CitationBuildResult  # noqa: F401 — re-export for backward compat
 from .chat_memory_service import ChatMemoryService, get_chat_memory_service
 from .chat_telemetry_recorder import ChatTelemetryRecorder
@@ -218,18 +218,25 @@ class ChatService:  # 封装问答接口的业务逻辑。
                 if hasattr(self.generation_client, "prepare_prompt")
                 else None
             )
+            llm_started_at = perf_counter()
             try:  # 优先调用 LLM 生成最终回答。
-                llm_started_at = perf_counter()
-                generation_kwargs = dict(
-                    question=effective_question,  # 追问型问题先按最近一轮主题改写，再进入生成链路。
-                    contexts=contexts,  # 传入检索证据上下文。
-                    memory_text=memory_summary,  # 最近几轮上下文只做轻量承接，不替代检索证据。
-                    timeout_seconds=profile.timeout_budget_seconds,  # 问答超时预算统一来自查询档位配置。
-                    model_name=response_model,
-                )
                 if prepared_prompt is not None:
-                    generation_kwargs["prepared_prompt"] = prepared_prompt
-                answer = self.generation_client.generate(**generation_kwargs)  # 执行回答生成。
+                    answer = self.generation_client.generate(
+                        question=effective_question,  # 追问型问题先按最近一轮主题改写，再进入生成链路。
+                        contexts=contexts,  # 传入检索证据上下文。
+                        memory_text=memory_summary,  # 最近几轮上下文只做轻量承接，不替代检索证据。
+                        timeout_seconds=profile.timeout_budget_seconds,  # 问答超时预算统一来自查询档位配置。
+                        model_name=response_model,
+                        prepared_prompt=prepared_prompt,
+                    )
+                else:
+                    answer = self.generation_client.generate(
+                        question=effective_question,
+                        contexts=contexts,
+                        memory_text=memory_summary,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                    )  # 执行回答生成。
                 self._append_trace_stage(
                     trace_stages,
                     stage="llm",
@@ -557,16 +564,24 @@ class ChatService:  # 封装问答接口的业务逻辑。
             answer_parts: list[str] = []  # 累积回答片段，最后拼成完整 answer。
             llm_started_at = perf_counter()
             try:  # 尝试真实流式生成。
-                generation_kwargs = dict(
-                    question=effective_question,
-                    contexts=contexts,
-                    memory_text=memory_summary,
-                    timeout_seconds=profile.timeout_budget_seconds,
-                    model_name=model,
-                )
                 if prepared_prompt is not None:
-                    generation_kwargs["prepared_prompt"] = prepared_prompt
-                for delta in self.generation_client.generate_stream(**generation_kwargs):
+                    stream = self.generation_client.generate_stream(
+                        question=effective_question,
+                        contexts=contexts,
+                        memory_text=memory_summary,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=model,
+                        prepared_prompt=prepared_prompt,
+                    )
+                else:
+                    stream = self.generation_client.generate_stream(
+                        question=effective_question,
+                        contexts=contexts,
+                        memory_text=memory_summary,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=model,
+                    )
+                for delta in stream:
                     if not delta:
                         continue
                     answer_parts.append(delta)
@@ -947,7 +962,7 @@ class ChatService:  # 封装问答接口的业务逻辑。
     def _append_trace_stage(
         stages: list[RequestTraceStage],
         *,
-        stage: str,
+        stage: RequestTraceStageName,
         status: RequestTraceStageStatus,
         duration_ms: int | None,
         input_size: int | None,

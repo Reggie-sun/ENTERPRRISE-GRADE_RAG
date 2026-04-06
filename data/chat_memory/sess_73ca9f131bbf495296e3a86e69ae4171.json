@@ -3,17 +3,8 @@
   "user_id": "user_roster_10565",
   "username": "10565",
   "department_id": "dept_production_technology",
-  "updated_at": "2026-04-06T05:30:43.889966Z",
+  "updated_at": "2026-04-06T08:47:04.398816Z",
   "turns": [
-    {
-      "turn_id": "turn_a077c7ea87bb",
-      "asked_at": "2026-04-02T06:15:54.906225Z",
-      "question": "倒角安全规范",
-      "answer": "根据提供的多个上下文信息，倒角的安全规范主要包括以下几个方面：\n\n1. **安全需要**：为了使在接触工件时不被锋利的边角划伤手。\n2. **外观需要**：为了使加工出来的工件更加美观。\n3. **工艺需要**：在配合部位避免互相干涉，另外倒角还可以去除内应力，防止工件在热处理后由于应力集中而导致开裂。\n\n这些规范确保了倒角不仅提高了产品的安全性，还改善了产品的外观和性能。",
-      "response_mode": "rag",
-      "document_id": null,
-      "citation_count": 5
-    },
     {
       "turn_id": "turn_561a3906aebe",
       "asked_at": "2026-04-02T06:16:02.167849Z",
@@ -55,6 +46,15 @@
       "asked_at": "2026-04-06T05:30:43.889946Z",
       "question": "如何给皮带装配",
       "answer": "无法直接从提供的上下文中找到关于皮带装配SOP或处理资料的最近更新信息。上下文主要描述了皮带装配的具体步骤和操作规范，并没有提及最近更新的内容。",
+      "response_mode": "rag",
+      "document_id": null,
+      "citation_count": 5
+    },
+    {
+      "turn_id": "turn_9696c9efcdfd",
+      "asked_at": "2026-04-06T08:47:04.398790Z",
+      "question": "解释一下cpps",
+      "answer": "CPPS是指慢性盆腔疼痛综合征(Chronic Prostatitis/Pelvic Pain Syndrome)，它是一系列症状的统称，这些症状包括但不限于直肠、生殖器或腹部的不适或疼痛，坐下时不适或疼痛加剧，性行为时或之后不适或疼痛，尿频，尿急，排尿踌躇不畅等。这些症状可能同时出现，也可能单独出现。CPPS并非由细菌感染引起，而是涉及多种因素，包括解剖结构问题、神经系统问题等。",
       "response_mode": "rag",
       "document_id": null,
       "citation_count": 5

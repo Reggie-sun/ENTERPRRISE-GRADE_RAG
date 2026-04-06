@@ -13,6 +13,8 @@ import {
   getDocumentPreview,
   getDocuments,
   rebuildDocumentVectors,
+  rebuildMyDocuments,
+  restoreMyDocuments,
   type DocumentLifecycleStatus,
   type DocumentPreviewResponse,
   type DocumentSummary,
@@ -74,6 +76,8 @@ export function DocumentListPanel() {
   const [deleteLoadingDocId, setDeleteLoadingDocId] = useState('');
   const [rebuildLoadingDocId, setRebuildLoadingDocId] = useState('');
   const [batchDeleteLoading, setBatchDeleteLoading] = useState(false);
+  const [batchRebuildLoading, setBatchRebuildLoading] = useState(false);
+  const [batchRestoreLoading, setBatchRestoreLoading] = useState(false);
   const [operationMessage, setOperationMessage] = useState('');
   const [operationError, setOperationError] = useState('');
 
@@ -218,6 +222,48 @@ export function DocumentListPanel() {
     }
   };
 
+  const handleBatchRebuild = async () => {
+    const confirmed = window.confirm('确认用最新配置重建您所有文档的知识索引吗？该操作会先清除旧索引再重新入库，耗时可能较长。');
+    if (!confirmed) {
+      return;
+    }
+    setBatchRebuildLoading(true);
+    setOperationMessage('');
+    setOperationError('');
+    try {
+      const result = await rebuildMyDocuments();
+      setOperationMessage(
+        `批量重建完成：成功 ${result.rebuilt_count} 个，跳过 ${result.skipped_count} 个，失败 ${result.failed_count} 个，已清理旧索引 ${result.total_vector_points_removed} 条。`
+      );
+      await fetchDocuments(page, pageSize);
+    } catch (err) {
+      setOperationError(formatApiError(err, '批量重建'));
+    } finally {
+      setBatchRebuildLoading(false);
+    }
+  };
+
+  const handleBatchRestore = async () => {
+    const confirmed = window.confirm('确认恢复您已删除的所有文档吗？恢复后会自动用最新配置重新构建知识索引。');
+    if (!confirmed) {
+      return;
+    }
+    setBatchRestoreLoading(true);
+    setOperationMessage('');
+    setOperationError('');
+    try {
+      const result = await restoreMyDocuments();
+      setOperationMessage(
+        `批量恢复完成：成功 ${result.restored_count} 个，失败 ${result.failed_count} 个。已自动触发知识索引重建。`
+      );
+      await fetchDocuments(page, pageSize);
+    } catch (err) {
+      setOperationError(formatApiError(err, '批量恢复'));
+    } finally {
+      setBatchRestoreLoading(false);
+    }
+  };
+
   const maxPage = Math.max(1, Math.ceil(total / pageSize));
   const canPrev = page > 1;
   const canNext = page < maxPage;
@@ -280,9 +326,25 @@ export function DocumentListPanel() {
           </Button>
           <Button
             type="button"
+            variant="ghost"
+            loading={batchRebuildLoading}
+            className="ml-auto"
+            onClick={handleBatchRebuild}
+          >
+            重建知识索引
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            loading={batchRestoreLoading}
+            onClick={handleBatchRestore}
+          >
+            恢复已删除
+          </Button>
+          <Button
+            type="button"
             variant="danger"
             loading={batchDeleteLoading}
-            className="ml-auto"
             onClick={handleBatchDelete}
           >
             删除我的上传

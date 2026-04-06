@@ -8,7 +8,7 @@
   "estimated_hours": 4,
   "depends_on": [],
   "blocking": [],
-  "description": "Create AbstentionCard component for guided abstention responses. Shows Chinese message + query reformulation suggestions + clickable example questions.",
+  "description": "Create AbstentionCard component for guided abstention responses. Shows Chinese message + query reformulation suggestions + clickable example questions. NOTE: Mode values ('no_context', 'evidence_gate_abstain') must match IMPL-002's types.ts update.",
   "acceptance_criteria": [
     "New AbstentionCard component renders for mode=no_context and mode=evidence_gate_abstain",
     "Template A (insufficient evidence): Chinese message + reformulation suggestions",
@@ -21,14 +21,46 @@
     "frontend/src/components/AbstentionCard.tsx"
   ],
   "files_to_modify": [
-    "frontend/src/panels/ChatPanel.tsx"
+    "frontend/src/portal/PortalChatPage.tsx"
   ],
   "implementation_steps": [
-    "1. Create AbstentionCard.tsx with Template A and C support",
-    "2. Add Chinese abstention messages as constants",
-    "3. Add suggested questions from existing suggestedQuestions config",
-    "4. Add click handler to submit suggestion as new query",
-    "5. Integrate AbstentionCard into ChatPanel.tsx response rendering",
-    "6. Ensure abstention mode detection: mode === 'no_context' || mode === 'evidence_gate_abstain'"
-  ]
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any code changes",
+    "1. Read types.ts to verify mode values exist (or will exist after IMPL-002)",
+    "2. Create AbstentionCard.tsx with Template A and C support",
+    "3. Add Chinese abstention messages as constants",
+    "4. Add suggested questions from existing suggestedQuestions config",
+    "5. Add click handler to submit suggestion as new query",
+    "6. Integrate AbstentionCard into PortalChatPage.tsx response rendering",
+    "7. Ensure abstention mode detection: mode === 'no_context' || mode === 'evidence_gate_abstain'",
+    "8. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "lite",
+    "reason": "Frontend-only: creates component + modifies page. No schema/API/retrieval changes. Mode values consumed from types.ts (set by IMPL-002). Meets Lite Mode conditions.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": [],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "note": "Depends on IMPL-002 having updated types.ts with mode values. If IMPL-005 runs before IMPL-002, use string literals and verify consistency during integration.",
+    "mandatory_reads": {
+      "general": [
+        ".agent/context/repo-map.md",
+        "frontend/src/api/types.ts"
+      ],
+      "frontend_current": [
+        "frontend/src/portal/PortalChatPage.tsx"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [],
+      "executor_tasks": [
+        "Create AbstentionCard component",
+        "Integrate into PortalChatPage",
+        "Run frontend lint + build"
+      ]
+    }
+  }
 }

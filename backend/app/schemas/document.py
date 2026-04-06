@@ -203,6 +203,18 @@ class DocumentBatchDeleteResponse(BaseModel):  # 定义 DELETE /documents 的批
     total_vector_points_removed: int = Field(ge=0)  # 清理掉的向量点位总数。
 
 
+class DocumentBatchRebuildResponse(BaseModel):  # 定义 POST /documents/rebuild 的批量重建响应结构。
+    rebuilt_count: int = Field(ge=0)  # 成功触发重建的文档数量。
+    skipped_count: int = Field(ge=0)  # 跳过的文档数量（已删除或有进行中的任务）。
+    failed_count: int = Field(ge=0)  # 重建失败的文档数量。
+    total_vector_points_removed: int = Field(ge=0)  # 重建前清理掉的旧向量点位总数。
+
+
+class DocumentBatchRestoreResponse(BaseModel):  # 定义 POST /documents/restore 的批量恢复响应结构。
+    restored_count: int = Field(ge=0)  # 成功恢复并触发重建的文档数量。
+    failed_count: int = Field(ge=0)  # 恢复失败的文档数量。
+
+
 class DocumentRebuildResponse(BaseModel):  # 定义 POST /documents/{doc_id}/rebuild 的响应结构。
     document_id: str  # 触发重建的文档 ID（当前主字段）。
     doc_id: str  # 兼容历史前端字段。

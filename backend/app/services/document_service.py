@@ -31,6 +31,8 @@ from ..schemas.document import (
     DocumentBatchCreateResponse,  # 批量创建响应。
     DocumentBatchDeleteResponse,  # 批量删除响应。
     DocumentBatchItemResponse,  # 批量创建中单条结果。
+    DocumentBatchRebuildResponse,  # 批量重建响应。
+    DocumentBatchRestoreResponse,  # 批量恢复响应。
     DocumentCreateResponse,  # 单文档创建响应。
     DocumentDeleteResponse,  # 文档删除响应。
     DocumentDetailResponse,  # 文档详情响应。
@@ -41,6 +43,7 @@ from ..schemas.document import (
     DocumentRecord,  # 文档元数据记录（内部持久化结构）。
     DocumentSummary,  # 文档摘要（列表项）。
     DocumentUploadResponse,  # 同步上传响应。
+    IngestErrorCode,  # 入库错误码类型。
     IngestJobRecord,  # 入库任务记录。
     IngestJobStatus,  # 入库任务状态类型。
     IngestJobStatusResponse,  # 入库任务状态响应。
@@ -123,9 +126,34 @@ class DocumentFilePayload:
     content: bytes | None = None  # 文件字节内容（path 不可用时回退）
 
 
-def _dead_letter_error_code(base_error_code: IngestBaseErrorCode) -> str:
+def _dead_letter_error_code(base_error_code: IngestBaseErrorCode) -> IngestErrorCode:
     """将基础错误码转为死信错误码，追加 _DEAD_LETTER 后缀。"""
-    return f"{base_error_code}{DEAD_LETTER_ERROR_SUFFIX}"
+    mapping: dict[IngestBaseErrorCode, IngestErrorCode] = {
+        "INGEST_DISPATCH_ERROR": "INGEST_DISPATCH_ERROR_DEAD_LETTER",
+        "INGEST_VALIDATION_ERROR": "INGEST_VALIDATION_ERROR_DEAD_LETTER",
+        "INGEST_RUNTIME_ERROR": "INGEST_RUNTIME_ERROR_DEAD_LETTER",
+    }
+    return mapping[base_error_code]
+
+
+def _coerce_ingest_status(status: str) -> IngestJobStatus:
+    valid_statuses: dict[str, IngestJobStatus] = {
+        "pending": "pending",
+        "uploaded": "uploaded",
+        "queued": "queued",
+        "parsing": "parsing",
+        "ocr_processing": "ocr_processing",
+        "chunking": "chunking",
+        "embedding": "embedding",
+        "indexing": "indexing",
+        "completed": "completed",
+        "failed": "failed",
+        "dead_letter": "dead_letter",
+        "partial_failed": "partial_failed",
+    }
+    if status not in valid_statuses:
+        raise ValueError(f"Unsupported ingest status: {status}")
+    return valid_statuses[status]
 
 
 def _sanitize_filename(filename: str) -> str:
@@ -309,7 +337,12 @@ class DocumentService:
                         "repaired_stuck_job": True,
                     },
                 )
-                return DocumentCreateResponse(doc_id=duplicate_record.doc_id, job_id=duplicate_record.latest_job_id, status="completed")
+            return DocumentCreateResponse(
+                document_id=duplicate_record.doc_id,
+                doc_id=duplicate_record.doc_id,
+                job_id=duplicate_record.latest_job_id,
+                status="completed",
+            )
 
             # 情况 B：旧任务已完成，检查产物是否存在
             if latest_job_record is not None and latest_job_record.status == "completed":
@@ -325,7 +358,12 @@ class DocumentService:
                         duration_ms=self._elapsed_ms(started_at),
                         details={"file_name": filename, "duplicate": True, "reused_job": False, "recompleted": True},
                     )
-                    return DocumentCreateResponse(doc_id=duplicate_record.doc_id, job_id=followup_job.job_id, status="queued")
+                    return DocumentCreateResponse(
+                        document_id=duplicate_record.doc_id,
+                        doc_id=duplicate_record.doc_id,
+                        job_id=followup_job.job_id,
+                        status="queued",
+                    )
                 # 产物存在 → 直接复用
                 self._save_document_record(duplicate_record)
                 self._record_document_event(
@@ -337,7 +375,12 @@ class DocumentService:
                     duration_ms=self._elapsed_ms(started_at),
                     details={"file_name": filename, "duplicate": True, "reused_job": True, "reused_completed": True},
                 )
-                return DocumentCreateResponse(doc_id=duplicate_record.doc_id, job_id=duplicate_record.latest_job_id, status="completed")
+                return DocumentCreateResponse(
+                    document_id=duplicate_record.doc_id,
+                    doc_id=duplicate_record.doc_id,
+                    job_id=duplicate_record.latest_job_id,
+                    status="completed",
+                )
 
             # 情况 C：旧任务仍在活跃进行中 → 复用（避免重复入库）
             if self._should_reuse_inflight_job(latest_job_record):
@@ -351,7 +394,12 @@ class DocumentService:
                     duration_ms=self._elapsed_ms(started_at),
                     details={"file_name": filename, "duplicate": True, "reused_job": True},
                 )
-                return DocumentCreateResponse(doc_id=duplicate_record.doc_id, job_id=duplicate_record.latest_job_id, status="queued")
+                return DocumentCreateResponse(
+                    document_id=duplicate_record.doc_id,
+                    doc_id=duplicate_record.doc_id,
+                    job_id=duplicate_record.latest_job_id,
+                    status="queued",
+                )
 
             # 情况 D：旧任务已终止（failed/dead_letter）→ 创建 follow-up 任务
             followup_job = self._create_followup_ingest_job(duplicate_record)
@@ -364,7 +412,12 @@ class DocumentService:
                 duration_ms=self._elapsed_ms(started_at),
                 details={"file_name": filename, "duplicate": True, "reused_job": False},
             )
-            return DocumentCreateResponse(doc_id=duplicate_record.doc_id, job_id=followup_job.job_id, status="queued")
+            return DocumentCreateResponse(
+                document_id=duplicate_record.doc_id,
+                doc_id=duplicate_record.doc_id,
+                job_id=followup_job.job_id,
+                status="queued",
+            )
 
         # --- 5. 无重复：创建新文档和新入库任务 ---
         now = datetime.now(timezone.utc)
@@ -436,7 +489,7 @@ class DocumentService:
             details={"file_name": filename, "duplicate": False},
         )
 
-        return DocumentCreateResponse(doc_id=doc_id, job_id=job_id, status="queued")
+        return DocumentCreateResponse(document_id=doc_id, doc_id=doc_id, job_id=job_id, status="queued")
 
     async def create_documents_batch(
         self,
@@ -587,7 +640,7 @@ class DocumentService:
 
         # 定义阶段回调：入库过程中每完成一个阶段就更新 job 状态
         def on_stage(stage: str, progress: int) -> None:
-            self._update_job_record(job_record, status=stage, stage=stage, progress=progress)
+            self._update_job_record(job_record, status=_coerce_ingest_status(stage), stage=stage, progress=progress)
 
         try:
             # 物化文件（如从对象存储下载到本地临时目录）
@@ -722,6 +775,7 @@ class DocumentService:
         self._ensure_can_read_document(record, auth_context)
         latest_ingest_status = self._get_latest_ingest_status(record.latest_job_id)
         return DocumentDetailResponse(
+            document_id=record.doc_id,
             doc_id=record.doc_id,
             file_name=record.file_name,
             status=record.status,
@@ -766,6 +820,7 @@ class DocumentService:
                 max_chars=max_chars,
             )
             return DocumentPreviewResponse(
+                document_id=record.doc_id,
                 doc_id=record.doc_id,
                 file_name=record.file_name,
                 preview_type="text",
@@ -782,6 +837,7 @@ class DocumentService:
             self._read_text_preview_bytes(parsed_path.read_bytes(), max_chars=max_chars) if parsed_path.exists() else ("", False)
         )
         return DocumentPreviewResponse(
+            document_id=record.doc_id,
             doc_id=record.doc_id,
             file_name=record.file_name,
             preview_type="pdf",
@@ -869,7 +925,12 @@ class DocumentService:
                     detail=f"Failed to clean vector replica for document {doc_id}: {exc}",
                 ) from exc
 
-            response = DocumentDeleteResponse(doc_id=record.doc_id, status="deleted", vector_points_removed=removed)
+            response = DocumentDeleteResponse(
+                document_id=record.doc_id,
+                doc_id=record.doc_id,
+                status="deleted",
+                vector_points_removed=removed,
+            )
             self._record_document_event(
                 action="delete",
                 outcome="success",
@@ -946,6 +1007,121 @@ class DocumentService:
         )
         return response
 
+    def rebuild_my_documents(self, *, auth_context: AuthContext | None = None) -> DocumentBatchRebuildResponse:
+        """重建当前用户上传的所有文档向量（用最新 chunk 配置重新入库）。
+
+        筛选条件：uploaded_by == 当前用户 AND tenant 匹配 AND 未删除。
+        跳过已删除或有进行中任务的文档，单条失败不影响其他。
+        """
+        started_at = perf_counter()
+        if auth_context is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
+
+        user_id = auth_context.user.user_id
+        tenant_id = auth_context.user.tenant_id
+
+        my_records = [
+            r
+            for r in self._list_document_records()
+            if r.tenant_id == tenant_id
+            and r.uploaded_by == user_id
+            and r.status != "deleted"
+        ]
+
+        rebuilt_count = 0
+        skipped_count = 0
+        failed_count = 0
+        total_vector_points_removed = 0
+
+        for record in my_records:
+            try:
+                # 检查是否有正在进行的入库任务
+                if record.latest_job_id:
+                    try:
+                        latest_job = self._load_job_record(record.latest_job_id)
+                        if self._should_reuse_inflight_job(latest_job):
+                            skipped_count += 1
+                            continue
+                    except HTTPException as exc:
+                        if exc.status_code != status.HTTP_404_NOT_FOUND:
+                            raise
+
+                removed = self.ingestion_service.vector_store.delete_document_points(record.doc_id)
+                total_vector_points_removed += removed
+                self._create_followup_ingest_job(record)
+                rebuilt_count += 1
+            except Exception:
+                failed_count += 1
+
+        response = DocumentBatchRebuildResponse(
+            rebuilt_count=rebuilt_count,
+            skipped_count=skipped_count,
+            failed_count=failed_count,
+            total_vector_points_removed=total_vector_points_removed,
+        )
+        self._record_document_event(
+            action="batch_rebuild_mine",
+            outcome="success" if failed_count == 0 else "partial",
+            auth_context=auth_context,
+            duration_ms=self._elapsed_ms(started_at),
+            details={
+                "rebuilt_count": rebuilt_count,
+                "skipped_count": skipped_count,
+                "failed_count": failed_count,
+                "total_vector_points_removed": total_vector_points_removed,
+            },
+        )
+        return response
+
+    def restore_my_documents(self, *, auth_context: AuthContext | None = None) -> DocumentBatchRestoreResponse:
+        """恢复当前用户已删除的文档：改回 status + 重新调度入库任务。
+
+        筛选条件：uploaded_by == 当前用户 AND tenant 匹配 AND status == 'deleted'。
+        """
+        started_at = perf_counter()
+        if auth_context is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
+
+        user_id = auth_context.user.user_id
+        tenant_id = auth_context.user.tenant_id
+
+        deleted_records = [
+            r
+            for r in self._list_document_records()
+            if r.tenant_id == tenant_id
+            and r.uploaded_by == user_id
+            and r.status == "deleted"
+        ]
+
+        restored_count = 0
+        failed_count = 0
+
+        for record in deleted_records:
+            try:
+                record.status = "uploaded"
+                record.updated_at = datetime.now(timezone.utc)
+                self._save_document_record(record)
+                self._create_followup_ingest_job(record)
+                restored_count += 1
+            except Exception:
+                failed_count += 1
+
+        response = DocumentBatchRestoreResponse(
+            restored_count=restored_count,
+            failed_count=failed_count,
+        )
+        self._record_document_event(
+            action="batch_restore_mine",
+            outcome="success" if failed_count == 0 else "partial",
+            auth_context=auth_context,
+            duration_ms=self._elapsed_ms(started_at),
+            details={
+                "restored_count": restored_count,
+                "failed_count": failed_count,
+            },
+        )
+        return response
+
     def rebuild_document_vectors(self, doc_id: str, *, auth_context: AuthContext | None = None) -> DocumentRebuildResponse:
         """重建文档向量：删除旧向量 + 调度新入库任务。
 
@@ -955,6 +1131,7 @@ class DocumentService:
         - 不能有正在进行的入库任务
         """
         started_at = perf_counter()
+        record: DocumentRecord | None = None
         try:
             record = self._load_document_record(doc_id)
             self._ensure_can_manage_document(record, auth_context)
@@ -986,6 +1163,7 @@ class DocumentService:
             # 创建 follow-up 入库任务
             followup_job = self._create_followup_ingest_job(record)
             response = DocumentRebuildResponse(
+                document_id=record.doc_id,
                 doc_id=record.doc_id,
                 job_id=followup_job.job_id,
                 status="queued",
@@ -1006,7 +1184,7 @@ class DocumentService:
                 action="rebuild",
                 outcome="failed",
                 auth_context=auth_context,
-                doc_id=record.doc_id,
+                doc_id=record.doc_id if record is not None else doc_id,
                 duration_ms=self._elapsed_ms(started_at),
                 details={"error_message": str(exc)},
             )
@@ -1019,7 +1197,7 @@ class DocumentService:
         self._ensure_can_read_document(document_record, auth_context)
         return self._to_ingest_job_status_response(record)
 
-    def _get_latest_ingest_status(self, latest_job_id: str | None) -> str | None:
+    def _get_latest_ingest_status(self, latest_job_id: str | None) -> IngestJobStatus | None:
         """获取文档最新入库任务的状态，任务不存在时返回 None。"""
         latest_job = self._load_latest_job_record(latest_job_id)
         if latest_job is None:
@@ -1062,7 +1240,11 @@ class DocumentService:
             if not self._can_read_document(record, auth_context):
                 continue  # 权限过滤：用户不可见的文档不返回
             latest_ingest_status = (
-                latest_ingest_statuses.get(record.latest_job_id)
+                (
+                    _coerce_ingest_status(latest_ingest_statuses[record.latest_job_id])
+                    if record.latest_job_id in latest_ingest_statuses
+                    else None
+                )
                 if self.metadata_store is not None
                 else self._get_latest_ingest_status(record.latest_job_id)
             )
@@ -1551,10 +1733,10 @@ class DocumentService:
         self,
         record: IngestJobRecord,
         *,
-        status: str,
+        status: IngestJobStatus,
         stage: str,
         progress: int,
-        error_code: str | None = None,
+        error_code: IngestErrorCode | None = None,
         error_message: str | None = None,
         increase_retry: bool = False,
     ) -> None:
@@ -1575,6 +1757,7 @@ class DocumentService:
         manual_retry_allowed = record.status not in PROCESSING_JOB_STATUSES and record.status != "completed"
         return IngestJobStatusResponse(
             job_id=record.job_id,
+            document_id=record.doc_id,
             doc_id=record.doc_id,
             status=record.status,
             progress=record.progress,
@@ -1810,7 +1993,8 @@ class DocumentService:
         """
         if "__" not in storage_name:
             return "unknown", storage_name
-        return tuple(storage_name.split("__", 1))
+        document_id, filename = storage_name.split("__", 1)
+        return document_id, filename
 
     @staticmethod
     def _normalize_source_suffix(source_type: str) -> str:
@@ -1916,7 +2100,7 @@ class DocumentService:
         # 实时解析原始文件
         with self.asset_store.materialize_for_processing(record.storage_path, file_name=record.file_name) as materialized_asset:
             parsed_document = self.ingestion_service.parser.parse(
-                source_path=materialized_asset.path,
+                source_path=materialized_asset.local_path,
                 document_id=record.doc_id,
                 filename=record.file_name,
             )

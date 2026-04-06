@@ -1,0 +1,522 @@
+{
+  "snapshot_id": "rsp_7aa032c2c3484d35",
+  "trace_id": "trc_retrieval_422f6c0c5880466f",
+  "request_id": "req_retrieval_1c05ee836cb24498",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T08:20:41.863174Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_installation_employee_demo",
+    "username": "installation.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_installation_service"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "电镀表面质量判定标准有哪些等级",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "电镀表面质量判定标准有哪些等级",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-0",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "实用的电镀产品外观与性能的检验标准\n\n2015-09-06 厦门乐将科技 乐将电镀资迅\n\n标准决定质量,有什么样的标准就有什么样的质量！这绝不是一句口号，而是我们制造业企业最应清楚认识与去实踐落实的，特别是我们电镀企业。我们乐将团队走访过许多厂家，发现很多朋友的电镀厂还停留在没有标准，或者标准不清，盲目生产的阶段，今天带给大家一份基础实用的电镀产品外观与性能的检验标准，希望对大家有所帮助。\n\n1.",
+      "score": 1.0,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.71826196,
+      "lexical_score": 48.02127984089307,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-1",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "，在较长时间内保持镀层良好的装饰外观，厚度达到规定要求且厚度均匀。\t对于防护--装饰性镀件包括不损害镀件外观的瑕疵。如内弯位轻微的麻点等；对防护性镀层包括不降低耐蚀性能的瑕疵，如次要外露面上的挂具位。在检验时可降级接收。\t过腐蚀性的镀件、有机械损伤的镀件、有大量孔隙难于消除的镀件、发生短路而烧坏的镀件、不允许去除不合格镀层的镀件（多层防护装饰电镀的锌合金件）。\n\n4产品质量要求\n\n合格的电镀产品按",
+      "score": 0.9540566959921798,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.69676363,
+      "lexical_score": 28.558599865400005,
+      "fused_score": 0.03128054740957967
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "，间距≥50毫米。\n\n3、电镀拉丝表面降级接收标准在上述规定的基础上，增加一条擦花线条，沿拉丝纹路方向。\n\n5，检验方法\n\n5.1电镀层表面外观采用目力测试，视力达1.2以上，目测距离为45±5cm，在220V 50HZ 40W的日光灯下。双手带作业手套握持电镀件，产品在长度方向先水平放置目测，再以长度方向为轴，用手旋转一定的角度目测，逐步检查每一面。在水平方向目测完后，将产品以铅垂方向为轴，旋转",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.67265373,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-6",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "盐雾测试判定标准\n\n类别\t素材材料\t电镀颜色\t测试时间\t合格等级\n挂镀\t铁\t铬\t6H\t≥6\n铜\t铬\t72H\t≥6\n青古铜\t72H\t≥6\n红古铜\t72H\t≥6\n拉丝铬\t72H\t≥6\n金\t24H\t≥6\n拉丝金\t48H\t≥6\nPVD金\t72H\t≥6\n锌合金\t铬\t72H\t≥6\n拉丝铬\t72H\t≥6\n金\t24H\t≥6\n拉丝金\t48H\t≥6\n青古铜\t72H\t≥6\n红古铜\t72H\t≥6\n镍\t48H\t≥6\n滚镀\t",
+      "score": 0.9684979838709676,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.6674324,
+      "lexical_score": 41.91579378077175,
+      "fused_score": 0.031754032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-5",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "。\n\n5.3.2.3用3M胶带或等同效力的胶纸牢牢粘住被测试的小网格，并用橡皮擦用力擦拭胶带以加大胶带与被测区域的接触面积及力度。\n\n5.3.2.4用手抓住胶带一端，在垂直方向（90°）迅速扯下胶纸，用放大镜观察表面。\n\n5.3.3实验面分等级按表6\n\n表6 实验结果分级\n\n分 级\t说 明\t发生脱落的十字交叉切割区的表面外观\n0\t切口的边缘完全光滑，格子边缘没有任何剥落\t_________\n1\t在",
+      "score": 0.9533577533577533,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.64016795,
+      "lexical_score": 37.1404046867643,
+      "fused_score": 0.03125763125763126
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "电镀表面质量判定标准有哪些等级",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_lexical_top1(4.0381)_below_threshold(10.00);department_mono_document_literal_mismatch(unique_docs=1,literal_coverage=0.3333)",
+    "recall_counts": {
+      "department_vector_count": 16,
+      "department_lexical_count": 14,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 2,
+      "supplemental_vector_count": 7,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "电镀表面质量判定标准有哪些等级",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 16,
+      "lexical_count": 14,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9838709677419354,
+      "avg_top_n_score": 0.9165921604832343,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7,
+      "top_k_unique_doc_count": 1,
+      "top1_literal_coverage": 0.3333333333333333
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_lexical_top1(4.0381)_below_threshold(10.00);department_mono_document_literal_mismatch(unique_docs=1,literal_coverage=0.3333)",
+      "vector_count": 7,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-46",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330040955_9ab296eb",
+          "chunk_id": "doc_20260330040955_9ab296eb-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-48",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-38",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-0",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.71826196,
+          "lexical_score": 48.02127984089307,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7183，词法 48.0213，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-1",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.69676363,
+          "lexical_score": 28.558599865400005,
+          "fused_score": 0.03128054740957967,
+          "final_score": 0.9540566959921798,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6968，词法 28.5586，融合 0.0313。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.67265373,
+          "lexical_score": null,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6727，融合 0.0159。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-6",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.6674324,
+          "lexical_score": 41.91579378077175,
+          "fused_score": 0.031754032258064516,
+          "final_score": 0.9684979838709676,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6674，词法 41.9158，融合 0.0318。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-5",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.64016795,
+          "lexical_score": 37.1404046867643,
+          "fused_score": 0.03125763125763126,
+          "final_score": 0.9533577533577533,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6402，词法 37.1404，融合 0.0313。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-0",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.71826196,
+        "lexical_score": 48.02127984089307,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7183，词法 48.0213，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-1",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.69676363,
+        "lexical_score": 28.558599865400005,
+        "fused_score": 0.03128054740957967,
+        "final_score": 0.9540566959921798,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6968，词法 28.5586，融合 0.0313。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.67265373,
+        "lexical_score": null,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6727，融合 0.0159。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-6",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.6674324,
+        "lexical_score": 41.91579378077175,
+        "fused_score": 0.031754032258064516,
+        "final_score": 0.9684979838709676,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6674，词法 41.9158，融合 0.0318。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-5",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.64016795,
+        "lexical_score": 37.1404046867643,
+        "fused_score": 0.03125763125763126,
+        "final_score": 0.9533577533577533,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6402，词法 37.1404，融合 0.0313。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-45",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-46",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330040955_9ab296eb",
+        "chunk_id": "doc_20260330040955_9ab296eb-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-48",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-38",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

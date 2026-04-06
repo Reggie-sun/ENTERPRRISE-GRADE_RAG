@@ -468,8 +468,20 @@ def score_sample(sample: dict[str, Any], retrieval_result: dict[str, Any]) -> di
         else None
     )
     primary_effective_count = diagnostic.get("primary_effective_count") if isinstance(diagnostic, dict) else None
-    top_k_unique_doc_count = diagnostic.get("top_k_unique_doc_count") if isinstance(diagnostic, dict) else None
-    primary_top1_literal_coverage = diagnostic.get("primary_top1_literal_coverage") if isinstance(diagnostic, dict) else None
+    # Read from structured diagnostic sub-stages (API returns these in primary_recall_stage)
+    _prs = diagnostic.get("primary_recall_stage") if isinstance(diagnostic, dict) else {}
+    if not isinstance(_prs, dict):
+        _prs = {}
+    top_k_unique_doc_count = (
+        diagnostic.get("top_k_unique_doc_count")
+        if diagnostic.get("top_k_unique_doc_count") is not None
+        else _prs.get("top_k_unique_doc_count")
+    )
+    primary_top1_literal_coverage = (
+        diagnostic.get("primary_top1_literal_coverage")
+        if diagnostic.get("primary_top1_literal_coverage") is not None
+        else _prs.get("top1_literal_coverage")
+    )
 
     supplemental_recall_stage = diagnostic.get("supplemental_recall_stage") if isinstance(diagnostic, dict) else None
     if supplemental_recall_stage and isinstance(supplemental_recall_stage, dict):

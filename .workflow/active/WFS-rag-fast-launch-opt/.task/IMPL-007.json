@@ -13,6 +13,7 @@
     "Threshold selected from eval score distribution analysis",
     "Using conservative_95 strategy: threshold captures 95% of correct-answer scores",
     "Zero false-positive validation: no wrong answers pass the gate",
+    "Safety margin of 0.03-0.05 applied above zero-FP threshold",
     "Threshold updated in data/system_config.json",
     "Re-run eval confirms gate behavior matches expectations",
     "Abstention rate documented for launch communication"
@@ -22,12 +23,53 @@
     "data/system_config.json"
   ],
   "implementation_steps": [
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any changes",
     "1. Load score distributions from IMPL-006 results",
     "2. Compute threshold candidates: conservative_95, balanced, aggressive",
-    "3. Select conservative_95 threshold",
+    "3. Select conservative_95 threshold with safety margin",
     "4. Validate: zero false-positives on eval dataset",
     "5. Update evidence_gate.threshold in system_config.json",
     "6. Re-run eval to verify gate behavior",
-    "7. Document abstention rate for launch communication"
-  ]
+    "7. Document abstention rate for launch communication",
+    "8. /review: Review threshold decision before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "standard",
+    "reason": "Modifies system-config true source (data/system_config.json). Threshold selection is a high-risk decision affecting chat behavior. Per coding-rules.md: config changes must go through system_config_service.py true source.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": [],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "config_source": [
+        "backend/app/services/system_config_service.py",
+        "backend/app/services/chat_service.py",
+        "backend/app/services/evidence_gate_service.py",
+        "data/system_config.json"
+      ],
+      "eval_results": [
+        "eval/results/",
+        ".agent/context/retrieval-state.md"
+      ],
+      "general": [
+        ".agent/context/repo-map.md"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [
+        "Analyze score distributions and select threshold",
+        "Apply safety margin decision",
+        "Validate zero false-positives",
+        "Review threshold decision (Brain MUST make this call)"
+      ],
+      "executor_tasks": [
+        "Update system_config.json with selected threshold",
+        "Run verification eval",
+        "Document abstention rate"
+      ]
+    }
+  }
 }

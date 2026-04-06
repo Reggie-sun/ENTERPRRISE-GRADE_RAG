@@ -21,7 +21,10 @@ class ChatMemoryService:
         token_budget_service: TokenBudgetService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.repository = repository or FilesystemChatMemoryRepository(self.settings.chat_memory_dir)
+        chat_memory_dir = self.settings.chat_memory_dir
+        if chat_memory_dir is None:
+            raise RuntimeError("Chat memory directory is not configured.")
+        self.repository = repository or FilesystemChatMemoryRepository(chat_memory_dir)
         self.token_budget_service = token_budget_service or TokenBudgetService(self.settings)
 
     def build_memory_summary(

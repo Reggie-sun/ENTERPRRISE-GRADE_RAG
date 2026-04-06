@@ -3984,11 +3984,332 @@ def test_retrieval_service_staged_triggers_supplemental_when_mono_document_with_
 
 
 def test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_is_strong(tmp_path: Path) -> None:
-    """Verify the SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE constant is defined and the tolerance
-    zone logic exists to suppress boundary jitter when avg_top_n is marginally below threshold
-    but top1 is strong and literal coverage is good (sop-005 scenario)."""
-    from backend.app.services.retrieval_service import SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE
+    """Verify avg_top_n boundary jitter suppression actually changes supplemental trigger behavior.
 
-    # The tolerance zone must be positive and small (< 0.20) to avoid over-suppression
-    assert SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE > 0
-    assert SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE < 0.20
+    This is a BEHAVIORAL test: it calls the retrieval pipeline end-to-end and checks
+    whether supplemental is triggered or not, not just that constants exist.
+
+    Two cases:
+      Case A) avg_top_n marginal + top1 strong + good literal coverage
+              → suppression fires → supplemental NOT triggered
+      Case B) avg_top_n marginal + top1 ALSO weak
+              → suppression does NOT fire → supplemental IS triggered
+    """
+    from backend.app.services.retrieval_service import (
+        SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE,
+        SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD,
+        RetrievalService,
+    )
+
+    # --- Constant sanity checks ---
+    assert 0 < SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE < 0.20
+    assert 0 < SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD <= 1.0
+
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n": 5,
+        }
+    )
+    ensure_data_directories(settings)
+
+    # In test context, system_config doesn't exist, so quality thresholds fall back
+    # to settings defaults: top1_threshold=0.55, avg_threshold=0.45
+    quality_top1_threshold = 0.55
+    quality_avg_threshold = 0.45
+    tolerance = SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE  # 0.10
+
+    # --- Shared mock infrastructure ---
+    class SpyDocumentService:
+        pass
+
+    class FakeLexicalRetriever:
+        @staticmethod
+        def search(query, *, limit, document_id=None, document_ids=None):
+            return []
+
+    def _run_case(dept_scores: list[float], query: str, top1_text: str, dept_doc_id: str, global_doc_id: str) -> RetrievalResponse:
+        """Run a full retrieval pipeline with mocked components and return the response."""
+
+        class SpyRetrievalScopePolicy:
+            def build_department_priority_retrieval_scope(self, auth_context):
+                return DepartmentPriorityRetrievalScope(
+                    department_document_ids=[dept_doc_id],
+                    global_document_ids=[global_doc_id],
+                )
+            def get_document_retrievability_map(self, doc_ids, auth_context):
+                return {doc_id: True for doc_id in doc_ids}
+
+        svc = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+        svc.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+
+        def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+            ids = list(document_ids or [])
+            results = []
+            if ids:
+                for i, score in enumerate(dept_scores if ids[0] == dept_doc_id else [0.80]):
+                    text = top1_text if (i == 0 and ids[0] == dept_doc_id) else f"通用文档内容片段 {i}"
+                    results.append(SimpleNamespace(
+                        id=f"point-{ids[0]}-{i}",
+                        score=score,
+                        payload={
+                            "chunk_id": f"chunk-{ids[0]}-{i}",
+                            "document_id": ids[0],
+                            "document_name": f"{ids[0]}.txt",
+                            "text": text,
+                            "source_path": f"/tmp/{ids[0]}.txt",
+                        },
+                    ))
+            return results
+
+        svc.vector_store = SimpleNamespace(search=fake_vector_search)
+        svc.lexical_retriever = FakeLexicalRetriever()
+
+        # Character-level tokenization for predictable literal coverage
+        svc._literal_guard_tokens = lambda text: [c for c in text if c.strip() and not c.isspace()]
+
+        request = RetrievalRequest(query=query, top_k=5)
+        auth_context = AuthContext(
+            user=UserRecord(
+                user_id="test_user",
+                tenant_id="wl",
+                username="test_user",
+                display_name="Test User",
+                department_id="dept_test",
+                role_id="employee",
+            ),
+            role=RoleDefinition(
+                role_id="employee",
+                name="employee",
+                description="employee",
+                data_scope="department",
+            ),
+            department=DepartmentRecord(
+                department_id="dept_test",
+                tenant_id="wl",
+                department_name="测试部",
+            ),
+            accessible_department_ids=["dept_test"],
+            department_query_isolation_enabled=True,
+            token_id="token-test-avgtopn",
+            issued_at=datetime.now(timezone.utc),
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        )
+        return svc.search(request, auth_context=auth_context, include_diagnostic=True)
+
+    # =====================================================
+    # Case A: top1 strong, avg_top_n marginal, good coverage → SUPPRESSED → no supplemental
+    # =====================================================
+    # Scores: [0.98, 0.30, 0.28, 0.26, 0.24]
+    # avg = 0.412 → in tolerance zone [0.35, 0.45)
+    # top1 = 0.98 → strong (>= 0.55)
+    # query & top1 text share many chars → literal coverage >= 0.5
+    case_a_scores = [0.98, 0.30, 0.28, 0.26, 0.24]
+    case_a_query = "安全操作规范步骤要求标准"
+    case_a_top1_text = "安全操作规范详细步骤执行要求标准文档"
+    response_a = _run_case(case_a_scores, case_a_query, case_a_top1_text, "doc_case_a", "doc_global_a")
+
+    assert response_a.diagnostic is not None
+    diag_a = response_a.diagnostic
+
+    # Verify preconditions: avg_top_n is in the tolerance zone and top1 is strong
+    avg_a = diag_a.primary_recall_stage.avg_top_n_score
+    top1_a = diag_a.primary_recall_stage.top1_score
+    assert avg_a is not None, "Case A: avg_top_n_score should not be None"
+    assert quality_avg_threshold - tolerance <= avg_a < quality_avg_threshold, \
+        f"Case A: avg_top_n ({avg_a:.4f}) should be in tolerance zone [{quality_avg_threshold - tolerance:.2f}, {quality_avg_threshold:.2f})"
+    assert top1_a is not None and top1_a >= quality_top1_threshold, \
+        f"Case A: top1 ({top1_a:.4f}) should be >= quality_top1 ({quality_top1_threshold:.2f})"
+
+    # BEHAVIORAL ASSERTION: supplemental should NOT trigger (suppressed by strong top1 + good coverage)
+    assert diag_a.supplemental_triggered is False, \
+        (f"Case A: supplemental should NOT trigger when avg_top_n is marginal + top1 is strong + coverage is good. "
+         f"trigger_basis={diag_a.supplemental_recall_stage.trigger_basis}, "
+         f"reason={diag_a.supplemental_recall_stage.reason}")
+
+    # =====================================================
+    # Case B: top1 weak, avg_top_n marginal → NOT suppressed → supplemental triggered
+    # =====================================================
+    # Scores: [0.50, 0.38, 0.36, 0.34, 0.32]
+    # avg = 0.38 → in tolerance zone [0.35, 0.45)
+    # top1 = 0.50 → weak (< 0.55), so suppression cannot fire
+    case_b_scores = [0.50, 0.38, 0.36, 0.34, 0.32]
+    case_b_query = "紧急停机故障代码排查方法"
+    case_b_top1_text = "紧急停机故障排查操作步骤"
+    response_b = _run_case(case_b_scores, case_b_query, case_b_top1_text, "doc_case_b", "doc_global_b")
+
+    assert response_b.diagnostic is not None
+    diag_b = response_b.diagnostic
+
+    # Verify preconditions
+    avg_b = diag_b.primary_recall_stage.avg_top_n_score
+    top1_b = diag_b.primary_recall_stage.top1_score
+    assert avg_b is not None, "Case B: avg_top_n_score should not be None"
+    assert quality_avg_threshold - tolerance <= avg_b < quality_avg_threshold, \
+        f"Case B: avg_top_n ({avg_b:.4f}) should be in tolerance zone [{quality_avg_threshold - tolerance:.2f}, {quality_avg_threshold:.2f})"
+    assert top1_b is not None and top1_b < quality_top1_threshold, \
+        f"Case B: top1 ({top1_b:.4f}) should be < quality_top1 ({quality_top1_threshold:.2f})"
+
+    # BEHAVIORAL ASSERTION: supplemental SHOULD trigger (no suppression because top1 is weak)
+    assert diag_b.supplemental_triggered is True, \
+        (f"Case B: supplemental SHOULD trigger when avg_top_n is marginal + top1 is also weak. "
+         f"trigger_basis={diag_b.supplemental_recall_stage.trigger_basis}, "
+         f"reason={diag_b.supplemental_recall_stage.reason}")
+
+
+def test_retrieval_service_staged_triggers_supplemental_when_multi_doc_low_literal_coverage_despite_high_scores(tmp_path: Path) -> None:
+    """When department results include multiple unique documents with high vector scores but
+    the top1 literal coverage of query terms is near-zero, the system should recognize this as
+    a semantic proximity mismatch and trigger supplemental retrieval.
+
+    Scenario (mirrors cross-014): user from dept_assembly queries "围栏急停报警恢复后不消失的排查方法".
+    The fault code manual belongs to dept_after_sales, so dept_assembly has no direct match.
+    However, dept_assembly's own docs (e.g., SOP docs) score highly on vector similarity (0.953)
+    because they share domain vocabulary (报警, 安全, etc.), even though they contain none
+    of the specific fault code terms (700014, 围栏急停, 安全继电器).  With literal_coverage ≈ 0.0625
+    (only 1/16 query terms matched), the multi-doc low literal coverage guard should fire
+    supplemental retrieval, pulling in the correct fault code manual from dept_after_sales.
+
+    This test verifies the behavioral contract without requiring a live API.
+    """
+    from backend.app.services.retrieval_service import (
+        SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD,
+        SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD,
+        RetrievalService,
+    )
+
+    # Verify the multi-doc threshold exists and is stricter than mono-document threshold
+    assert 0 < SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD < SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD, \
+        f"multi_doc threshold ({SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD}) should be between 0 and mono_doc threshold ({SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD})"
+
+    settings = build_test_settings(tmp_path).model_copy(
+        update={
+            "query_fast_top_k_default": 5,
+            "query_fast_rerank_top_n": 5,
+        }
+    )
+    ensure_data_directories(settings)
+
+    class SpyDocumentService:
+        pass
+
+    class SpyRetrievalScopePolicy:
+        def build_department_priority_retrieval_scope(self, auth_context):
+            return DepartmentPriorityRetrievalScope(
+                department_document_ids=["doc_assembly_sop_1", "doc_assembly_sop_2", "doc_assembly_sop_3"],
+                global_document_ids=["doc_after_sales_fault_manual"],
+            )
+
+        def get_document_retrievability_map(self, doc_ids, auth_context):
+            return {doc_id: True for doc_id in doc_ids}
+
+    retrieval_service = RetrievalService(settings, document_service=SpyDocumentService(), retrieval_scope_policy=SpyRetrievalScopePolicy())  # type: ignore[arg-type]
+    retrieval_service.embedding_client = SimpleNamespace(embed_texts=lambda texts: [[0.1, 0.2, 0.3]])
+
+    def fake_vector_search(query_vector, *, limit, document_id=None, document_ids=None):
+        ids = list(document_ids or [])
+        results = []
+        if ids and ids[0].startswith("doc_assembly"):
+            # 3 unique docs, all with high vector scores (topical overlap)
+            # but their text contains NONE of the fault code terms
+            assembly_doc_texts = [
+                "摇臂钻床安全操作规范 WI-SJ-052 日常维护保养要求",  # doc 1
+                "皮带轮固定架组压装止动螺丝安装工艺流程 步骤",  # doc 2
+                "电镀检验标准 镜光表面麻点判定 表面积等级",  # doc 3
+            ]
+            for doc_idx, (doc_id, text) in enumerate(zip(
+                ["doc_assembly_sop_1", "doc_assembly_sop_2", "doc_assembly_sop_3"],
+                assembly_doc_texts,
+            )):
+                for chunk_i in range(2):
+                    results.append(
+                        SimpleNamespace(
+                            id=f"point-dept-{doc_idx}-{chunk_i}",
+                            score=0.953 - doc_idx * 0.01 - chunk_i * 0.005,
+                            payload={
+                                "chunk_id": f"chunk-dept-{doc_idx}-{chunk_i}",
+                                "document_id": doc_id,
+                                "document_name": f"{doc_id}.txt",
+                                "text": text,
+                                "source_path": f"/tmp/{doc_id}.txt",
+                            },
+                        )
+                    )
+        elif ids and ids[0].startswith("doc_after_sales"):
+            # The correct fault code manual
+            results.append(
+                SimpleNamespace(
+                    id="point-global-0",
+                    score=0.92,
+                    payload={
+                        "chunk_id": "chunk-global-0",
+                        "document_id": "doc_after_sales_fault_manual",
+                        "document_name": "故障代码手册.txt",
+                        "text": "700014 围栏急停报警 恢复后还不消失应该重点查安全继电器 排查方法",
+                        "source_path": "/tmp/故障代码手册.txt",
+                    },
+                )
+            )
+        return results
+
+    retrieval_service.vector_store = SimpleNamespace(search=fake_vector_search)
+
+    class FakeLexicalRetriever:
+        @staticmethod
+        def search(query, *, limit, document_id=None, document_ids=None):
+            return []
+
+    retrieval_service.lexical_retriever = FakeLexicalRetriever()
+
+    # Mock _literal_guard_tokens for deterministic literal coverage computation.
+    # Character-level tokenization for Chinese text produces predictable coverage scores.
+    retrieval_service._literal_guard_tokens = lambda text: [c for c in text if c.strip() and not c.isspace()]
+
+    # The query contains specific fault code terms that won't match assembly SOP texts
+    query = "围栏急停报警恢复后不消失的排查方法"
+
+    request = RetrievalRequest(query=query, top_k=5)
+    auth_context = AuthContext(
+        user=UserRecord(
+            user_id="test_user",
+            tenant_id="wl",
+            username="test_user",
+            display_name="Test User",
+            department_id="dept_assembly",
+            role_id="employee",
+        ),
+        role=RoleDefinition(
+            role_id="employee",
+            name="employee",
+            description="employee",
+            data_scope="department",
+        ),
+        department=DepartmentRecord(
+            department_id="dept_assembly",
+            tenant_id="wl",
+            department_name="装配部",
+        ),
+        accessible_department_ids=["dept_assembly"],
+        token_id="token-test-cross-014",
+        issued_at=datetime.now(timezone.utc),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+
+    response = retrieval_service.search(request, auth_context=auth_context, include_diagnostic=True)
+
+    # The multi-doc low literal coverage guard MUST trigger supplemental
+    assert response.diagnostic is not None
+    assert response.diagnostic.supplemental_triggered is True, \
+        f"Expected supplemental to trigger for multi-doc low literal coverage scenario. " \
+        f"trigger_basis={response.diagnostic.supplemental_recall_stage.trigger_basis}, " \
+        f"reason={response.diagnostic.supplemental_recall_stage.reason}"
+
+    # The correct fault code manual should be in the results
+    result_doc_ids = {r.document_id for r in response.results}
+    assert "doc_after_sales_fault_manual" in result_doc_ids, \
+        f"Expected fault code manual in results, got: {result_doc_ids}"
+
+    # Verify the trigger reason mentions multi-doc low coverage
+    trigger_reason = response.diagnostic.supplemental_recall_stage.reason or ""
+    assert "multi_doc_low_coverage" in trigger_reason, \
+        f"Expected trigger reason to mention multi_doc_low_coverage, got: {trigger_reason}"

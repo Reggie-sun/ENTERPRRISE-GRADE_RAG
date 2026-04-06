@@ -24,6 +24,7 @@
   ],
   "files_to_modify": [],
   "implementation_steps": [
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any changes",
     "1. Select 20-30 stratified samples from IMPL-006/IMPL-007 results",
     "2. Create human review form with 5-bucket classification",
     "3. Run two-reviewer protocol",
@@ -31,6 +32,40 @@
     "5. Check hard gates: wrong-with-citation=0, permission-boundary-failure=0",
     "6. Check soft gates: correct+abstained >= 85%, correct >= 80%",
     "7. Compile evidence_package.json",
-    "8. Document go/no-go decision"
-  ]
+    "8. Document go/no-go decision",
+    "9. /review: Review evidence package and launch decision"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "lite",
+    "reason": "Creates new scripts and data files. No existing files modified. No schema/API/retrieval changes. Meets Lite Mode conditions.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": ["scripts/"],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "general": [
+        ".agent/context/repo-map.md",
+        "data/system_config.json"
+      ],
+      "eval_results": [
+        "eval/results/",
+        ".agent/context/retrieval-state.md"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [
+        "Make go/no-go decision (Brain MUST make this call)",
+        "Review evidence package quality",
+        "Decide if hard/soft gates are met"
+      ],
+      "executor_tasks": [
+        "Create run_human_review.py script",
+        "Compile evidence_package.json",
+        "Calculate metrics and kappa"
+      ]
+    }
+  }
 }

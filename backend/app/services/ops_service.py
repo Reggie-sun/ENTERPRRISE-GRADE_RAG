@@ -31,6 +31,16 @@ from .runtime_gate_service import RuntimeGateService, get_runtime_gate_service
 from .system_config_service import SystemConfigService
 
 
+def _coerce_redis_queue_length(value: object) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        return int(value.strip())
+    raise RuntimeError("Redis LLEN returned a non-integer response.")
+
+
 class OpsService:
     RERANK_PROMOTION_MIN_PROVIDER_SAMPLES = 5
 
@@ -152,7 +162,7 @@ class OpsService:
                 retry_on_timeout=False,
             )
             client.ping()
-            backlog = int(client.llen(self.settings.celery_ingest_queue))
+            backlog = _coerce_redis_queue_length(client.llen(self.settings.celery_ingest_queue))
             return OpsQueueSummary(
                 available=True,
                 ingest_queue=self.settings.celery_ingest_queue,

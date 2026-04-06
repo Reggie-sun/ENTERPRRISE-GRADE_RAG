@@ -459,17 +459,23 @@ class SopGenerationService:
             downgraded_from: str | None = None
             response_model = self._response_model_name(profile=profile)
             try:
-                generation_kwargs = dict(
-                    question=generation_instruction,
-                    contexts=contexts,
-                    timeout_seconds=profile.timeout_budget_seconds,
-                    model_name=response_model,
+                generated_content = (
+                    self.generation_client.generate(
+                        question=generation_instruction,
+                        contexts=contexts,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                        prepared_prompt=prepared_prompt,
+                    )
+                    if prepared_prompt is not None
+                    else self.generation_client.generate(
+                        question=generation_instruction,
+                        contexts=contexts,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                    )
                 )
-                if prepared_prompt is not None:
-                    generation_kwargs["prepared_prompt"] = prepared_prompt
-                content = self._strip_markdown_code_fence(
-                    self.generation_client.generate(**generation_kwargs)
-                )
+                content = self._strip_markdown_code_fence(generated_content)
                 generation_mode = "rag"
             except LLMGenerationRetryableError:
                 degraded_citation_result = self._build_degraded_citations(
@@ -742,15 +748,23 @@ class SopGenerationService:
                 else None
             )
             try:
-                generation_kwargs = dict(
-                    question=generation_instruction,
-                    contexts=contexts,
-                    timeout_seconds=profile.timeout_budget_seconds,
-                    model_name=response_model,
+                generation_stream = (
+                    self.generation_client.generate_stream(
+                        question=generation_instruction,
+                        contexts=contexts,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                        prepared_prompt=prepared_prompt,
+                    )
+                    if prepared_prompt is not None
+                    else self.generation_client.generate_stream(
+                        question=generation_instruction,
+                        contexts=contexts,
+                        timeout_seconds=profile.timeout_budget_seconds,
+                        model_name=response_model,
+                    )
                 )
-                if prepared_prompt is not None:
-                    generation_kwargs["prepared_prompt"] = prepared_prompt
-                for delta in self.generation_client.generate_stream(**generation_kwargs):
+                for delta in generation_stream:
                     if not delta:
                         continue
                     answer_parts.append(delta)

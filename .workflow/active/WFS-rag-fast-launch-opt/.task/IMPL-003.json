@@ -24,6 +24,7 @@
   ],
   "files_to_modify": [],
   "implementation_steps": [
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any code changes",
     "1. Create scripts/freeze_bundle.py with freeze/verify/force modes",
     "2. Implement git commit SHA capture (require clean worktree for data/eval/)",
     "3. Implement config snapshot (copy system_config.json)",
@@ -31,6 +32,36 @@
     "5. Implement index info capture (collection name + embedding model version)",
     "6. Implement ACL seed export",
     "7. Implement --verify mode to check bundle drift",
-    "8. Write atomic launch-bundle.json"
-  ]
+    "8. Write atomic launch-bundle.json",
+    "9. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "lite",
+    "reason": "Single new script file, no existing files modified, no schema/API/retrieval/ingestion changes. Meets Lite Mode conditions per AGENTS.md §2.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": ["scripts/"],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "general": [
+        ".agent/context/repo-map.md",
+        "data/system_config.json",
+        "MAIN_CONTRACT_MATRIX.md"
+      ],
+      "qdrant_related": [
+        "backend/app/services/retrieval_service.py"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [],
+      "executor_tasks": [
+        "Implement freeze_bundle.py",
+        "Implement verify mode",
+        "Test with --verify flag"
+      ]
+    }
+  }
 }

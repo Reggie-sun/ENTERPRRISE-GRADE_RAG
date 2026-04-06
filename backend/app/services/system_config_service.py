@@ -18,7 +18,9 @@ from ..schemas.system_config import (
     PromptBudgetConfig,
     QueryModeConfig,
     QueryProfilesConfig,
+    RerankerDefaultStrategy,
     RerankerRoutingConfig,
+    RerankerRoutingProvider,
     RetryControlsConfig,
     SystemConfigResponse,
     SystemConfigUpdateRequest,
@@ -330,7 +332,7 @@ class SystemConfigService:
         primary_model = (self.settings.llm_model or self.settings.ollama_model).strip()
         return primary_model or "default-llm-model"
 
-    def _default_reranker_provider(self) -> str:
+    def _default_reranker_provider(self) -> RerankerRoutingProvider:
         provider = self.settings.reranker_provider.lower().strip()
         if provider in {"heuristic", "mock"}:
             return "heuristic"
@@ -341,7 +343,7 @@ class SystemConfigService:
     def _default_reranker_model_name(self) -> str:
         return self.settings.reranker_model.strip() or "default-reranker-model"
 
-    def _default_reranker_strategy(self) -> str:
+    def _default_reranker_strategy(self) -> RerankerDefaultStrategy:
         strategy = self.settings.reranker_default_strategy.lower().strip()
         if strategy == "provider" and self._default_reranker_provider() != "heuristic":
             return "provider"

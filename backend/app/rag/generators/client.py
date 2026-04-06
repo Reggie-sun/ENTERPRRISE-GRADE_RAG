@@ -72,16 +72,22 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
     ) -> str:
         """非流式生成入口：拼接 prompt 并调用 LLM 返回完整回答字符串。"""
         def operation() -> str:
-            kwargs = dict(
+            if prepared_prompt is not None:
+                return self._generate_once(
+                    question=question,
+                    contexts=contexts,
+                    memory_text=memory_text,
+                    timeout_seconds=timeout_seconds,
+                    model_name=model_name,
+                    prepared_prompt=prepared_prompt,
+                )
+            return self._generate_once(
                 question=question,
                 contexts=contexts,
                 memory_text=memory_text,
                 timeout_seconds=timeout_seconds,
                 model_name=model_name,
             )
-            if prepared_prompt is not None:
-                kwargs["prepared_prompt"] = prepared_prompt
-            return self._generate_once(**kwargs)
 
         return self._run_with_retry(operation)
 
@@ -470,16 +476,24 @@ class LLMGenerationClient:  # 封装问答生成逻辑，支持 mock / ollama / 
             attempt += 1
             started_streaming = False
             try:
-                kwargs = dict(
-                    question=question,
-                    contexts=contexts,
-                    memory_text=memory_text,
-                    timeout_seconds=timeout_seconds,
-                    model_name=model_name,
-                )
                 if prepared_prompt is not None:
-                    kwargs["prepared_prompt"] = prepared_prompt
-                for token in self._generate_stream_once(**kwargs):
+                    stream = self._generate_stream_once(
+                        question=question,
+                        contexts=contexts,
+                        memory_text=memory_text,
+                        timeout_seconds=timeout_seconds,
+                        model_name=model_name,
+                        prepared_prompt=prepared_prompt,
+                    )
+                else:
+                    stream = self._generate_stream_once(
+                        question=question,
+                        contexts=contexts,
+                        memory_text=memory_text,
+                        timeout_seconds=timeout_seconds,
+                        model_name=model_name,
+                    )
+                for token in stream:
                     started_streaming = True
                     yield token
                 return

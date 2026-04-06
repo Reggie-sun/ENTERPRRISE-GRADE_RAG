@@ -36,7 +36,7 @@ class RuntimeGateSnapshot:
 class RuntimeGateLease:
     def __init__(self, service: "RuntimeGateService", channel: RuntimeGateChannel, owner_key: str | None = None) -> None:
         self._service = service
-        self.channel = channel
+        self.channel: RuntimeGateChannel = channel
         self.owner_key = owner_key
         self._released = False
 

@@ -5,10 +5,10 @@
   "priority": "High",
   "status": "pending",
   "day": 3,
-  "estimated_hours": 4,
+  "estimated_hours": 5,
   "depends_on": ["IMPL-002", "IMPL-003"],
   "blocking": ["IMPL-007"],
-  "description": "Extend eval dataset from 43 to 60-80 samples with focus on semantic/coarse types. Run eval with evidence gate enabled (threshold=0.0) to capture score distributions.",
+  "description": "Extend eval dataset from 43 to 60-80 samples with focus on semantic/coarse types. Run eval with evidence gate enabled (threshold=0.0) to capture score distributions. CRITICAL: Must acknowledge retrieval-state.md Phase 1B-B GATE NOT PASSED status.",
   "acceptance_criteria": [
     "Eval dataset expanded to 60-80 samples",
     "New samples include 15-20 semantic rephrasings and 10-15 coarse summaries",
@@ -16,7 +16,9 @@
     "Eval run captures post-rerank Citation.score per sample (not Qdrant raw)",
     "Score distribution report generated per query type (exact/fine/semantic/coarse)",
     "Results include threshold candidate analysis (conservative_95, balanced, aggressive)",
-    "Eval run references bundle_id from frozen bundle"
+    "Eval run references bundle_id from frozen bundle",
+    "retrieval-state.md GATE NOT PASSED status acknowledged in eval report",
+    "No modification to retrieval_service.py or any retrieval internals"
   ],
   "files_to_create": [
     "eval/retrieval_samples_v2.yaml"
@@ -25,12 +27,84 @@
     "backend/eval/run_retrieval_eval.py"
   ],
   "implementation_steps": [
-    "1. Design new eval samples: semantic rephrasings, coarse summaries, anti-patterns",
-    "2. Add samples to eval/retrieval_samples_v2.yaml",
-    "3. Enhance run_retrieval_eval.py to capture post-rerank Citation.score",
-    "4. Add score distribution reporting per query type",
-    "5. Add threshold candidate analysis",
-    "6. Freeze bundle (run IMPL-003 output)",
-    "7. Run eval against frozen bundle"
-  ]
+    "0. MANDATORY READS: Read ALL retrieval mandatory reads listed in agents_compliance.mandatory_reads BEFORE any code changes",
+    "1. Read .agent/context/retrieval-state.md and acknowledge Phase 1B-B GATE NOT PASSED",
+    "2. Read eval/README.md, eval/retrieval_samples.yaml, scripts/eval_retrieval.py for current eval structure",
+    "3. Design new eval samples: semantic rephrasings, coarse summaries, anti-patterns",
+    "4. Add samples to eval/retrieval_samples_v2.yaml",
+    "5. Enhance run_retrieval_eval.py to capture post-rerank Citation.score",
+    "6. Add score distribution reporting per query type",
+    "7. Add threshold candidate analysis",
+    "8. Freeze bundle (run IMPL-003 output)",
+    "9. Run eval against frozen bundle",
+    "10. Document retrieval-state acknowledgment in eval report",
+    "11. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "standard",
+    "reason": "Touches eval domain which triggers Retrieval auto-enforcement per AGENTS.md § 自动触发规则 §1: 'eval/README.md, eval/retrieval_samples.yaml, scripts/eval_retrieval.py' are listed as retrieval patterns. NOT Lite Mode eligible.",
+    "spec_required": true,
+    "spec_template": ".agent/specs/feature-template.md",
+    "review_required": true,
+    "harness_contract_required": true,
+    "harness_category": "retrieval",
+    "high_risk_prefixes_hit": ["eval/", "scripts/"],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "retrieval_module_full": [
+        "MAIN_CONTRACT_MATRIX.md",
+        "RETRIEVAL_OPTIMIZATION_PLAN.md",
+        "RETRIEVAL_OPTIMIZATION_BACKLOG.md",
+        "eval/README.md",
+        "eval/retrieval_samples.yaml",
+        "scripts/eval_retrieval.py",
+        "backend/app/services/retrieval_service.py",
+        ".agent/context/retrieval-state.md"
+      ],
+      "retrieval_optional": [
+        "backend/app/services/retrieval_query_router.py",
+        "backend/app/services/query_profile_service.py",
+        "backend/app/services/retrieval_scope_policy.py",
+        "backend/tests/test_retrieval_chat.py",
+        "eval/results/"
+      ],
+      "general": [
+        ".agent/context/repo-map.md"
+      ]
+    },
+    "retrieval_state_acknowledgment": {
+      "current_phase": "Phase 1B-B",
+      "gate_status": "GATE NOT PASSED",
+      "key_constraints": [
+        "eval instability: conservative_trigger_count oscillates 1-11 across runs",
+        "supplemental_precision oscillates 0.676-0.957",
+        "cross-013 department_sufficient misjudgment not fully resolved",
+        "provisional thresholds (0.55/0.45) not yet calibrated",
+        "HNSW non-determinism causes boundary case oscillation"
+      ],
+      "scope_limitation": "This task EXTENDS eval samples and adds score capture to the eval script. It does NOT modify retrieval_service.py, reranker, router, chunk, or any retrieval internals. The eval script modification only adds score distribution reporting.",
+      "prohibited_actions": [
+        "Do not modify retrieval_service.py",
+        "Do not claim eval is calibrated if results are still unstable",
+        "Do not enter Phase 2B chunk implementation",
+        "Do not mix 8020/8021 baselines",
+        "Do not modify existing samples to hide problems"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [
+        "Review retrieval-state.md constraints before approving sample design",
+        "Validate sample design against known blind spots (threshold boundary, lexical edge, cross-dept)",
+        "Review eval results for stability concerns",
+        "Decide if eval results are sufficient to proceed to IMPL-007"
+      ],
+      "executor_tasks": [
+        "Create new eval samples in retrieval_samples_v2.yaml",
+        "Enhance eval script for score capture",
+        "Run eval against frozen bundle",
+        "Generate score distribution report"
+      ]
+    }
+  }
 }

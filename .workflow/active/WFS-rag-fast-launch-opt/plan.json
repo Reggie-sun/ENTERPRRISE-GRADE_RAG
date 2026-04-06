@@ -7,21 +7,38 @@
     "所有用户面向消息中文",
     "不引入新基础设施",
     "Kill switch fail-open",
-    "Evidence gate 用 post-rerank Citation.score"
+    "Evidence gate 用 post-rerank Citation.score",
+    "遵守 AGENTS.md workflow: spec → plan → implement → review",
+    "遵守 .agent/rules/coding-rules.md 强制读取规则",
+    "Standard mode 任务必须写 spec (IMPL-001, 002, 006)",
+    "所有任务必须 /review",
+    "retrieval-state.md Phase 1B-B GATE NOT PASSED 必须在 IMPL-006 中确认"
   ],
   "timeline_days": 5,
   "total_tasks": 9,
-  "critical_path": ["IMPL-001", "IMPL-002", "IMPL-003", "IMPL-006", "IMPL-007", "IMPL-008"],
+  "critical_path": ["IMPL-001", "IMPL-002", "IMPL-006", "IMPL-007", "IMPL-008"],
   "parallel_tracks": [
     ["IMPL-001", "IMPL-003", "IMPL-004"],
     ["IMPL-002"],
     ["IMPL-005", "IMPL-009"]
   ],
+  "agents_compliance": {
+    "standard_mode_tasks": ["IMPL-001", "IMPL-002", "IMPL-006", "IMPL-007"],
+    "lite_mode_tasks": ["IMPL-003", "IMPL-004", "IMPL-005", "IMPL-008", "IMPL-009"],
+    "spec_required_tasks": ["IMPL-001", "IMPL-002", "IMPL-006"],
+    "harness_contract_tasks": ["IMPL-001", "IMPL-002", "IMPL-006"],
+    "frontend_sync_tasks": ["IMPL-001", "IMPL-002"],
+    "brain_decision_tasks": ["IMPL-001", "IMPL-002", "IMPL-007", "IMPL-008"]
+  },
   "shared_context": {
     "tech_stack": "FastAPI + React + Qdrant + PostgreSQL + docker-compose",
     "primary_service_file": "backend/app/services/chat_service.py",
     "config_file": "data/system_config.json",
     "eval_dir": "eval/",
-    "scripts_dir": "scripts/"
+    "scripts_dir": "scripts/",
+    "agents_md": "AGENTS.md",
+    "coding_rules": ".agent/rules/coding-rules.md",
+    "retrieval_state": ".agent/context/retrieval-state.md",
+    "contract_matrix": "MAIN_CONTRACT_MATRIX.md"
   }
 }

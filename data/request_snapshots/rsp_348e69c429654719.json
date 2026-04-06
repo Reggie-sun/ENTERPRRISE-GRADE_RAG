@@ -1,0 +1,522 @@
+{
+  "snapshot_id": "rsp_348e69c429654719",
+  "trace_id": "trc_retrieval_e4782c4ac8824538",
+  "request_id": "req_retrieval_788ae100c11e4dcf",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T08:20:16.227344Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_production_technology_employee_demo",
+    "username": "production.technology.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "为什么不能直接做大而全V1",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "为什么不能直接做大而全V1",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "# V1 Plan\n\n## 0. 编写依据\n\n本版计划基于以下两类输入：\n\n- 需求文档：\n  [宁波伟立机器人 企业级RAG智能知识库系统 需求规格说明书（V1.0 精简版）](/home/reggie/文档/xwechat_files/wxid_ut5o9e1igztd22_f3a1/msg/file/2026-03/宁波伟立机器人 企业级RAG智能知识库系统 需求规格说明书（V1.0 精简版",
+      "score": 1.0,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.614272,
+      "lexical_score": 43.77941354094429,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "始就把一个更大的模型硬拆到两张卡上。\n\n原因：\n\n- `4090` 没有 NVLink\n- 双卡张量并行能跑，但跨卡同步延迟不适合先追求稳定的在线服务\n- 你现在更需要的是：\n  稳定、可控、可分流，而不是一开始就把最大模型堆上去\n\nV1 推荐部署口径：\n\n- `GPU0`：\n  `fast` 问答模型\n- `GPU1`：\n  `accurate` 问答模型\n\n模型大小建议：\n\n- `fast`：",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.60748464,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-2",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "用当前 `heuristic rerank` 跑通首轮业务试点\n- OCR 图片处理不纳入当前冻结底座，但必须在 `v0.5.0` SOP 直生前补上最小可用版，否则扫描件和图片资料无法进入主链路\n\n补充说明：\n\n- 当前代码里仍保留一部分 `Ollama` 兼容字段和旧 provider 口径，但 V1 规划不再继续扩展 `Ollama`\n- V1 的生成服务主路径统一收敛为：\n  `vLLM(",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.53390574,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-49",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "1 可以继续复用，不强制现在全迁本机\n- 如果后面要本机化，优先上轻量 Embedding / Rerank，不要先和 `fast` 主模型抢同一张卡的预算\n- 外部 LLM API 不建议在 V1 一开始就作为默认主路径，但应在 provider 抽象里预留：\n  作为后续高质量模型、溢出流量、灰度实验和外部服务接入点\n\n### 10.10 并发控制怎么落地\n\n推荐在 `v0.6.0` 把并发控",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.5301217,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "主契约收口\n\n目标：\n\n- 在继续扩企业微信、数据库真源、metrics/exporter 之前，先把当前 V1 已经对外可见的主契约冻结下来\n- 防止后续继续加功能时，把 `documents / retrieval / chat / sops / system-config / logs / ops` 的字段语义再次打散\n\n为什么现在做：\n\n- `v0.4.5` 的 OCR / hybrid ",
+      "score": 0.961166253101737,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.52959377,
+      "lexical_score": 24.78791908387495,
+      "fused_score": 0.0315136476426799
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "为什么不能直接做大而全V1",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.9038,avg_top_n=0.6433)_below_thresholds(0.95,0.70);department_lexical_top1(9.3046)_below_threshold(10.00)",
+    "recall_counts": {
+      "department_vector_count": 11,
+      "department_lexical_count": 11,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 8,
+      "supplemental_vector_count": 7,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "为什么不能直接做大而全V1",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 11,
+      "lexical_count": 11,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9037532923617206,
+      "avg_top_n_score": 0.6432583764094123,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7,
+      "top_k_unique_doc_count": 4,
+      "top1_literal_coverage": 0.2857142857142857
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.9038,avg_top_n=0.6433)_below_thresholds(0.95,0.70);department_lexical_top1(9.3046)_below_threshold(10.00)",
+      "vector_count": 7,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-47",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-41",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_97beed34",
+          "chunk_id": "doc_20260406020404_97beed34-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020633_48b70cdb",
+          "chunk_id": "doc_20260406020633_48b70cdb-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_5ce6fd03",
+          "chunk_id": "doc_20260406020404_5ce6fd03-chunk-71",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_5ce6fd03",
+          "chunk_id": "doc_20260406020404_5ce6fd03-chunk-64",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-30",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-38",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.614272,
+          "lexical_score": 43.77941354094429,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6143，词法 43.7794，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.60748464,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6075，融合 0.0161。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-2",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.53390574,
+          "lexical_score": null,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5339，融合 0.0159。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-49",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.5301217,
+          "lexical_score": null,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5301，融合 0.0156。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.52959377,
+          "lexical_score": 24.78791908387495,
+          "fused_score": 0.0315136476426799,
+          "final_score": 0.961166253101737,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5296，词法 24.7879，融合 0.0315。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.614272,
+        "lexical_score": 43.77941354094429,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6143，词法 43.7794，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.60748464,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6075，融合 0.0161。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-2",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.53390574,
+        "lexical_score": null,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5339，融合 0.0159。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-49",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.5301217,
+        "lexical_score": null,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5301，融合 0.0156。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.52959377,
+        "lexical_score": 24.78791908387495,
+        "fused_score": 0.0315136476426799,
+        "final_score": 0.961166253101737,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5296，词法 24.7879，融合 0.0315。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-47",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-41",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_97beed34",
+        "chunk_id": "doc_20260406020404_97beed34-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020633_48b70cdb",
+        "chunk_id": "doc_20260406020633_48b70cdb-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_5ce6fd03",
+        "chunk_id": "doc_20260406020404_5ce6fd03-chunk-71",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_5ce6fd03",
+        "chunk_id": "doc_20260406020404_5ce6fd03-chunk-64",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-30",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-38",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

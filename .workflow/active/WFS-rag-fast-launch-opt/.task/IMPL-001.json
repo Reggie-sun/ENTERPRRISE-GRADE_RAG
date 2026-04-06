@@ -5,7 +5,7 @@
   "priority": "High",
   "status": "pending",
   "day": 1,
-  "estimated_hours": 3,
+  "estimated_hours": 4,
   "depends_on": [],
   "blocking": ["IMPL-002"],
   "description": "Add config-level kill switch to ChatService. When enabled, all responses return immediate abstention. Includes toggle CLI script and rollback procedure documentation.",
@@ -17,7 +17,9 @@
     "scripts/toggle_kill_switch.py supports --enable/--disable/--status with advisory file lock",
     "ROLLBACK_PROCEDURE.md exists in project root with step-by-step instructions",
     "Config read failure defaults to kill_switch_enabled=False (fail-open)",
-    "All user-facing strings are Chinese"
+    "All user-facing strings are Chinese",
+    "frontend/src/api/types.ts updated with 'kill_switch' mode type",
+    "MAIN_CONTRACT_MATRIX.md checked before adding mode field to chat/ask response"
   ],
   "files_to_create": [
     "scripts/toggle_kill_switch.py",
@@ -27,15 +29,75 @@
     "backend/app/schemas/system_config.py",
     "backend/app/services/system_config_service.py",
     "backend/app/services/chat_service.py",
-    "data/system_config.json"
+    "data/system_config.json",
+    "frontend/src/api/types.ts"
   ],
   "implementation_steps": [
-    "1. Add LaunchControlsConfig to backend/app/schemas/system_config.py",
-    "2. Add get_launch_controls() to SystemConfigService",
-    "3. Add kill switch check at start of ChatService.answer() and stream_answer_sse()",
-    "4. Add _build_kill_switch_response() helper with Chinese message",
-    "5. Add _launch_controls section to data/system_config.json",
-    "6. Create scripts/toggle_kill_switch.py with --enable/--disable/--status",
-    "7. Create ROLLBACK_PROCEDURE.md"
-  ]
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any code changes",
+    "1. Check MAIN_CONTRACT_MATRIX.md for POST /api/v1/chat/ask response contract constraints",
+    "2. Add LaunchControlsConfig to backend/app/schemas/system_config.py",
+    "3. Add get_launch_controls() to SystemConfigService",
+    "4. Add kill switch check at start of ChatService.answer() and stream_answer_sse()",
+    "5. Add _build_kill_switch_response() helper with Chinese message",
+    "6. Add _launch_controls section to data/system_config.json",
+    "7. Update frontend/src/api/types.ts with 'kill_switch' in ChatResponse mode union",
+    "8. Create scripts/toggle_kill_switch.py with --enable/--disable/--status",
+    "9. Create ROLLBACK_PROCEDURE.md",
+    "10. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "standard",
+    "reason": "Cross-module (services + schemas + scripts + frontend types). Adds mode to stable contract POST /api/v1/chat/ask. Not Lite Mode eligible.",
+    "spec_required": true,
+    "spec_template": ".agent/specs/feature-template.md",
+    "review_required": true,
+    "harness_contract_required": true,
+    "harness_category": "api_schema",
+    "high_risk_prefixes_hit": ["backend/app/services/", "backend/app/schemas/", "scripts/"],
+    "contract_checks": [
+      "POST /api/v1/chat/ask — response mode field gains 'kill_switch' value",
+      "MAIN_CONTRACT_MATRIX.md — verify adding mode is not expanding stable contract"
+    ],
+    "frontend_sync_required": true,
+    "frontend_sync_files": ["frontend/src/api/types.ts"],
+    "mandatory_reads": {
+      "api_contract_module": [
+        "MAIN_CONTRACT_MATRIX.md",
+        "backend/app/api/v1/endpoints/chat.py",
+        "backend/app/schemas/chat.py",
+        "frontend/src/api/types.ts",
+        "frontend/src/api/client.ts",
+        "backend/tests/test_main_contract_endpoints.py",
+        "backend/tests/test_main_contract_errors.py"
+      ],
+      "schema_module": [
+        "backend/app/schemas/system_config.py",
+        "backend/app/services/system_config_service.py",
+        "backend/app/services/chat_service.py",
+        "frontend/src/api/types.ts",
+        "frontend/src/api/client.ts",
+        "MAIN_CONTRACT_MATRIX.md",
+        "backend/tests/test_main_contract_endpoints.py",
+        "backend/tests/test_main_contract_errors.py"
+      ],
+      "general": [
+        ".agent/context/repo-map.md"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [
+        "Define LaunchControlsConfig schema boundary",
+        "Check MAIN_CONTRACT_MATRIX.md for mode field constraints",
+        "Review final implementation",
+        "Decide if kill_switch mode is additive (non-breaking) to stable contract"
+      ],
+      "executor_tasks": [
+        "Implement schema additions",
+        "Implement service method",
+        "Implement CLI script",
+        "Update frontend types.ts",
+        "Write rollback documentation"
+      ]
+    }
+  }
 }

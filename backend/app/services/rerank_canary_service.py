@@ -21,7 +21,10 @@ class RerankCanaryService:
         repository: RerankCanaryRepository | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.repository = repository or FilesystemRerankCanaryRepository(self.settings.rerank_canary_dir)
+        rerank_canary_dir = self.settings.rerank_canary_dir
+        if rerank_canary_dir is None:
+            raise RuntimeError("Rerank canary directory is not configured.")
+        self.repository = repository or FilesystemRerankCanaryRepository(rerank_canary_dir)
 
     def record_compare_sample(
         self,

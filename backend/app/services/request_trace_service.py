@@ -24,7 +24,10 @@ class RequestTraceService:
         repository: RequestTraceRepository | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.repository = repository or FilesystemRequestTraceRepository(self.settings.request_trace_dir)
+        request_trace_dir = self.settings.request_trace_dir
+        if request_trace_dir is None:
+            raise RuntimeError("Request trace directory is not configured.")
+        self.repository = repository or FilesystemRequestTraceRepository(request_trace_dir)
 
     def record(
         self,

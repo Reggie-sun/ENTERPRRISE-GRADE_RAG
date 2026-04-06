@@ -15,7 +15,7 @@ from ..schemas.chat import (
     Citation,
 )
 from ..schemas.query_profile import QueryProfile
-from ..schemas.request_trace import RequestTraceStage, RequestTraceStageStatus
+from ..schemas.request_trace import RequestTraceStage, RequestTraceStageName, RequestTraceStageStatus
 from ..schemas.retrieval import RetrievalRequest
 from .query_profile_service import QueryProfileService
 from .retrieval_service import RetrievalService
@@ -273,7 +273,7 @@ def _trace_status_for_rerank_strategy(rerank_strategy: str) -> RequestTraceStage
 def _append_trace_stage(
     stages: list[RequestTraceStage],
     *,
-    stage: str,
+    stage: RequestTraceStageName,
     status: RequestTraceStageStatus,
     duration_ms: int | None,
     input_size: int | None,

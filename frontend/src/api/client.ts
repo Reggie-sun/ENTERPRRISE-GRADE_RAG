@@ -38,6 +38,8 @@ import type {
   DocumentDetailResponse,
   DocumentDeleteResponse,
   DocumentBatchDeleteResponse,
+  DocumentBatchRebuildResponse,
+  DocumentBatchRestoreResponse,
   DocumentPreviewResponse,
   DocumentRebuildResponse,
   IngestJobStatusResponse,
@@ -833,6 +835,20 @@ export async function deleteDocument(docId: string): Promise<DocumentDeleteRespo
 export async function deleteMyDocuments(): Promise<DocumentBatchDeleteResponse> {
   return request<DocumentBatchDeleteResponse>('/documents', {
     method: 'DELETE',
+  });
+}
+
+/** 重建当前用户上传的所有文档向量（用最新 chunk 配置重新入库） */
+export async function rebuildMyDocuments(): Promise<DocumentBatchRebuildResponse> {
+  return request<DocumentBatchRebuildResponse>('/documents/rebuild', {
+    method: 'POST',
+  });
+}
+
+/** 恢复当前用户已删除的文档（恢复状态并重新入库） */
+export async function restoreMyDocuments(): Promise<DocumentBatchRestoreResponse> {
+  return request<DocumentBatchRestoreResponse>('/documents/restore', {
+    method: 'POST',
   });
 }
 

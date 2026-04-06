@@ -1,0 +1,522 @@
+{
+  "snapshot_id": "rsp_a8005154df664bf3",
+  "trace_id": "trc_retrieval_a18e9e3537aa4257",
+  "request_id": "req_retrieval_8e544efc937c4b19",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T08:20:36.464882Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "摇臂钻床日常维护保养和安全检查要点",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "摇臂钻床日常维护保养和安全检查要点",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::pre_operation",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "本部分涵盖 4.1-4.4，包括：4.1 摇臂钻床应有专人操作与保养。；4.2 作业前应该检查摇臂钻床电器、机械、工具、夹具是否存在异常，确认一切正常才能开机生产。；4.3 操作前要穿紧身防护服，袖口扣紧，上衣下摆不能敞开，不得在开动的机床旁穿、脱换衣服，或围布于身上，摇臂钻作业时禁止带围巾、领带、手套，防止机器绞伤。；4.4 在摇臂回转范围内，不得有障碍物，钻削前必须锁紧摇臂。。",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.76673293,
+      "lexical_score": 51.80382105805903,
+      "fused_score": 0.032018442622950824
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::abnormal_shutdown_maintenance",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "本部分涵盖 4.22-4.27，包括：4.22 当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。；4.23 当设备发生事故，应保持现场并立即报告部门主管。；4.24 设备开动时严禁操作者高开岗位或托人代管。；4.25 工作后须卸下钻头将各手柄置于非工作位置上，主轴箱停放应靠近立柱，摇臂适当降低并刹好车，再切断电源以防止发生意外。；4.26 ",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.76617426,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.27",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "操作者要做好运行保养记录。",
+      "score": 0.9533577533577533,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.75631833,
+      "lexical_score": 51.131054999683435,
+      "fused_score": 0.03125763125763126
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "摇臂钻床应有专人操作与保养。",
+      "score": 0.9606894841269841,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.7422761,
+      "lexical_score": 52.952789319812766,
+      "fused_score": 0.03149801587301587
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260330055115_c20cfc5a::doc_summary",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "本文件用于本规程用于指导操作者正确操作和使用设备。适用范围为本规程适用于指导本公司摇臂钻的操作与安全操作。职责包括：3.1 生产管理部负责设备保养、设备维修以及改善的确认工作；；3.2 生产技术部负责设备故障原因查找、故障定性、设备维护方案制定、设备维修以及维修报告的出具；；3.3 采购管理部负责设备维修所需物料采购；；3.4 财务部负责设备维修物料价格、设备第三方维护价格的核查。内容覆盖作业前准",
+      "score": 0.9692307692307693,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.7395953,
+      "lexical_score": 54.719261306808086,
+      "fused_score": 0.03177805800756621
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "摇臂钻床日常维护保养和安全检查要点",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_lexical_top1(6.0862)_below_threshold(10.00)",
+    "recall_counts": {
+      "department_vector_count": 13,
+      "department_lexical_count": 13,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 10,
+      "supplemental_vector_count": 8,
+      "supplemental_lexical_count": 8,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "摇臂钻床日常维护保养和安全检查要点",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 13,
+      "lexical_count": 13,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9621212121212123,
+      "avg_top_n_score": 0.9037937737975541,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7,
+      "top_k_unique_doc_count": 4,
+      "top1_literal_coverage": 0.18181818181818182
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_lexical_top1(6.0862)_below_threshold(10.00)",
+      "vector_count": 8,
+      "lexical_count": 8,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::clause::3.1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::basic_info",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::chip_and_stop",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328022343_b95834e1",
+          "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328035056_fd1b630f",
+          "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326065846_b619236e",
+          "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::pre_operation",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.76673293,
+          "lexical_score": 51.80382105805903,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7667，词法 51.8038，融合 0.0320。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::abnormal_shutdown_maintenance",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.76617426,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7662，融合 0.0161。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.27",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.75631833,
+          "lexical_score": 51.131054999683435,
+          "fused_score": 0.03125763125763126,
+          "final_score": 0.9533577533577533,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7563，词法 51.1311，融合 0.0313。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.1",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.7422761,
+          "lexical_score": 52.952789319812766,
+          "fused_score": 0.03149801587301587,
+          "final_score": 0.9606894841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7423，词法 52.9528，融合 0.0315。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a::doc_summary",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.7395953,
+          "lexical_score": 54.719261306808086,
+          "fused_score": 0.03177805800756621,
+          "final_score": 0.9692307692307693,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7396，词法 54.7193，融合 0.0318。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::pre_operation",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.76673293,
+        "lexical_score": 51.80382105805903,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7667，词法 51.8038，融合 0.0320。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::abnormal_shutdown_maintenance",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.76617426,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7662，融合 0.0161。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.27",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.75631833,
+        "lexical_score": 51.131054999683435,
+        "fused_score": 0.03125763125763126,
+        "final_score": 0.9533577533577533,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7563，词法 51.1311，融合 0.0313。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::clause::4.1",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.7422761,
+        "lexical_score": 52.952789319812766,
+        "fused_score": 0.03149801587301587,
+        "final_score": 0.9606894841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7423，词法 52.9528，融合 0.0315。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::doc_summary",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.7395953,
+        "lexical_score": 54.719261306808086,
+        "fused_score": 0.03177805800756621,
+        "final_score": 0.9692307692307693,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7396，词法 54.7193，融合 0.0318。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::clause::3.1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::basic_info",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a::section_summary::chip_and_stop",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328022343_b95834e1",
+        "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328035056_fd1b630f",
+        "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326065846_b619236e",
+        "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

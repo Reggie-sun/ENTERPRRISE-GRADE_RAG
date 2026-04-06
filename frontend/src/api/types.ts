@@ -933,6 +933,20 @@ export interface DocumentBatchDeleteResponse {
   total_vector_points_removed: number;  // 清理掉的向量点位总数。
 }
 
+/** 批量重建当前用户文档向量响应 */
+export interface DocumentBatchRebuildResponse {
+  rebuilt_count: number;  // 成功触发重建的文档数量。
+  skipped_count: number;  // 跳过的文档数量（已删除或有进行中的任务）。
+  failed_count: number;  // 重建失败的文档数量。
+  total_vector_points_removed: number;  // 重建前清理掉的旧向量点位总数。
+}
+
+/** 批量恢复当前用户已删除文档响应 */
+export interface DocumentBatchRestoreResponse {
+  restored_count: number;  // 成功恢复并触发重建的文档数量。
+  failed_count: number;  // 恢复失败的文档数量。
+}
+
 /** 文档重建向量响应 */
 export interface DocumentRebuildResponse {
   doc_id: string;  // 触发重建的文档 ID。

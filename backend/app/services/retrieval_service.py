@@ -1,8 +1,10 @@
 """文档检索服务，封装向量召回、词法召回、RRF混合融合、部门优先检索和Rerank对比验证。"""
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import logging
 
 from fastapi import HTTPException, status  # 导入 HTTPException，用于越权检索时显式拒绝。
+from qdrant_client.http import models as qdrant_models
 
 from ..core.config import Settings, get_settings  # 导入配置对象和配置获取函数。
 from ..rag.embeddings.client import EmbeddingClient  # 导入 embedding 客户端，用于把查询文本向量化。
@@ -46,6 +48,12 @@ SUPPLEMENTAL_LITERAL_COVERAGE_MIN_QUERY_TOKENS = 3
 SUPPLEMENTAL_LOW_QUALITY_RESERVED_GLOBAL_SLOTS = 2
 SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE = 0.10
 SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD = 0.35
+# When multiple unique documents are present but top1 literal coverage is extremely low,
+# the high vector scores likely reflect topical overlap rather than genuine content match
+# (e.g., cross-014: "fence emergency stop alarm" query scores 0.953 against unrelated docs).
+# This catches cases the mono-document guard misses (multiple docs with high scores but
+# near-zero literal coverage of query terms).
+SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD = 0.10
 
 @dataclass
 class _RetrievalCandidate:
@@ -294,9 +302,9 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 fused_score=raw_score,  # 返回最终融合原始分数，便于调试真实排序依据。
                 ocr_used=bool(payload.get("ocr_used") or False),  # 返回 OCR 标记，便于前端和生成链路判断文本来源。
                 parser_name=str(payload.get("parser_name")) if payload.get("parser_name") else None,  # 返回解析器名称。
-                page_no=int(payload["page_no"]) if payload.get("page_no") is not None else None,  # 返回 OCR 页码。
-                ocr_confidence=float(payload["ocr_confidence"]) if payload.get("ocr_confidence") is not None else None,  # 返回 OCR 置信度摘要。
-                quality_score=float(payload["quality_score"]) if payload.get("quality_score") is not None else None,  # 返回统一质量分。
+                page_no=self._as_int(payload.get("page_no")),  # 返回 OCR 页码。
+                ocr_confidence=self._as_float(payload.get("ocr_confidence")),  # 返回 OCR 置信度摘要。
+                quality_score=self._as_float(payload.get("quality_score")),  # 返回统一质量分。
             )
             if normalized_document_id and item.document_id != normalized_document_id:  # 二次安全过滤：即使向量库过滤异常也不允许串文档。
                 _scope_filtered += 1
@@ -532,9 +540,11 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         results: list[RetrievedChunk],
     ) -> RetrievalDiagnostic:
         """将 search_candidates 内部诊断字典转换为结构化 RetrievalDiagnostic。"""
-        recall_counts = dict(diagnostic.get("recall_counts")) if isinstance(diagnostic.get("recall_counts"), dict) else {}
-        filter_counts = dict(diagnostic.get("filter_counts", diagnostic.get("filters"))) if isinstance(diagnostic.get("filter_counts", diagnostic.get("filters")), dict) else {}
-        branch_weights = diagnostic.get("branch_weights")
+        recall_counts = RetrievalService._as_str_int_dict(diagnostic.get("recall_counts"))
+        filter_counts = RetrievalService._as_str_int_dict(
+            diagnostic.get("filter_counts", diagnostic.get("filters"))
+        )
+        branch_weights = RetrievalService._as_str_object_dict(diagnostic.get("branch_weights"))
         retrieval_mode = str(diagnostic.get("retrieval_mode", "")) or None
         query_text = str(diagnostic.get("raw_query", request.query))
         department_priority_enabled = bool(diagnostic.get("department_priority_enabled", False))
@@ -558,8 +568,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         )
         routing_stage = RetrievalRoutingStage(
             is_hybrid=retrieval_mode == "hybrid",
-            vector_weight=RetrievalService._as_float((branch_weights or {}).get("vector_weight")) if isinstance(branch_weights, dict) else None,
-            lexical_weight=RetrievalService._as_float((branch_weights or {}).get("lexical_weight")) if isinstance(branch_weights, dict) else None,
+            vector_weight=RetrievalService._as_float(branch_weights.get("vector_weight")) if branch_weights is not None else None,
+            lexical_weight=RetrievalService._as_float(branch_weights.get("lexical_weight")) if branch_weights is not None else None,
             is_document_id_exact=bool(diagnostic.get("document_id_filter_applied", False)),
             department_priority_enabled=department_priority_enabled,
             structured_routing_applied=bool(diagnostic.get("structured_routing_applied", False)),
@@ -601,7 +611,9 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             top_k_truncated_count=RetrievalService._pick_count(filter_counts, "top_k_truncated_count", "top_k_truncated"),
             filtered_candidates=filtered_candidates,
         )
-        final_result_count = int(diagnostic.get("final_result_count", diagnostic.get("final_results", 0)))
+        final_result_count = RetrievalService._as_int(
+            diagnostic.get("final_result_count", diagnostic.get("final_results", 0))
+        ) or 0
         finalization_stage = RetrievalFinalizationStage(
             final_result_count=final_result_count,
             returned_top_k=len(results),
@@ -624,8 +636,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             recall_counts=recall_counts,
             filter_counts=filter_counts,
             final_result_count=final_result_count,
-            branch_weights=branch_weights if isinstance(branch_weights, dict) else None,
-            stage_durations_ms=dict(diagnostic.get("stage_durations_ms")) if isinstance(diagnostic.get("stage_durations_ms"), dict) else {},
+            branch_weights=branch_weights,
+            stage_durations_ms=RetrievalService._as_str_int_dict(diagnostic.get("stage_durations_ms")),
             query_stage=query_stage,
             routing_stage=routing_stage,
             primary_recall_stage=primary_recall_stage,
@@ -650,10 +662,14 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             return None
         if isinstance(value, int):
             return value
-        try:
+        if isinstance(value, float):
             return int(value)
-        except (TypeError, ValueError):
-            return None
+        if isinstance(value, str):
+            try:
+                return int(value)
+            except ValueError:
+                return None
+        return None
 
     @staticmethod
     def _as_float(value: object) -> float | None:
@@ -661,10 +677,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             return None
         if isinstance(value, (int, float)):
             return float(value)
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return None
+        if isinstance(value, str):
+            try:
+                return float(value)
+            except ValueError:
+                return None
+        return None
 
     @staticmethod
     def _as_optional_str(value: object) -> str | None:
@@ -672,6 +690,31 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             return None
         value_str = str(value).strip()
         return value_str or None
+
+    @staticmethod
+    def _as_str_int_dict(value: object) -> dict[str, int]:
+        if not isinstance(value, Mapping):
+            return {}
+        result: dict[str, int] = {}
+        for raw_key, raw_value in value.items():
+            key = RetrievalService._as_optional_str(raw_key)
+            normalized_value = RetrievalService._as_int(raw_value)
+            if key is None or normalized_value is None:
+                continue
+            result[key] = normalized_value
+        return result
+
+    @staticmethod
+    def _as_str_object_dict(value: object) -> dict[str, object] | None:
+        if not isinstance(value, Mapping):
+            return None
+        result: dict[str, object] = {}
+        for raw_key, raw_value in value.items():
+            key = RetrievalService._as_optional_str(raw_key)
+            if key is None:
+                continue
+            result[key] = raw_value
+        return result
 
     @staticmethod
     def _build_filtered_candidate_summaries(raw_items: object) -> list[FilteredCandidateSummary]:
@@ -735,7 +778,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             "supplemental": "补充命中",
             "global": "全局范围命中",
             "both": "部门与补充双重命中",
-        }.get(selected_via, "检索命中")
+        }.get(selected_via or "", "检索命中")
         score_parts: list[str] = []
         if item.vector_score is not None:
             score_parts.append(f"向量 {item.vector_score:.4f}")
@@ -780,7 +823,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         self,
         *,
         query: str,
-        vector_points: list[object],
+        vector_points: Sequence[qdrant_models.ScoredPoint],
         profile: QueryProfile,
         limit: int,
         document_id: str | None,
@@ -813,15 +856,24 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             supplemental_bigram_weight=self.settings.retrieval_lexical_supplemental_bigram_weight,
         )
         try:
-            lexical_search_kwargs: dict[str, object] = {
-                "query": query,
-                "limit": min(profile.lexical_top_k, limit),
-            }
+            lexical_limit = min(profile.lexical_top_k, limit)
             if document_id is not None:
-                lexical_search_kwargs["document_id"] = document_id
-            if document_ids is not None:
-                lexical_search_kwargs["document_ids"] = document_ids
-            lexical_matches = lexical_retriever.search(**lexical_search_kwargs)
+                lexical_matches = lexical_retriever.search(
+                    query,
+                    limit=lexical_limit,
+                    document_id=document_id,
+                )
+            elif document_ids is not None:
+                lexical_matches = lexical_retriever.search(
+                    query,
+                    limit=lexical_limit,
+                    document_ids=document_ids,
+                )
+            else:
+                lexical_matches = lexical_retriever.search(
+                    query,
+                    limit=lexical_limit,
+                )
         except RuntimeError:
             logger.warning("hybrid retrieval fallback_to=qdrant reason=lexical_error")
             return vector_candidates, "qdrant", None
@@ -980,6 +1032,20 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             and scope is not None
             and len(scope.global_document_ids) > 0
         )
+        # Multi-doc low literal coverage: even with multiple unique documents, if the top1's literal
+        # coverage of query terms is near-zero, the high vector scores reflect topical proximity
+        # rather than actual content match (e.g., cross-014: 3 unique docs, top1=0.953, but
+        # literal_coverage=0.0625 — the returned docs don't contain the query's fault code terms).
+        low_quality_by_multi_doc_low_coverage = (
+            top_k_unique_doc_count is not None
+            and top_k_unique_doc_count > 1
+            and primary_top1_literal_coverage is not None
+            and primary_top1_literal_coverage < SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD
+            and primary_top1_score is not None
+            and primary_top1_score >= quality_top1_threshold
+            and scope is not None
+            and len(scope.global_document_ids) > 0
+        )
         # Boundary jitter guard for avg_top_n: when avg_top_n is only marginally below the threshold
         # (within the tolerance zone) but top1 is healthy and literal coverage is good, suppress the
         # avg_top_n-based trigger to avoid oscillation from HNSW non-determinism (e.g., sop-005).
@@ -1002,7 +1068,13 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             low_quality_by_score = (
                 primary_top1_score is not None and primary_top1_score < quality_top1_threshold
             )
-        low_quality = low_quality_by_score or low_quality_by_lexical or low_quality_by_literal or low_quality_by_mono_document
+        low_quality = (
+            low_quality_by_score
+            or low_quality_by_lexical
+            or low_quality_by_literal
+            or low_quality_by_mono_document
+            or low_quality_by_multi_doc_low_coverage
+        )
 
         if department_effective_count >= required and not low_quality:
             # Department has sufficient and good-quality results — skip supplemental route entirely
@@ -1026,6 +1098,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 diagnostic["primary_avg_top_n_score"] = primary_avg_top_n_score
                 diagnostic["quality_top1_threshold"] = quality_top1_threshold
                 diagnostic["quality_avg_threshold"] = quality_avg_threshold
+                diagnostic["top_k_unique_doc_count"] = top_k_unique_doc_count
+                diagnostic["primary_top1_literal_coverage"] = primary_top1_literal_coverage
                 diagnostic["recall_counts"] = {
                     "department_vector_count": department_vector_count,
                     "department_lexical_count": department_lexical_count,
@@ -1033,8 +1107,6 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                     "department_after_ocr": department_after_ocr_count,
                     "department_unique_docs_after_ocr": department_unique_doc_count,
                 }
-            diagnostic["primary_top1_literal_coverage"] = primary_top1_literal_coverage
-            diagnostic["top_k_unique_doc_count"] = top_k_unique_doc_count
             return department_candidates, department_mode, department_branch_weights
 
         # --- Stage 2: supplemental route ---
@@ -1101,7 +1173,11 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                     )
                 if low_quality_by_mono_document:
                     reason_parts.append(
-                        f"department_mono_document_literal_mismatch(unique_docs={department_unique_doc_count},literal_coverage={primary_top1_literal_coverage:.4f})"
+                        f"department_mono_document_literal_mismatch(unique_docs={top_k_unique_doc_count},literal_coverage={primary_top1_literal_coverage:.4f})"
+                    )
+                if low_quality_by_multi_doc_low_coverage:
+                    reason_parts.append(
+                        f"department_multi_doc_low_coverage(unique_docs={top_k_unique_doc_count},literal_coverage={primary_top1_literal_coverage:.4f},top1={primary_top1_score:.4f})"
                     )
                 if avg_top_n_suppressed_by_strong_top1:
                     reason_parts.append(
@@ -1315,11 +1391,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if not bool(payload.get("ocr_used") or False):
             return False
         quality_score = payload.get("quality_score")
-        if quality_score is None:
-            return False
-        try:
-            normalized_quality = float(quality_score)
-        except (TypeError, ValueError):
+        normalized_quality = self._as_float(quality_score)
+        if normalized_quality is None:
             return False
         return normalized_quality < self.settings.ocr_low_quality_min_score
 
@@ -1514,7 +1587,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         return kept_prefix + promoted_candidates + demoted_candidates + suffix_candidates
 
     @staticmethod
-    def _candidate_from_vector_point(point: object) -> _RetrievalCandidate:
+    def _candidate_from_vector_point(point: qdrant_models.ScoredPoint) -> _RetrievalCandidate:
         payload = dict(getattr(point, "payload", None) or {})
         point_id = str(getattr(point, "id", "unknown"))
         vector_score = float(getattr(point, "score", 0.0))
@@ -1571,13 +1644,12 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         limit: int,
         document_id: str | None = None,
         document_ids: list[str] | None = None,
-    ) -> list[object]:
-        search_kwargs: dict[str, object] = {"limit": limit}
+    ) -> Sequence[qdrant_models.ScoredPoint]:
         if document_id is not None:
-            search_kwargs["document_id"] = document_id
+            return self.vector_store.search(query_vector, limit=limit, document_id=document_id)
         if document_ids is not None:
-            search_kwargs["document_ids"] = document_ids
-        return self.vector_store.search(query_vector, **search_kwargs)
+            return self.vector_store.search(query_vector, limit=limit, document_ids=document_ids)
+        return self.vector_store.search(query_vector, limit=limit)
 
     def _normalized_retrieval_strategy(self) -> str:
         normalized = self.settings.retrieval_strategy_default.strip().lower()

@@ -8,6 +8,8 @@ from ....schemas.document import (  # 导入文档相关响应模型。
     Classification,
     DocumentBatchCreateResponse,
     DocumentBatchDeleteResponse,
+    DocumentBatchRebuildResponse,
+    DocumentBatchRestoreResponse,
     DocumentLifecycleStatus,
     DocumentCreateResponse,
     DocumentDeleteResponse,
@@ -225,6 +227,30 @@ def delete_my_documents(  # 定义批量删除接口函数。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentBatchDeleteResponse:
     return document_service.delete_my_documents(auth_context=auth_context)  # 查找当前用户上传的所有文档并逐个删除。
+
+
+@router.post(
+    "/restore",
+    response_model=DocumentBatchRestoreResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)  # 声明 POST /documents/restore 接口，批量恢复当前用户已删除的文档。
+def restore_my_documents(  # 定义批量恢复接口函数。
+    auth_context: AuthContext = Depends(get_current_auth_context),  # 批量恢复必须登录，只恢复当前用户上传的文档。
+    document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
+) -> DocumentBatchRestoreResponse:
+    return document_service.restore_my_documents(auth_context=auth_context)  # 筛选当前用户已删除文档，恢复状态并重新入库。
+
+
+@router.post(
+    "/rebuild",
+    response_model=DocumentBatchRebuildResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)  # 声明 POST /documents/rebuild 接口，批量重建当前用户文档的向量。
+def rebuild_my_documents(  # 定义批量重建向量接口函数。
+    auth_context: AuthContext = Depends(get_current_auth_context),  # 批量重建必须登录，只处理当前用户上传的文档。
+    document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
+) -> DocumentBatchRebuildResponse:
+    return document_service.rebuild_my_documents(auth_context=auth_context)  # 筛选当前用户文档并用最新 chunk 配置重建向量。
 
 
 @router.post(

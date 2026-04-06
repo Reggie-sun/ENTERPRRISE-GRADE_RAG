@@ -5,7 +5,7 @@
   "priority": "High",
   "status": "pending",
   "day": 1,
-  "estimated_hours": 4,
+  "estimated_hours": 5,
   "depends_on": ["IMPL-001"],
   "blocking": ["IMPL-006"],
   "description": "Add evidence gate between retrieval and LLM generation. Phase A uses threshold=0.0 (pass-through) to capture score distributions without blocking. Gate uses post-rerank Citation.score.",
@@ -17,23 +17,101 @@
     "ChatService.answer() and stream_answer_sse() call gate after build_citations()",
     "Trace enriched with evidence_gate_result (triggered, top1_score, threshold)",
     "Phase A: threshold defaults to 0.0 (all pass, just capturing scores)",
-    "All user-facing abstention messages are Chinese (PM Template A)"
+    "All user-facing abstention messages are Chinese (PM Template A)",
+    "Test file backend/app/services/test_evidence_gate.py with >=10 test cases",
+    "frontend/src/api/types.ts updated with 'evidence_gate_abstain' mode type",
+    "MAIN_CONTRACT_MATRIX.md checked before adding mode field to chat/ask response",
+    "frontend/src/api/client.ts reviewed for response handling compatibility"
   ],
   "files_to_create": [
-    "backend/app/services/evidence_gate_service.py"
+    "backend/app/services/evidence_gate_service.py",
+    "backend/app/services/test_evidence_gate.py"
   ],
   "files_to_modify": [
     "backend/app/services/chat_service.py",
     "backend/app/schemas/system_config.py",
-    "data/system_config.json"
+    "data/system_config.json",
+    "frontend/src/api/types.ts",
+    "frontend/src/api/client.ts"
   ],
   "implementation_steps": [
-    "1. Create backend/app/services/evidence_gate_service.py with EvidenceGateService",
-    "2. Add evidence_gate config section to system_config schema",
-    "3. Integrate gate into ChatService.answer() after build_citations()",
-    "4. Add _build_evidence_gate_response() with Chinese Template A message",
-    "5. Add evidence_gate_result to trace details",
-    "6. Set default threshold to 0.0 in system_config.json",
-    "7. Integrate into stream_answer_sse() as well"
-  ]
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any code changes",
+    "1. Check MAIN_CONTRACT_MATRIX.md for POST /api/v1/chat/ask response contract constraints",
+    "2. Create backend/app/services/evidence_gate_service.py with EvidenceGateService",
+    "3. Add evidence_gate config section to system_config schema",
+    "4. Integrate gate into ChatService.answer() after build_citations()",
+    "5. Add _build_evidence_gate_response() with Chinese Template A message",
+    "6. Add evidence_gate_result to trace details",
+    "7. Set default threshold to 0.0 in system_config.json",
+    "8. Integrate into stream_answer_sse() as well",
+    "9. Update frontend/src/api/types.ts with 'evidence_gate_abstain' in ChatResponse mode union",
+    "10. Review frontend/src/api/client.ts for response handling of new mode",
+    "11. Create test_evidence_gate.py with >=10 test cases",
+    "12. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "standard",
+    "reason": "Cross-module (services + schemas + frontend types). Adds 'evidence_gate_abstain' mode to stable contract POST /api/v1/chat/ask. Modifies chat service chain. NOT Lite Mode eligible per AGENTS.md §2 禁止条件: '需要改 schema、API、frontend API 类型或 client'.",
+    "spec_required": true,
+    "spec_template": ".agent/specs/feature-template.md",
+    "review_required": true,
+    "harness_contract_required": true,
+    "harness_category": "api_schema",
+    "high_risk_prefixes_hit": ["backend/app/services/", "backend/app/schemas/"],
+    "contract_checks": [
+      "POST /api/v1/chat/ask — response mode field gains 'evidence_gate_abstain' value",
+      "MAIN_CONTRACT_MATRIX.md — verify adding mode is not expanding stable contract",
+      "frontend/src/api/types.ts — ChatResponseMode type must include new mode",
+      "frontend/src/api/client.ts — response parsing must handle new mode"
+    ],
+    "frontend_sync_required": true,
+    "frontend_sync_files": ["frontend/src/api/types.ts", "frontend/src/api/client.ts"],
+    "mandatory_reads": {
+      "api_contract_module": [
+        "MAIN_CONTRACT_MATRIX.md",
+        "backend/app/api/v1/endpoints/chat.py",
+        "backend/app/schemas/chat.py",
+        "frontend/src/api/types.ts",
+        "frontend/src/api/client.ts",
+        "backend/tests/test_main_contract_endpoints.py",
+        "backend/tests/test_main_contract_errors.py"
+      ],
+      "schema_module": [
+        "backend/app/schemas/system_config.py",
+        "backend/app/services/system_config_service.py",
+        "frontend/src/api/types.ts",
+        "frontend/src/api/client.ts",
+        "MAIN_CONTRACT_MATRIX.md",
+        "backend/tests/test_main_contract_endpoints.py",
+        "backend/tests/test_main_contract_errors.py"
+      ],
+      "chat_service_chain": [
+        "backend/app/services/chat_service.py",
+        "backend/app/services/chat_citation_pipeline.py"
+      ],
+      "general": [
+        ".agent/context/repo-map.md",
+        ".agent/context/retrieval-state.md"
+      ]
+    },
+    "retrieval_state_acknowledgment": "Current state: Phase 1B-B, GATE NOT PASSED. Evidence gate does NOT modify retrieval internals — it sits in the chat layer AFTER retrieval and rerank, reading post-rerank Citation.score. This is explicitly within scope per RAG_FAST_LAUNCH_PLAN.md: '不动 retrieval 内部逻辑'.",
+    "brain_executor": {
+      "brain_tasks": [
+        "Define EvidenceGateService interface and integration boundary",
+        "Check MAIN_CONTRACT_MATRIX.md for mode field constraints",
+        "Decide if evidence_gate_abstain mode is additive (non-breaking) to stable contract",
+        "Design score source: confirm post-rerank Citation.score availability",
+        "Review final implementation and test coverage"
+      ],
+      "executor_tasks": [
+        "Implement EvidenceGateService class",
+        "Add config schema for evidence_gate section",
+        "Integrate into ChatService.answer() and stream_answer_sse()",
+        "Add Chinese abstention message (Template A)",
+        "Update frontend types.ts with new mode",
+        "Review client.ts compatibility",
+        "Write test_evidence_gate.py"
+      ]
+    }
+  }
 }

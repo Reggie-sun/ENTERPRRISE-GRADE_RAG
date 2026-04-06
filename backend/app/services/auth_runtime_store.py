@@ -175,7 +175,7 @@ class RedisBackedAuthRuntimeStore(AuthRuntimeStore):
     def get_login_block_retry_after(self, *, username: str, client_ip: str | None) -> int | None:
         block_key = _login_block_key(username=username, client_ip=client_ip)
         try:
-            ttl = self._client.ttl(block_key)
+            ttl = _coerce_redis_int(self._client.ttl(block_key))
         except Exception:
             return self._fallback.get_login_block_retry_after(username=username, client_ip=client_ip)
         if ttl is None or ttl < 0:
@@ -194,11 +194,13 @@ class RedisBackedAuthRuntimeStore(AuthRuntimeStore):
         failure_key = _login_failure_key(username=username, client_ip=client_ip)
         block_key = _login_block_key(username=username, client_ip=client_ip)
         try:
-            ttl = self._client.ttl(block_key)
+            ttl = _coerce_redis_int(self._client.ttl(block_key))
             if ttl is not None and ttl > 0:
                 return True, max(1, int(ttl))
 
-            failure_count = int(self._client.incr(failure_key))
+            failure_count = _coerce_redis_int(self._client.incr(failure_key))
+            if failure_count is None:
+                raise RuntimeError("Redis INCR returned a non-integer response.")
             if failure_count == 1:
                 self._client.expire(failure_key, window_seconds)
             if failure_count >= max_attempts:
@@ -245,6 +247,21 @@ def _login_scope_key(*, username: str, client_ip: str | None) -> str:
 
 def _normalize_expiry(expires_at: datetime) -> datetime:
     return expires_at if expires_at.tzinfo is not None else expires_at.replace(tzinfo=UTC)
+
+
+def _coerce_redis_int(value: object) -> int | None:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped:
+            try:
+                return int(stripped)
+            except ValueError:
+                return None
+    return None
 
 
 def _seconds(value: int) -> timedelta:

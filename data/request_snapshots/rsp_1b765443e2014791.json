@@ -1,0 +1,519 @@
+{
+  "snapshot_id": "rsp_1b765443e2014791",
+  "trace_id": "trc_retrieval_3c4e0e6a5a404852",
+  "request_id": "req_retrieval_cb3c93d38bbf49be",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T08:20:36.671424Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "V1版本为什么不用大而全的方案而是分步交付",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "V1版本为什么不用大而全的方案而是分步交付",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "# V1 Plan\n\n## 0. 编写依据\n\n本版计划基于以下两类输入：\n\n- 需求文档：\n  [宁波伟立机器人 企业级RAG智能知识库系统 需求规格说明书（V1.0 精简版）](/home/reggie/文档/xwechat_files/wxid_ut5o9e1igztd22_f3a1/msg/file/2026-03/宁波伟立机器人 企业级RAG智能知识库系统 需求规格说明书（V1.0 精简版",
+      "score": 1.0,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6623142,
+      "lexical_score": 25.9598370894851,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-38",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "再说”，而是明确为当前优先动作\n- smoke skill 默认围绕冻结主契约做验证，不把 `traces / request-snapshots / rerank-compare` 误当成稳定接口\n- 后续新增功能如果要改主契约，必须在计划和架构里显式记录，而不是静默漂移\n\n---\n\n## 7. 当前版本与需求文档的对应关系\n\n需求文档里的“V1 最小可用版”更像是上面 `v0.1.2 -> v",
+      "score": 0.9339644693782141,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6147722,
+      "lexical_score": 8.705014831590503,
+      "fused_score": 0.030621785881252923
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n",
+      "score": 0.9137044489157166,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5423674,
+      "lexical_score": 12.742941641279554,
+      "fused_score": 0.029957522915269395
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-61",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "文件顶部或单独附录维护一张轻量状态表，至少包含：\n\n- `模块`\n- `计划版本`\n- `当前状态`\n- `代码状态`\n- `联调状态`\n- `阻塞项`\n- `下一步`\n\n推荐状态值统一为：\n\n- `planned`\n- `in_progress`\n- `blocked`\n- `done`\n- `verified`\n\n建议首批纳入状态看板的模块：\n\n- 文档上传与异步入库\n- 文档管理\n- 登录与",
+      "score": 0.8551960784313725,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5360314,
+      "lexical_score": 8.768352831245128,
+      "fused_score": 0.02803921568627451
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-1",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "- schema 反复变\n- 接口反复变\n- 前后端互相阻塞\n- 已经跑通的入库 / 检索 / 问答链路被持续打断\n\n所以这版计划的核心原则是：\n\n**总目标按需求文档对齐，实施路径按小版本拆解，优先保证低耦合和可连续交付。**\n\n---\n\n## 2. 当前冻结边界\n\n以下内容在这一轮计划中视为固定底座，不主动推翻：\n\n- 当前在线检索底座继续沿用：\n  `query -> embedding -",
+      "score": 0.7873917388407727,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5358833,
+      "lexical_score": 6.003809706800912,
+      "fused_score": 0.02581612258494337
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "V1版本为什么不用大而全的方案而是分步交付",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 14,
+      "department_lexical_count": 12,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 2,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "V1版本为什么不用大而全的方案而是分步交付",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 14,
+      "lexical_count": 12,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 1.0,
+      "avg_top_n_score": 0.8980513471132152,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7,
+      "top_k_unique_doc_count": 2,
+      "top1_literal_coverage": 0.6363636363636364
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-35",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-65",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-55",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-50",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-39",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-52",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6623142,
+          "lexical_score": 25.9598370894851,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6623，词法 25.9598，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-38",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6147722,
+          "lexical_score": 8.705014831590503,
+          "fused_score": 0.030621785881252923,
+          "final_score": 0.9339644693782141,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6148，词法 8.7050，融合 0.0306。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5423674,
+          "lexical_score": 12.742941641279554,
+          "fused_score": 0.029957522915269395,
+          "final_score": 0.9137044489157166,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5424，词法 12.7429，融合 0.0300。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-61",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5360314,
+          "lexical_score": 8.768352831245128,
+          "fused_score": 0.02803921568627451,
+          "final_score": 0.8551960784313725,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5360，词法 8.7684，融合 0.0280。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-1",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5358833,
+          "lexical_score": 6.003809706800912,
+          "fused_score": 0.02581612258494337,
+          "final_score": 0.7873917388407727,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5359，词法 6.0038，融合 0.0258。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-0",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6623142,
+        "lexical_score": 25.9598370894851,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6623，词法 25.9598，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-38",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6147722,
+        "lexical_score": 8.705014831590503,
+        "fused_score": 0.030621785881252923,
+        "final_score": 0.9339644693782141,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6148，词法 8.7050，融合 0.0306。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5423674,
+        "lexical_score": 12.742941641279554,
+        "fused_score": 0.029957522915269395,
+        "final_score": 0.9137044489157166,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5424，词法 12.7429，融合 0.0300。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-61",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5360314,
+        "lexical_score": 8.768352831245128,
+        "fused_score": 0.02803921568627451,
+        "final_score": 0.8551960784313725,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5360，词法 8.7684，融合 0.0280。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-1",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5358833,
+        "lexical_score": 6.003809706800912,
+        "fused_score": 0.02581612258494337,
+        "final_score": 0.7873917388407727,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5359，词法 6.0038，融合 0.0258。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-35",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-27",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-65",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-55",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-50",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-39",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-52",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

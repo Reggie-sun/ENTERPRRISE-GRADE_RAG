@@ -1,0 +1,618 @@
+{
+  "document_id": "doc_20260331071329_36c0ab64",
+  "file_name": "滚珠丝杠装配SOP.docx",
+  "source_path": "/app/data/uploads/doc_20260331071329_36c0ab64__SOP.docx",
+  "parser_name": "docx_embedded_image_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 101,
+  "page_count": 1,
+  "normalized_text": "WCLLLIH\n伟立机器人\nWELLLIH ROBOTS\n\n③辅助轨\n①安装台\n座\n②基准轨\n\n滑块\n\n丝杠固\n定座\n丝杠固\n定座\n电机\n100\n尾端\n70.0\n\n700\n\n1\no0\n0\n\n©\nX\n-\n©\n1\n\n0\n0\nS\n0\n0\n0\n\n-\nC\n0\nO\n门\n0\n0\n\n检棒高低差打表\n示意图\n根部\n端部\n\n检棒水平差打表\n示意图\n-\n\n丝杆固定座分中\n打表示意图\n0\n旋转180\n\n2\n© 0\n©0\n③\nB\n3\nC\nC\n\n丝杠螺母\n固定座\n滑板\n\n0\nC\n0\n\nO\n\n0\n®\n6\nC\n\n-\n世\n0\n\n丝杆螺母固定座\n分中打表示意图\n旋转180.\n\n电机端\n尾端\n\n2\n0\n\n电机\n端\n尾端\n\nⅡ\n300\nC\nB\n300\nA\n①\n□\n目\n\n3\nB\n300\nA\nT\n\n减速机法兰\n平行度打表\n示意图\n减速机法兰\n同心度打表\n示意图",
+  "segments": [
+    {
+      "text": "WCLLLIH",
+      "page_no": null,
+      "line_no": 1,
+      "confidence": 0.842660129070282
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": null,
+      "line_no": 2,
+      "confidence": 0.9997841119766235
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": null,
+      "line_no": 3,
+      "confidence": 0.9693588018417358
+    },
+    {
+      "text": "③辅助轨",
+      "page_no": null,
+      "line_no": 4,
+      "confidence": 0.9876209497451782
+    },
+    {
+      "text": "①安装台",
+      "page_no": null,
+      "line_no": 5,
+      "confidence": 0.99775230884552
+    },
+    {
+      "text": "座",
+      "page_no": null,
+      "line_no": 6,
+      "confidence": 0.999983549118042
+    },
+    {
+      "text": "②基准轨",
+      "page_no": null,
+      "line_no": 7,
+      "confidence": 0.9487212896347046
+    },
+    {
+      "text": "滑块",
+      "page_no": null,
+      "line_no": 8,
+      "confidence": 0.999482274055481
+    },
+    {
+      "text": "丝杠固",
+      "page_no": null,
+      "line_no": 9,
+      "confidence": 0.9985687732696533
+    },
+    {
+      "text": "定座",
+      "page_no": null,
+      "line_no": 10,
+      "confidence": 0.9998998641967773
+    },
+    {
+      "text": "丝杠固",
+      "page_no": null,
+      "line_no": 11,
+      "confidence": 0.9981946349143982
+    },
+    {
+      "text": "定座",
+      "page_no": null,
+      "line_no": 12,
+      "confidence": 0.999907374382019
+    },
+    {
+      "text": "电机",
+      "page_no": null,
+      "line_no": 13,
+      "confidence": 0.9996316432952881
+    },
+    {
+      "text": "100",
+      "page_no": null,
+      "line_no": 14,
+      "confidence": 0.7592599987983704
+    },
+    {
+      "text": "尾端",
+      "page_no": null,
+      "line_no": 15,
+      "confidence": 0.9999593496322632
+    },
+    {
+      "text": "70.0",
+      "page_no": null,
+      "line_no": 16,
+      "confidence": 0.7645118832588196
+    },
+    {
+      "text": "700",
+      "page_no": null,
+      "line_no": 17,
+      "confidence": 0.7790371775627136
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 18,
+      "confidence": 0.962186872959137
+    },
+    {
+      "text": "o0",
+      "page_no": null,
+      "line_no": 19,
+      "confidence": 0.392902135848999
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 20,
+      "confidence": 0.4923268258571625
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 21,
+      "confidence": 0.7013916969299316
+    },
+    {
+      "text": "X",
+      "page_no": null,
+      "line_no": 22,
+      "confidence": 0.7889866828918457
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 23,
+      "confidence": 0.7107341289520264
+    },
+    {
+      "text": "©",
+      "page_no": null,
+      "line_no": 24,
+      "confidence": 0.5727262496948242
+    },
+    {
+      "text": "1",
+      "page_no": null,
+      "line_no": 25,
+      "confidence": 0.9948263764381409
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 26,
+      "confidence": 0.6854943037033081
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 27,
+      "confidence": 0.3989960551261902
+    },
+    {
+      "text": "S",
+      "page_no": null,
+      "line_no": 28,
+      "confidence": 0.07296334952116013
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 29,
+      "confidence": 0.45489954948425293
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 30,
+      "confidence": 0.8742849826812744
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 31,
+      "confidence": 0.8047924637794495
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 32,
+      "confidence": 0.383265882730484
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 33,
+      "confidence": 0.7200177311897278
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 34,
+      "confidence": 0.5385282039642334
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 35,
+      "confidence": 0.3629281520843506
+    },
+    {
+      "text": "门",
+      "page_no": null,
+      "line_no": 36,
+      "confidence": 0.3991459906101227
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 37,
+      "confidence": 0.7879721522331238
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 38,
+      "confidence": 0.652951717376709
+    },
+    {
+      "text": "检棒高低差打表",
+      "page_no": null,
+      "line_no": 39,
+      "confidence": 0.9956598281860352
+    },
+    {
+      "text": "示意图",
+      "page_no": null,
+      "line_no": 40,
+      "confidence": 0.9911880493164062
+    },
+    {
+      "text": "根部",
+      "page_no": null,
+      "line_no": 41,
+      "confidence": 0.9999682903289795
+    },
+    {
+      "text": "端部",
+      "page_no": null,
+      "line_no": 42,
+      "confidence": 0.9999711513519287
+    },
+    {
+      "text": "检棒水平差打表",
+      "page_no": null,
+      "line_no": 43,
+      "confidence": 0.9985489845275879
+    },
+    {
+      "text": "示意图",
+      "page_no": null,
+      "line_no": 44,
+      "confidence": 0.9892155528068542
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 45,
+      "confidence": 0.22063402831554413
+    },
+    {
+      "text": "丝杆固定座分中",
+      "page_no": null,
+      "line_no": 46,
+      "confidence": 0.9991884231567383
+    },
+    {
+      "text": "打表示意图",
+      "page_no": null,
+      "line_no": 47,
+      "confidence": 0.9978521466255188
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 48,
+      "confidence": 0.0537259466946125
+    },
+    {
+      "text": "旋转180",
+      "page_no": null,
+      "line_no": 49,
+      "confidence": 0.9981580972671509
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 50,
+      "confidence": 0.9984915256500244
+    },
+    {
+      "text": "© 0",
+      "page_no": null,
+      "line_no": 51,
+      "confidence": 0.5174657702445984
+    },
+    {
+      "text": "©0",
+      "page_no": null,
+      "line_no": 52,
+      "confidence": 0.4793998897075653
+    },
+    {
+      "text": "③",
+      "page_no": null,
+      "line_no": 53,
+      "confidence": 0.32382896542549133
+    },
+    {
+      "text": "B",
+      "page_no": null,
+      "line_no": 54,
+      "confidence": 0.10135739296674728
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 55,
+      "confidence": 0.9349685311317444
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 56,
+      "confidence": 0.9440294504165649
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 57,
+      "confidence": 0.9745864868164062
+    },
+    {
+      "text": "丝杠螺母",
+      "page_no": null,
+      "line_no": 58,
+      "confidence": 0.9947160482406616
+    },
+    {
+      "text": "固定座",
+      "page_no": null,
+      "line_no": 59,
+      "confidence": 0.9958200454711914
+    },
+    {
+      "text": "滑板",
+      "page_no": null,
+      "line_no": 60,
+      "confidence": 0.993183434009552
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 61,
+      "confidence": 0.8604700565338135
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 62,
+      "confidence": 0.9610917568206787
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 63,
+      "confidence": 0.36364513635635376
+    },
+    {
+      "text": "O",
+      "page_no": null,
+      "line_no": 64,
+      "confidence": 0.5549446940422058
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 65,
+      "confidence": 0.4886464774608612
+    },
+    {
+      "text": "®",
+      "page_no": null,
+      "line_no": 66,
+      "confidence": 0.2529437839984894
+    },
+    {
+      "text": "6",
+      "page_no": null,
+      "line_no": 67,
+      "confidence": 0.19331510365009308
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 68,
+      "confidence": 0.3859769403934479
+    },
+    {
+      "text": "-",
+      "page_no": null,
+      "line_no": 69,
+      "confidence": 0.1686505526304245
+    },
+    {
+      "text": "世",
+      "page_no": null,
+      "line_no": 70,
+      "confidence": 0.12856818735599518
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 71,
+      "confidence": 0.12830160558223724
+    },
+    {
+      "text": "丝杆螺母固定座",
+      "page_no": null,
+      "line_no": 72,
+      "confidence": 0.9967918395996094
+    },
+    {
+      "text": "分中打表示意图",
+      "page_no": null,
+      "line_no": 73,
+      "confidence": 0.9954929947853088
+    },
+    {
+      "text": "旋转180.",
+      "page_no": null,
+      "line_no": 74,
+      "confidence": 0.9234037399291992
+    },
+    {
+      "text": "电机端",
+      "page_no": null,
+      "line_no": 75,
+      "confidence": 0.9985935688018799
+    },
+    {
+      "text": "尾端",
+      "page_no": null,
+      "line_no": 76,
+      "confidence": 0.9622399806976318
+    },
+    {
+      "text": "2",
+      "page_no": null,
+      "line_no": 77,
+      "confidence": 0.4713749885559082
+    },
+    {
+      "text": "0",
+      "page_no": null,
+      "line_no": 78,
+      "confidence": 0.49049222469329834
+    },
+    {
+      "text": "电机",
+      "page_no": null,
+      "line_no": 79,
+      "confidence": 0.9995763301849365
+    },
+    {
+      "text": "端",
+      "page_no": null,
+      "line_no": 80,
+      "confidence": 0.9998749494552612
+    },
+    {
+      "text": "尾端",
+      "page_no": null,
+      "line_no": 81,
+      "confidence": 0.9995466470718384
+    },
+    {
+      "text": "Ⅱ",
+      "page_no": null,
+      "line_no": 82,
+      "confidence": 0.3375896215438843
+    },
+    {
+      "text": "300",
+      "page_no": null,
+      "line_no": 83,
+      "confidence": 0.9622583985328674
+    },
+    {
+      "text": "C",
+      "page_no": null,
+      "line_no": 84,
+      "confidence": 0.9471575617790222
+    },
+    {
+      "text": "B",
+      "page_no": null,
+      "line_no": 85,
+      "confidence": 0.9922038316726685
+    },
+    {
+      "text": "300",
+      "page_no": null,
+      "line_no": 86,
+      "confidence": 0.9763844013214111
+    },
+    {
+      "text": "A",
+      "page_no": null,
+      "line_no": 87,
+      "confidence": 0.9901928901672363
+    },
+    {
+      "text": "①",
+      "page_no": null,
+      "line_no": 88,
+      "confidence": 0.192270889878273
+    },
+    {
+      "text": "□",
+      "page_no": null,
+      "line_no": 89,
+      "confidence": 0.3274494409561157
+    },
+    {
+      "text": "目",
+      "page_no": null,
+      "line_no": 90,
+      "confidence": 0.7485817670822144
+    },
+    {
+      "text": "3",
+      "page_no": null,
+      "line_no": 91,
+      "confidence": 0.787498414516449
+    },
+    {
+      "text": "B",
+      "page_no": null,
+      "line_no": 92,
+      "confidence": 0.8594889640808105
+    },
+    {
+      "text": "300",
+      "page_no": null,
+      "line_no": 93,
+      "confidence": 0.9535642266273499
+    },
+    {
+      "text": "A",
+      "page_no": null,
+      "line_no": 94,
+      "confidence": 0.9868032336235046
+    },
+    {
+      "text": "T",
+      "page_no": null,
+      "line_no": 95,
+      "confidence": 0.7261579036712646
+    },
+    {
+      "text": "减速机法兰",
+      "page_no": null,
+      "line_no": 96,
+      "confidence": 0.9995267987251282
+    },
+    {
+      "text": "平行度打表",
+      "page_no": null,
+      "line_no": 97,
+      "confidence": 0.9989830255508423
+    },
+    {
+      "text": "示意图",
+      "page_no": null,
+      "line_no": 98,
+      "confidence": 0.9945540428161621
+    },
+    {
+      "text": "减速机法兰",
+      "page_no": null,
+      "line_no": 99,
+      "confidence": 0.9996389150619507
+    },
+    {
+      "text": "同心度打表",
+      "page_no": null,
+      "line_no": 100,
+      "confidence": 0.9995296597480774
+    },
+    {
+      "text": "示意图",
+      "page_no": null,
+      "line_no": 101,
+      "confidence": 0.9973902106285095
+    }
+  ]
+}

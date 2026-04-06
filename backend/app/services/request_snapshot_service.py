@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
 from fastapi import HTTPException, status
@@ -25,6 +25,7 @@ from ..schemas.request_snapshot import (
     RequestSnapshotReplayResponse,
     RequestSnapshotResult,
     RequestSnapshotRewrite,
+    RequestSnapshotRewriteStatus,
 )
 from ..schemas.retrieval import (
     RetrievalDiagnostic,
@@ -57,7 +58,9 @@ class RequestSnapshotService:
         system_config_service: SystemConfigService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.repository = repository or FilesystemRequestSnapshotRepository(self.settings.request_snapshot_dir)
+        request_snapshot_dir = self.settings.request_snapshot_dir
+        assert request_snapshot_dir is not None
+        self.repository = repository or FilesystemRequestSnapshotRepository(request_snapshot_dir)
         self.system_config_service = system_config_service or SystemConfigService(self.settings)
 
     def record_chat_snapshot(
@@ -79,7 +82,7 @@ class RequestSnapshotService:
         error_message: str | None = None,
         details: dict[str, object] | None = None,
         memory_summary: str | None = None,
-        rewrite_status: str = "skipped",
+        rewrite_status: RequestSnapshotRewriteStatus = "skipped",
         rewritten_question: str | None = None,
         prompt_version: str = "chat-rag-v1",
     ) -> RequestSnapshotRecord:
@@ -154,7 +157,7 @@ class RequestSnapshotService:
         downgraded_from: str | None = None,
         error_message: str | None = None,
         details: dict[str, object] | None = None,
-        rewrite_status: str = "skipped",
+        rewrite_status: RequestSnapshotRewriteStatus = "skipped",
         rewritten_question: str | None = None,
         prompt_version: str = "sop-generation-v1",
     ) -> RequestSnapshotRecord:
@@ -380,23 +383,22 @@ class RequestSnapshotService:
     ) -> RequestSnapshotReplayResponse:
         record = self.get_snapshot(snapshot_id, auth_context=auth_context)
         replay_request = record.request.model_copy(deep=True)
-        if hasattr(replay_request, "session_id"):
+        if isinstance(replay_request, ChatRequest):
             replay_request.session_id = None
         if (
             replay_mode == "original"
             and record.category == "chat"
             and record.rewrite.status == "applied"
             and record.rewrite.rewritten_question
-            and hasattr(replay_request, "question")
+            and isinstance(replay_request, ChatRequest)
         ):
             replay_request.question = record.rewrite.rewritten_question
-        if hasattr(replay_request, "mode") and hasattr(replay_request, "top_k"):
-            if replay_mode == "original":
-                replay_request.mode = record.profile.mode
-                replay_request.top_k = record.profile.top_k
-            else:
-                replay_request.mode = None
-                replay_request.top_k = None
+        if replay_mode == "original":
+            replay_request.mode = record.profile.mode
+            replay_request.top_k = record.profile.top_k
+        else:
+            replay_request.mode = None
+            replay_request.top_k = None
         response = self._dispatch_replay(
             record=record,
             replay_request=replay_request,
@@ -524,11 +526,16 @@ class RequestSnapshotService:
         request: SopGenerateByDocumentRequest | SopGenerateByScenarioRequest | SopGenerateByTopicRequest,
         request_mode: SopGenerationRequestMode,
     ) -> str:
-        if request_mode == "document":
+        if request_mode == "document" and isinstance(request, SopGenerateByDocumentRequest):
             return f"根据文档 {request.document_id} 生成 SOP 草稿"
-        if request_mode == "scenario":
+        if request_mode == "scenario" and isinstance(request, SopGenerateByScenarioRequest):
             process_name = request.process_name or "未指定工序"
             return f"按场景生成 SOP：{process_name} / {request.scenario_name}"
+        if not isinstance(request, SopGenerateByTopicRequest):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Snapshot payload does not match SOP prompt requirements.",
+            )
         scenario_name = request.scenario_name or "未指定场景"
         process_name = request.process_name or "未指定工序"
         return f"按主题生成 SOP：{request.topic} / {process_name} / {scenario_name}"

@@ -23,6 +23,7 @@
   ],
   "files_to_modify": [],
   "implementation_steps": [
+    "0. MANDATORY READS: Read files listed in agents_compliance.mandatory_reads",
     "1. Create scripts/monitor_dashboard.py with JSONL parsing",
     "2. Implement chat metrics extraction (success rate, latency)",
     "3. Implement mode distribution counting",
@@ -30,6 +31,35 @@
     "5. Implement retrieval metrics (top1 score, supplemental rate)",
     "6. Implement unified alert thresholds per EP-005",
     "7. Add --check-bundle drift detection (optional)",
-    "8. Add --json output mode"
-  ]
+    "8. Add --json output mode",
+    "9. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "lite",
+    "reason": "Single new script file, no existing files modified, no schema/API/retrieval changes. Meets Lite Mode conditions.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": ["scripts/"],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "general": [
+        ".agent/context/repo-map.md",
+        "data/system_config.json"
+      ],
+      "trace_formats": [
+        "data/request_traces/",
+        "data/event_logs/"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [],
+      "executor_tasks": [
+        "Implement monitor_dashboard.py",
+        "Test with sample data"
+      ]
+    }
+  }
 }

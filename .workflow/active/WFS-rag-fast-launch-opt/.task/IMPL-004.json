@@ -18,12 +18,42 @@
   ],
   "files_to_create": [],
   "files_to_modify": [
-    "frontend/src/panels/ChatPanel.tsx"
+    "frontend/src/portal/PortalChatPage.tsx"
   ],
   "implementation_steps": [
-    "1. Add citation count badge to answer header",
-    "2. Fix snippet truncation to 200 chars",
-    "3. Add expand/collapse toggle for full paragraph",
-    "4. Add empty snippet defense"
-  ]
+    "0. MANDATORY READS: Read all files listed in agents_compliance.mandatory_reads BEFORE any code changes",
+    "1. Read PortalChatPage.tsx to understand current citation rendering",
+    "2. Add citation count badge to answer header",
+    "3. Fix snippet truncation to 200 chars",
+    "4. Add expand/collapse toggle for full paragraph",
+    "5. Add empty snippet defense",
+    "6. /review: Review all changes before marking complete"
+  ],
+  "agents_compliance": {
+    "workflow_mode": "lite",
+    "reason": "Single frontend file, pure display change, no schema/API/retrieval changes. Meets Lite Mode conditions.",
+    "spec_required": false,
+    "review_required": true,
+    "harness_contract_required": false,
+    "harness_category": null,
+    "high_risk_prefixes_hit": [],
+    "contract_checks": [],
+    "frontend_sync_required": false,
+    "mandatory_reads": {
+      "general": [
+        ".agent/context/repo-map.md",
+        "frontend/src/api/types.ts"
+      ],
+      "frontend_current": [
+        "frontend/src/portal/PortalChatPage.tsx"
+      ]
+    },
+    "brain_executor": {
+      "brain_tasks": [],
+      "executor_tasks": [
+        "Implement citation display enhancements",
+        "Run frontend lint"
+      ]
+    }
+  }
 }
