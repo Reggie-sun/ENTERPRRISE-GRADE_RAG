@@ -1,0 +1,36 @@
+{
+  "task_id": "IMPL-008",
+  "title": "Human Review + Go/No-Go Decision",
+  "feature": "F-004",
+  "priority": "High",
+  "status": "pending",
+  "day": 5,
+  "estimated_hours": 4,
+  "depends_on": ["IMPL-007"],
+  "blocking": [],
+  "description": "Run 5-bucket human review on 20-30 representative samples. Compile evidence package. Make go/no-go launch decision.",
+  "acceptance_criteria": [
+    "20-30 samples selected from eval results (stratified: errors + boundary + random + anti-pattern)",
+    "Each sample classified into one of 5 buckets: correct/abstained/unsupported-query/wrong-with-citation/permission-boundary-failure",
+    "Two reviewers per sample, Cohen's kappa >= 0.7",
+    "Hard gates: wrong-with-citation=0, permission-boundary-failure=0",
+    "Soft gates: correct+abstained >= 85%, correct >= 80%",
+    "Evidence package compiled: pinned bundle + eval results + human review + permission preflight + rollback docs",
+    "Launch decision documented with signoff"
+  ],
+  "files_to_create": [
+    "scripts/run_human_review.py",
+    "data/evidence_package.json"
+  ],
+  "files_to_modify": [],
+  "implementation_steps": [
+    "1. Select 20-30 stratified samples from IMPL-006/IMPL-007 results",
+    "2. Create human review form with 5-bucket classification",
+    "3. Run two-reviewer protocol",
+    "4. Compute bucket counts and Cohen's kappa",
+    "5. Check hard gates: wrong-with-citation=0, permission-boundary-failure=0",
+    "6. Check soft gates: correct+abstained >= 85%, correct >= 80%",
+    "7. Compile evidence_package.json",
+    "8. Document go/no-go decision"
+  ]
+}

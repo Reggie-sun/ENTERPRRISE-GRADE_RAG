@@ -1,0 +1,33 @@
+{
+  "task_id": "IMPL-007",
+  "title": "Threshold Calibration: Set Evidence Gate Threshold",
+  "feature": "F-001",
+  "priority": "High",
+  "status": "pending",
+  "day": 4,
+  "estimated_hours": 2,
+  "depends_on": ["IMPL-006"],
+  "blocking": ["IMPL-008"],
+  "description": "Analyze score distributions from IMPL-006 eval results. Set evidence gate threshold using conservative_95 strategy. Re-run eval to verify.",
+  "acceptance_criteria": [
+    "Threshold selected from eval score distribution analysis",
+    "Using conservative_95 strategy: threshold captures 95% of correct-answer scores",
+    "Zero false-positive validation: no wrong answers pass the gate",
+    "Threshold updated in data/system_config.json",
+    "Re-run eval confirms gate behavior matches expectations",
+    "Abstention rate documented for launch communication"
+  ],
+  "files_to_create": [],
+  "files_to_modify": [
+    "data/system_config.json"
+  ],
+  "implementation_steps": [
+    "1. Load score distributions from IMPL-006 results",
+    "2. Compute threshold candidates: conservative_95, balanced, aggressive",
+    "3. Select conservative_95 threshold",
+    "4. Validate: zero false-positives on eval dataset",
+    "5. Update evidence_gate.threshold in system_config.json",
+    "6. Re-run eval to verify gate behavior",
+    "7. Document abstention rate for launch communication"
+  ]
+}

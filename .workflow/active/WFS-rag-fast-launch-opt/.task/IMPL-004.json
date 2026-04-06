@@ -1,0 +1,29 @@
+{
+  "task_id": "IMPL-004",
+  "title": "Frontend: Citation Display Enhancement",
+  "feature": "F-005",
+  "priority": "Medium",
+  "status": "pending",
+  "day": 1,
+  "estimated_hours": 2,
+  "depends_on": [],
+  "blocking": [],
+  "description": "Minimal frontend changes to improve citation display: add citation count badge, fix truncation to 200 chars, add expand-to-full-text toggle.",
+  "acceptance_criteria": [
+    "Citation count shown in answer header (e.g., '3 citations')",
+    "Snippet truncation at 200 chars with '...' ellipsis",
+    "Expand/collapse toggle to show full paragraph text",
+    "Empty snippet defense (show 'See document' when snippet is empty)",
+    "No backend changes required"
+  ],
+  "files_to_create": [],
+  "files_to_modify": [
+    "frontend/src/panels/ChatPanel.tsx"
+  ],
+  "implementation_steps": [
+    "1. Add citation count badge to answer header",
+    "2. Fix snippet truncation to 200 chars",
+    "3. Add expand/collapse toggle for full paragraph",
+    "4. Add empty snippet defense"
+  ]
+}

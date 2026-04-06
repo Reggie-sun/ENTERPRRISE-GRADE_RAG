@@ -1,0 +1,35 @@
+{
+  "task_id": "IMPL-009",
+  "title": "Monitoring Dashboard Script",
+  "feature": "F-008",
+  "priority": "Low",
+  "status": "pending",
+  "day": 5,
+  "estimated_hours": 3,
+  "depends_on": [],
+  "blocking": [],
+  "description": "Create scripts/monitor_dashboard.py that parses existing JSONL event_log and request_trace files. Produces health summary with unified alert thresholds.",
+  "acceptance_criteria": [
+    "scripts/monitor_dashboard.py --date today produces formatted health summary",
+    "Sections: chat metrics, mode distribution, evidence gate metrics, retrieval metrics, alerts",
+    "Unified alert thresholds: error_rate 2%, gate_trigger WARNING 30%/CRITICAL 40%, P95 15s",
+    "Malformed JSONL lines skipped with warning (not crash)",
+    "Old traces without evidence_gate fields handled gracefully",
+    "Optional --check-bundle detects drift against launch-bundle.json",
+    "Only Python stdlib, no external dependencies"
+  ],
+  "files_to_create": [
+    "scripts/monitor_dashboard.py"
+  ],
+  "files_to_modify": [],
+  "implementation_steps": [
+    "1. Create scripts/monitor_dashboard.py with JSONL parsing",
+    "2. Implement chat metrics extraction (success rate, latency)",
+    "3. Implement mode distribution counting",
+    "4. Implement evidence gate metrics (trigger rate, score distribution)",
+    "5. Implement retrieval metrics (top1 score, supplemental rate)",
+    "6. Implement unified alert thresholds per EP-005",
+    "7. Add --check-bundle drift detection (optional)",
+    "8. Add --json output mode"
+  ]
+}

@@ -7,6 +7,7 @@ from ....schemas.auth import AuthContext  # 导入统一鉴权上下文，让文
 from ....schemas.document import (  # 导入文档相关响应模型。
     Classification,
     DocumentBatchCreateResponse,
+    DocumentBatchDeleteResponse,
     DocumentLifecycleStatus,
     DocumentCreateResponse,
     DocumentDeleteResponse,
@@ -216,6 +217,14 @@ def delete_document(  # 定义文档删除接口函数。
     document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
 ) -> DocumentDeleteResponse:
     return document_service.delete_document(doc_id, auth_context=auth_context)  # 先改主数据状态，再清理向量副本并返回结果。
+
+
+@router.delete("", response_model=DocumentBatchDeleteResponse)  # 声明 DELETE /documents 接口，批量删除当前用户上传的文档。
+def delete_my_documents(  # 定义批量删除接口函数。
+    auth_context: AuthContext = Depends(get_current_auth_context),  # 批量删除必须登录，只删当前用户上传的。
+    document_service: DocumentService = Depends(get_document_service),  # 通过依赖注入获取文档服务实例。
+) -> DocumentBatchDeleteResponse:
+    return document_service.delete_my_documents(auth_context=auth_context)  # 查找当前用户上传的所有文档并逐个删除。
 
 
 @router.post(

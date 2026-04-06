@@ -37,6 +37,7 @@ import type {
   DocumentListQuery,
   DocumentDetailResponse,
   DocumentDeleteResponse,
+  DocumentBatchDeleteResponse,
   DocumentPreviewResponse,
   DocumentRebuildResponse,
   IngestJobStatusResponse,
@@ -824,6 +825,13 @@ export function getDocumentDownloadUrl(docId: string): string {
 /** 删除文档（主数据状态 + 向量副本） */
 export async function deleteDocument(docId: string): Promise<DocumentDeleteResponse> {
   return request<DocumentDeleteResponse>(`/documents/${encodeURIComponent(docId)}`, {
+    method: 'DELETE',
+  });
+}
+
+/** 删除当前用户上传的所有文档（只删自己上传的） */
+export async function deleteMyDocuments(): Promise<DocumentBatchDeleteResponse> {
+  return request<DocumentBatchDeleteResponse>('/documents', {
     method: 'DELETE',
   });
 }

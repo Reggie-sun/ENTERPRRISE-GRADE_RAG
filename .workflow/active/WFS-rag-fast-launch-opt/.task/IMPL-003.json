@@ -1,0 +1,36 @@
+{
+  "task_id": "IMPL-003",
+  "title": "Create Bundle Freeze Script",
+  "feature": "F-002",
+  "priority": "High",
+  "status": "pending",
+  "day": 1,
+  "estimated_hours": 3,
+  "depends_on": [],
+  "blocking": ["IMPL-006"],
+  "description": "Create scripts/freeze_bundle.py that captures commit SHA, config snapshot, corpus manifest, index info, and ACL seed into an immutable launch-bundle.json.",
+  "acceptance_criteria": [
+    "scripts/freeze_bundle.py generates data/launch-bundle.json with: commit_sha, config_snapshot, corpus_manifest, index_info, acl_seed, frozen_at",
+    "Corpus manifest uses Qdrant scroll API as primary source + filesystem reconciliation",
+    "ACL seed exported from identity_bootstrap or equivalent",
+    "Blocks on uncommitted changes to data/ and eval/ directories",
+    "Warns on uncommitted changes to other directories",
+    "--verify mode checks current state matches frozen bundle",
+    "--force flag to override dirty worktree check (with confirmation)",
+    "Exit code 0 on success, 1 on validation failure"
+  ],
+  "files_to_create": [
+    "scripts/freeze_bundle.py"
+  ],
+  "files_to_modify": [],
+  "implementation_steps": [
+    "1. Create scripts/freeze_bundle.py with freeze/verify/force modes",
+    "2. Implement git commit SHA capture (require clean worktree for data/eval/)",
+    "3. Implement config snapshot (copy system_config.json)",
+    "4. Implement corpus manifest via Qdrant scroll API + filesystem reconciliation",
+    "5. Implement index info capture (collection name + embedding model version)",
+    "6. Implement ACL seed export",
+    "7. Implement --verify mode to check bundle drift",
+    "8. Write atomic launch-bundle.json"
+  ]
+}

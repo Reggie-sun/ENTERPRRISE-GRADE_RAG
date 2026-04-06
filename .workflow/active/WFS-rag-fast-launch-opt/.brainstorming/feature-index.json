@@ -1,0 +1,92 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-04-06",
+  "session_id": "WFS-rag-fast-launch-opt",
+  "feature_mode": true,
+  "features": [
+    {
+      "id": "F-001",
+      "slug": "evidence-gate",
+      "name": "Chat layer score threshold + citation validation",
+      "priority": "High",
+      "spec_path": "feature-specs/F-001-evidence-gate.md",
+      "contributing_roles": ["system-architect", "test-strategist", "product-manager", "data-architect"],
+      "cross_cutting_refs": ["F-002", "F-003", "F-004", "F-005", "F-006", "F-007", "F-008"]
+    },
+    {
+      "id": "F-002",
+      "slug": "bundle-freeze",
+      "name": "Script to freeze commit/config/corpus/index/ACL",
+      "priority": "High",
+      "spec_path": "feature-specs/F-002-bundle-freeze.md",
+      "contributing_roles": ["system-architect", "data-architect"],
+      "cross_cutting_refs": ["F-001", "F-003", "F-004", "F-007", "F-008"]
+    },
+    {
+      "id": "F-003",
+      "slug": "eval-calibration",
+      "name": "Extend eval to 60-80 samples, focus semantic/coarse",
+      "priority": "High",
+      "spec_path": "feature-specs/F-003-eval-calibration.md",
+      "contributing_roles": ["test-strategist", "data-architect"],
+      "cross_cutting_refs": ["F-001", "F-002", "F-004", "F-008"]
+    },
+    {
+      "id": "F-004",
+      "slug": "human-review",
+      "name": "20-30 sample 5-bucket human review",
+      "priority": "High",
+      "spec_path": "feature-specs/F-004-human-review.md",
+      "contributing_roles": ["test-strategist", "product-manager"],
+      "cross_cutting_refs": ["F-001", "F-002", "F-003", "F-006"]
+    },
+    {
+      "id": "F-005",
+      "slug": "citation-display",
+      "name": "Frontend: doc name + paragraph summary",
+      "priority": "Medium",
+      "spec_path": "feature-specs/F-005-citation-display.md",
+      "contributing_roles": ["product-manager"],
+      "cross_cutting_refs": ["F-001", "F-006"]
+    },
+    {
+      "id": "F-006",
+      "slug": "guided-abstention",
+      "name": "Frontend: query reformulation suggestions",
+      "priority": "Medium",
+      "spec_path": "feature-specs/F-006-guided-abstention.md",
+      "contributing_roles": ["product-manager", "system-architect"],
+      "cross_cutting_refs": ["F-001", "F-005", "F-007"]
+    },
+    {
+      "id": "F-007",
+      "slug": "kill-switch",
+      "name": "Config-level emergency toggle + rollback docs",
+      "priority": "Medium",
+      "spec_path": "feature-specs/F-007-kill-switch.md",
+      "contributing_roles": ["system-architect"],
+      "cross_cutting_refs": ["F-001", "F-002", "F-006", "F-008"]
+    },
+    {
+      "id": "F-008",
+      "slug": "monitoring-dashboard",
+      "name": "Script to analyze existing traces",
+      "priority": "Low",
+      "spec_path": "feature-specs/F-008-monitoring-dashboard.md",
+      "contributing_roles": ["system-architect", "data-architect"],
+      "cross_cutting_refs": ["F-001", "F-002", "F-003", "F-007"]
+    }
+  ],
+  "cross_cutting_specs": [
+    "system-architect/analysis-cross-cutting.md",
+    "test-strategist/analysis-cross-cutting.md",
+    "product-manager/analysis-cross-cutting.md",
+    "data-architect/analysis-cross-cutting.md"
+  ],
+  "unified_timeline": {
+    "day1_2": "Implement F-001 (threshold=0.0), F-002, F-007, F-005, F-006",
+    "day3": "Run F-002 freeze. Run F-003 eval with gate capturing scores.",
+    "day4": "Calibrate F-001 threshold from F-003 results. Re-run F-003 to verify.",
+    "day5": "Run F-004 human review. Compile evidence package. Launch or defer."
+  }
+}

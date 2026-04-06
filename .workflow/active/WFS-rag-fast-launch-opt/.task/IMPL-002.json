@@ -1,0 +1,39 @@
+{
+  "task_id": "IMPL-002",
+  "title": "Implement Evidence Gate (Phase A: threshold=0.0 pass-through)",
+  "feature": "F-001",
+  "priority": "High",
+  "status": "pending",
+  "day": 1,
+  "estimated_hours": 4,
+  "depends_on": ["IMPL-001"],
+  "blocking": ["IMPL-006"],
+  "description": "Add evidence gate between retrieval and LLM generation. Phase A uses threshold=0.0 (pass-through) to capture score distributions without blocking. Gate uses post-rerank Citation.score.",
+  "acceptance_criteria": [
+    "EvidenceGateService class with should_abstain(citations, config) method",
+    "Gate reads threshold from _internal_retrieval_controls.evidence_gate.enabled + .threshold",
+    "Gate uses citations[0].score (post-rerank) as score source",
+    "Two abstention modes: no_context (empty citations) vs evidence_gate_abstain (low score)",
+    "ChatService.answer() and stream_answer_sse() call gate after build_citations()",
+    "Trace enriched with evidence_gate_result (triggered, top1_score, threshold)",
+    "Phase A: threshold defaults to 0.0 (all pass, just capturing scores)",
+    "All user-facing abstention messages are Chinese (PM Template A)"
+  ],
+  "files_to_create": [
+    "backend/app/services/evidence_gate_service.py"
+  ],
+  "files_to_modify": [
+    "backend/app/services/chat_service.py",
+    "backend/app/schemas/system_config.py",
+    "data/system_config.json"
+  ],
+  "implementation_steps": [
+    "1. Create backend/app/services/evidence_gate_service.py with EvidenceGateService",
+    "2. Add evidence_gate config section to system_config schema",
+    "3. Integrate gate into ChatService.answer() after build_citations()",
+    "4. Add _build_evidence_gate_response() with Chinese Template A message",
+    "5. Add evidence_gate_result to trace details",
+    "6. Set default threshold to 0.0 in system_config.json",
+    "7. Integrate into stream_answer_sse() as well"
+  ]
+}

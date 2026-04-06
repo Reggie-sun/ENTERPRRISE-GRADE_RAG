@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'ghost' | 'danger';
   loading?: boolean;
 }
 
@@ -31,6 +31,14 @@ export function Button({
         text-white
         shadow-[0_2px_8px_rgba(194,65,12,0.15)]
         hover:not-disabled:shadow-[0_4px_12px_rgba(194,65,12,0.2)]
+        hover:not-disabled:-translate-y-px
+      `
+    : variant === 'danger'
+    ? `
+        bg-gradient-to-br from-red-600 to-red-700
+        text-white
+        shadow-[0_2px_8px_rgba(220,38,38,0.2)]
+        hover:not-disabled:shadow-[0_4px_12px_rgba(220,38,38,0.3)]
         hover:not-disabled:-translate-y-px
       `
     : `

@@ -926,6 +926,13 @@ export interface DocumentDeleteResponse {
   vector_points_removed: number;  // 清理掉的向量点位数量。
 }
 
+/** 批量删除当前用户文档响应 */
+export interface DocumentBatchDeleteResponse {
+  deleted_count: number;  // 成功删除的文档数量。
+  failed_count: number;  // 删除失败的文档数量。
+  total_vector_points_removed: number;  // 清理掉的向量点位总数。
+}
+
 /** 文档重建向量响应 */
 export interface DocumentRebuildResponse {
   doc_id: string;  // 触发重建的文档 ID。

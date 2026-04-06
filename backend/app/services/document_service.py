@@ -29,6 +29,7 @@ from ..schemas.auth import AuthContext  # 导入统一鉴权上下文。
 from ..schemas.document import (
     Classification,  # 文档分类级别：internal / confidential / restricted 等。
     DocumentBatchCreateResponse,  # 批量创建响应。
+    DocumentBatchDeleteResponse,  # 批量删除响应。
     DocumentBatchItemResponse,  # 批量创建中单条结果。
     DocumentCreateResponse,  # 单文档创建响应。
     DocumentDeleteResponse,  # 文档删除响应。
@@ -888,6 +889,62 @@ class DocumentService:
                 details={"error_message": str(exc)},
             )
             raise
+
+    def delete_my_documents(self, *, auth_context: AuthContext | None = None) -> DocumentBatchDeleteResponse:
+        """删除当前用户上传的所有文档（只删自己上传的）。
+
+        筛选条件：uploaded_by == 当前用户 AND tenant 匹配 AND 未删除。
+        对每条文档执行软删除 + 向量清理，单条失败不影响其他。
+        """
+        started_at = perf_counter()
+        if auth_context is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
+
+        user_id = auth_context.user.user_id
+        tenant_id = auth_context.user.tenant_id
+
+        my_records = [
+            r
+            for r in self._list_document_records()
+            if r.tenant_id == tenant_id
+            and r.uploaded_by == user_id
+            and r.status != "deleted"
+        ]
+
+        deleted_count = 0
+        failed_count = 0
+        total_vector_points_removed = 0
+
+        for record in my_records:
+            try:
+                now = datetime.now(timezone.utc)
+                record.status = "deleted"
+                record.updated_at = now
+                self._save_document_record(record)
+
+                removed = self.ingestion_service.vector_store.delete_document_points(record.doc_id)
+                total_vector_points_removed += removed
+                deleted_count += 1
+            except Exception:
+                failed_count += 1
+
+        response = DocumentBatchDeleteResponse(
+            deleted_count=deleted_count,
+            failed_count=failed_count,
+            total_vector_points_removed=total_vector_points_removed,
+        )
+        self._record_document_event(
+            action="batch_delete_mine",
+            outcome="success" if failed_count == 0 else "partial",
+            auth_context=auth_context,
+            duration_ms=self._elapsed_ms(started_at),
+            details={
+                "deleted_count": deleted_count,
+                "failed_count": failed_count,
+                "total_vector_points_removed": total_vector_points_removed,
+            },
+        )
+        return response
 
     def rebuild_document_vectors(self, doc_id: str, *, auth_context: AuthContext | None = None) -> DocumentRebuildResponse:
         """重建文档向量：删除旧向量 + 调度新入库任务。

@@ -1,0 +1,425 @@
+{
+  "metadata": {
+    "task_description": "RAG fast-launch optimization -- 8 features for full production release within 1 week: evidence-gate, bundle-freeze, eval-calibration, human-review, citation-display, guided-abstention, kill-switch, monitoring-dashboard",
+    "timestamp": "2026-04-06T14:00:00Z",
+    "keywords": ["evidence_gate", "kill_switch", "citation_display", "guided_abstention", "bundle_freeze", "eval_calibration", "human_review", "monitoring_dashboard", "system_config", "chat_service", "retrieval_service", "abstention", "threshold"],
+    "complexity": "medium",
+    "session_id": "WFS-rag-fast-launch-opt"
+  },
+  "project_context": {
+    "architecture_patterns": ["FastAPI service layer with DI", "RAG pipeline: query_rewrite -> retrieval -> rerank -> LLM generation", "Citation pipeline extracted from ChatService", "SystemConfigService for runtime-configurable behavior", "EventLog/RequestTrace for observability"],
+    "coding_conventions": {
+      "naming": {
+        "functions": "snake_case",
+        "classes": "PascalCase",
+        "files": "snake_case.py",
+        "schemas": "Pydantic BaseModel classes"
+      },
+      "error_handling": {
+        "pattern": "fail-open for new features; existing services use HTTPException",
+        "config_reads": "always fail-open with sensible defaults"
+      },
+      "async_patterns": {
+        "preferred": "sync services with FastAPI DI; SSE streaming via generators"
+      },
+      "testing": "pytest with mock/patch patterns; tests in backend/tests/"
+    },
+    "tech_stack": {
+      "language": "python 3.11",
+      "frameworks": ["fastapi", "celery"],
+      "libraries": ["pydantic", "qdrant-client", "redis"],
+      "frontend": ["react", "typescript", "vite", "tailwind"],
+      "testing": ["pytest"],
+      "build_system": "make + docker-compose",
+      "vector_db": "qdrant",
+      "metadata_db": "postgresql with prisma",
+      "llm": "Qwen2.5-14B-AWQ",
+      "reranker": "BAAI/bge-reranker-v2-m3"
+    },
+    "modules": {
+      "backend_services": "backend/app/services/ (30 service files)",
+      "backend_schemas": "backend/app/schemas/ (19 schema files)",
+      "backend_api": "backend/app/api/v1/endpoints/ (14 endpoint files)",
+      "backend_rag": "backend/app/rag/ (embeddings, generators, rerankers, retrievers, vectorstores, parsers, chunkers)",
+      "backend_core": "backend/app/core/ (config, auth, app bootstrap)",
+      "backend_db": "backend/app/db/ (9 repository files)",
+      "frontend_pages": "frontend/src/pages/ (9 pages)",
+      "frontend_panels": "frontend/src/panels/ (5 panels including ChatPanel)",
+      "frontend_components": "frontend/src/components/ (8 components)",
+      "frontend_api": "frontend/src/api/ (client, types, index)",
+      "scripts": "scripts/ (11 utility scripts)",
+      "eval": "eval/ (threshold_matrix, retrieval_samples, results)"
+    }
+  },
+  "assets": {
+    "documentation": [
+      {"path": "README.md", "scope": "project-overview", "relevance_score": 0.70},
+      {"path": "RAG_FAST_LAUNCH_PLAN.md", "scope": "feature-plan", "relevance_score": 0.90},
+      {"path": "RAG架构.md", "scope": "architecture", "relevance_score": 0.65}
+    ],
+    "source_code": [
+      {
+        "path": "backend/app/services/chat_service.py",
+        "role": "primary-modify-target",
+        "dependencies": ["ChatCitationPipeline", "RuntimeGateService", "SystemConfigService", "LLMGenerationClient"],
+        "exports": ["ChatService", "answer()", "stream_answer_sse()"],
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Insert evidence gate and kill switch checks between build_citations() and LLM generation in both answer() and stream_answer_sse()",
+        "relevance_score": 0.99
+      },
+      {
+        "path": "backend/app/services/chat_citation_pipeline.py",
+        "role": "reference-component",
+        "dependencies": ["RetrievalService", "RerankerClient", "QueryProfileService", "SystemConfigService"],
+        "exports": ["ChatCitationPipeline", "CitationBuildResult", "build_citations()"],
+        "feature_targets": ["F-001"],
+        "rationale": "Returns Citation[] that evidence gate evaluates; not modified but its output is the gate input",
+        "relevance_score": 0.88
+      },
+      {
+        "path": "backend/app/services/retrieval_service.py",
+        "role": "reference-component",
+        "dependencies": ["EmbeddingClient", "RerankerClient", "QdrantVectorStore", "DocumentService", "RetrievalScopePolicy"],
+        "exports": ["RetrievalService"],
+        "feature_targets": [],
+        "rationale": "NOT modified per F-001 constraint; reference for understanding Citation.score derivation",
+        "relevance_score": 0.75
+      },
+      {
+        "path": "backend/app/services/system_config_service.py",
+        "role": "primary-modify-target",
+        "dependencies": ["FilesystemSystemConfigRepository", "SystemConfigResponse", "InternalRetrievalControlsConfig"],
+        "exports": ["SystemConfigService", "get_internal_retrieval_controls()"],
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Add evidence_gate config read and kill_switch config read methods",
+        "relevance_score": 0.92
+      },
+      {
+        "path": "backend/app/services/runtime_gate_service.py",
+        "role": "reference-component",
+        "dependencies": ["SystemConfigService", "ConcurrencyControlsConfig"],
+        "exports": ["RuntimeGateService", "RuntimeGateLease", "RuntimeGateBusyError"],
+        "feature_targets": ["F-007"],
+        "rationale": "Pattern reference for fail-open config-driven service; kill switch follows similar pattern",
+        "relevance_score": 0.72
+      },
+      {
+        "path": "backend/app/services/event_log_service.py",
+        "role": "reference-component",
+        "dependencies": ["EventLogRepository"],
+        "exports": ["EventLogService"],
+        "feature_targets": ["F-008"],
+        "rationale": "F-008 monitoring dashboard reads event logs; reference for data format",
+        "relevance_score": 0.65
+      },
+      {
+        "path": "backend/app/services/chat_telemetry_recorder.py",
+        "role": "primary-modify-target",
+        "dependencies": ["EventLogService", "RequestTraceService", "RequestSnapshotService", "ChatMemoryService"],
+        "exports": ["ChatTelemetryRecorder"],
+        "feature_targets": ["F-001", "F-008"],
+        "rationale": "Trace enrichment for evidence gate result; F-008 dashboard consumes trace data",
+        "relevance_score": 0.78
+      },
+      {
+        "path": "backend/app/schemas/system_config.py",
+        "role": "primary-modify-target",
+        "exports": ["EvidenceGateConfig (new)", "LaunchControlsConfig (new)", "InternalRetrievalControlsConfig", "SystemConfigResponse", "SystemConfigUpdateRequest"],
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Add EvidenceGateConfig and _launch_controls schemas for evidence gate threshold and kill switch",
+        "relevance_score": 0.94
+      },
+      {
+        "path": "backend/app/schemas/chat.py",
+        "role": "reference-component",
+        "exports": ["ChatRequest", "ChatResponse", "ChatStreamMetaPayload", "Citation", "ChatStreamErrorCode"],
+        "feature_targets": ["F-001", "F-005", "F-006"],
+        "rationale": "ChatResponse.mode adds evidence_gate_abstain/kill_switch; Citation schema used for score extraction",
+        "relevance_score": 0.88
+      },
+      {
+        "path": "backend/app/api/v1/endpoints/chat.py",
+        "role": "reference-component",
+        "exports": ["ask_question()", "ask_question_stream()"],
+        "feature_targets": ["F-001"],
+        "rationale": "Endpoint layer delegates to ChatService; no endpoint changes expected but verify response model compatibility",
+        "relevance_score": 0.70
+      },
+      {
+        "path": "frontend/src/panels/ChatPanel.tsx",
+        "role": "primary-modify-target",
+        "exports": ["ChatPanel"],
+        "feature_targets": ["F-005", "F-006"],
+        "rationale": "Render citation display (F-005) and abstention suggestions (F-006) in chat panel",
+        "relevance_score": 0.93
+      },
+      {
+        "path": "frontend/src/components/EvidenceSourceSummary.tsx",
+        "role": "reference-component",
+        "exports": ["EvidenceSourceSummary"],
+        "feature_targets": ["F-005"],
+        "rationale": "Existing citation quality display component; F-005 extends or parallels this pattern",
+        "relevance_score": 0.80
+      },
+      {
+        "path": "frontend/src/components/ResultBox.tsx",
+        "role": "reference-component",
+        "exports": ["ResultBox", "ResultCard"],
+        "feature_targets": ["F-005", "F-006"],
+        "rationale": "Existing result display components; may be used for citation cards",
+        "relevance_score": 0.72
+      },
+      {
+        "path": "frontend/src/api/types.ts",
+        "role": "reference-component",
+        "exports": ["ChatResponse", "Citation", "QueryMode", "RequestTraceStageName"],
+        "feature_targets": ["F-005", "F-006"],
+        "rationale": "Frontend type definitions; may need mode union extension for evidence_gate_abstain",
+        "relevance_score": 0.78
+      },
+      {
+        "path": "frontend/src/api/client.ts",
+        "role": "reference-component",
+        "exports": ["askQuestionStream()", "API_PREFIX"],
+        "feature_targets": ["F-005"],
+        "rationale": "API client; streaming response handling for new mode types",
+        "relevance_score": 0.70
+      }
+    ],
+    "config": [
+      {
+        "path": "data/system_config.json",
+        "role": "primary-modify-target",
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Add evidence_gate config and _launch_controls for kill switch",
+        "relevance_score": 0.95
+      },
+      {
+        "path": "docker-compose.yml",
+        "role": "infrastructure-reference",
+        "relevance_score": 0.50
+      },
+      {
+        "path": "Makefile",
+        "role": "build-reference",
+        "relevance_score": 0.45
+      }
+    ],
+    "tests": [
+      {
+        "path": "backend/tests/test_runtime_gate_service.py",
+        "role": "pattern-reference",
+        "feature_targets": ["F-001"],
+        "rationale": "Pattern for testing config-driven service with fail-open behavior",
+        "relevance_score": 0.80
+      },
+      {
+        "path": "backend/tests/test_system_config_service.py",
+        "role": "pattern-reference",
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Pattern for testing config reads; will need new tests for evidence_gate/kill_switch config",
+        "relevance_score": 0.82
+      },
+      {
+        "path": "backend/tests/test_system_config_endpoints.py",
+        "role": "pattern-reference",
+        "feature_targets": ["F-001", "F-007"],
+        "rationale": "Tests for config API endpoints; verify config changes don't break existing",
+        "relevance_score": 0.72
+      },
+      {
+        "path": "backend/tests/test_retrieval_chat.py",
+        "role": "pattern-reference",
+        "feature_targets": ["F-001"],
+        "rationale": "Integration tests for retrieval+chat pipeline; verify gate insertion doesn't break flow",
+        "relevance_score": 0.78
+      }
+    ],
+    "scripts": [
+      {
+        "path": "scripts/eval_retrieval.py",
+        "role": "reference-for-F-003",
+        "feature_targets": ["F-003"],
+        "rationale": "Existing eval script; F-003 extends sample count to 60-80",
+        "relevance_score": 0.80
+      },
+      {
+        "path": "scripts/compare_eval_results.py",
+        "role": "reference-for-F-003",
+        "feature_targets": ["F-003"],
+        "rationale": "Compare eval results across runs",
+        "relevance_score": 0.65
+      },
+      {
+        "path": "scripts/smoke_test.sh",
+        "role": "reference-for-F-004",
+        "feature_targets": ["F-004"],
+        "rationale": "Pattern for running end-to-end test scripts",
+        "relevance_score": 0.55
+      }
+    ],
+    "eval": [
+      {
+        "path": "eval/retrieval_samples.yaml",
+        "role": "reference-for-F-003",
+        "feature_targets": ["F-003"],
+        "rationale": "Current eval sample set; F-003 expands to 60-80 samples",
+        "relevance_score": 0.85
+      },
+      {
+        "path": "eval/threshold_matrix.yaml",
+        "role": "reference-for-F-001",
+        "feature_targets": ["F-001"],
+        "rationale": "Existing threshold config; evidence gate threshold calibrated alongside",
+        "relevance_score": 0.80
+      },
+      {
+        "path": "eval/baseline_config_snapshot.yaml",
+        "role": "reference-for-F-002",
+        "feature_targets": ["F-002"],
+        "rationale": "Pattern for config snapshot; F-002 bundle freeze extends this",
+        "relevance_score": 0.75
+      }
+    ]
+  },
+  "dependencies": {
+    "internal": [
+      {"from": "chat_service.py", "to": "chat_citation_pipeline.py", "type": "composition"},
+      {"from": "chat_service.py", "to": "runtime_gate_service.py", "type": "composition"},
+      {"from": "chat_service.py", "to": "system_config_service.py", "type": "config-read"},
+      {"from": "chat_service.py", "to": "chat_telemetry_recorder.py", "type": "composition"},
+      {"from": "chat_citation_pipeline.py", "to": "retrieval_service.py", "type": "service-dependency"},
+      {"from": "chat_citation_pipeline.py", "to": "system_config_service.py", "type": "config-read"},
+      {"from": "system_config_service.py", "to": "system_config_repository.py", "type": "data-access"},
+      {"from": "chat_telemetry_recorder.py", "to": "event_log_service.py", "type": "service-dependency"},
+      {"from": "chat_telemetry_recorder.py", "to": "request_trace_service.py", "type": "service-dependency"},
+      {"from": "ChatPanel.tsx", "to": "api/client.ts", "type": "api-call"},
+      {"from": "ChatPanel.tsx", "to": "components/EvidenceSourceSummary.tsx", "type": "component-composition"},
+      {"from": "ChatPanel.tsx", "to": "api/types.ts", "type": "type-import"}
+    ],
+    "external": [
+      {"package": "fastapi", "usage": "web framework, DI, routing"},
+      {"package": "pydantic", "usage": "schema validation, config models"},
+      {"package": "qdrant-client", "usage": "vector search"},
+      {"package": "celery", "usage": "async task queue"},
+      {"package": "react", "usage": "frontend UI framework"},
+      {"package": "typescript", "usage": "frontend type system"},
+      {"package": "vite", "usage": "frontend build tool"}
+    ]
+  },
+  "brainstorm_artifacts": {
+    "guidance_specification": {
+      "path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/guidance-specification.md",
+      "exists": true
+    },
+    "role_analyses": [
+      {"role": "system-architect", "files": ["analysis.md", "analysis-F-001-evidence-gate.md", "analysis-F-002-bundle-freeze.md", "analysis-F-007-kill-switch.md", "analysis-F-008-monitoring-dashboard.md", "analysis-cross-cutting.md"]},
+      {"role": "test-strategist", "files": ["analysis.md", "analysis-cross-cutting.md"]},
+      {"role": "product-manager", "files": ["analysis.md", "analysis-cross-cutting.md"]},
+      {"role": "data-architect", "files": ["analysis.md", "analysis-cross-cutting.md"]}
+    ],
+    "synthesis_output": {
+      "path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/synthesis-changelog.md",
+      "exists": true,
+      "feature_driven": {
+        "feature_index": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/feature-index.json",
+        "feature_specs_dir": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/"
+      }
+    },
+    "feature_index": {
+      "path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-index.json",
+      "exists": true
+    },
+    "feature_index_path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-index.json",
+    "feature_specs": [
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-001-evidence-gate.md", "feature_id": "F-001"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-002-bundle-freeze.md", "feature_id": "F-002"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-003-eval-calibration.md", "feature_id": "F-003"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-004-human-review.md", "feature_id": "F-004"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-005-citation-display.md", "feature_id": "F-005"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-006-guided-abstention.md", "feature_id": "F-006"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-007-kill-switch.md", "feature_id": "F-007"},
+      {"path": ".workflow/active/WFS-rag-fast-launch-opt/.brainstorming/feature-specs/F-008-monitoring-dashboard.md", "feature_id": "F-008"}
+    ]
+  },
+  "conflict_detection": {
+    "risk_level": "medium",
+    "risk_factors": {
+      "existing_implementations": ["backend/app/services/chat_service.py", "backend/app/schemas/system_config.py", "data/system_config.json"],
+      "api_changes": false,
+      "architecture_changes": false,
+      "data_model_changes": true,
+      "breaking_changes": []
+    },
+    "potential_conflicts": [
+      {
+        "pair": "F-001 x F-007",
+        "severity": "medium",
+        "description": "Both modify ChatService.answer() and stream_answer_sse(). F-007 kill switch check must run BEFORE F-001 evidence gate check. Shared insertion point creates merge risk.",
+        "mitigation": "Implement F-007 first, then F-001. Kill switch at top of method; evidence gate after build_citations()."
+      },
+      {
+        "pair": "F-001 x F-007",
+        "severity": "medium",
+        "description": "Both extend system_config.py and system_config.json. F-001 adds EvidenceGateConfig under _internal_retrieval_controls; F-007 adds _launch_controls at top level.",
+        "mitigation": "Non-overlapping config sections; merge conflict is cosmetic only."
+      },
+      {
+        "pair": "F-001 x F-003",
+        "severity": "low",
+        "description": "F-001 ships with threshold=0.0; F-003 calibrates threshold from expanded eval. No code conflict but dependency on eval results.",
+        "mitigation": "Temporal dependency, not file conflict. F-001 code done first; F-003 provides data for threshold update."
+      },
+      {
+        "pair": "F-005 x F-006",
+        "severity": "low",
+        "description": "Both modify ChatPanel.tsx frontend component. F-005 adds citation display; F-006 adds abstention suggestions.",
+        "mitigation": "Different UI regions within ChatPanel; citation display in result area, abstention in empty-result area."
+      }
+    ],
+    "affected_modules": ["chat_service", "system_config", "frontend_chat_panel"],
+    "mitigation_strategy": "Implement in dependency order: F-007 (kill switch) first, then F-001 (evidence gate), then F-005/F-006 (frontend). F-002/F-003/F-004 are scripts/eval with no code overlap. F-008 is a standalone analysis script."
+  },
+  "feature_file_map": {
+    "F-001-evidence-gate": {
+      "new_files": ["backend/app/services/evidence_gate_service.py", "backend/tests/test_evidence_gate.py"],
+      "modify_files": ["backend/app/services/chat_service.py", "backend/app/schemas/system_config.py", "data/system_config.json"],
+      "reference_files": ["backend/app/services/chat_citation_pipeline.py", "backend/app/services/system_config_service.py", "backend/app/services/runtime_gate_service.py"]
+    },
+    "F-002-bundle-freeze": {
+      "new_files": ["scripts/freeze_bundle.py"],
+      "modify_files": [],
+      "reference_files": ["eval/baseline_config_snapshot.yaml", "scripts/eval_retrieval.py"]
+    },
+    "F-003-eval-calibration": {
+      "new_files": [],
+      "modify_files": ["scripts/eval_retrieval.py", "eval/retrieval_samples.yaml"],
+      "reference_files": ["eval/threshold_matrix.yaml", "eval/results/"]
+    },
+    "F-004-human-review": {
+      "new_files": ["scripts/human_review.py"],
+      "modify_files": [],
+      "reference_files": ["scripts/eval_retrieval.py", "eval/retrieval_samples.yaml"]
+    },
+    "F-005-citation-display": {
+      "new_files": [],
+      "modify_files": ["frontend/src/panels/ChatPanel.tsx"],
+      "reference_files": ["frontend/src/components/EvidenceSourceSummary.tsx", "frontend/src/components/ResultBox.tsx", "frontend/src/api/types.ts"]
+    },
+    "F-006-guided-abstention": {
+      "new_files": [],
+      "modify_files": ["frontend/src/panels/ChatPanel.tsx"],
+      "reference_files": ["frontend/src/api/types.ts", "frontend/src/components/ResultBox.tsx"]
+    },
+    "F-007-kill-switch": {
+      "new_files": ["scripts/toggle_kill_switch.py", "ROLLBACK_PROCEDURE.md"],
+      "modify_files": ["backend/app/services/chat_service.py", "backend/app/schemas/system_config.py", "data/system_config.json"],
+      "reference_files": ["backend/app/services/runtime_gate_service.py", "backend/app/services/system_config_service.py"]
+    },
+    "F-008-monitoring-dashboard": {
+      "new_files": ["scripts/analyze_traces.py"],
+      "modify_files": [],
+      "reference_files": ["backend/app/services/request_trace_service.py", "data/request_traces/"]
+    }
+  }
+}

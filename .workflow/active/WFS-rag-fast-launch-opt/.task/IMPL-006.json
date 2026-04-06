@@ -1,0 +1,36 @@
+{
+  "task_id": "IMPL-006",
+  "title": "Eval Calibration: Extend to 60-80 Samples + Run",
+  "feature": "F-003",
+  "priority": "High",
+  "status": "pending",
+  "day": 3,
+  "estimated_hours": 4,
+  "depends_on": ["IMPL-002", "IMPL-003"],
+  "blocking": ["IMPL-007"],
+  "description": "Extend eval dataset from 43 to 60-80 samples with focus on semantic/coarse types. Run eval with evidence gate enabled (threshold=0.0) to capture score distributions.",
+  "acceptance_criteria": [
+    "Eval dataset expanded to 60-80 samples",
+    "New samples include 15-20 semantic rephrasings and 10-15 coarse summaries",
+    "5-8 anti-pattern (out-of-scope) queries with should_refuse=true",
+    "Eval run captures post-rerank Citation.score per sample (not Qdrant raw)",
+    "Score distribution report generated per query type (exact/fine/semantic/coarse)",
+    "Results include threshold candidate analysis (conservative_95, balanced, aggressive)",
+    "Eval run references bundle_id from frozen bundle"
+  ],
+  "files_to_create": [
+    "eval/retrieval_samples_v2.yaml"
+  ],
+  "files_to_modify": [
+    "backend/eval/run_retrieval_eval.py"
+  ],
+  "implementation_steps": [
+    "1. Design new eval samples: semantic rephrasings, coarse summaries, anti-patterns",
+    "2. Add samples to eval/retrieval_samples_v2.yaml",
+    "3. Enhance run_retrieval_eval.py to capture post-rerank Citation.score",
+    "4. Add score distribution reporting per query type",
+    "5. Add threshold candidate analysis",
+    "6. Freeze bundle (run IMPL-003 output)",
+    "7. Run eval against frozen bundle"
+  ]
+}

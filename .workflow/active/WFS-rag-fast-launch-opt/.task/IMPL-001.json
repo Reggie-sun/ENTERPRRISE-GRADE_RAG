@@ -1,0 +1,41 @@
+{
+  "task_id": "IMPL-001",
+  "title": "Implement Kill Switch + Rollback Documentation",
+  "feature": "F-007",
+  "priority": "High",
+  "status": "pending",
+  "day": 1,
+  "estimated_hours": 3,
+  "depends_on": [],
+  "blocking": ["IMPL-002"],
+  "description": "Add config-level kill switch to ChatService. When enabled, all responses return immediate abstention. Includes toggle CLI script and rollback procedure documentation.",
+  "acceptance_criteria": [
+    "LaunchControlsConfig schema added to system_config.py with kill_switch_enabled + force_abstain_message",
+    "SystemConfigService.get_launch_controls() method reads _launch_controls section",
+    "ChatService.answer() and stream_answer_sse() check kill switch at entry, before any other processing",
+    "Kill switch response uses mode='kill_switch', model='none', citations=[], Chinese message",
+    "scripts/toggle_kill_switch.py supports --enable/--disable/--status with advisory file lock",
+    "ROLLBACK_PROCEDURE.md exists in project root with step-by-step instructions",
+    "Config read failure defaults to kill_switch_enabled=False (fail-open)",
+    "All user-facing strings are Chinese"
+  ],
+  "files_to_create": [
+    "scripts/toggle_kill_switch.py",
+    "ROLLBACK_PROCEDURE.md"
+  ],
+  "files_to_modify": [
+    "backend/app/schemas/system_config.py",
+    "backend/app/services/system_config_service.py",
+    "backend/app/services/chat_service.py",
+    "data/system_config.json"
+  ],
+  "implementation_steps": [
+    "1. Add LaunchControlsConfig to backend/app/schemas/system_config.py",
+    "2. Add get_launch_controls() to SystemConfigService",
+    "3. Add kill switch check at start of ChatService.answer() and stream_answer_sse()",
+    "4. Add _build_kill_switch_response() helper with Chinese message",
+    "5. Add _launch_controls section to data/system_config.json",
+    "6. Create scripts/toggle_kill_switch.py with --enable/--disable/--status",
+    "7. Create ROLLBACK_PROCEDURE.md"
+  ]
+}

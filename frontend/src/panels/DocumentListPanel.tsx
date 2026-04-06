@@ -8,6 +8,7 @@ import { RefreshCw } from 'lucide-react';
 import { Card, Button, Input, ResultBox, StatusPill } from '@/components';
 import {
   deleteDocument,
+  deleteMyDocuments,
   formatApiError,
   getDocumentPreview,
   getDocuments,
@@ -72,6 +73,7 @@ export function DocumentListPanel() {
   const [previewDocId, setPreviewDocId] = useState('');
   const [deleteLoadingDocId, setDeleteLoadingDocId] = useState('');
   const [rebuildLoadingDocId, setRebuildLoadingDocId] = useState('');
+  const [batchDeleteLoading, setBatchDeleteLoading] = useState(false);
   const [operationMessage, setOperationMessage] = useState('');
   const [operationError, setOperationError] = useState('');
 
@@ -192,6 +194,30 @@ export function DocumentListPanel() {
     }
   };
 
+  const handleBatchDelete = async () => {
+    const confirmed = window.confirm('确认删除您上传的所有文档吗？该操作不可撤销，会同步清理所有相关知识索引。');
+    if (!confirmed) {
+      return;
+    }
+    setBatchDeleteLoading(true);
+    setOperationMessage('');
+    setOperationError('');
+    try {
+      const result = await deleteMyDocuments();
+      setOperationMessage(
+        `批量删除完成：成功 ${result.deleted_count} 个，失败 ${result.failed_count} 个，已清理索引 ${result.total_vector_points_removed} 条。`
+      );
+      setPreviewData(null);
+      setPreviewStatus('idle');
+      setPreviewDocId('');
+      await fetchDocuments(1, pageSize);
+    } catch (err) {
+      setOperationError(formatApiError(err, '批量删除'));
+    } finally {
+      setBatchDeleteLoading(false);
+    }
+  };
+
   const maxPage = Math.max(1, Math.ceil(total / pageSize));
   const canPrev = page > 1;
   const canNext = page < maxPage;
@@ -251,6 +277,15 @@ export function DocumentListPanel() {
           </Button>
           <Button type="button" variant="ghost" onClick={handleResetFilters}>
             清空筛选
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            loading={batchDeleteLoading}
+            className="ml-auto"
+            onClick={handleBatchDelete}
+          >
+            删除我的上传
           </Button>
         </div>
       </form>

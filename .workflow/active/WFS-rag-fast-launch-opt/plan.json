@@ -1,0 +1,27 @@
+{
+  "session_id": "WFS-rag-fast-launch-opt",
+  "goal": "RAG 快速首发优化 — 1周内全量发布证据型问答系统",
+  "scope": "8 features: evidence-gate, bundle-freeze, eval-calibration, human-review, citation-display, guided-abstention, kill-switch, monitoring-dashboard",
+  "constraints": [
+    "不动 retrieval 内部逻辑",
+    "所有用户面向消息中文",
+    "不引入新基础设施",
+    "Kill switch fail-open",
+    "Evidence gate 用 post-rerank Citation.score"
+  ],
+  "timeline_days": 5,
+  "total_tasks": 9,
+  "critical_path": ["IMPL-001", "IMPL-002", "IMPL-003", "IMPL-006", "IMPL-007", "IMPL-008"],
+  "parallel_tracks": [
+    ["IMPL-001", "IMPL-003", "IMPL-004"],
+    ["IMPL-002"],
+    ["IMPL-005", "IMPL-009"]
+  ],
+  "shared_context": {
+    "tech_stack": "FastAPI + React + Qdrant + PostgreSQL + docker-compose",
+    "primary_service_file": "backend/app/services/chat_service.py",
+    "config_file": "data/system_config.json",
+    "eval_dir": "eval/",
+    "scripts_dir": "scripts/"
+  }
+}
