@@ -1,0 +1,517 @@
+{
+  "snapshot_id": "rsp_b785cd2c8d904b3a",
+  "trace_id": "trc_retrieval_9a8ed16662f74d6c",
+  "request_id": "req_retrieval_3ef94b98c3ee4de4",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:15:13.337808Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "摇臂钻床安全操作规范中异常响声怎么处理",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "摇臂钻床安全操作规范中异常响声怎么处理",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：完全满足（#重要项）。系统可结合机床下一批次生产任务的刀具需求，自动分析上一批次加工使用的刀具，筛选出下一批次不再使用的刀具，生成卸刀清单，指导操作人员及时卸刀，为下一批次生产做好准备，提升生产连续性。【附图48：卸刀清单生成示意图】\n\n5. 机床刀具断刀，机床实时把异常信号传回系统，系统弹窗预警，自动触发 “备刀预案 ”。\n\n我方响应：完全满足（#重要项）。当机床刀具出现断刀情况时，机床可通过",
+      "score": 0.9841269841269842,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4703521,
+      "lexical_score": 10.295969698892904,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+      "document_id": "doc_20260328022343_b95834e1",
+      "document_name": "sop_stream_smoke.md",
+      "snippet": "# 巡检手册\n\n巡检前先检查监控面板和服务状态。\n发现异常后记录时间、现象和影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": 0.9462481962481962,
+      "source_path": "document://doc_20260328022343_b95834e1/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4641124,
+      "lexical_score": 9.318226891252028,
+      "fused_score": 0.031024531024531024
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+      "document_id": "doc_20260326054237_2605c799",
+      "document_name": "sop_document_flow_smoke.txt",
+      "snippet": "数字化部 SOP 生成烟测文档。\n巡检前先检查任务调度服务、数据库连接和告警队列。\n异常情况下先记录时间、现象、影响范围，再通知值班负责人。\n处理完成后更新值班记录，并归档相关截图。",
+      "score": 0.9250919117647058,
+      "source_path": "document://doc_20260326054237_2605c799/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4572851,
+      "lexical_score": 8.821581859184885,
+      "fused_score": 0.030330882352941176
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+      "document_id": "doc_20260326065846_b619236e",
+      "document_name": "portal_sop_employee_smoke.txt",
+      "snippet": "数字化部系统巡检SOP测试文档\n\n巡检前检查监控面板和服务状态。\n发现异常后先记录时间、现象、影响范围。\n完成处理后更新值班记录并通知相关同事。",
+      "score": 0.9173450927182271,
+      "source_path": "document://doc_20260326065846_b619236e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.44914958,
+      "lexical_score": 9.164510271675143,
+      "fused_score": 0.03007688828584351
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "滞刀具。所有报表可调用。\n\n我方响应：完全满足。系统具备完善的报表分析功能，至少包含刀具使用率与寿命对比报表、按机床/工件/时间段统计的消耗成本报表、维修/报废分析报表及库存状态报表，所有报表支持柱状图、折线图、饼图等图表化展示，直观清晰；可基于历史消耗数据（按机床、工件、一个季度等维度）自动计算安全库存阈值，当库存低于阈值时，系统自动推送补货建议（含供应商、补货数量），并生成采购清单，采购清单支",
+      "score": 0.8848013453857473,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.44287497,
+      "lexical_score": 7.741791506564045,
+      "fused_score": 0.02900988017658188
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "摇臂钻床安全操作规范中异常响声怎么处理",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 13,
+      "department_lexical_count": 15,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 9,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "摇臂钻床安全操作规范中异常响声怎么处理",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 13,
+      "lexical_count": 15,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 0.9841269841269842,
+      "avg_top_n_score": 0.931522706048772,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328034931_6d36c484",
+          "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-47",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328035056_fd1b630f",
+          "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.4703521,
+          "lexical_score": 10.295969698892904,
+          "fused_score": 0.032266458495966696,
+          "final_score": 0.9841269841269842,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4704，词法 10.2960，融合 0.0323。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260328022343_b95834e1",
+          "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+          "document_name": "sop_stream_smoke.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.4641124,
+          "lexical_score": 9.318226891252028,
+          "fused_score": 0.031024531024531024,
+          "final_score": 0.9462481962481962,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4641，词法 9.3182，融合 0.0310。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326054237_2605c799",
+          "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+          "document_name": "sop_document_flow_smoke.txt",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.4572851,
+          "lexical_score": 8.821581859184885,
+          "fused_score": 0.030330882352941176,
+          "final_score": 0.9250919117647058,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4573，词法 8.8216，融合 0.0303。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260326065846_b619236e",
+          "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+          "document_name": "portal_sop_employee_smoke.txt",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.44914958,
+          "lexical_score": 9.164510271675143,
+          "fused_score": 0.03007688828584351,
+          "final_score": 0.9173450927182271,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4491，词法 9.1645，融合 0.0301。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.44287497,
+          "lexical_score": 7.741791506564045,
+          "fused_score": 0.02900988017658188,
+          "final_score": 0.8848013453857473,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4429，词法 7.7418，融合 0.0290。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-17",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.4703521,
+        "lexical_score": 10.295969698892904,
+        "fused_score": 0.032266458495966696,
+        "final_score": 0.9841269841269842,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4704，词法 10.2960，融合 0.0323。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260328022343_b95834e1",
+        "chunk_id": "doc_20260328022343_b95834e1-chunk-0",
+        "document_name": "sop_stream_smoke.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.4641124,
+        "lexical_score": 9.318226891252028,
+        "fused_score": 0.031024531024531024,
+        "final_score": 0.9462481962481962,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4641，词法 9.3182，融合 0.0310。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326054237_2605c799",
+        "chunk_id": "doc_20260326054237_2605c799-chunk-0",
+        "document_name": "sop_document_flow_smoke.txt",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.4572851,
+        "lexical_score": 8.821581859184885,
+        "fused_score": 0.030330882352941176,
+        "final_score": 0.9250919117647058,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4573，词法 8.8216，融合 0.0303。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260326065846_b619236e",
+        "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+        "document_name": "portal_sop_employee_smoke.txt",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.44914958,
+        "lexical_score": 9.164510271675143,
+        "fused_score": 0.03007688828584351,
+        "final_score": 0.9173450927182271,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4491，词法 9.1645，融合 0.0301。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.44287497,
+        "lexical_score": 7.741791506564045,
+        "fused_score": 0.02900988017658188,
+        "final_score": 0.8848013453857473,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4429，词法 7.7418，融合 0.0290。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328034931_6d36c484",
+        "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-47",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328035056_fd1b630f",
+        "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

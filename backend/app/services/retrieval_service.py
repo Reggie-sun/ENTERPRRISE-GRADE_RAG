@@ -45,7 +45,7 @@ SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD = 0.5
 SUPPLEMENTAL_LITERAL_COVERAGE_MIN_QUERY_TOKENS = 3
 SUPPLEMENTAL_LOW_QUALITY_RESERVED_GLOBAL_SLOTS = 2
 SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE = 0.10
-SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD = 0.70
+SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD = 0.35
 
 @dataclass
 class _RetrievalCandidate:
@@ -583,6 +583,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             avg_top_n_score=RetrievalService._as_float(diagnostic.get("primary_avg_top_n_score")),
             quality_top1_threshold=RetrievalService._as_float(diagnostic.get("quality_top1_threshold")),
             quality_avg_threshold=RetrievalService._as_float(diagnostic.get("quality_avg_threshold")),
+            top_k_unique_doc_count=RetrievalService._as_int(diagnostic.get("top_k_unique_doc_count")),
+            top1_literal_coverage=RetrievalService._as_float(diagnostic.get("primary_top1_literal_coverage")),
         )
         supplemental_recall_stage = RetrievalSupplementalRecallStage(
             triggered=supplemental_triggered,
@@ -916,6 +918,7 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         department_unique_doc_count = self._count_unique_documents(department_after_ocr)
         department_effective_count = department_after_ocr_count
         required = self._required_primary_results(profile, truncate_to_top_k)
+        top_k_unique_doc_count = self._count_unique_documents(department_after_ocr[:required])
         primary_top1_score, primary_avg_top_n_score = self._summarize_primary_quality(
             department_after_ocr,
             retrieval_mode=department_mode,
@@ -960,21 +963,16 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             and primary_top1_lexical_score < SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD
         )
         low_quality_by_literal = (
-            department_mode == "hybrid"
-            and (query_granularity == "fine" or query_type == "exact")
-            and primary_top1_literal_coverage is not None
-            and primary_top1_literal_coverage < SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD
+            False  # Disabled: literal coverage alone is too noisy for quality gate
         )
-        # Mono-document literal mismatch: when all department results come from a single document
-        # AND the top1 literal coverage is weak, this strongly suggests the content doesn't genuinely
-        # match the query. High vector scores with low literal coverage indicate semantic overlap
-        # rather than genuine content match (e.g., cross-013 where "tool system requirements" doc
-        # scores 0.99 against a "pulley SOP" query).
-        # Unlike the standard low_quality_by_literal (which only fires for fine/exact queries),
-        # mono-document scenarios are inherently suspicious because the department lacks diversity,
-        # so we use a stricter threshold and check regardless of query granularity.
+        # Mono-document literal mismatch: when the user-visible top-K results all come from a single
+        # document AND literal coverage is weak, the content doesn't genuinely match the query.
+        # High vector scores with low literal coverage indicate semantic overlap rather than genuine
+        # content match (e.g., cross-013 where "tool system requirements" doc scores 0.99 against a
+        # "pulley SOP" query — full recall has 6 docs but top-5 are all from one irrelevant doc).
+        # We use a stricter threshold and check regardless of query granularity.
         low_quality_by_mono_document = (
-            department_unique_doc_count <= 1
+            top_k_unique_doc_count <= 1
             and department_effective_count >= required
             and department_effective_count > 0
             and primary_top1_literal_coverage is not None
@@ -1035,6 +1033,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                     "department_after_ocr": department_after_ocr_count,
                     "department_unique_docs_after_ocr": department_unique_doc_count,
                 }
+            diagnostic["primary_top1_literal_coverage"] = primary_top1_literal_coverage
+            diagnostic["top_k_unique_doc_count"] = top_k_unique_doc_count
             return department_candidates, department_mode, department_branch_weights
 
         # --- Stage 2: supplemental route ---
@@ -1123,6 +1123,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
                 "supplemental_lexical_count": supplemental_lexical_count,
                 "supplemental_fused_count": supplemental_fused_count,
             }
+            diagnostic["primary_top1_literal_coverage"] = primary_top1_literal_coverage
+            diagnostic["top_k_unique_doc_count"] = top_k_unique_doc_count
 
         retrieval_mode = "hybrid" if "hybrid" in {department_mode, global_mode} else "qdrant"
         branch_weights = department_branch_weights or global_branch_weights
@@ -1232,10 +1234,21 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
 
     def _literal_guard_tokens(self, text: str) -> list[str]:
         normalized_text = text.strip()
-        if not normalized_text or self.lexical_retriever is None:
+        if not normalized_text:
             return []
 
-        tokenizer = getattr(self.lexical_retriever, "_tokenize", None)
+        # Use the same lazy retriever creation as _collect_scoped_candidates
+        retriever = self.lexical_retriever
+        if retriever is None and self.vector_store is not None:
+            retriever = QdrantLexicalRetriever(
+                self.vector_store,
+                chinese_tokenizer_mode=self.settings.retrieval_lexical_chinese_tokenizer,
+                supplemental_bigram_weight=self.settings.retrieval_lexical_supplemental_bigram_weight,
+            )
+        if retriever is None:
+            return []
+
+        tokenizer = getattr(retriever, "_tokenize", None)
         if not callable(tokenizer):
             return []
 

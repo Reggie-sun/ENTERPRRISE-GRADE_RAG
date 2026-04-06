@@ -450,6 +450,7 @@ def score_sample(sample: dict[str, Any], retrieval_result: dict[str, Any]) -> di
     quality_top1_threshold = diagnostic.get("quality_top1_threshold") if isinstance(diagnostic, dict) else None
     quality_avg_threshold = diagnostic.get("quality_avg_threshold") if isinstance(diagnostic, dict) else None
     supplemental_trigger_basis = diagnostic.get("supplemental_trigger_basis") if isinstance(diagnostic, dict) else None
+    supplemental_reason = diagnostic.get("supplemental_reason") if isinstance(diagnostic, dict) else None
 
     # Also check structured diagnostic sub-stages
     primary_recall_stage = diagnostic.get("primary_recall_stage") if isinstance(diagnostic, dict) else None
@@ -459,6 +460,16 @@ def score_sample(sample: dict[str, Any], retrieval_result: dict[str, Any]) -> di
         primary_avg_top_n_score = primary_recall_stage.get("avg_top_n_score", primary_avg_top_n_score)
         quality_top1_threshold = primary_recall_stage.get("quality_top1_threshold", quality_top1_threshold)
         quality_avg_threshold = primary_recall_stage.get("quality_avg_threshold", quality_avg_threshold)
+
+    # Additional diagnostic fields for mono-document analysis
+    department_unique_docs = (
+        diagnostic.get("recall_counts", {}).get("department_unique_docs_after_ocr")
+        if isinstance(diagnostic, dict)
+        else None
+    )
+    primary_effective_count = diagnostic.get("primary_effective_count") if isinstance(diagnostic, dict) else None
+    top_k_unique_doc_count = diagnostic.get("top_k_unique_doc_count") if isinstance(diagnostic, dict) else None
+    primary_top1_literal_coverage = diagnostic.get("primary_top1_literal_coverage") if isinstance(diagnostic, dict) else None
 
     supplemental_recall_stage = diagnostic.get("supplemental_recall_stage") if isinstance(diagnostic, dict) else None
     if supplemental_recall_stage and isinstance(supplemental_recall_stage, dict):
@@ -504,6 +515,11 @@ def score_sample(sample: dict[str, Any], retrieval_result: dict[str, Any]) -> di
         "diagnostic_quality_top1_threshold": quality_top1_threshold,
         "diagnostic_quality_avg_threshold": quality_avg_threshold,
         "diagnostic_trigger_basis": supplemental_trigger_basis,
+        "diagnostic_supplemental_reason": supplemental_reason,
+        "diagnostic_department_unique_docs": department_unique_docs,
+        "diagnostic_primary_effective_count": primary_effective_count,
+        "diagnostic_top_k_unique_doc_count": top_k_unique_doc_count,
+        "diagnostic_primary_top1_literal_coverage": primary_top1_literal_coverage,
         "auth_username": None,
         "auth_department_id": None,
         "auth_profile_id": None,

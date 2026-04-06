@@ -67,6 +67,8 @@ class RetrievalPrimaryRecallStage(BaseModel):
     avg_top_n_score: float | None = None
     quality_top1_threshold: float | None = None
     quality_avg_threshold: float | None = None
+    top_k_unique_doc_count: int | None = None  # Diagnostic: unique docs in top-K department results
+    top1_literal_coverage: float | None = None  # Diagnostic: literal coverage of top1 result
 
 
 class RetrievalSupplementalRecallStage(BaseModel):

@@ -1,0 +1,522 @@
+{
+  "snapshot_id": "rsp_2053e5b1add6492d",
+  "trace_id": "trc_retrieval_2d7544e3f3b24b5a",
+  "request_id": "req_retrieval_87c687600b0341bf",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:19:11.816582Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_installation_employee_demo",
+    "username": "installation.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_installation_service"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "企业智能助手的技术选型和部署方案",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "企业智能助手的技术选型和部署方案",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "# DFMS嵌入式智能助手架构方案（领导汇报版）\n\n## 1. 项目定位\n\n本项目的目标，是把 AI 能力嵌入伟立现有 DFMS 系统，形成一个可落地、可复制、可销售的智能化产品模块。\n\n它不是一个独立的聊天工具，而是 DFMS 的智能升级层，重点解决三类问题：\n\n- 系统复杂，员工学习和使用成本高\n- 技术资料分散，故障处理效率低\n- 生产数据难以被业务人员直接使用\n\n最终希望形成一个面向制造现",
+      "score": 1.0,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.6324897,
+      "lexical_score": 55.64073329893583,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "## 7.3 部署架构原则\n\n无论哪种模式，都保持以下原则：\n\n- 业务系统不变\n- 知识库和权限体系统一\n- 智能中台架构一致\n- 差异主要体现在模型调用方式\n\n这能保证项目不会因为部署模式不同而演变成两套系统。\n\n---\n\n## 8. 管理与安全架构\n\n领导层更关心的不是具体技术名词，而是系统能不能管、能不能控、能不能审。\n\n本项目在架构上需要保证：\n\n- 用户身份统一管理\n- 权限边界清晰\n",
+      "score": 0.961166253101737,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.6154765,
+      "lexical_score": 44.068290507372254,
+      "fused_score": 0.0315136476426799
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "接：\n\n- 用户身份\n- 组织权限\n- 数据边界\n- 审计要求\n\n### 4.5 部署与运营保障层\n\n这一层负责支撑产品交付和规模化推广。\n\n重点包括：\n\n- 私有化部署\n- 混合云部署\n- 安全与权限控制\n- 日志审计\n- 监控与运维\n\n它决定这个系统能不能真正进入企业现场，而不只是做一个演示版本。\n\n---\n\n## 5. 关键业务场景架构\n\n### 5.1 场景一：系统使用辅助\n\n员工在 DF",
+      "score": 0.9606894841269841,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.5673335,
+      "lexical_score": 46.53342604523795,
+      "fused_score": 0.03149801587301587
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-6",
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "document_name": "RAG架构_领导汇报版.md",
+      "snippet": "系统识别分析意图\n   ↓\n关联生产与运营数据\n   ↓\n生成统计结果和图表\n   ↓\n输出可读结论\n```\n\n价值：\n\n- 降低数据使用门槛\n- 提高管理层获取洞察的速度\n- 推动数据驱动管理\n\n---\n\n## 6. 企业微信接入架构\n\n企业微信在本项目中的定位，不是独立系统，而是 DFMS 智能助手的移动入口和通知通道。\n\n### 6.1 企业微信的角色\n\n- 作为移动端统一入口\n- 作为用户",
+      "score": 0.9684979838709676,
+      "source_path": "document://doc_20260326064202_f5b7a9ae/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.56009096,
+      "lexical_score": 54.43971162481348,
+      "fused_score": 0.031754032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401023358_e0a01f4b-chunk-11",
+      "document_id": "doc_20260401023358_e0a01f4b",
+      "document_name": "美标CW15纵走机吊装SOP.pdf",
+      "snippet": "由受权人员进行。\n否则有可能发生人员伤害、设备损坏。\n\n- - 10 - -\nNINGBO WELL-LIH\nROBOTS TECHNOLOGY CO., LTD.\n宁波伟立机器人科技股份有限公司\n\n地址：浙江省余姚市朗霞街道巷桥路 48 号\nNo.48 Xiangqiao Road, Langxia Street,\nYuyao City, Zhejiang, China,315480\n电话：+8",
+      "score": 0.46923076923076923,
+      "source_path": "document://doc_20260401023358_e0a01f4b/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.5532359,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "企业智能助手的技术选型和部署方案",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_lexical_top1(1.2598)_below_threshold(10.00);department_mono_document_literal_mismatch(unique_docs=2,literal_coverage=0.2222)",
+    "recall_counts": {
+      "department_vector_count": 14,
+      "department_lexical_count": 13,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 2,
+      "supplemental_vector_count": 7,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "企业智能助手的技术选型和部署方案",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 14,
+      "lexical_count": 13,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9760624679979518,
+      "avg_top_n_score": 0.9116406539773776,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7,
+      "top_k_unique_doc_count": 1,
+      "top1_literal_coverage": 0.2222222222222222
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_lexical_top1(1.2598)_below_threshold(10.00);department_mono_document_literal_mismatch(unique_docs=2,literal_coverage=0.2222)",
+      "vector_count": 7,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-140",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330040955_9ab296eb",
+          "chunk_id": "doc_20260330040955_9ab296eb-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-36",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-34",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-38",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.6324897,
+          "lexical_score": 55.64073329893583,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6325，词法 55.6407，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.6154765,
+          "lexical_score": 44.068290507372254,
+          "fused_score": 0.0315136476426799,
+          "final_score": 0.961166253101737,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6155，词法 44.0683，融合 0.0315。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.5673335,
+          "lexical_score": 46.53342604523795,
+          "fused_score": 0.03149801587301587,
+          "final_score": 0.9606894841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5673，词法 46.5334，融合 0.0315。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260326064202_f5b7a9ae",
+          "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-6",
+          "document_name": "RAG架构_领导汇报版.md",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.56009096,
+          "lexical_score": 54.43971162481348,
+          "fused_score": 0.031754032258064516,
+          "final_score": 0.9684979838709676,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5601，词法 54.4397，融合 0.0318。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401023358_e0a01f4b",
+          "chunk_id": "doc_20260401023358_e0a01f4b-chunk-11",
+          "document_name": "美标CW15纵走机吊装SOP.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.5532359,
+          "lexical_score": null,
+          "fused_score": 0.015384615384615385,
+          "final_score": 0.46923076923076923,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5532，融合 0.0154。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-0",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.6324897,
+        "lexical_score": 55.64073329893583,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6325，词法 55.6407，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-7",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.6154765,
+        "lexical_score": 44.068290507372254,
+        "fused_score": 0.0315136476426799,
+        "final_score": 0.961166253101737,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6155，词法 44.0683，融合 0.0315。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-5",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.5673335,
+        "lexical_score": 46.53342604523795,
+        "fused_score": 0.03149801587301587,
+        "final_score": 0.9606894841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5673，词法 46.5334，融合 0.0315。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260326064202_f5b7a9ae",
+        "chunk_id": "doc_20260326064202_f5b7a9ae-chunk-6",
+        "document_name": "RAG架构_领导汇报版.md",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.56009096,
+        "lexical_score": 54.43971162481348,
+        "fused_score": 0.031754032258064516,
+        "final_score": 0.9684979838709676,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5601，词法 54.4397，融合 0.0318。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401023358_e0a01f4b",
+        "chunk_id": "doc_20260401023358_e0a01f4b-chunk-11",
+        "document_name": "美标CW15纵走机吊装SOP.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.5532359,
+        "lexical_score": null,
+        "fused_score": 0.015384615384615385,
+        "final_score": 0.46923076923076923,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5532，融合 0.0154。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-140",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330040955_9ab296eb",
+        "chunk_id": "doc_20260330040955_9ab296eb-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-36",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-40",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-34",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-38",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

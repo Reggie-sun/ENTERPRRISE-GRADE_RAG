@@ -1,0 +1,519 @@
+{
+  "snapshot_id": "rsp_760750e35d2043fe",
+  "trace_id": "trc_retrieval_8862a9060a614558",
+  "request_id": "req_retrieval_53b5e134a1214d2f",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:18:26.754943Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_production_technology_employee_demo",
+    "username": "production.technology.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "皮带轮部品（通用）作业指导书 目录包含哪些章节",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "皮带轮部品（通用）作业指导书 目录包含哪些章节",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401092629_f470103f-chunk-0",
+      "document_id": "doc_20260401092629_f470103f",
+      "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+      "snippet": "[Slide 1]\n\n皮带轮部品（通用）\n作业\n指导\n书\n著\n-\n生技部\n2020.02.18\n\n[Slide 2]\n\n目录\nContents\n产品总览\n3\n皮带轮、滚珠轴承安装\n4\n皮带轮固定架、皮带轮轴检查\n5\n皮带轮固定架组压装、止动螺丝安装\n6\n\n[Slide 3]\n\n皮带轮\n部品\n产品总\n览\n3\n图示模型为皮带轮部品系列之一\n技术参数详见订单配置单；\n本手册内的颜色以实物为准；\n\n[Sl",
+      "score": 1.0,
+      "source_path": "document://doc_20260401092629_f470103f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.67745894,
+      "lexical_score": 47.39266910839164,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+      "document_id": "doc_20260401092629_f3b52aa5",
+      "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+      "snippet": "[Slide 1]\n\n主手臂部品\n作业指导书\n（\nFAW05-1000P-X1000-Y2000\n系列）\n著\n-\n生技部\n2020.03.13\n1\n\n[Slide 2]\n\n目录\nContents\n产品总览\n3\n皮带夹板（上下座连接）安装\n29\n从动手臂粱（主臂）检查\n4\n下降待机感应铁片与手臂感应块安装\n30\n从动手臂粱（主臂）、光轨安装\n5\n感应开关固定支架与电感式传感器安装\n31\n从动手臂梁滑",
+      "score": 0.9838709677419354,
+      "source_path": "document://doc_20260401092629_f3b52aa5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.64161927,
+      "lexical_score": 42.12641253449843,
+      "fused_score": 0.03225806451612903
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260406015929_d45fe238-chunk-0",
+      "document_id": "doc_20260406015929_d45fe238",
+      "document_name": "FAW05-1000P-X1000-Y2000系列#横行部#作业指导书.pptx",
+      "snippet": "[Slide 1]\n\n横行部部品作业指导书\n（\n FAW05-1000P-X1000-Y2000\n系列\n）\n著\n-\n生技部\n2020.03.06\n与世界同步的工业机器人\nKeep  pace  with  the  world\n\n[Slide 2]\n\n目录\nContents\n产品总览\n3\n横行气阀罩壳固定件与气阀罩壳固定钣金安装\n31\n上机座、吊环安装\n4\n同步带安装（一）\n32\n打磨\n5\n同步带",
+      "score": 0.9457932692307692,
+      "source_path": "document://doc_20260406015929_d45fe238/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.57597613,
+      "lexical_score": 31.126828773121233,
+      "fused_score": 0.031009615384615385
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260406015929_2eeeccaf-chunk-0",
+      "document_id": "doc_20260406015929_2eeeccaf",
+      "document_name": "FAW05-1000P-X1000-Y2000#副手臂部品#作业指导书SOP.pptx",
+      "snippet": "[Slide 1]\n\n副手臂部品\n作业指导书\n（\nFAW05-1000P-X1000-Y2000\n系列）\n著\n-\n生技部\n2020.03.17\n\n[Slide 2]\n\n目录\nContents\n产品总览\n3\n扎线固定座安装\n29\n副手臂梁检查\n4\n欧式端子安装\n30\n副手臂梁、光轨安装\n5\n副手臂粱端板\n(\n下\n)\n安装\n31\n滑块（含油嘴）安装\n6\n夹具与夹具过渡板安装\n32\n下降待机感应铁片安装",
+      "score": 0.939350864723999,
+      "source_path": "document://doc_20260406015929_2eeeccaf/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5890274,
+      "lexical_score": 28.762833417390695,
+      "fused_score": 0.030798389007344232
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331083626_2236f7b1-chunk-0",
+      "document_id": "doc_20260331083626_2236f7b1",
+      "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+      "snippet": "[Slide 1]\n\n电控箱部品\n作业\n指导\n书\n（\nFAW05-1000P-X1000-Y2000\n系列）\n著\n-\n生技部\n2020.02.17\n1\n\n[Slide 2]\n\n目录\nContents\n2\n产品总览\n3\n铰链固定\n29\n电控箱固定支架固定\n4\n电控箱盖固定\n30\n电控箱底板与开关电源固定\n5\n电控箱盖底板固定\n31\n平板式开关电源与滤波器固定\n6\nA08\n铝轨固定\n3\n32\n滤波器电",
+      "score": 0.8626384493670886,
+      "source_path": "document://doc_20260331083626_2236f7b1/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5822576,
+      "lexical_score": 19.98057328031836,
+      "fused_score": 0.028283227848101264
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "皮带轮部品（通用）作业指导书 目录包含哪些章节",
+    "query_type": "fixed",
+    "query_granularity": "medium",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 14,
+      "department_lexical_count": 16,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 15,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "皮带轮部品（通用）作业指导书 目录包含哪些章节",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "medium",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 14,
+      "lexical_count": 16,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 1.0,
+      "avg_top_n_score": 0.9463307102127585,
+      "quality_top1_threshold": 0.55,
+      "quality_avg_threshold": 0.45,
+      "top_k_unique_doc_count": 5,
+      "top1_literal_coverage": 0.6363636363636364
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f470103f",
+          "chunk_id": "doc_20260401092629_f470103f-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_0e157e08",
+          "chunk_id": "doc_20260401023359_0e157e08-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_e57c111d",
+          "chunk_id": "doc_20260401023359_e57c111d-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_3b4d7d2f",
+          "chunk_id": "doc_20260406020404_3b4d7d2f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023358_e0a01f4b",
+          "chunk_id": "doc_20260401023358_e0a01f4b-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_97beed34",
+          "chunk_id": "doc_20260406020404_97beed34-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406015930_69146d90",
+          "chunk_id": "doc_20260406015930_69146d90-chunk-7",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401092629_f470103f",
+          "chunk_id": "doc_20260401092629_f470103f-chunk-0",
+          "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.67745894,
+          "lexical_score": 47.39266910839164,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6775，词法 47.3927，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+          "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.64161927,
+          "lexical_score": 42.12641253449843,
+          "fused_score": 0.03225806451612903,
+          "final_score": 0.9838709677419354,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6416，词法 42.1264，融合 0.0323。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260406015929_d45fe238",
+          "chunk_id": "doc_20260406015929_d45fe238-chunk-0",
+          "document_name": "FAW05-1000P-X1000-Y2000系列#横行部#作业指导书.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.57597613,
+          "lexical_score": 31.126828773121233,
+          "fused_score": 0.031009615384615385,
+          "final_score": 0.9457932692307692,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5760，词法 31.1268，融合 0.0310。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260406015929_2eeeccaf",
+          "chunk_id": "doc_20260406015929_2eeeccaf-chunk-0",
+          "document_name": "FAW05-1000P-X1000-Y2000#副手臂部品#作业指导书SOP.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5890274,
+          "lexical_score": 28.762833417390695,
+          "fused_score": 0.030798389007344232,
+          "final_score": 0.939350864723999,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5890，词法 28.7628，融合 0.0308。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331083626_2236f7b1",
+          "chunk_id": "doc_20260331083626_2236f7b1-chunk-0",
+          "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5822576,
+          "lexical_score": 19.98057328031836,
+          "fused_score": 0.028283227848101264,
+          "final_score": 0.8626384493670886,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5823，词法 19.9806，融合 0.0283。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401092629_f470103f",
+        "chunk_id": "doc_20260401092629_f470103f-chunk-0",
+        "document_name": "FAW05#皮带轮部品（通用）#作业指导书SOP.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.67745894,
+        "lexical_score": 47.39266910839164,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6775，词法 47.3927，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+        "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.64161927,
+        "lexical_score": 42.12641253449843,
+        "fused_score": 0.03225806451612903,
+        "final_score": 0.9838709677419354,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6416，词法 42.1264，融合 0.0323。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260406015929_d45fe238",
+        "chunk_id": "doc_20260406015929_d45fe238-chunk-0",
+        "document_name": "FAW05-1000P-X1000-Y2000系列#横行部#作业指导书.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.57597613,
+        "lexical_score": 31.126828773121233,
+        "fused_score": 0.031009615384615385,
+        "final_score": 0.9457932692307692,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5760，词法 31.1268，融合 0.0310。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260406015929_2eeeccaf",
+        "chunk_id": "doc_20260406015929_2eeeccaf-chunk-0",
+        "document_name": "FAW05-1000P-X1000-Y2000#副手臂部品#作业指导书SOP.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5890274,
+        "lexical_score": 28.762833417390695,
+        "fused_score": 0.030798389007344232,
+        "final_score": 0.939350864723999,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5890，词法 28.7628，融合 0.0308。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331083626_2236f7b1",
+        "chunk_id": "doc_20260331083626_2236f7b1-chunk-0",
+        "document_name": "FAW05-1000P-X1000-Y2000#电控箱部品#作业指导书SOP.pptx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5822576,
+        "lexical_score": 19.98057328031836,
+        "fused_score": 0.028283227848101264,
+        "final_score": 0.8626384493670886,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5823，词法 19.9806，融合 0.0283。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f470103f",
+        "chunk_id": "doc_20260401092629_f470103f-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_0e157e08",
+        "chunk_id": "doc_20260401023359_0e157e08-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_e57c111d",
+        "chunk_id": "doc_20260401023359_e57c111d-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_3b4d7d2f",
+        "chunk_id": "doc_20260406020404_3b4d7d2f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023358_e0a01f4b",
+        "chunk_id": "doc_20260401023358_e0a01f4b-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_97beed34",
+        "chunk_id": "doc_20260406020404_97beed34-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406015930_69146d90",
+        "chunk_id": "doc_20260406015930_69146d90-chunk-7",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

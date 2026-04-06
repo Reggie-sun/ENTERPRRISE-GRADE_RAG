@@ -1,0 +1,520 @@
+{
+  "snapshot_id": "rsp_32bcca5e9f4e4d07",
+  "trace_id": "trc_retrieval_7b13be02e6e044cb",
+  "request_id": "req_retrieval_bcf1a37bb2e54c33",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:15:28.484172Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "电机齿轮装配时齿轮齿条间隙调整标准",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "电机齿轮装配时齿轮齿条间隙调整标准",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "齿条的间隙调节完成后，再锁紧，紧固扭矩详见《WI-SJ-005》\n\n所有螺丝用红色油性记号笔100%在螺丝上画线且画线方向一致\n\n内容\n\n通过图中两颗螺丝来调节齿轮与齿条的间隙，检测方法详看下方步骤；齿轮与齿条的间隙控制在0.15mm-0.3mm以内即可；\n\n调节完成后，将减速机固定螺丝锁紧，紧固扭矩详见《WI-SJ-005》\n\n注意：用压铅法检查齿轮合间隙时，铅丝直径不宜超过隙的 3倍，铅丝的长",
+      "score": 0.9919354838709679,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.66991717,
+      "lexical_score": 45.75861644128198,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设",
+      "score": 0.9919354838709679,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.66792834,
+      "lexical_score": 48.066515413408595,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401092629_f3b52aa5-chunk-18",
+      "document_id": "doc_20260401092629_f3b52aa5",
+      "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+      "snippet": "]\n\n引拔齿轮间隙调节\n块\n安装\n39\n\nStep1\n检查\n外观表面无磕碰、变形、刮伤等不良现象；\n所有螺纹孔无残渣、无堵塞；\n规格型号与清单一致\n；\n\nStep2\n内六角\n扳手\n5MM\n（紧固\n扭矩\n12.5N\n•\nm\n）\nFAW05-1000P-X1000-Y2000\n系列\n-\n主手臂\n【注】：上岗必须经过培训遵守操作规范\n\n[Slide 40]\n\n手臂齿轮罩\n壳\n安装\n40\n\nStep",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260401092629_f3b52aa5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.66370213,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331062759_0867e1df-chunk-49",
+      "document_id": "doc_20260331062759_0867e1df",
+      "document_name": "FA05#悬挂式全伺服机械手（正装）单臂式（装配SOP)#A0.pdf",
+      "snippet": "........................................................................................................ - 99 -\n引拔齿轮间隙调节 ...............................................................................",
+      "score": 0.953125,
+      "source_path": "document://doc_20260331062759_0867e1df/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.6396658,
+      "lexical_score": 34.599364161229154,
+      "fused_score": 0.03125
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-56",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "间距是否在4m以下\n安装吊夹，以便控制距离在4m以下\n弯曲部以及末端紧固绝缘子两端的吊夹安装间距\n集电臂安装角棒有无明显的弯曲\n是否在500mm以下\n安装吊夹，以便控制距离在500mm以下\nO\n吊夹\n固定螺栓有无松动\n拧紧\nO\n有明显弯曲产生时，需修正\nO\n日\n↓弯曲\n树脂部有无破损、裂纹\n有破损和裂纹产生时，需更换产品\nO\n福\n中间固定绝缘子安装后，缝隙是否为15mm±5\n调整缝隙为15mm±5",
+      "score": 0.46923076923076923,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.62532496,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "电机齿轮装配时齿轮齿条间隙调整标准",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_mono_document_literal_mismatch(unique_docs=3,literal_coverage=0.2500)",
+    "recall_counts": {
+      "department_vector_count": 11,
+      "department_lexical_count": 15,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 3,
+      "supplemental_vector_count": 8,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "电机齿轮装配时齿轮齿条间隙调整标准",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 11,
+      "lexical_count": 15,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9621212121212123,
+      "avg_top_n_score": 0.8922177742778301,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_mono_document_literal_mismatch(unique_docs=3,literal_coverage=0.2500)",
+      "vector_count": 8,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401092630_00587936",
+          "chunk_id": "doc_20260401092630_00587936-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-184",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_8d419e28",
+          "chunk_id": "doc_20260401092629_8d419e28-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-43",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328034931_6d36c484",
+          "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.66991717,
+          "lexical_score": 45.75861644128198,
+          "fused_score": 0.03252247488101534,
+          "final_score": 0.9919354838709679,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6699，词法 45.7586，融合 0.0325。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.66792834,
+          "lexical_score": 48.066515413408595,
+          "fused_score": 0.03252247488101534,
+          "final_score": 0.9919354838709679,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6679，词法 48.0665，融合 0.0325。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-18",
+          "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.66370213,
+          "lexical_score": null,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6637，融合 0.0159。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-49",
+          "document_name": "FA05#悬挂式全伺服机械手（正装）单臂式（装配SOP)#A0.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.6396658,
+          "lexical_score": 34.599364161229154,
+          "fused_score": 0.03125,
+          "final_score": 0.953125,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6397，词法 34.5994，融合 0.0312。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-56",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.62532496,
+          "lexical_score": null,
+          "fused_score": 0.015384615384615385,
+          "final_score": 0.46923076923076923,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6253，融合 0.0154。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-1",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.66991717,
+        "lexical_score": 45.75861644128198,
+        "fused_score": 0.03252247488101534,
+        "final_score": 0.9919354838709679,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6699，词法 45.7586，融合 0.0325。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.66792834,
+        "lexical_score": 48.066515413408595,
+        "fused_score": 0.03252247488101534,
+        "final_score": 0.9919354838709679,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6679，词法 48.0665，融合 0.0325。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-18",
+        "document_name": "FAW05-1000P-X1000-Y2000#主手臂部品#作业指导书SOP.pptx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.66370213,
+        "lexical_score": null,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6637，融合 0.0159。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-49",
+        "document_name": "FA05#悬挂式全伺服机械手（正装）单臂式（装配SOP)#A0.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.6396658,
+        "lexical_score": 34.599364161229154,
+        "fused_score": 0.03125,
+        "final_score": 0.953125,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6397，词法 34.5994，融合 0.0312。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-56",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.62532496,
+        "lexical_score": null,
+        "fused_score": 0.015384615384615385,
+        "final_score": 0.46923076923076923,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6253，融合 0.0154。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401092630_00587936",
+        "chunk_id": "doc_20260401092630_00587936-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-184",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_8d419e28",
+        "chunk_id": "doc_20260401092629_8d419e28-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-43",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-48",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328034931_6d36c484",
+        "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

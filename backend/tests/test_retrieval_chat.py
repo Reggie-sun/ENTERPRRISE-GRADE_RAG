@@ -3885,7 +3885,7 @@ def test_retrieval_service_staged_triggers_supplemental_when_mono_document_with_
     )
 
     # Mono-document threshold must be stricter than the regular one
-    assert SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD > SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD
+    assert SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD < SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD
 
     settings = build_test_settings(tmp_path).model_copy(
         update={

@@ -1,0 +1,519 @@
+{
+  "snapshot_id": "rsp_c2e06aad935c4a2b",
+  "trace_id": "trc_retrieval_b9dffa17b84f4ef4",
+  "request_id": "req_retrieval_76c8369097a44097",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:18:51.734544Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "电镀镜光表面A面表面积1000以下麻点允许数量",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "电镀镜光表面A面表面积1000以下麻点允许数量",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401085300_13d0ce46-chunk-35",
+      "document_id": "doc_20260401085300_13d0ce46",
+      "document_name": "V1_PLAN.md",
+      "snippet": "X.md`\n\n执行口径补充：\n\n- 字段命名、分页、时间、错误 envelope、稳定面 vs 诊断面边界，以 `MAIN_CONTRACT_MATRIX.md` 为准\n- `V1_PLAN.md` 负责说明为什么冻结、冻结到哪一层、何时允许继续演进\n\n契约冻结约束规则：\n\n以下规则适用于 `MAIN_CONTRACT_MATRIX.md` 中列出的所有已冻结稳定字段。任何改动必须先同步 `V1_",
+      "score": 0.9121621621621622,
+      "source_path": "document://doc_20260401085300_13d0ce46/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.40468162,
+      "lexical_score": 13.501208584227637,
+      "fused_score": 0.029906956136464335
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "：刀具归还对刀及维修记录界面示意图】\n\n（4）报废刀具需通过系统生成 “报废 ” 标识，注明报废日期、原因、图片及判定人；报废刀具处置回收或再利用，过程需在系统中完整记录存档。\n\n我方响应：完全满足。刀具报废时，需通过系统生成“报废”标识，明确录入报废日期、报废原因、报废图片及判定人信息，确保报废流程规范；报废刀具的处置回收或再利用过程，可在系统中完整记录存档，实现报废刀具全流程可追溯，便于后续审",
+      "score": 0.9037532923617206,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.41176635,
+      "lexical_score": 5.399278456960182,
+      "fused_score": 0.029631255487269532
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "滞刀具。所有报表可调用。\n\n我方响应：完全满足。系统具备完善的报表分析功能，至少包含刀具使用率与寿命对比报表、按机床/工件/时间段统计的消耗成本报表、维修/报废分析报表及库存状态报表，所有报表支持柱状图、折线图、饼图等图表化展示，直观清晰；可基于历史消耗数据（按机床、工件、一个季度等维度）自动计算安全库存阈值，当库存低于阈值时，系统自动推送补货建议（含供应商、补货数量），并生成采购清单，采购清单支",
+      "score": 0.8412998299641035,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.4198277,
+      "lexical_score": 2.8963773448202543,
+      "fused_score": 0.027583600982429624
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "查询结果精准、高效；同时支持库存位置信息更正功能，当刀具库位调整时，管理人员可便捷修改库存位置，确保库存位置与实际存放位置一致，避免库位混乱。【附图14：库存信息查询及库位更正操作示意图】\n\n（5）刀具进出库管理可定义刀具属性（易耗品 / 耐用品），耐用品分新旧、优先领旧；按一次性或折旧统计成本，按机床统计领用、报废信息及使用成本。\n\n我方响应：完全满足。系统支持自定义刀具属性（易耗品/耐用品），",
+      "score": 0.814636752136752,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.39785337,
+      "lexical_score": 4.418268208857949,
+      "fused_score": 0.026709401709401708
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+      "document_id": "doc_20260328034931_6d36c484",
+      "document_name": "ocr_mobile_fresh_validation.png",
+      "snippet": "OCR构建收口验证\n批次20260328-115200\n设备巡检步骤A1A2 A3\nSTEP3CHECKPRESSURE13579",
+      "score": 0.5,
+      "source_path": "document://doc_20260328034931_6d36c484/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.44342571,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "电镀镜光表面A面表面积1000以下麻点允许数量",
+    "query_type": "fixed",
+    "query_granularity": "medium",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 12,
+      "department_lexical_count": 12,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 6,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "电镀镜光表面A面表面积1000以下麻点允许数量",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "medium",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 12,
+      "lexical_count": 12,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 0.9121621621621622,
+      "avg_top_n_score": 0.7943704073249477,
+      "quality_top1_threshold": 0.55,
+      "quality_avg_threshold": 0.45,
+      "top_k_unique_doc_count": 3,
+      "top1_literal_coverage": 0.25
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-36",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328035056_fd1b630f",
+          "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-63",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-33",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328022431_8bf3fa29",
+          "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-35",
+          "document_name": "V1_PLAN.md",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.40468162,
+          "lexical_score": 13.501208584227637,
+          "fused_score": 0.029906956136464335,
+          "final_score": 0.9121621621621622,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4047，词法 13.5012，融合 0.0299。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.41176635,
+          "lexical_score": 5.399278456960182,
+          "fused_score": 0.029631255487269532,
+          "final_score": 0.9037532923617206,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4118，词法 5.3993，融合 0.0296。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.4198277,
+          "lexical_score": 2.8963773448202543,
+          "fused_score": 0.027583600982429624,
+          "final_score": 0.8412998299641035,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4198，词法 2.8964，融合 0.0276。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.39785337,
+          "lexical_score": 4.418268208857949,
+          "fused_score": 0.026709401709401708,
+          "final_score": 0.814636752136752,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.3979，词法 4.4183，融合 0.0267。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260328034931_6d36c484",
+          "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+          "document_name": "ocr_mobile_fresh_validation.png",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.44342571,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4434，融合 0.0164。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-35",
+        "document_name": "V1_PLAN.md",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.40468162,
+        "lexical_score": 13.501208584227637,
+        "fused_score": 0.029906956136464335,
+        "final_score": 0.9121621621621622,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4047，词法 13.5012，融合 0.0299。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-13",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.41176635,
+        "lexical_score": 5.399278456960182,
+        "fused_score": 0.029631255487269532,
+        "final_score": 0.9037532923617206,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4118，词法 5.3993，融合 0.0296。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-14",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.4198277,
+        "lexical_score": 2.8963773448202543,
+        "fused_score": 0.027583600982429624,
+        "final_score": 0.8412998299641035,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4198，词法 2.8964，融合 0.0276。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-5",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.39785337,
+        "lexical_score": 4.418268208857949,
+        "fused_score": 0.026709401709401708,
+        "final_score": 0.814636752136752,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.3979，词法 4.4183，融合 0.0267。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260328034931_6d36c484",
+        "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+        "document_name": "ocr_mobile_fresh_validation.png",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.44342571,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4434，融合 0.0164。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-36",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-6",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-37",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328035056_fd1b630f",
+        "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-63",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-15",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-33",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328022431_8bf3fa29",
+        "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-18",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "session_id": "WFS-rag-fast-launch-opt",
+  "type": "brainstorming",
+  "topic": "基于现有代码优化 RAG 快速首发方案 — 1周内全量发布，评估链补全，保持后续可优化",
+  "selected_roles": ["system-architect", "test-strategist", "product-manager", "data-architect"],
+  "phase_completed": "artifacts",
+  "timestamp": "2026-04-06",
+  "count_parameter": 4,
+  "feature_ids": ["F-001", "F-002", "F-003", "F-004", "F-005", "F-006", "F-007", "F-008"],
+  "non_goals": [
+    "SOP 功能",
+    "Chunk/Router/Rerank 重构",
+    "新 API 接口",
+    "通用聊天助手定位",
+    "新基础设施 (K8s, Prometheus)",
+    "Retrieval 内部调整"
+  ]
+}

@@ -12,26 +12,25 @@
 > - 只要 baseline、运行时阈值、阶段判断、当前 blocker 发生变化，必须同步更新本文件
 > - 如果没有同步更新，本文件应视为可能漂移的快照，不能单独作为继续 / 暂停某阶段的判断依据
 
-更新时间： `2026-04-06 10:10`
+更新时间： `2026-04-06 11:35`
 
 ---
 
 ## 1. 当前阶段
 
 - 当前主线： `Phase 1B-B`
-- 当前状态: `gate 复核完成，GATE NOT PASSED；发现 2 个新问题：cross-013 department_sufficient 误判 + sop-005 阈值不稳定性`
+- 当前状态: `gate verdict 审计中，GATE NOT PASSED`
 - `Phase 2A / Gate`: 已完成
-- `Phase 2B`: **GATE NOT PASSED — 当前仍不可进入 Phase 2B 正式实现**
+- `Phase 2B`: **GATE NOT PASSED — 不能进入 Phase 2B 正式实现**
 - `Phase 3`: 未开始
 
 **当前口径**:
 - `cross-007 / cross-009 / cross-010` 的 cross-dept top-k 回退，已在当前工作区代码上收口
+- `cross-013` 的 mono-document literal mismatch 已修复
 - 当前工作区代码在 fresh API (`127.0.0.1:8021`) 上可复现：
-  - 31 条原始样本基线：`top1=96.77%, topk=100%, sup_precision=1.0, sup_recall=1.0`
-  - 43 条含边界样本：`top1=95.35%, topk=97.67%, sup_precision=0.957, sup_recall=0.957`
+  - 43 条样本：`top1=97.67%, topk=100%, sup_precision=0.92, sup_recall=1.0`
 - 默认 `localhost:8020` 命中 Docker 容器 `enterprise-rag-api`（由 docker-proxy 绑定端口）
-- 当前 gate 复核为保证可重复性，统一使用 `127.0.0.1:8021`；若要改回 8020，需先做环境一致性校验
-- **Phase 2B readiness / sample gate 复核已完成，结论：GATE NOT PASSED**（详见下方 §3 最新 eval 结果和 §5 gate 判决）
+- 当前 gate 复核为保证可重复性，统一使用 `127.0.0.1:8021`
 
 ---
 
@@ -60,17 +59,23 @@
 
 ### 最新 eval 结果（含 boundary 样本）
 
-- `eval/results/eval_20260406_100642.json` — 43 条样本 gate 复核 eval
+- `eval/results/eval_20260406_113356.json` — 43 条样本最新 gate 复核 eval（修复后）
 - 运行环境：fresh local uvicorn `http://127.0.0.1:8021`
 
-关键指标：
-- `top1_accuracy = 95.35%`（原 31 条为 96.77%，新增样本拉低 1.42pp）
-- `topk_recall = 97.67%`（原 100.00%，cross-013 完全未命中）
-- `expected_doc_coverage_avg = 97.67%`
-- `supplemental_precision = 0.957`（原 1.0，sop-005 保守误触发导致下降）
-- `supplemental_recall = 0.957`（原 1.0，cross-013 漏触发导致下降）
-- `conservative_trigger_count = 1`（原 0，sop-005 在本轮出现保守误触发）
-- `term_coverage_avg = 88.57%`
+关键指标（最新结果）:
+- `top1_accuracy = 97.67%`
+- `topk_recall = 100.00%`
+- `expected_doc_coverage_avg = 100.00%`
+- `supplemental_precision = 0.92`
+- `supplemental_recall = 1.0`
+- `conservative_trigger_count = 2`
+- `term_coverage_avg = 88.95%`
+
+**稳定性警告**：7 次 eval 运行结果不稳定：
+- `conservative_trigger_count` 波动范围：1 ~ 11
+- `supplemental_precision` 波动范围：0.676 ~ 0.957
+- `cross-013` 在 `eval_20260406_112629.json` 中失败（top1=0.0, topk=0.0）
+- `sop-005` 和 `fine-001` 存在 HNSW 非确定性导致的边界抖动
 
 ### 新增样本的 eval 发现
 
@@ -307,36 +312,61 @@
 
 ## 5. 当前最小下一步
 
-**gate 复核已完成，结论：GATE NOT PASSED**
+**gate verdict 审计完成，结论：GATE NOT PASSED**
 
-当前已发现的具体问题：
-1. `cross-013` — department_sufficient 在高置信度语义重叠时误判，supplemental 未触发
-2. `sop-005` — fine_query_avg_top_n_threshold 对非确定性向量搜索过于敏感，边界 case 振荡
+### 修复已提交（代码层面）
+
+1. **cross-013 修复** — 新增 `low_quality_by_mono_document` 检查，当 top-K 结果全部来自单一文档且 literal coverage < 0.35 时触发 supplemental
+2. **_literal_guard_tokens 修复** — 修复 lazy lexical retriever 创建，使 literal coverage 计算正常工作
+3. **avg_top_n 边界抖动抑制** — 新增 `SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE = 0.10`，当 avg_top_n 在阈值附近 10% 范围内且 top1 强、literal coverage 良好时抑制触发
+
+### 但 eval 稳定性不足以支撑 GATE PASSED
+
+7 次 eval 运行（`eval_20260406_111352.json` ~ `eval_20260406_113356.json`）的 core metrics 对比：
+
+| 指标 | 111352 | 111935 | 112329 | **112629** | 112840 | 113111 | **113356** |
+|------|--------|--------|--------|------------|--------|--------|------------|
+| top1_accuracy | 97.67% | 97.67% | 97.67% | **95.35%** | 97.67% | 97.67% | 97.67% |
+| topk_recall | 100% | 100% | 100% | **97.67%** | 100% | 100% | 100% |
+| sup_precision | 0.676 | 0.719 | 0.719 | 0.957 | 0.793 | 0.719 | 0.92 |
+| conservative_trig | **11** | **9** | **9** | 1 | **6** | **9** | 2 |
+
+**关键不稳定点**：
+- `conservative_trigger_count` 在 1 ~ 11 之间波动，不稳定
+- `supplemental_precision` 在 0.676 ~ 0.957 之间波动，不稳定
+- `cross-013` 在 `eval_20260406_112629.json` 中失败（top1=0.0, topk=0.0, supp=False, basis=department_sufficient），HNSW 非确定性导致 mono-document 检查条件不满足
+- `sop-005` / `fine-001` 在多数运行中出现保守误触发，但在 112629 中表现不同（sop-005 正常、fine-001 触发），说明 HNSW 非确定性对边界 case 的影响不可控
+
+### 新增测试覆盖不足
+
+- `test_retrieval_service_staged_triggers_supplemental_when_mono_document_with_high_score_semantic_mismatch` — 验证了 mono-document 修复行为（通过 mock 构造 cross-013 场景），**覆盖充分**
+- `test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_is_strong` — **只验证常量存在性**（`SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE > 0 and < 0.20`），**未验证实际抖动抑制行为**，覆盖不足
+
+### 判定
+
+- `cross-013` 的 mono-document 修复在 6/7 次 eval 中生效，但在 112629 中回归（HNSW 非确定性导致 top-K unique doc count > 1，mono-document 条件不满足）
+- `sop-005` / `fine-001` 的抖动抑制只在常量层面验证，行为验证缺失
+- `conservative_trigger_count` 从 1 到 11 的波动说明边界 case 行为远未收敛
+- **不能凭单份最优结果（113356: cons=2, sup_prec=0.92）宣称 GATE PASSED**
 
 如果继续做 `Phase 1B-B`, 默认下一步是:
 
 1. **[已完成]** 固化运行基线
-   - 确认事实：`8020` 默认命中 Docker 容器实例，`8021` 是 fresh local uvicorn，二者是不同运行实例
-   - 基线已可复现：两次独立运行结果一致（`eval_20260406_081609` / `eval_20260406_082413`）
-2. **[已完成]** Phase 2B readiness / sample gate 复核
-   - gate 复核 eval：`eval/results/eval_20260406_100642.json`
-   - 12 条新边界样本已验证（11 通过 / 1 失败）
-   - 1 条原始样本出现不稳定行为（sop-005）
-   - **结论：GATE NOT PASSED**
-3. **[下一步建议]** 解决 gate 复核暴露的 2 个问题
-   - `cross-013`: 需要在 department_sufficient 判定中增加语义匹配验证（不能仅依赖 score 阈值）
-   - `sop-005`: 需要调整 fine_query_avg_top_n_threshold 或增加振荡容忍机制
-   - 解决后需要重跑 43 条样本验证
+2. **[已完成]** Phase 2B readiness / sample gate 复核 — 代码修复已提交
+3. **[未完成]** gate verdict 稳定性验证
+   - 需要连续多次 eval 中 `conservative_trigger_count` 和 `supplemental_precision` 稳定
+   - 需要补充 `avg_top_n` 抖动抑制的行为测试（不仅是常量存在性）
+   - 需要分析 `cross-013` 在 112629 中回归的根因（HNSW 非确定性如何影响 mono-document 条件）
 4. **[禁止]**
+   - 在未完成稳定性验证前进入 `Phase 2B` chunk 实现
    - 在未做环境一致性校验前，把 `8020` 与 `8021` 结果混用为同一基线
-   - 在 gate 未通过的情况下进入 `Phase 2B` 正式实现
    - 修改样本定义来掩盖问题
 
 ---
 
 ## 6. 当前禁止动作
 
-在 `Phase 1B-B` gate 未明确前, 默认不要做:
+在 `Phase 2B` 实现阶段，默认不要做:
 - 把 fresh API 的恢复结果直接等同于“readiness 已完成”
 - 未经 gate 复核就正式开始 `Phase 2B` chunk 实现
 - 调 router / hybrid 权重作为主路径

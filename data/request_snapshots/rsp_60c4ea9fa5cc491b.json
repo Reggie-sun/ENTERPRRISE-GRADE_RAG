@@ -1,0 +1,530 @@
+{
+  "snapshot_id": "rsp_60c4ea9fa5cc491b",
+  "trace_id": "trc_retrieval_a091cbba11d14862",
+  "request_id": "req_retrieval_f8f7095b4879482d",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T05:14:48.589041Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_production_technology_employee_demo",
+    "username": "production.technology.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4",
+      "score": 0.9838709677419354,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6331705,
+      "lexical_score": 26.196251286675686,
+      "fused_score": 0.03225806451612903
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+      "document_id": "doc_20260330055115_2056c1bf",
+      "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+      "snippet": "电焊作业安全操作规范\t文件编号\tWI-SC-009\n版本号\tA/0\n页次\t2\n生效日期\t2022-05-06\n1.目的\n用于在电焊作业过程中，规范安全作业行为，增强安全意识。\n2.适用范围\n公司所有电焊作业涉及场景。\n3.操作说明\n3.1、参加焊接作业的所有人员，要经安全技术培训、考试合格，取得特种作业合格证。\n3.2、电焊机开机前，必须检查电焊机电线绝缘层、插头是否完好，如发现破损，不得使用。\n",
+      "score": 0.9533577533577533,
+      "source_path": "document://doc_20260330055115_2056c1bf/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.56102073,
+      "lexical_score": 16.888502959570253,
+      "fused_score": 0.03125763125763126
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主",
+      "score": 0.9019352033050663,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6088559,
+      "lexical_score": 12.808774871213945,
+      "fused_score": 0.029571646010002173
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 16.18830433919941,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401053010_fb598ba4-chunk-3",
+      "document_id": "doc_20260401053010_fb598ba4",
+      "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+      "snippet": "钳口后方后即可（如作业图四）\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5\t\t切割片是否回位\t\t\t\t回到钳口后方\t\t\t\t\t目视\n\t6\t按下钳松开关，打开防护门，或从右侧送料架取出物料。\n\n版本\t更改标记\t\t处数\t更改文件号\t\t签字\t\t\t\t日期\t\t版本\t\t更改标记\t\t\t处数\t\t更改文件号\t\t\t签字\t\t\t日期\t\t\t\t编制\t\t\t审核\t\t\t\t\t\t批准\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260401053010_fb598ba4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5656465,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 19,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 11,
+      "department_lexical_count": 13,
+      "department_fused_count": 20,
+      "department_after_ocr": 19,
+      "department_unique_docs_after_ocr": 14,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "WI-SJ-052 摇臂钻床安全操作规范 4.25 下班后要做什么",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 11,
+      "lexical_count": 13,
+      "fused_count": 20,
+      "effective_count": 19,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 0.9838709677419354,
+      "avg_top_n_score": 0.758457784880951,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260330055116_f9c87da8",
+          "chunk_id": "doc_20260330055116_f9c87da8-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062308_21e15fba",
+          "chunk_id": "doc_20260331062308_21e15fba-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-83",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406015929_d45fe238",
+          "chunk_id": "doc_20260406015929_d45fe238-chunk-8",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-12",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_5ce6fd03",
+          "chunk_id": "doc_20260406020404_5ce6fd03-chunk-60",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406015929_2eeeccaf",
+          "chunk_id": "doc_20260406015929_2eeeccaf-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406015930_69146d90",
+          "chunk_id": "doc_20260406015930_69146d90-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6331705,
+          "lexical_score": 26.196251286675686,
+          "fused_score": 0.03225806451612903,
+          "final_score": 0.9838709677419354,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6332，词法 26.1963，融合 0.0323。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260330055115_2056c1bf",
+          "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+          "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.56102073,
+          "lexical_score": 16.888502959570253,
+          "fused_score": 0.03125763125763126,
+          "final_score": 0.9533577533577533,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5610，词法 16.8885，融合 0.0313。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6088559,
+          "lexical_score": 12.808774871213945,
+          "fused_score": 0.029571646010002173,
+          "final_score": 0.9019352033050663,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6089，词法 12.8088，融合 0.0296。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 16.18830433919941,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 16.1883，融合 0.0156。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401053010_fb598ba4",
+          "chunk_id": "doc_20260401053010_fb598ba4-chunk-3",
+          "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5656465,
+          "lexical_score": null,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5656，融合 0.0156。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6331705,
+        "lexical_score": 26.196251286675686,
+        "fused_score": 0.03225806451612903,
+        "final_score": 0.9838709677419354,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6332，词法 26.1963，融合 0.0323。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260330055115_2056c1bf",
+        "chunk_id": "doc_20260330055115_2056c1bf-chunk-0",
+        "document_name": "WI-SC-009#电焊作业安全操作规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.56102073,
+        "lexical_score": 16.888502959570253,
+        "fused_score": 0.03125763125763126,
+        "final_score": 0.9533577533577533,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5610，词法 16.8885，融合 0.0313。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6088559,
+        "lexical_score": 12.808774871213945,
+        "fused_score": 0.029571646010002173,
+        "final_score": 0.9019352033050663,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6089，词法 12.8088，融合 0.0296。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 16.18830433919941,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 16.1883，融合 0.0156。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401053010_fb598ba4",
+        "chunk_id": "doc_20260401053010_fb598ba4-chunk-3",
+        "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5656465,
+        "lexical_score": null,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5656，融合 0.0156。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-0",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260330055116_f9c87da8",
+        "chunk_id": "doc_20260330055116_f9c87da8-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062308_21e15fba",
+        "chunk_id": "doc_20260331062308_21e15fba-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-83",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-11",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406015929_d45fe238",
+        "chunk_id": "doc_20260406015929_d45fe238-chunk-8",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-12",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_5ce6fd03",
+        "chunk_id": "doc_20260406020404_5ce6fd03-chunk-60",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406015929_2eeeccaf",
+        "chunk_id": "doc_20260406015929_2eeeccaf-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406015930_69146d90",
+        "chunk_id": "doc_20260406015930_69146d90-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}
