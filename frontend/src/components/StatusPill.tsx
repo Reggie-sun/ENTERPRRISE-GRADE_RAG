@@ -1,32 +1,31 @@
 /**
- * 状态徽章组件
- * 用于显示操作状态
+ * Status Pill - Clear state indication
  */
 
 import type { ReactNode } from 'react';
 
 interface StatusPillProps {
-  children: ReactNode;  // 徽章内容。
-  tone?: 'default' | 'ok' | 'warn' | 'error';  // 状态色调。
+  children: ReactNode;
+  tone?: 'default' | 'ok' | 'warn' | 'error';
 }
 
 export function StatusPill({ children, tone = 'default' }: StatusPillProps) {
-  // 根据状态选择背景色和文字色。
   const toneStyles = {
-    default: 'bg-[rgba(23,32,42,0.06)]',  // 默认灰色。
-    ok: 'bg-[rgba(31,122,82,0.11)] text-ok',  // 成功绿色。
-    warn: 'bg-[rgba(141,93,22,0.12)] text-warn',  // 警告黄色。
-    error: 'bg-[rgba(182,70,47,0.12)] text-accent-deep',  // 错误红色。
+    default: 'bg-[rgba(15,23,42,0.06)] text-ink-soft',
+    ok: 'bg-[#d1fae5] text-[#059669]',
+    warn: 'bg-[#fef3c7] text-[#d97706]',
+    error: 'bg-[#fee2e2] text-[#dc2626]',
   };
 
   return (
     <div
       className={`
         inline-flex items-center gap-2
-        min-h-9 w-fit
-        px-3 py-2
+        min-h-8 w-fit
+        px-3 py-1.5
         rounded-full
-        text-sm font-bold
+        text-xs font-semibold
+        tracking-wide
         ${toneStyles[tone]}
       `}
     >

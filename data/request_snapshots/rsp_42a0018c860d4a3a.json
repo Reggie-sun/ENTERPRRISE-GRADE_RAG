@@ -1,0 +1,785 @@
+{
+  "snapshot_id": "rsp_42a0018c860d4a3a",
+  "trace_id": "trc_retrieval_7e0e9bb89e3042e5",
+  "request_id": "req_retrieval_0dad9d3419454a47",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-05T06:29:36.368518Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_production_technology_employee_demo",
+    "username": "production.technology.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "刀具管理系统刀具基础数据包括哪些内容",
+    "top_k": 10,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 10,
+    "candidate_top_k": 40,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "刀具管理系统刀具基础数据包括哪些内容",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": ".禁止在设备上焊补或校直工件。\n4.20.加工作业时要注意钻头、刀具的锋利，磨钝了的钻头、刀具不得继续使用。\n4.21.钻削时要用机床冷却液冷却，不得使用清水进行冷却。\n4.22.当设备出现异常现象，如油路不通、声音不正常、局部温度升高等均不得强行使用，不能排除应立即通知维修人员处理。\n4.23.当设备发生事故，应保持现场并立即报告部门主管。\n4.24.设备开动时严禁操作者高开岗位或托人代管。\n4",
+      "score": 0.9841269841269842,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5239421,
+      "lexical_score": 18.815644994540456,
+      "fused_score": 0.032266458495966696
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+      "snippet": "中，摇臂、主轴箱必须处于夹紧状态。\n4.8.\t在安装变径套和钻柄时锥度必须符合标准，锥面必须清洁，无伤痕。\n4.9.\t工件的装夹必须牢固，钻透孔时必须在底面垫上垫块，不得钻伤设备工作台面。\n4.10.用自动进给钻透孔，在接近钻透时，应改自动进给为手动进给。\n4.11.装卸工件时应将摇臂转在一旁，根据工件重量和形状选择安全吊具，轻起轻放不得碰撞设备。\n4.12.卸钻卡具（刀具）时，应将主轴退至靠近主",
+      "score": 0.8731854838709677,
+      "source_path": "document://doc_20260330055115_c20cfc5a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.49659908,
+      "lexical_score": 18.672346688735725,
+      "fused_score": 0.028629032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401053010_fb598ba4-chunk-0",
+      "document_id": "doc_20260401053010_fb598ba4",
+      "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+      "snippet": "[Sheet] 导轨切割机切割作业指导书\n\n导轨切割机切割作业指导书\t\t\t\t\t\t\t\t\t\t\t\t\t设备名称\t\t\t导轨切割机\t\t\t\t\t零件名称\t\tTHK系列\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t产品图号\t\t\t\t\t\t\t\t零件图号\t\t\t\t\t\t共 1页\t\t\t\t第 1 页\n工序号\t1\t\t工序名称\t\t物料切割\t\t\t设备名称\t\t导轨切割机\t\t设备代号\t\t\t\t\t\t夹具名称\t\t\t\t\t\t夹具代号\t\t\t\t\t\t工时\t\t\t加",
+      "score": 0.5,
+      "source_path": "document://doc_20260401053010_fb598ba4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.529236,
+      "lexical_score": null,
+      "fused_score": 0.01639344262295082
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260401023359_ace477d5-chunk-30",
+      "document_id": "doc_20260401023359_ace477d5",
+      "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+      "snippet": "码\t子件物料名称\t子件物料规格\t应领数量\n1\t12320060934\t引拔防撞块（阿博格）\tSCD22071803-40\t2\n2\t212202497\tFA05引拔电机组\t三菱JET（阿博格）单臂\t1\n3\t12320060924\t引拔减速机法兰固定板（阿博格）\tSCD22071803-30\t1\n4\t12320060932\t引拔同步带惰轮（阿博格）\tSCD22071803-38\t1\n5\t1032010",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260401023359_ace477d5/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.5245415,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+      "document_id": "doc_20260401084714_a1631d19",
+      "document_name": "倒角标准及规范.docx",
+      "snippet": "A.需要清角的内角，技术图纸必须标注。\n\nB.当图纸未标注清角时，内尖角以R3弧过渡；\n\n当出现刀具长度不能满足R3倒角时，反馈设计人员征询技术解决方案。\n\n上述关系装配时，内角与外角取值要适当，外角倒角或倒圆取值过大会影响零件工作面，内角倒角或倒圆取值过小会产生应力集中。\n\n参考资料：\n\n国家标准GB/T 6403.4-2008 零件倒圆与倒角",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260401084714_a1631d19/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 17.35896465258997,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 6,
+      "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+      "document_id": "doc_20260401084714_a1631d19",
+      "document_name": "倒角标准及规范.docx",
+      "snippet": "倒角（1-1.5）*45°\n\nd≥φ80  倒角（1.5-2）*45°\n\n对轴倒角，图纸有要求，按图纸要求，若无要求倒角原则为：\n\nd＜φ20  倒角（0.5-1）*45°\n\nΦ20≤d＜φ80  倒角（2-3）*45°\n\nd≥φ80  倒角（3-5）*45°\n\n⑥ 图纸未画出倒角、未标明尖角且在技术要求中未作约定的，以不伤手为原则倒角，倒角大小最大不超过0.5mm；\n\n⑦ 原则上各道工序的倒角由",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260401084714_a1631d19/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 16.121350772055692,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 7,
+      "chunk_id": "doc_20260401053010_fb598ba4-chunk-2",
+      "document_id": "doc_20260401053010_fb598ba4",
+      "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+      "snippet": "工艺装备\t\t\t辅助材料\t\t\t检查项目\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t序号\t\t项目\t\t\t\t标准\t\t\t\t\t方式\n\t1\t将物料从左侧送料架滑入，顶端与右侧定尺靠山贴平。（详见作业图一）\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t送料架\t\t\t无\t\t\t1\t\t物料顶端是否贴平靠山\t\t\t\t贴平靠山\t\t\t\t\t目视\n\t2\t按住钳紧开关，使油缸钳紧物料。（如作业图二）\t\t\t\t\t\t\t\t\t\t",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260401053010_fb598ba4/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.52152526,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 8,
+      "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+      "document_id": "doc_20260401084714_b7ed464a",
+      "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+      "snippet": "，间距≥50毫米。\n\n3、电镀拉丝表面降级接收标准在上述规定的基础上，增加一条擦花线条，沿拉丝纹路方向。\n\n5，检验方法\n\n5.1电镀层表面外观采用目力测试，视力达1.2以上，目测距离为45±5cm，在220V 50HZ 40W的日光灯下。双手带作业手套握持电镀件，产品在长度方向先水平放置目测，再以长度方向为轴，用手旋转一定的角度目测，逐步检查每一面。在水平方向目测完后，将产品以铅垂方向为轴，旋转",
+      "score": 0.46923076923076923,
+      "source_path": "document://doc_20260401084714_b7ed464a/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": null,
+      "lexical_score": 15.859691622237897,
+      "fused_score": 0.015384615384615385
+    },
+    {
+      "rank": 9,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "存数据，包括刀具ID、存放层位、剩余寿命、使用状态等，确保系统与立体库数据一致，实现全方位管控。【附图28：机器人状态监控及库存数据同步示意图】\n\n（4）与垂直升降库集成：刀具管理系统可直接接管垂直升降库的物料管理、库位管理、出/入库控制，在刀具管理系统中可直接查询物料信息，输出物料数据报表，无需跨系统操作，方便库房管理人员在一套系统中管理所有物料；\n\n我方响应：完全满足。系统具备标准集成接口，可",
+      "score": 0.9919354838709679,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.66240215,
+      "lexical_score": 72.99989001593323,
+      "fused_score": 0.03252247488101534
+    },
+    {
+      "rank": 10,
+      "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+      "document_id": "doc_20260326071937_37f67e8c",
+      "document_name": "发黄部长：刀具系统软件要求.docx",
+      "snippet": "可实现远程登录、操作及管理，适配多终端（电脑、平板）访问，部署便捷、维护简单，同时支持局域网内稳定运行，确保数据传输安全、高效，满足车间多岗位协同操作需求。【附图3：系统架构示意图及多终端访问演示图】\n\n4.10.2 刀具的基础数据管理\n\n（1）刀具基础数据（ID、名称、描述）、刀具类型、刀具几何参数 2D 图形、3D 模型，供应商信息等数据的管理。\n\n我方响应：完全满足。系统具备完善的刀具基础数",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260326071937_37f67e8c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.7584481,
+      "lexical_score": 62.98803275305737,
+      "fused_score": 0.032018442622950824
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 10,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "刀具管理系统刀具基础数据包括哪些内容",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 10,
+    "primary_effective_count": 38,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.9841,avg_top_n=0.5687)_below_thresholds(0.95,0.70)",
+    "recall_counts": {
+      "department_vector_count": 22,
+      "department_lexical_count": 20,
+      "department_fused_count": 40,
+      "department_after_ocr": 38,
+      "department_unique_docs_after_ocr": 20,
+      "supplemental_vector_count": 19,
+      "supplemental_lexical_count": 20,
+      "supplemental_fused_count": 20,
+      "total_candidates": 40
+    },
+    "filter_counts": {
+      "ocr_quality": 2,
+      "top_k_truncated": 28
+    },
+    "final_result_count": 10,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "刀具管理系统刀具基础数据包括哪些内容",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 22,
+      "lexical_count": 20,
+      "fused_count": 40,
+      "effective_count": 38,
+      "threshold": 10,
+      "whether_sufficient": false,
+      "top1_score": 0.9841269841269842,
+      "avg_top_n_score": 0.5687082686578655,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.9841,avg_top_n=0.5687)_below_thresholds(0.95,0.70)",
+      "vector_count": 19,
+      "lexical_count": 20,
+      "fused_count": 20,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 2,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 28,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260401085048_c4fc9f78",
+          "chunk_id": "doc_20260401085048_c4fc9f78-chunk-4",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-106",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_44927c8a",
+          "chunk_id": "doc_20260401085048_44927c8a-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_1c8fa34f",
+          "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_fb598ba4",
+          "chunk_id": "doc_20260401053010_fb598ba4-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-43",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401053010_e833627e",
+          "chunk_id": "doc_20260401053010_e833627e-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401092629_f3b52aa5",
+          "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401024730_ddf5bbed",
+          "chunk_id": "doc_20260401024730_ddf5bbed-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 10,
+      "returned_top_k": 10,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5239421,
+          "lexical_score": 18.815644994540456,
+          "fused_score": 0.032266458495966696,
+          "final_score": 0.9841269841269842,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5239，词法 18.8156，融合 0.0323。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260330055115_c20cfc5a",
+          "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+          "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.49659908,
+          "lexical_score": 18.672346688735725,
+          "fused_score": 0.028629032258064516,
+          "final_score": 0.8731854838709677,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4966，词法 18.6723，融合 0.0286。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401053010_fb598ba4",
+          "chunk_id": "doc_20260401053010_fb598ba4-chunk-0",
+          "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.529236,
+          "lexical_score": null,
+          "fused_score": 0.01639344262295082,
+          "final_score": 0.5,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5292，融合 0.0164。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-30",
+          "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.5245415,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5245，融合 0.0161。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+          "document_name": "倒角标准及规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 17.35896465258997,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 17.3590，融合 0.0159。"
+        },
+        {
+          "rank": 6,
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+          "document_name": "倒角标准及规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 16.121350772055692,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 16.1214，融合 0.0156。"
+        },
+        {
+          "rank": 7,
+          "document_id": "doc_20260401053010_fb598ba4",
+          "chunk_id": "doc_20260401053010_fb598ba4-chunk-2",
+          "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.52152526,
+          "lexical_score": null,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5215，融合 0.0156。"
+        },
+        {
+          "rank": 8,
+          "document_id": "doc_20260401084714_b7ed464a",
+          "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+          "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": null,
+          "lexical_score": 15.859691622237897,
+          "fused_score": 0.015384615384615385,
+          "final_score": 0.46923076923076923,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 15.8597，融合 0.0154。"
+        },
+        {
+          "rank": 9,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.66240215,
+          "lexical_score": 72.99989001593323,
+          "fused_score": 0.03252247488101534,
+          "final_score": 0.9919354838709679,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6624，词法 72.9999，融合 0.0325。"
+        },
+        {
+          "rank": 10,
+          "document_id": "doc_20260326071937_37f67e8c",
+          "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+          "document_name": "发黄部长：刀具系统软件要求.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.7584481,
+          "lexical_score": 62.98803275305737,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7584，词法 62.9880，融合 0.0320。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-2",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5239421,
+        "lexical_score": 18.815644994540456,
+        "fused_score": 0.032266458495966696,
+        "final_score": 0.9841269841269842,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5239，词法 18.8156，融合 0.0323。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260330055115_c20cfc5a",
+        "chunk_id": "doc_20260330055115_c20cfc5a-chunk-1",
+        "document_name": "WI-SJ-052#摇臂钻床安全操作规范#A0.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.49659908,
+        "lexical_score": 18.672346688735725,
+        "fused_score": 0.028629032258064516,
+        "final_score": 0.8731854838709677,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.4966，词法 18.6723，融合 0.0286。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401053010_fb598ba4",
+        "chunk_id": "doc_20260401053010_fb598ba4-chunk-0",
+        "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.529236,
+        "lexical_score": null,
+        "fused_score": 0.01639344262295082,
+        "final_score": 0.5,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5292，融合 0.0164。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-30",
+        "document_name": "FA05系列阿博格#双臂式（反装)#A0.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.5245415,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5245，融合 0.0161。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+        "document_name": "倒角标准及规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 17.35896465258997,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 17.3590，融合 0.0159。"
+      },
+      {
+        "rank": 6,
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+        "document_name": "倒角标准及规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 16.121350772055692,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 16.1214，融合 0.0156。"
+      },
+      {
+        "rank": 7,
+        "document_id": "doc_20260401053010_fb598ba4",
+        "chunk_id": "doc_20260401053010_fb598ba4-chunk-2",
+        "document_name": "WL-SJ-052#导轨切割机切割作业指导书#A0.xlsx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.52152526,
+        "lexical_score": null,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.5215，融合 0.0156。"
+      },
+      {
+        "rank": 8,
+        "document_id": "doc_20260401084714_b7ed464a",
+        "chunk_id": "doc_20260401084714_b7ed464a-chunk-4",
+        "document_name": "实用的电镀产品外观与性能的检验标准.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": null,
+        "lexical_score": 15.859691622237897,
+        "fused_score": 0.015384615384615385,
+        "final_score": 0.46923076923076923,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；词法 15.8597，融合 0.0154。"
+      },
+      {
+        "rank": 9,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-10",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.66240215,
+        "lexical_score": 72.99989001593323,
+        "fused_score": 0.03252247488101534,
+        "final_score": 0.9919354838709679,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6624，词法 72.9999，融合 0.0325。"
+      },
+      {
+        "rank": 10,
+        "document_id": "doc_20260326071937_37f67e8c",
+        "chunk_id": "doc_20260326071937_37f67e8c-chunk-1",
+        "document_name": "发黄部长：刀具系统软件要求.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.7584481,
+        "lexical_score": 62.98803275305737,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7584，词法 62.9880，融合 0.0320。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260401085048_c4fc9f78",
+        "chunk_id": "doc_20260401085048_c4fc9f78-chunk-4",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-106",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_44927c8a",
+        "chunk_id": "doc_20260401085048_44927c8a-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_1c8fa34f",
+        "chunk_id": "doc_20260401053010_1c8fa34f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_fb598ba4",
+        "chunk_id": "doc_20260401053010_fb598ba4-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-43",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401053010_e833627e",
+        "chunk_id": "doc_20260401053010_e833627e-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401092629_f3b52aa5",
+        "chunk_id": "doc_20260401092629_f3b52aa5-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401024730_ddf5bbed",
+        "chunk_id": "doc_20260401024730_ddf5bbed-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

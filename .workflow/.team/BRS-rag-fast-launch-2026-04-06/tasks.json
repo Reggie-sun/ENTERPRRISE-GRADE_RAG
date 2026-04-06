@@ -1,0 +1,61 @@
+[
+  {
+    "task_id": "IDEA-001",
+    "role": "ideator",
+    "phase": "generate",
+    "status": "in_progress",
+    "deps": [],
+    "title": "Generate accuracy-first MVP launch ideas",
+    "angle": "accuracy-first MVP"
+  },
+  {
+    "task_id": "IDEA-002",
+    "role": "ideator",
+    "phase": "generate",
+    "status": "in_progress",
+    "deps": [],
+    "title": "Generate launch guardrail ideas",
+    "angle": "launch guardrails"
+  },
+  {
+    "task_id": "IDEA-003",
+    "role": "ideator",
+    "phase": "generate",
+    "status": "pending",
+    "deps": [],
+    "title": "Generate optimization-ready architecture ideas",
+    "angle": "optimization-ready architecture"
+  },
+  {
+    "task_id": "CHALLENGE-001",
+    "role": "challenger",
+    "phase": "challenge",
+    "status": "pending",
+    "deps": [
+      "IDEA-001",
+      "IDEA-002",
+      "IDEA-003"
+    ],
+    "title": "Challenge the proposed launch directions"
+  },
+  {
+    "task_id": "SYNTH-001",
+    "role": "synthesizer",
+    "phase": "synthesize",
+    "status": "pending",
+    "deps": [
+      "CHALLENGE-001"
+    ],
+    "title": "Synthesize the launch strategy into a recommended path"
+  },
+  {
+    "task_id": "EVAL-001",
+    "role": "evaluator",
+    "phase": "evaluate",
+    "status": "pending",
+    "deps": [
+      "SYNTH-001"
+    ],
+    "title": "Evaluate the synthesized launch strategy"
+  }
+]

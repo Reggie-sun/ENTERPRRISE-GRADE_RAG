@@ -221,7 +221,7 @@ export function PortalDocumentCenter({
     <div className="grid gap-5">
       <section className="grid grid-cols-12 gap-5">
         <HeroCard className="col-span-8 max-lg:col-span-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(194,65,12,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
             {eyebrow}
           </div>
           <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
@@ -232,7 +232,7 @@ export function PortalDocumentCenter({
           </p>
         </HeroCard>
 
-        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">{scopeTitle}</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
             {scopeDescription}
@@ -269,7 +269,7 @@ export function PortalDocumentCenter({
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
                 disabled={Boolean(lockedDepartmentId)}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink disabled:cursor-not-allowed disabled:bg-[rgba(23,32,42,0.05)]"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink disabled:cursor-not-allowed disabled:bg-[rgba(15,23,42,0.05)]"
               >
                 {!lockedDepartmentId ? <option value="">全部部门</option> : null}
                 {departmentOptions.map((item) => (
@@ -282,7 +282,7 @@ export function PortalDocumentCenter({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
               >
                 <option value="">全部分类</option>
                 {categoryOptions.map((item) => (
@@ -325,10 +325,10 @@ export function PortalDocumentCenter({
                   <article
                     key={item.document_id}
                     className={`
-                      rounded-[24px] border p-4 transition-all duration-200
+                      rounded-xl border p-4 transition-all duration-200
                       ${selectedDocId === item.document_id
-                        ? 'border-[rgba(182,70,47,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
-                        : 'border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
+                        ? 'border-[rgba(194,65,12,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
+                        : 'border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
                     `}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -355,7 +355,7 @@ export function PortalDocumentCenter({
                       </Button>
                       <a
                         href={getDocumentDownloadUrl(item.document_id)}
-                        className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5"
+                        className="inline-flex items-center gap-2 rounded-full bg-[rgba(15,23,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5"
                       >
                         <Download className="h-4 w-4" />
                         下载原文
@@ -374,7 +374,7 @@ export function PortalDocumentCenter({
           </div>
         </Card>
 
-        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">在线预览</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
             先预览，再决定是否下载，避免用户反复本地打开文档。
@@ -410,7 +410,7 @@ export function PortalDocumentCenter({
                         href={previewData.preview_file_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-4 py-2 text-sm font-semibold text-ink no-underline"
+                        className="inline-flex items-center gap-2 rounded-full bg-[rgba(15,23,42,0.06)] px-4 py-2 text-sm font-semibold text-ink no-underline"
                       >
                         <FileText className="h-4 w-4" />
                         新窗口打开
@@ -423,7 +423,7 @@ export function PortalDocumentCenter({
                   <iframe
                     src={previewData.preview_file_url}
                     title={`portal-preview-${previewData.doc_id}`}
-                    className="h-[420px] w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-white"
+                    className="h-[420px] w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-white"
                   />
                 ) : null}
 

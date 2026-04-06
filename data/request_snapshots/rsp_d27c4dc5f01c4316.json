@@ -1,0 +1,530 @@
+{
+  "snapshot_id": "rsp_d27c4dc5f01c4316",
+  "trace_id": "trc_retrieval_9ae6851d66754f3b",
+  "request_id": "req_retrieval_bc726f7ce28e4265",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-06T02:10:47.688855Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "如何倒角",
+    "top_k": 5,
+    "mode": "fast",
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "如何倒角",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260401084714_a1631d19-chunk-0",
+      "document_id": "doc_20260401084714_a1631d19",
+      "document_name": "倒角标准及规范.docx",
+      "snippet": "当前版本更改次数\n更改日期\n最新更新作者\n作者&创建日期\n审核&审核日期\n会签&日期\n批准&日期\n\n更新次数\t更新日期\t修订作者\t主要修订摘要\n第一版\n\n本标准适用我公司所有加工件、部套。\n\n1. 倒角的目的\n\n① 安全需要：为了使在接触工件时不被锋利的边角划伤手；\n\n② 外观需要：为了使加工出来的工件更加美观；\n\n③ 工艺需要：在配合部位避免互相干涉，另外倒角还可以去除内应力防止工件热处理后因为",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260401084714_a1631d19/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.63906986,
+      "lexical_score": 20.75271382939494,
+      "fused_score": 0.032018442622950824
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+      "document_id": "doc_20260401084714_a1631d19",
+      "document_name": "倒角标准及规范.docx",
+      "snippet": "倒角（1-1.5）*45°\n\nd≥φ80  倒角（1.5-2）*45°\n\n对轴倒角，图纸有要求，按图纸要求，若无要求倒角原则为：\n\nd＜φ20  倒角（0.5-1）*45°\n\nΦ20≤d＜φ80  倒角（2-3）*45°\n\nd≥φ80  倒角（3-5）*45°\n\n⑥ 图纸未画出倒角、未标明尖角且在技术要求中未作约定的，以不伤手为原则倒角，倒角大小最大不超过0.5mm；\n\n⑦ 原则上各道工序的倒角由",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260401084714_a1631d19/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6680436,
+      "lexical_score": 15.234053069294077,
+      "fused_score": 0.032018442622950824
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "倒角标准及规范\t文件编号\tWI-SJ-043\n版 本 号\tA/1\n页    次\t6\n生效日期\t2022-11-17\n倒角的目的\n1.1安全需要：为了使在接触工件时不被锋利的边角划伤手；\n1.2 外观需要：为了使加工出来的工件更加美观；\n1.3工艺需要：在配合部位避免互相干涉，另外倒角还可以去除内应力防止工件热处理后因为应力集中而料裂；\n适用范围\n本标准适用我公司所有加工件、部套。\n职责\n3.1 生",
+      "score": 0.9760624679979518,
+      "source_path": "document://doc_20260330055115_5847f42f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.63927615,
+      "lexical_score": 20.531049749168275,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+      "document_id": "doc_20260330055115_5847f42f",
+      "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+      "snippet": "定\n6.1 倒角范围：外形楞、槽、台阶、孔口、螺纹孔口等部件C角、R角加工（C倒角：45°）。\n6.2 图纸应对不允许倒角的地方做出明确规定；\n6.3 图纸中所需要倒圆角的地方需要明确注明；\n6.4 图纸已有明确标注的按图加工检验，下表为普通零件倒角或圆角一般参考值；\n(d为直径或板面厚度）\n6.5图纸画出倒角而未标注的为未注倒角。未注倒角按技术要求所约定尺寸加工检验：\n外螺纹倒角，图纸有要求的，",
+      "score": 0.9760624679979518,
+      "source_path": "document://doc_20260330055115_5847f42f/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6570833,
+      "lexical_score": 15.288395841403236,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401084714_a1631d19-chunk-1",
+      "document_id": "doc_20260401084714_a1631d19",
+      "document_name": "倒角标准及规范.docx",
+      "snippet": "R角加工（C倒角：45°）。\n\n② 图纸应对不允许倒角的地方做出明确规定；\n\n③ 图纸中所需要倒圆角的地方需要明确注明；\n\n④ 图纸已有明确标注的按图加工检验，下表为普通零件倒角或圆角一般参考值；\n\nd\t<3\t3-6\t6-10\t10-18\t18-30\t30-50\nC或R\t0.2\t0.4\t0.6\t0.8\t1.0\t1.6\nd\t50-80\t80-120\t120-180\t180-250\t250-320\t3",
+      "score": 0.9242424242424242,
+      "source_path": "document://doc_20260401084714_a1631d19/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "department",
+      "vector_score": 0.6322696,
+      "lexical_score": 14.926501557279476,
+      "fused_score": 0.030303030303030304
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "如何倒角",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": "fast",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 19,
+    "supplemental_triggered": false,
+    "supplemental_reason": "department_sufficient",
+    "recall_counts": {
+      "department_vector_count": 14,
+      "department_lexical_count": 13,
+      "department_fused_count": 20,
+      "department_after_ocr": 19,
+      "department_unique_docs_after_ocr": 11,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "如何倒角",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": "fast",
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 14,
+      "lexical_count": 13,
+      "fused_count": 20,
+      "effective_count": 19,
+      "threshold": 5,
+      "whether_sufficient": true,
+      "top1_score": 0.9765625000000001,
+      "avg_top_n_score": 0.9658984720476657,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": false,
+      "reason": "department_sufficient",
+      "vector_count": 0,
+      "lexical_count": 0,
+      "fused_count": 0,
+      "trigger_basis": "department_sufficient"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020633_48b70cdb",
+          "chunk_id": "doc_20260406020633_48b70cdb-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260406020404_97beed34",
+          "chunk_id": "doc_20260406020404_97beed34-chunk-9",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-2",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062309_d004c548",
+          "chunk_id": "doc_20260331062309_d004c548-chunk-83",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-51",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-96",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-43",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-42",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-0",
+          "document_name": "倒角标准及规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.63906986,
+          "lexical_score": 20.75271382939494,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6391，词法 20.7527，融合 0.0320。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+          "document_name": "倒角标准及规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6680436,
+          "lexical_score": 15.234053069294077,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6680，词法 15.2341，融合 0.0320。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+          "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.63927615,
+          "lexical_score": 20.531049749168275,
+          "fused_score": 0.03200204813108039,
+          "final_score": 0.9760624679979518,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6393，词法 20.5310，融合 0.0320。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260330055115_5847f42f",
+          "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+          "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6570833,
+          "lexical_score": 15.288395841403236,
+          "fused_score": 0.03200204813108039,
+          "final_score": 0.9760624679979518,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6571，词法 15.2884，融合 0.0320。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401084714_a1631d19",
+          "chunk_id": "doc_20260401084714_a1631d19-chunk-1",
+          "document_name": "倒角标准及规范.docx",
+          "source_scope": "department",
+          "department_hit": true,
+          "supplemental_hit": false,
+          "vector_score": 0.6322696,
+          "lexical_score": 14.926501557279476,
+          "fused_score": 0.030303030303030304,
+          "final_score": 0.9242424242424242,
+          "selected_via": "department",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6323，词法 14.9265，融合 0.0303。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-0",
+        "document_name": "倒角标准及规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.63906986,
+        "lexical_score": 20.75271382939494,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6391，词法 20.7527，融合 0.0320。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-2",
+        "document_name": "倒角标准及规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6680436,
+        "lexical_score": 15.234053069294077,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6680，词法 15.2341，融合 0.0320。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-0",
+        "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.63927615,
+        "lexical_score": 20.531049749168275,
+        "fused_score": 0.03200204813108039,
+        "final_score": 0.9760624679979518,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6393，词法 20.5310，融合 0.0320。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-1",
+        "document_name": "WI-SJ-043#倒角标准及规范#A1.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6570833,
+        "lexical_score": 15.288395841403236,
+        "fused_score": 0.03200204813108039,
+        "final_score": 0.9760624679979518,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6571，词法 15.2884，融合 0.0320。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-1",
+        "document_name": "倒角标准及规范.docx",
+        "source_scope": "department",
+        "department_hit": true,
+        "supplemental_hit": false,
+        "vector_score": 0.6322696,
+        "lexical_score": 14.926501557279476,
+        "fused_score": 0.030303030303030304,
+        "final_score": 0.9242424242424242,
+        "selected_via": "department",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "本部门命中，按 hybrid 融合排序 保留；向量 0.6323，词法 14.9265，融合 0.0303。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260330055115_5847f42f",
+        "chunk_id": "doc_20260330055115_5847f42f-chunk-2",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260401084714_a1631d19",
+        "chunk_id": "doc_20260401084714_a1631d19-chunk-3",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020633_48b70cdb",
+        "chunk_id": "doc_20260406020633_48b70cdb-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260406020404_97beed34",
+        "chunk_id": "doc_20260406020404_97beed34-chunk-9",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-2",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062309_d004c548",
+        "chunk_id": "doc_20260331062309_d004c548-chunk-83",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-51",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-96",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-43",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-42",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

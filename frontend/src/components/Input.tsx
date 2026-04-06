@@ -1,40 +1,38 @@
 /**
- * 输入框组件
- * 提供文本输入和文本域两种类型
+ * Input components - Enterprise grade
  */
 
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;  // 标签文本。
+  label?: string;
 }
 
-/** 单行文本输入框 */
+/** Single-line text input */
 export function Input({ label, className = '', ...props }: InputProps) {
   const inputElement = (
     <input
       className={`
         w-full
-        rounded-2xl
-        border border-[rgba(23,32,42,0.12)]
-        bg-[rgba(255,255,255,0.82)]
+        rounded-xl
+        border border-[rgba(15,23,42,0.08)]
+        bg-white
         px-4 py-3
-        text-ink
-        transition-all duration-200
+        text-sm text-ink
+        transition-all duration-150
         focus:outline-none
-        focus:border-[rgba(182,70,47,0.48)]
-        focus:-translate-y-0.5
-        placeholder:text-ink-soft
+        focus:border-[rgba(194,65,12,0.4)]
+        focus:ring-2 focus:ring-[rgba(194,65,12,0.08)]
+        placeholder:text-ink-muted
         ${className}
       `}
       {...props}
     />
   );
 
-  // 如果有标签，包裹在 label 元素中。
   if (label) {
     return (
-      <label className="grid gap-1.5 text-sm font-semibold">
+      <label className="grid gap-1.5 text-sm font-medium text-ink">
         {label}
         {inputElement}
       </label>
@@ -45,36 +43,35 @@ export function Input({ label, className = '', ...props }: InputProps) {
 }
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;  // 标签文本。
+  label?: string;
 }
 
-/** 多行文本输入框 */
+/** Multi-line textarea */
 export function Textarea({ label, className = '', ...props }: TextareaProps) {
   const textareaElement = (
     <textarea
       className={`
         w-full min-h-28
-        rounded-2xl
-        border border-[rgba(23,32,42,0.12)]
-        bg-[rgba(255,255,255,0.82)]
+        rounded-xl
+        border border-[rgba(15,23,42,0.08)]
+        bg-white
         px-4 py-3
-        text-ink
+        text-sm text-ink
         resize-y
-        transition-all duration-200
+        transition-all duration-150
         focus:outline-none
-        focus:border-[rgba(182,70,47,0.48)]
-        focus:-translate-y-0.5
-        placeholder:text-ink-soft
+        focus:border-[rgba(194,65,12,0.4)]
+        focus:ring-2 focus:ring-[rgba(194,65,12,0.08)]
+        placeholder:text-ink-muted
         ${className}
       `}
       {...props}
     />
   );
 
-  // 如果有标签，包裹在 label 元素中。
   if (label) {
     return (
-      <label className="grid gap-1.5 text-sm font-semibold">
+      <label className="grid gap-1.5 text-sm font-medium text-ink">
         {label}
         {textareaElement}
       </label>

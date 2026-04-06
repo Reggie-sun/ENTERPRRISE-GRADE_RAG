@@ -19,7 +19,9 @@ from backend.app.core.config import Settings, ensure_data_directories  # 导入�
 from backend.app.rag.ocr.client import OCRExtractionResult, OCRTextSegment
 from backend.app.rag.parsers.document_parser import ParsedDocument
 from backend.app.rag.vectorstores.qdrant_store import QdrantVectorStore  # 导入 Qdrant 存储，验证远程模式客户端参数。
+from backend.app.schemas.auth import AuthContext, DepartmentRecord, RoleDefinition, UserRecord
 from backend.app.schemas.document import DocumentRecord, IngestJobRecord  # 导入文档和任务元数据结构，用于 metadata store 测试桩。
+from backend.app.services.auth_service import get_current_auth_context
 from backend.app.services.document_service import (  # 导入上传服务、依赖注入函数和上传分块读取配置。
     DocumentService,
     UPLOAD_READ_CHUNK_SIZE_BYTES,
@@ -207,6 +209,39 @@ def build_test_settings(
         ocr_artifact_dir=data_dir / "ocr_artifacts",  # 指定 OCR 中间产物目录，避免测试污染仓库根 data。
         document_dir=data_dir / "documents",  # 指定 document 元数据目录。
         job_dir=data_dir / "jobs",  # 指定 ingest job 元数据目录。
+    )
+
+
+def _build_test_auth_context(role_id: str = "sys_admin") -> AuthContext:
+    department = DepartmentRecord(
+        department_id="dept_digitalization",
+        tenant_id="wl",
+        department_name="数字化部",
+    )
+    role = RoleDefinition(
+        role_id=role_id,
+        name=role_id,
+        description=role_id,
+        data_scope="global" if role_id == "sys_admin" else "department",
+        is_admin=role_id != "employee",
+    )
+    user = UserRecord(
+        user_id=f"user_{role_id}",
+        tenant_id="wl",
+        username=f"{role_id}.user",
+        display_name=role_id,
+        department_id=department.department_id,
+        role_id=role_id,
+    )
+    issued_at = datetime.now(timezone.utc)
+    return AuthContext(
+        user=user,
+        role=role,
+        department=department,
+        accessible_department_ids=[department.department_id],
+        token_id="token_001",
+        issued_at=issued_at,
+        expires_at=issued_at + timedelta(hours=1),
     )
 
 
@@ -1376,6 +1411,7 @@ def test_create_document_accepts_legacy_doc_when_libreoffice_binary_is_resolved(
     )
 
     app.dependency_overrides[get_document_service] = lambda: service
+    app.dependency_overrides[get_current_auth_context] = lambda: _build_test_auth_context()
     client = TestClient(app)
 
     try:
@@ -1392,6 +1428,142 @@ def test_create_document_accepts_legacy_doc_when_libreoffice_binary_is_resolved(
     assert payload["status"] == "queued"
     assert payload["doc_id"].startswith("doc_")
     assert payload["job_id"].startswith("job_")
+
+
+def test_create_document_queues_legacy_doc_when_api_runtime_cannot_resolve_libreoffice(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = build_test_settings(tmp_path, task_always_eager=False)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    monkeypatch.setattr("backend.app.services.document_service.find_libreoffice_binary", lambda: None)
+    monkeypatch.setattr(
+        "backend.app.services.document_service.dispatch_ingest_job",
+        lambda *args, **kwargs: None,
+    )
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    app.dependency_overrides[get_current_auth_context] = lambda: _build_test_auth_context()
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("legacy.doc", b"fake-doc-binary", "application/msword")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["status"] == "queued"
+    assert payload["doc_id"].startswith("doc_")
+    assert payload["job_id"].startswith("job_")
+    assert len(list(settings.document_dir.glob("*.json"))) == 1
+    assert len(list(settings.job_dir.glob("*.json"))) == 1
+
+
+def test_upload_document_still_rejects_legacy_doc_when_libreoffice_binary_is_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = build_test_settings(tmp_path)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    monkeypatch.setattr("backend.app.services.document_service.find_libreoffice_binary", lambda: None)
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    app.dependency_overrides[get_current_auth_context] = lambda: _build_test_auth_context()
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents/upload",
+            files={"file": ("legacy.doc", b"fake-doc-binary", "application/msword")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Legacy DOC parsing requires a resolvable LibreOffice binary in the current API runtime."
+    )
+
+
+def test_create_document_rejects_legacy_doc_in_eager_mode_when_libreoffice_binary_is_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = build_test_settings(tmp_path, task_always_eager=True)
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    monkeypatch.setattr("backend.app.services.document_service.find_libreoffice_binary", lambda: None)
+    monkeypatch.setattr(
+        "backend.app.services.document_service.dispatch_ingest_job",
+        lambda *args, **kwargs: None,
+    )
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    app.dependency_overrides[get_current_auth_context] = lambda: _build_test_auth_context()
+    client = TestClient(app)
+
+    try:
+        response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("legacy.doc", b"fake-doc-binary", "application/msword")},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Legacy DOC parsing requires a resolvable LibreOffice binary in the current API runtime."
+    )
+
+
+def test_run_ingest_job_reports_missing_libreoffice_as_ingest_runtime_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = build_test_settings(tmp_path, task_always_eager=False).model_copy(update={"ingest_failure_retry_limit": 1})
+    ensure_data_directories(settings)
+    service = DocumentService(settings)
+
+    monkeypatch.setattr(
+        "backend.app.services.document_service.dispatch_ingest_job",
+        lambda *args, **kwargs: None,
+    )
+
+    app.dependency_overrides[get_document_service] = lambda: service
+    app.dependency_overrides[get_current_auth_context] = lambda: _build_test_auth_context()
+    client = TestClient(app)
+
+    try:
+        create_response = client.post(
+            "/api/v1/documents",
+            data={"tenant_id": "wl"},
+            files={"file": ("legacy.doc", b"fake-doc-binary", "application/msword")},
+        )
+        create_payload = create_response.json()
+
+        monkeypatch.setattr("backend.app.rag.parsers.document_parser.find_libreoffice_binary", lambda: None)
+        result = service.run_ingest_job(create_payload["job_id"])
+        job_response = client.get(f"/api/v1/ingest/jobs/{create_payload['job_id']}")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert create_response.status_code == 201
+    assert result.status == "dead_letter"
+    assert result.error_code == "INGEST_RUNTIME_ERROR_DEAD_LETTER"
+    assert "current ingest runtime" in (result.error_message or "")
+    assert job_response.status_code == 200
+    assert "current ingest runtime" in (job_response.json()["error_message"] or "")
 
 
 def test_get_ingest_job_status_after_create_document(tmp_path: Path) -> None:  # 测试创建文档后可通过 ingest job 接口查询任务状态。

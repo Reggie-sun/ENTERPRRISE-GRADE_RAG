@@ -1,0 +1,520 @@
+{
+  "snapshot_id": "rsp_cb698b5a60134ddf",
+  "trace_id": "trc_retrieval_6e0267443fc1465c",
+  "request_id": "req_retrieval_51ab1e85df0043e4",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-05T06:46:21.368380Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_employee_demo",
+    "username": "employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_digitalization"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "接触式移动供电系统最低多久检测一次",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "接触式移动供电系统最低多久检测一次",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "坠落事故。\n务必遵守\n-\n否则可能导致接触不良以及坠落事故。\n依照维护保养日程的安排加以实施。\n务必遵守\n●在更换集电子时，将导线与负荷连接时，务必在确认本体的相（R.S.T）后，进行\n接线。\n否则，可能会因火花而引起火灾。\n1\n2\n\n室内·室外兼用\n接触式移动供电系统（TRO-REEL、TROLLEY-WIRE（300A,500A))安全说明\n维护保养日程\n本产品的故障处理和维修作业需专业电气工",
+      "score": 0.9621212121212123,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.64118767,
+      "lexical_score": 35.50449901111675,
+      "fused_score": 0.031544957774465976
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-11",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "检测时务必切断电源。\n●请勿在产生结露的场所使用。\n否则可能导致触电。\n否则可能导致触电、火灾以及坠落事故。\n●必须进行试运行、定期检测。检测后必须试运行。\n禁止\n●集电子如果超过更换线，请勿使用。\n否则可能导致触电、火灾以及坠落事故。\n电轨（张力型）、TRO-REEL\n否则可能导致触电、火灾以及坠落事故。\n●如果本体的绝缘套发生破损、破裂，更换本体。\n否则可能导致触电、火灾以及坠落事故。\n●请勿",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.62254214,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-14",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "松弛（一至三个月一次）→拧紧。\n接线。\n集\n电\n臂\n·检查集电器的磨损程度有无到达更换基准线（一至三个月一次）一如果磨损程度已经到达更换基准线，应更换集电臂、集电器。\n否则，可能会因火花而引起火灾。\n·检查弹簧销有无破损、旋转轴有无破损、弹簧支架五金件有无磨损（一至三个月一次）一如果发生破损或出现异常的情况，更换产品。\n3\n4\n\n为了提高产线的安全便利，\n松下为您提供各类配线系统。\n我们准备了5大",
+      "score": 0.939350864723999,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.61538905,
+      "lexical_score": 29.434121872548637,
+      "fused_score": 0.030798389007344232
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "400A\n60A\nG\nA、B、C、D四款可供选择。\n滚轮式移动供电系统\n137\nH\n30A\n不定点式固定供电系统\n137\n一鸟酒\n200A\n非接触式供电系统提案\n138\n20A\n100A\n5\n6\n\n能够大幅节约架设空间\n回转台等特殊路线\n有效利用工厂空间\n也能轻松架设\nHIGH-TRO-REEL(张力型)\nTRO-REEL\n0\nTRO-REEL\nHIGH-TRO-REEL(张力型)\nyjism\n7",
+      "score": 0.9765625000000001,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.61324286,
+      "lexical_score": 73.72131034084558,
+      "fused_score": 0.032018442622950824
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260331081535_5d30086d-chunk-12",
+      "document_id": "doc_20260331081535_5d30086d",
+      "document_name": "滑触线DH54系列 - 施工手册.pdf",
+      "snippet": "火灾以及坠落事故。\n务必遵守\n否则可能导致触电、火灾事故。\n·绝缘套管有无裂缝、残缺（三至六个月一次）一更换本体。\n·检查线圈弹簧的长度是否合适（三至六个月一次）一调节成合适的长度。\n■检测注意事项\n为防止人身伤害及财产损害，以下就务必遵守的事项加以说明。\n末端紧固绝缘子\n·检查线圈弹簧的螺母是否松弛（三至六个月一次）→拧紧。\n·检查树脂部分有无破损（三至六个月一次）→更换产品。\n警告\n·检查卷簧",
+      "score": 0.46923076923076923,
+      "source_path": "document://doc_20260331081535_5d30086d/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.59081876,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "接触式移动供电系统最低多久检测一次",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.9107,avg_top_n=0.7349,lexical_top1=5.7928)_below_thresholds(0.95,0.70,10.00)",
+    "recall_counts": {
+      "department_vector_count": 12,
+      "department_lexical_count": 11,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 11,
+      "supplemental_vector_count": 7,
+      "supplemental_lexical_count": 8,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "接触式移动供电系统最低多久检测一次",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 12,
+      "lexical_count": 11,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.910650623885918,
+      "avg_top_n_score": 0.7349259517101073,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.9107,avg_top_n=0.7349,lexical_top1=5.7928)_below_thresholds(0.95,0.70,10.00)",
+      "vector_count": 7,
+      "lexical_count": 8,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-21",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-10",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328035056_fd1b630f",
+          "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-50",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328034931_6d36c484",
+          "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260328022431_8bf3fa29",
+          "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326060709_cbcd2267",
+          "chunk_id": "doc_20260326060709_cbcd2267-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260326065846_b619236e",
+          "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260327001645_07fd1ab7",
+          "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085300_13d0ce46",
+          "chunk_id": "doc_20260401085300_13d0ce46-chunk-39",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.64118767,
+          "lexical_score": 35.50449901111675,
+          "fused_score": 0.031544957774465976,
+          "final_score": 0.9621212121212123,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6412，词法 35.5045，融合 0.0315。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-11",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.62254214,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6225，融合 0.0161。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-14",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.61538905,
+          "lexical_score": 29.434121872548637,
+          "fused_score": 0.030798389007344232,
+          "final_score": 0.939350864723999,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6154，词法 29.4341，融合 0.0308。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.61324286,
+          "lexical_score": 73.72131034084558,
+          "fused_score": 0.032018442622950824,
+          "final_score": 0.9765625000000001,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6132，词法 73.7213，融合 0.0320。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-12",
+          "document_name": "滑触线DH54系列 - 施工手册.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.59081876,
+          "lexical_score": null,
+          "fused_score": 0.015384615384615385,
+          "final_score": 0.46923076923076923,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5908，融合 0.0154。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-7",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.64118767,
+        "lexical_score": 35.50449901111675,
+        "fused_score": 0.031544957774465976,
+        "final_score": 0.9621212121212123,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6412，词法 35.5045，融合 0.0315。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-11",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.62254214,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6225，融合 0.0161。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-14",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.61538905,
+        "lexical_score": 29.434121872548637,
+        "fused_score": 0.030798389007344232,
+        "final_score": 0.939350864723999,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6154，词法 29.4341，融合 0.0308。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-16",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.61324286,
+        "lexical_score": 73.72131034084558,
+        "fused_score": 0.032018442622950824,
+        "final_score": 0.9765625000000001,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6132，词法 73.7213，融合 0.0320。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-12",
+        "document_name": "滑触线DH54系列 - 施工手册.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.59081876,
+        "lexical_score": null,
+        "fused_score": 0.015384615384615385,
+        "final_score": 0.46923076923076923,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5908，融合 0.0154。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-21",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-10",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328035056_fd1b630f",
+        "chunk_id": "doc_20260328035056_fd1b630f-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-50",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328034931_6d36c484",
+        "chunk_id": "doc_20260328034931_6d36c484-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260328022431_8bf3fa29",
+        "chunk_id": "doc_20260328022431_8bf3fa29-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326060709_cbcd2267",
+        "chunk_id": "doc_20260326060709_cbcd2267-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260326065846_b619236e",
+        "chunk_id": "doc_20260326065846_b619236e-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260327001645_07fd1ab7",
+        "chunk_id": "doc_20260327001645_07fd1ab7-chunk-0",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085300_13d0ce46",
+        "chunk_id": "doc_20260401085300_13d0ce46-chunk-39",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

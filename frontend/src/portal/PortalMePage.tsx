@@ -34,7 +34,7 @@ export function PortalMePage() {
   return (
     <div className="grid gap-5">
       <HeroCard>
-        <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(194,65,12,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
           个人中心
         </div>
         <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
@@ -61,7 +61,7 @@ export function PortalMePage() {
       </HeroCard>
 
       <section className="grid grid-cols-12 gap-5">
-        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">你当前可以做什么</h3>
           <div className="mt-4 grid gap-3 text-sm leading-relaxed text-ink-soft">
             {experience.myCapabilityItems.map((item) => (
@@ -73,7 +73,7 @@ export function PortalMePage() {
           {canAccessWorkspace ? (
             <Link
               to="/workspace"
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.1)] px-4 py-2 text-sm font-semibold text-accent-deep no-underline"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-[rgba(194,65,12,0.1)] px-4 py-2 text-sm font-semibold text-accent-deep no-underline"
             >
               <Shield className="h-4 w-4" />
               {experience.workspaceEntryLabel}
@@ -108,7 +108,7 @@ export function PortalMePage() {
       </section>
 
       <section className="grid grid-cols-12 gap-5">
-        <Card className="col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <div className="flex items-center gap-2">
             <FileClock className="h-5 w-5 text-accent-deep" />
             <h3 className="m-0 text-xl font-semibold text-ink">最近查看资料</h3>

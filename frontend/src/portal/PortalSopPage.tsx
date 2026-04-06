@@ -231,7 +231,7 @@ export function PortalSopPage() {
     <div className="grid gap-5">
       <section className="grid grid-cols-12 gap-5">
         <HeroCard className="col-span-8 max-lg:col-span-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(194,65,12,0.09)] px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-accent-deep">
             SOP Center
           </div>
           <h2 className="m-0 mt-4 font-serif text-3xl md:text-4xl leading-tight text-ink">
@@ -242,7 +242,7 @@ export function PortalSopPage() {
           </p>
         </HeroCard>
 
-        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-4 max-lg:col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">当前使用方式</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
             {experience.sopScopeDescription}
@@ -287,7 +287,7 @@ export function PortalSopPage() {
                 value={departmentId}
                 onChange={(event) => setDepartmentId(event.target.value)}
                 disabled={Boolean(lockedDepartmentId)}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink disabled:cursor-not-allowed disabled:bg-[rgba(23,32,42,0.05)]"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink disabled:cursor-not-allowed disabled:bg-[rgba(15,23,42,0.05)]"
               >
                 {!lockedDepartmentId ? <option value="">全部部门</option> : null}
                 {departmentOptions.map((item) => (
@@ -300,7 +300,7 @@ export function PortalSopPage() {
               <select
                 value={processName}
                 onChange={(event) => setProcessName(event.target.value)}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
               >
                 <option value="">全部工序</option>
                 {processOptions.map((item) => (
@@ -313,7 +313,7 @@ export function PortalSopPage() {
               <select
                 value={scenarioName}
                 onChange={(event) => setScenarioName(event.target.value)}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
               >
                 <option value="">全部场景</option>
                 {scenarioOptions.map((item) => (
@@ -326,7 +326,7 @@ export function PortalSopPage() {
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as SopStatus | '')}
-                className="w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
+                className="w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)] px-4 py-3 text-sm text-ink"
               >
                 <option value="">全部状态</option>
                 <option value="active">生效中</option>
@@ -366,10 +366,10 @@ export function PortalSopPage() {
               <article
                 key={item.sop_id}
                 className={`
-                  rounded-[24px] border p-4 transition-all duration-200
+                  rounded-xl border p-4 transition-all duration-200
                   ${selectedSopId === item.sop_id
-                    ? 'border-[rgba(182,70,47,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
-                    : 'border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
+                    ? 'border-[rgba(194,65,12,0.18)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_rgba(77,42,16,0.08)]'
+                    : 'border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.72)]'}
                 `}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -396,7 +396,7 @@ export function PortalSopPage() {
                     <Eye className="h-4 w-4" />
                     查看详情
                   </button>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(15,23,42,0.06)] px-5 py-3 text-sm font-bold text-ink">
                     <FileDown className="h-4 w-4" />
                     {item.downloadable_formats.join(' / ').toUpperCase() || '待补下载'}
                   </div>
@@ -412,7 +412,7 @@ export function PortalSopPage() {
           </div>
         </Card>
 
-        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(182,70,47,0.1)]">
+        <Card className="col-span-5 max-lg:col-span-12 bg-panel border-[rgba(194,65,12,0.1)]">
           <h3 className="m-0 text-xl font-semibold text-ink">SOP 详情与预览</h3>
           <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
             当前右侧已经接入真实详情、文本预览和格式下载。下载逻辑仍保持独立，不反向侵入文档主链路。
@@ -480,7 +480,7 @@ export function PortalSopPage() {
                     type="button"
                     onClick={() => handleDownload('pdf')}
                     disabled={!detailData.download_pdf_available || downloadStatus === 'loading'}
-                    className="inline-flex items-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                    className="inline-flex items-center gap-2 rounded-full bg-[rgba(15,23,42,0.06)] px-5 py-3 text-sm font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
                   >
                     <FileDown className="h-4 w-4" />
                     {downloadingFormat === 'pdf' ? '下载中...' : '下载 PDF'}
@@ -504,7 +504,7 @@ export function PortalSopPage() {
                     href={previewData.preview_file_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[rgba(23,32,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[rgba(15,23,42,0.06)] px-5 py-3 text-sm font-bold text-ink no-underline"
                   >
                     <Eye className="h-4 w-4" />
                     打开预览资源

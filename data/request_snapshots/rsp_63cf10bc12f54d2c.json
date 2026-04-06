@@ -1,0 +1,520 @@
+{
+  "snapshot_id": "rsp_63cf10bc12f54d2c",
+  "trace_id": "trc_retrieval_2c3850ae018d41e4",
+  "request_id": "req_retrieval_5246e656d7634736",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-05T07:08:03.314546Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_installation_employee_demo",
+    "username": "installation.employee.demo",
+    "role_id": "employee",
+    "department_id": "dept_installation_service"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "电机齿轮安装斜齿轮加温设定时间和温度是多少",
+    "top_k": 5,
+    "mode": null,
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "电机齿轮安装斜齿轮加温设定时间和温度是多少",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+      "document_id": "doc_20260331021041_adff1740",
+      "document_name": "电机齿轮安装SOP.docx",
+      "snippet": "电机齿轮安装SOP-生技部电机齿轮安装SOP-生技部\n装配准备工作\n\n1.准备好相应的螺丝、弹垫、内六角扳手、铅丝、卡尺；\n\n2.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n3.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n1.斜齿轮加温\n\n2.斜齿轮与减速机组装\n\n内容\n\n外观表面无磕碰、变形、刮伤等不良现象；\n\n所有螺纹孔无残渣、无堵塞；\n\n规格型号与清单一致；\n\n将斜齿轮放入烘箱设",
+      "score": 1.0,
+      "source_path": "document://doc_20260331021041_adff1740/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.71088254,
+      "lexical_score": 65.71257179749271,
+      "fused_score": 0.03278688524590164
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260401092629_1d17b38c-chunk-33",
+      "document_id": "doc_20260401092629_1d17b38c",
+      "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-横行部（装配SOP)#A0).pdf",
+      "snippet": "一致；\n 横行斜齿轮放入烘箱设备中并开启加热；\n（设定时间 1 小时）\n 取出零件必须佩戴防烫手套；\n【注】：上岗必须经过培训遵守操作规范；\n\n\n 外观表面无磕碰、变形、刮伤等不良现象；\n 所有螺纹孔无残渣、无堵塞；\n 规格型号与清单一致；\n 减速机平整摆放在工作台面上（凸轴朝上）；\n 方键扣入减速机凹槽处并套入横行斜齿轮、垫片；\n 紧固扭矩 12.5N• m；（扭矩内六角扳手 ",
+      "score": 0.9760624679979518,
+      "source_path": "document://doc_20260401092629_1d17b38c/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.6754644,
+      "lexical_score": 39.34017750048399,
+      "fused_score": 0.03200204813108039
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260401092630_00587936-chunk-28",
+      "document_id": "doc_20260401092630_00587936",
+      "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+      "snippet": " 用枪型气锤打入，确保定位销同心并埋入凹槽内；\n\n\n 手臂减速机法兰全程移动 3~5 次确保顺畅、 无卡滞\n等不良现象；\n（滑块贴紧基准面光轨偏大间隙，用防震橡皮锤矫正并\n锁紧）\n 紧固扭矩 7.5N•m；（内六角扳手 3mm）\n 所有螺丝用红色油性记号笔 100%在螺丝上画线且\n画线方向一致；\n\n- - 22 - -\nNINGBO WELL-LIH\nROBOTS TECHNOLOGY ",
+      "score": 0.9533577533577533,
+      "source_path": "document://doc_20260401092630_00587936/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.64375144,
+      "lexical_score": 35.904680287571175,
+      "fused_score": 0.03125763125763126
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+      "document_id": "doc_20260330075201_24a4a12e",
+      "document_name": "齿条安装SOP .docx",
+      "snippet": "斜精铣齿条安装SOP-生技部斜精铣齿条安装SOP-生技部\n装配准备工作\n\n1.准备好油石、铲刀、百分表、橡胶锤、芯棒；\n\n2.准备好相应的螺丝、弹垫、内六角扳手；\n\n3.检查外观表面无磕碰、变形、刮伤等不良现象；\n\n4.检查所有螺纹孔无残渣、无堵塞、规格型号与清单一致。\n\n一、清洁\n\n内容\n\n用油石研磨齿条安装面摩擦至少2次；\n\n研磨完成后需用手触摸感受，是否有明显的凹凸面，如果有请继续研磨，研磨",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260330075201_24a4a12e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.63866067,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260401092630_00587936-chunk-29",
+      "document_id": "doc_20260401092630_00587936",
+      "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+      "snippet": "上岗必须经过培训遵守操作规范；\n\n\n 输入已编程序号；（详见现场操作规程、序号）\n 斜齿轮压入减速机；\n【注】：上岗必须经过培训遵守操作规范；\n\n\n 外观表面无磕碰、变形、刮伤等不良现象；\n 所有螺纹孔无残渣、无堵塞；\n 规格型号与清单一致；\n 将减速机轴端涂上润滑油一圈；锂基脂（Longtime\nPD00）\n 方键放入键槽内，把斜齿轮套入一部分；\n\n- - 23 - -\nNIN",
+      "score": 0.46923076923076923,
+      "source_path": "document://doc_20260401092630_00587936/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.61908734,
+      "lexical_score": null,
+      "fused_score": 0.015384615384615385
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "电机齿轮安装斜齿轮加温设定时间和温度是多少",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": null,
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 20,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.9251,avg_top_n=0.9024,lexical_top1=7.7210)_below_thresholds(0.95,0.70,10.00)",
+    "recall_counts": {
+      "department_vector_count": 15,
+      "department_lexical_count": 17,
+      "department_fused_count": 20,
+      "department_after_ocr": 20,
+      "department_unique_docs_after_ocr": 1,
+      "supplemental_vector_count": 7,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "top_k_truncated": 15
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "电机齿轮安装斜齿轮加温设定时间和温度是多少",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": null,
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 15,
+      "lexical_count": 17,
+      "fused_count": 20,
+      "effective_count": 20,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.9250919117647058,
+      "avg_top_n_score": 0.9024000221254038,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.9251,avg_top_n=0.9024,lexical_top1=7.7210)_below_thresholds(0.95,0.70,10.00)",
+      "vector_count": 7,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 0,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 15,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-182",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331062759_0867e1df",
+          "chunk_id": "doc_20260331062759_0867e1df-chunk-181",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-24",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-51",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-12",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-25",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-17",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260321070337_445684f4",
+          "chunk_id": "doc_20260321070337_445684f4-chunk-28",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260331021041_adff1740",
+          "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+          "document_name": "电机齿轮安装SOP.docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.71088254,
+          "lexical_score": 65.71257179749271,
+          "fused_score": 0.03278688524590164,
+          "final_score": 1.0,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7109，词法 65.7126，融合 0.0328。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260401092629_1d17b38c",
+          "chunk_id": "doc_20260401092629_1d17b38c-chunk-33",
+          "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-横行部（装配SOP)#A0).pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.6754644,
+          "lexical_score": 39.34017750048399,
+          "fused_score": 0.03200204813108039,
+          "final_score": 0.9760624679979518,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6755，词法 39.3402，融合 0.0320。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260401092630_00587936",
+          "chunk_id": "doc_20260401092630_00587936-chunk-28",
+          "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.64375144,
+          "lexical_score": 35.904680287571175,
+          "fused_score": 0.03125763125763126,
+          "final_score": 0.9533577533577533,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6438，词法 35.9047，融合 0.0313。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260330075201_24a4a12e",
+          "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+          "document_name": "齿条安装SOP .docx",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.63866067,
+          "lexical_score": null,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6387，融合 0.0156。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260401092630_00587936",
+          "chunk_id": "doc_20260401092630_00587936-chunk-29",
+          "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.61908734,
+          "lexical_score": null,
+          "fused_score": 0.015384615384615385,
+          "final_score": 0.46923076923076923,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6191，融合 0.0154。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260331021041_adff1740",
+        "chunk_id": "doc_20260331021041_adff1740-chunk-0",
+        "document_name": "电机齿轮安装SOP.docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.71088254,
+        "lexical_score": 65.71257179749271,
+        "fused_score": 0.03278688524590164,
+        "final_score": 1.0,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.7109，词法 65.7126，融合 0.0328。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260401092629_1d17b38c",
+        "chunk_id": "doc_20260401092629_1d17b38c-chunk-33",
+        "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-横行部（装配SOP)#A0).pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.6754644,
+        "lexical_score": 39.34017750048399,
+        "fused_score": 0.03200204813108039,
+        "final_score": 0.9760624679979518,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6755，词法 39.3402，融合 0.0320。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260401092630_00587936",
+        "chunk_id": "doc_20260401092630_00587936-chunk-28",
+        "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.64375144,
+        "lexical_score": 35.904680287571175,
+        "fused_score": 0.03125763125763126,
+        "final_score": 0.9533577533577533,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6438，词法 35.9047，融合 0.0313。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260330075201_24a4a12e",
+        "chunk_id": "doc_20260330075201_24a4a12e-chunk-0",
+        "document_name": "齿条安装SOP .docx",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.63866067,
+        "lexical_score": null,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6387，融合 0.0156。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260401092630_00587936",
+        "chunk_id": "doc_20260401092630_00587936-chunk-29",
+        "document_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-手臂部（装配SOP)#A0).pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.61908734,
+        "lexical_score": null,
+        "fused_score": 0.015384615384615385,
+        "final_score": 0.46923076923076923,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.6191，融合 0.0154。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-182",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331062759_0867e1df",
+        "chunk_id": "doc_20260331062759_0867e1df-chunk-181",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-24",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-51",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-12",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-25",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-17",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-49",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260321070337_445684f4",
+        "chunk_id": "doc_20260321070337_445684f4-chunk-28",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

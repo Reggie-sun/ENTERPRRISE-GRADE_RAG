@@ -25,9 +25,9 @@ type DraftRequestMode = SopGenerationRequestMode | '';
 const SOP_STREAM_START_TIMEOUT_MS = 15_000;
 
 const SELECT_CLASS_NAME = `
-  w-full rounded-2xl border border-[rgba(23,32,42,0.12)] bg-[rgba(255,255,255,0.82)]
+  w-full rounded-2xl border border-[rgba(15,23,42,0.12)] bg-[rgba(255,255,255,0.82)]
   px-4 py-3 text-ink transition-all duration-200 focus:outline-none
-  focus:border-[rgba(182,70,47,0.48)] focus:-translate-y-0.5
+  focus:border-[rgba(194,65,12,0.48)] focus:-translate-y-0.5
 `;
 
 const GENERATION_MODE_OPTIONS: Array<{
@@ -501,7 +501,7 @@ export function PortalSopGeneratePanel() {
 
       <section className="grid grid-cols-12 gap-5">
         <div className="col-span-4 grid gap-5 max-lg:col-span-12">
-          <Card className="bg-panel border-[rgba(182,70,47,0.12)]">
+          <Card className="bg-panel border-[rgba(194,65,12,0.12)]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="m-0 text-xl font-semibold text-ink">当前文件上下文</h3>
@@ -589,8 +589,8 @@ export function PortalSopGeneratePanel() {
                         className={`
                           rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200
                           ${active
-                            ? 'bg-[rgba(182,70,47,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(182,70,47,0.14)]'
-                            : 'bg-[rgba(23,32,42,0.06)] text-ink hover:-translate-y-0.5'
+                            ? 'bg-[rgba(194,65,12,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(194,65,12,0.14)]'
+                            : 'bg-[rgba(15,23,42,0.06)] text-ink hover:-translate-y-0.5'
                           }
                         `}
                         onClick={() => {
@@ -741,7 +741,7 @@ export function PortalSopGeneratePanel() {
               {draft.citations.map((item) => (
                 <article
                   key={item.chunk_id}
-                  className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.74)] p-4"
+                  className="rounded-2xl border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.74)] p-4"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                     <strong className="text-ink">{item.document_name}</strong>
@@ -764,7 +764,7 @@ export function PortalSopGeneratePanel() {
               ))}
 
               {!draft.citations.length ? (
-                <div className="rounded-2xl border border-dashed border-[rgba(23,32,42,0.12)] px-4 py-8 text-sm leading-relaxed text-ink-soft">
+                <div className="rounded-2xl border border-dashed border-[rgba(15,23,42,0.12)] px-4 py-8 text-sm leading-relaxed text-ink-soft">
                   先上传来源文件并生成 SOP，这里才会显示引用证据。
                 </div>
               ) : null}

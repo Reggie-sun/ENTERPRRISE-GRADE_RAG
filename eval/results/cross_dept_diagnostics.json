@@ -1,0 +1,432 @@
+[
+  {
+    "sample_id": "cross-001",
+    "query": "电机齿轮安装斜齿轮加温设定时间和温度是多少",
+    "expected_doc_ids": [
+      "doc_20260331021041_adff1740"
+    ],
+    "requester_department_id": "dept_after_sales",
+    "top1": {
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9250919117647058,
+      "source_scope": "department",
+      "vector_score": 0.50279117,
+      "lexical_score": 7.721001953992658
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260331021041_adff1740",
+      "score": 1.0,
+      "source_scope": "global",
+      "vector_score": 0.71088254,
+      "lexical_score": 65.71257179749271
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260331021041_adff1740",
+      "score": 1.0,
+      "vector_score": 0.71088254,
+      "lexical_score": 65.71257179749271
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 14,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-002",
+    "query": "皮带轮固定架组压装止动螺丝安装 Step3 扭矩是多少",
+    "expected_doc_ids": [
+      "doc_20260401092629_f470103f"
+    ],
+    "requester_department_id": "dept_after_sales",
+    "top1": {
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9841269841269842,
+      "source_scope": "department",
+      "vector_score": 0.5159348,
+      "lexical_score": 3.916667596250824
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260401092629_f470103f",
+      "score": 0.9919354838709679,
+      "source_scope": "global",
+      "vector_score": 0.712044,
+      "lexical_score": 53.14973697928396
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260401092629_f470103f",
+      "score": 0.9919354838709679,
+      "vector_score": 0.712044,
+      "lexical_score": 53.14973697928396
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 12,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-003",
+    "query": "从动手臂梁滑块含油嘴安装 Step3 定位面方向要求",
+    "expected_doc_ids": [
+      "doc_20260401092629_f3b52aa5"
+    ],
+    "requester_department_id": "dept_after_sales",
+    "top1": {
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9244546498277841,
+      "source_scope": "department",
+      "vector_score": 0.486469,
+      "lexical_score": 4.53157144967566
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260401092629_f3b52aa5",
+      "score": 0.9841269841269842,
+      "source_scope": "global",
+      "vector_score": 0.67443496,
+      "lexical_score": 66.16185056640762
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260401092629_f3b52aa5",
+      "score": 0.9841269841269842,
+      "vector_score": 0.67443496,
+      "lexical_score": 66.16185056640762
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 19,
+      "sup_lexical_count": 16,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-004",
+    "query": "DFMS智能助手的业务目标和产品目标分别是什么",
+    "expected_doc_ids": [
+      "doc_20260326064202_f5b7a9ae"
+    ],
+    "requester_department_id": "dept_assembly",
+    "top1": {
+      "document_id": "doc_20260401084714_fa3b8bf6",
+      "score": 0.818319118692253,
+      "source_scope": "department",
+      "vector_score": 0.37393796,
+      "lexical_score": 12.65210659140769
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "score": 1.0,
+      "source_scope": "global",
+      "vector_score": 0.7319889,
+      "lexical_score": 73.67429416461073
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260326064202_f5b7a9ae",
+      "score": 1.0,
+      "vector_score": 0.7319889,
+      "lexical_score": 73.67429416461073
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 15,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-005",
+    "query": "刀具管理系统刀具基础数据包括哪些内容",
+    "expected_doc_ids": [
+      "doc_20260326071937_37f67e8c"
+    ],
+    "requester_department_id": "dept_assembly",
+    "top1": {
+      "document_id": "doc_20260330055115_c20cfc5a",
+      "score": 0.9841269841269842,
+      "source_scope": "department",
+      "vector_score": 0.5239421,
+      "lexical_score": 18.815644994540456
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260326071937_37f67e8c",
+      "score": 0.9919354838709679,
+      "source_scope": "global",
+      "vector_score": 0.66240215,
+      "lexical_score": 72.99989001593323
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260326071937_37f67e8c",
+      "score": 0.9919354838709679,
+      "vector_score": 0.66240215,
+      "lexical_score": 72.99989001593323
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 20,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-006",
+    "query": "V1版本当前冻结边界包括哪些内容",
+    "expected_doc_ids": [
+      "doc_20260401085300_13d0ce46"
+    ],
+    "requester_department_id": "dept_after_sales",
+    "top1": {
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 1.0,
+      "source_scope": "department",
+      "vector_score": 0.45969087,
+      "lexical_score": 8.065972307540353
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 0.9841269841269842,
+      "source_scope": "global",
+      "vector_score": 0.6113922,
+      "lexical_score": 38.44289359738727
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 0.9841269841269842,
+      "vector_score": 0.6113922,
+      "lexical_score": 38.44289359738727
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 17,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-007",
+    "query": "电镀镜光表面A面表面积1000以下麻点允许数量",
+    "expected_doc_ids": [
+      "doc_20260401084714_b7ed464a"
+    ],
+    "requester_department_id": "dept_digitalization",
+    "top1": {
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 0.9121621621621622,
+      "source_scope": "department",
+      "vector_score": 0.40468162,
+      "lexical_score": 13.501208584227637
+    },
+    "expected_doc": null,
+    "best_pure_global": null,
+    "diagnostic": {
+      "supplemental_triggered": false,
+      "trigger_basis": "department_sufficient",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 0,
+      "dept_mode": "hybrid",
+      "global_mode": "qdrant"
+    }
+  },
+  {
+    "sample_id": "cross-008",
+    "query": "接触式移动供电系统最低多久检测一次",
+    "expected_doc_ids": [
+      "doc_20260331081535_5d30086d"
+    ],
+    "requester_department_id": "dept_digitalization",
+    "top1": {
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 0.910650623885918,
+      "source_scope": "department",
+      "vector_score": 0.48821127,
+      "lexical_score": 5.792793977741892
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260331081535_5d30086d",
+      "score": 0.9765625000000001,
+      "source_scope": "global",
+      "vector_score": 0.61324286,
+      "lexical_score": 73.72131034084558
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260331081535_5d30086d",
+      "score": 0.9765625000000001,
+      "vector_score": 0.61324286,
+      "lexical_score": 73.72131034084558
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 14,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-009",
+    "query": "700000 面板急停报警现场先查什么",
+    "expected_doc_ids": [
+      "doc_20260321070337_445684f4"
+    ],
+    "requester_department_id": "dept_assembly",
+    "top1": {
+      "document_id": "doc_20260401023359_0e157e08",
+      "score": 0.9760624679979518,
+      "source_scope": "department",
+      "vector_score": 0.5658456,
+      "lexical_score": 11.184644187762226
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9919354838709679,
+      "source_scope": "global",
+      "vector_score": 0.7057649,
+      "lexical_score": 48.914421612707855
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9919354838709679,
+      "vector_score": 0.7057649,
+      "lexical_score": 48.914421612707855
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 17,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-010",
+    "query": "摇臂钻床安全操作规范中异常响声怎么处理",
+    "expected_doc_ids": [
+      "doc_20260330055115_c20cfc5a"
+    ],
+    "requester_department_id": "dept_digitalization",
+    "top1": {
+      "document_id": "doc_20260326071937_37f67e8c",
+      "score": 0.9841269841269842,
+      "source_scope": "department",
+      "vector_score": 0.4703521,
+      "lexical_score": 10.295969698892904
+    },
+    "expected_doc": null,
+    "best_pure_global": null,
+    "diagnostic": {
+      "supplemental_triggered": false,
+      "trigger_basis": "department_sufficient",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 0,
+      "dept_mode": "hybrid",
+      "global_mode": "qdrant"
+    }
+  },
+  {
+    "sample_id": "cross-011",
+    "query": "为什么不能直接做大而全V1",
+    "expected_doc_ids": [
+      "doc_20260401085300_13d0ce46"
+    ],
+    "requester_department_id": "dept_assembly",
+    "top1": {
+      "document_id": "doc_20260401084714_fa3b8bf6",
+      "score": 0.9684979838709676,
+      "source_scope": "department",
+      "vector_score": 0.4445185,
+      "lexical_score": 9.113338420378508
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 1.0,
+      "source_scope": "global",
+      "vector_score": 0.614272,
+      "lexical_score": 43.09630696909438
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260401085300_13d0ce46",
+      "score": 1.0,
+      "vector_score": 0.614272,
+      "lexical_score": 43.09630696909438
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 14,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  },
+  {
+    "sample_id": "cross-012",
+    "query": "刀具管理系统为什么需要支持3D模型多视角展示",
+    "expected_doc_ids": [
+      "doc_20260326071937_37f67e8c"
+    ],
+    "requester_department_id": "dept_after_sales",
+    "top1": {
+      "document_id": "doc_20260321070337_445684f4",
+      "score": 0.9919354838709679,
+      "source_scope": "department",
+      "vector_score": 0.525636,
+      "lexical_score": 8.133762794150726
+    },
+    "expected_doc": {
+      "rank": 9,
+      "document_id": "doc_20260326071937_37f67e8c",
+      "score": 0.9919354838709679,
+      "source_scope": "global",
+      "vector_score": 0.6401972,
+      "lexical_score": 81.83494825568806
+    },
+    "best_pure_global": {
+      "rank": 9,
+      "document_id": "doc_20260326071937_37f67e8c",
+      "score": 0.9919354838709679,
+      "vector_score": 0.6401972,
+      "lexical_score": 81.83494825568806
+    },
+    "diagnostic": {
+      "supplemental_triggered": true,
+      "trigger_basis": "department_low_quality",
+      "dept_lexical_count": 20,
+      "sup_lexical_count": 19,
+      "dept_mode": "hybrid",
+      "global_mode": "hybrid"
+    }
+  }
+]

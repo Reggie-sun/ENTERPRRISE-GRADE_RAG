@@ -221,7 +221,7 @@ export function PortalChatPage() {
                 <button
                   key={item}
                   type="button"
-                  className="rounded-full bg-[rgba(23,32,42,0.06)] px-3 py-2 text-sm text-ink transition-all duration-200 hover:-translate-y-0.5"
+                  className="rounded-full bg-[rgba(15,23,42,0.06)] px-3 py-2 text-sm text-ink transition-all duration-200 hover:-translate-y-0.5"
                   onClick={() => setQuestion(item)}
                 >
                   {item}
@@ -241,8 +241,8 @@ export function PortalChatPage() {
                         className={`
                           rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200
                           ${active
-                            ? 'bg-[rgba(182,70,47,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(182,70,47,0.14)]'
-                            : 'bg-[rgba(23,32,42,0.06)] text-ink hover:-translate-y-0.5'
+                            ? 'bg-[rgba(194,65,12,0.14)] text-accent-deep shadow-[0_10px_20px_rgba(194,65,12,0.14)]'
+                            : 'bg-[rgba(15,23,42,0.06)] text-ink hover:-translate-y-0.5'
                           }
                         `}
                         onClick={() => setQueryMode(item.value)}
@@ -274,7 +274,7 @@ export function PortalChatPage() {
             </div>
           </form>
 
-          <div className="mt-5 rounded-[28px] border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)] p-5">
+          <div className="mt-5 rounded-2xl border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.72)] p-5">
             {error ? (
               <p className="m-0 whitespace-pre-wrap leading-relaxed text-accent-deep">{error}</p>
             ) : (
@@ -285,13 +285,13 @@ export function PortalChatPage() {
           </div>
 
           {shouldShowSources ? (
-            <section className="mt-4 rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.72)] p-4">
+            <section className="mt-4 rounded-2xl border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.72)] p-4">
               <h3 className="m-0 text-base font-semibold text-ink">信息来源</h3>
               <div className="mt-3 grid gap-3">
                 {data?.citations.map((item: Citation) => (
                   <article
                     key={item.chunk_id}
-                    className="rounded-2xl border border-[rgba(23,32,42,0.08)] bg-[rgba(255,255,255,0.78)] p-4"
+                    className="rounded-2xl border border-[rgba(15,23,42,0.08)] bg-[rgba(255,255,255,0.78)] p-4"
                   >
                     <p className="m-0 font-semibold text-ink break-all">{item.document_name}</p>
                     <p className="m-0 mt-2 text-sm leading-relaxed text-ink-soft">
@@ -308,13 +308,13 @@ export function PortalChatPage() {
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Link
                         to={`/portal/library?doc_id=${encodeURIComponent(item.document_id)}`}
-                        className="rounded-full bg-[rgba(182,70,47,0.09)] px-3 py-1.5 text-sm font-semibold text-accent-deep no-underline"
+                        className="rounded-full bg-[rgba(194,65,12,0.09)] px-3 py-1.5 text-sm font-semibold text-accent-deep no-underline"
                       >
                         查看资料
                       </Link>
                       <Link
                         to={`/portal/sop?doc_id=${encodeURIComponent(item.document_id)}`}
-                        className="rounded-full bg-[rgba(23,32,42,0.06)] px-3 py-1.5 text-sm font-semibold text-ink no-underline"
+                        className="rounded-full bg-[rgba(15,23,42,0.06)] px-3 py-1.5 text-sm font-semibold text-ink no-underline"
                       >
                         去 SOP 中心
                       </Link>

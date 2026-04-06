@@ -41,6 +41,11 @@ from .retrieval_query_router import HybridBranchWeights, RetrievalQueryRouter
 
 logger = logging.getLogger(__name__)
 SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD = 10.0
+SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD = 0.5
+SUPPLEMENTAL_LITERAL_COVERAGE_MIN_QUERY_TOKENS = 3
+SUPPLEMENTAL_LOW_QUALITY_RESERVED_GLOBAL_SLOTS = 2
+SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE = 0.10
+SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD = 0.70
 
 @dataclass
 class _RetrievalCandidate:
@@ -918,10 +923,19 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             window_size=required,
         )
         primary_top1_lexical_score = self._top_candidate_lexical_score(department_after_ocr)
+        query_type = (
+            str(diagnostic.get("query_type") or "").strip().lower()
+            if diagnostic is not None
+            else ""
+        )
         query_granularity = (
             str(diagnostic.get("query_granularity") or "").strip().lower()
             if diagnostic is not None
             else ""
+        )
+        primary_top1_literal_coverage = self._top_candidate_literal_coverage(
+            query=query,
+            candidates=department_after_ocr,
         )
         quality_thresholds = self._get_supplemental_quality_thresholds()
         quality_top1_threshold = quality_thresholds.top1_threshold
@@ -945,18 +959,64 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             and primary_top1_lexical_score is not None
             and primary_top1_lexical_score < SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD
         )
-        low_quality = low_quality_by_score or low_quality_by_lexical
+        low_quality_by_literal = (
+            department_mode == "hybrid"
+            and (query_granularity == "fine" or query_type == "exact")
+            and primary_top1_literal_coverage is not None
+            and primary_top1_literal_coverage < SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD
+        )
+        # Mono-document literal mismatch: when all department results come from a single document
+        # AND the top1 literal coverage is weak, this strongly suggests the content doesn't genuinely
+        # match the query. High vector scores with low literal coverage indicate semantic overlap
+        # rather than genuine content match (e.g., cross-013 where "tool system requirements" doc
+        # scores 0.99 against a "pulley SOP" query).
+        # Unlike the standard low_quality_by_literal (which only fires for fine/exact queries),
+        # mono-document scenarios are inherently suspicious because the department lacks diversity,
+        # so we use a stricter threshold and check regardless of query granularity.
+        low_quality_by_mono_document = (
+            department_unique_doc_count <= 1
+            and department_effective_count >= required
+            and department_effective_count > 0
+            and primary_top1_literal_coverage is not None
+            and primary_top1_literal_coverage < SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD
+            and scope is not None
+            and len(scope.global_document_ids) > 0
+        )
+        # Boundary jitter guard for avg_top_n: when avg_top_n is only marginally below the threshold
+        # (within the tolerance zone) but top1 is healthy and literal coverage is good, suppress the
+        # avg_top_n-based trigger to avoid oscillation from HNSW non-determinism (e.g., sop-005).
+        avg_top_n_marginal = (
+            primary_avg_top_n_score is not None
+            and quality_avg_threshold is not None
+            and primary_avg_top_n_score < quality_avg_threshold
+            and primary_avg_top_n_score >= quality_avg_threshold - SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE
+        )
+        avg_top_n_suppressed_by_strong_top1 = (
+            avg_top_n_marginal
+            and primary_top1_score is not None
+            and primary_top1_score >= quality_top1_threshold
+            and primary_top1_literal_coverage is not None
+            and primary_top1_literal_coverage >= SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD
+        )
+        raw_low_quality_by_score = low_quality_by_score
+        if avg_top_n_suppressed_by_strong_top1:
+            # Re-evaluate: only keep score-based trigger if top1 is also below threshold
+            low_quality_by_score = (
+                primary_top1_score is not None and primary_top1_score < quality_top1_threshold
+            )
+        low_quality = low_quality_by_score or low_quality_by_lexical or low_quality_by_literal or low_quality_by_mono_document
 
         if department_effective_count >= required and not low_quality:
             # Department has sufficient and good-quality results — skip supplemental route entirely
             logger.info(
-                "staged_retrieval stage=department_only department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f supplemental=skipped",
+                "staged_retrieval stage=department_only department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f literal_coverage=%.4f supplemental=skipped",
                 department_effective_count,
                 department_unique_doc_count,
                 required,
                 primary_top1_score or 0.0,
                 primary_avg_top_n_score or 0.0,
                 primary_top1_lexical_score or 0.0,
+                primary_top1_literal_coverage or 0.0,
             )
             if diagnostic is not None:
                 diagnostic["primary_threshold"] = required
@@ -997,41 +1057,57 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         supplemental_fused_count = len(global_candidates)
 
         logger.info(
-            "staged_retrieval stage=supplemental department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f supplemental_limit=%d supplemental_recall=%d",
+            "staged_retrieval stage=supplemental department_effective=%d department_unique_docs=%d required=%d top1=%.4f avg_top_n=%.4f lexical_top1=%.4f literal_coverage=%.4f supplemental_limit=%d supplemental_recall=%d",
             department_effective_count,
             department_unique_doc_count,
             required,
             primary_top1_score or 0.0,
             primary_avg_top_n_score or 0.0,
             primary_top1_lexical_score or 0.0,
+            primary_top1_literal_coverage or 0.0,
             supplemental_limit,
             len(global_candidates),
         )
 
+        trigger_basis = "department_insufficient" if department_effective_count < required else "department_low_quality"
+        reserve_global_slots = 0
+        if trigger_basis == "department_low_quality":
+            reserve_global_slots = min(
+                SUPPLEMENTAL_LOW_QUALITY_RESERVED_GLOBAL_SLOTS,
+                max(1, required // 2),
+            )
         if diagnostic is not None:
-            trigger_basis = "department_insufficient" if department_effective_count < required else "department_low_quality"
             diagnostic["primary_threshold"] = required
             diagnostic["primary_effective_count"] = department_effective_count
             diagnostic["supplemental_triggered"] = True
             if trigger_basis == "department_insufficient":
                 diagnostic["supplemental_reason"] = f"department_effective({department_effective_count})_below_threshold({required})"
             else:
-                if low_quality_by_score and low_quality_by_lexical:
-                    diagnostic["supplemental_reason"] = (
-                        f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f},"
-                        f"lexical_top1={primary_top1_lexical_score:.4f})_below_thresholds("
-                        f"{quality_top1_threshold:.2f},{quality_avg_threshold:.2f},{SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD:.2f})"
-                    )
-                elif low_quality_by_score:
-                    diagnostic["supplemental_reason"] = (
+                reason_parts: list[str] = []
+                if low_quality_by_score:
+                    reason_parts.append(
                         f"department_quality(top1={primary_top1_score:.4f},avg_top_n={primary_avg_top_n_score:.4f})"
                         f"_below_thresholds({quality_top1_threshold:.2f},{quality_avg_threshold:.2f})"
                     )
-                else:
-                    diagnostic["supplemental_reason"] = (
+                if low_quality_by_lexical:
+                    reason_parts.append(
                         f"department_lexical_top1({primary_top1_lexical_score:.4f})"
                         f"_below_threshold({SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD:.2f})"
                     )
+                if low_quality_by_literal:
+                    reason_parts.append(
+                        f"department_literal_coverage({primary_top1_literal_coverage:.4f})"
+                        f"_below_threshold({SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD:.2f})"
+                    )
+                if low_quality_by_mono_document:
+                    reason_parts.append(
+                        f"department_mono_document_literal_mismatch(unique_docs={department_unique_doc_count},literal_coverage={primary_top1_literal_coverage:.4f})"
+                    )
+                if avg_top_n_suppressed_by_strong_top1:
+                    reason_parts.append(
+                        f"avg_top_n_boundary_suppressed(avg={primary_avg_top_n_score:.4f},threshold={quality_avg_threshold:.2f})"
+                    )
+                diagnostic["supplemental_reason"] = ";".join(reason_parts) or "department_low_quality"
             diagnostic["supplemental_trigger_basis"] = trigger_basis
             diagnostic["primary_top1_score"] = primary_top1_score
             diagnostic["primary_avg_top_n_score"] = primary_avg_top_n_score
@@ -1054,6 +1130,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             department_candidates=department_candidates,
             global_candidates=global_candidates,
             limit=limit,
+            reserve_global_slots=reserve_global_slots,
+            reserve_window=required,
         )
         return fused_candidates, retrieval_mode, branch_weights
 
@@ -1125,6 +1203,58 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         if lexical_score is None:
             return None
         return float(lexical_score)
+
+    def _top_candidate_literal_coverage(
+        self,
+        *,
+        query: str,
+        candidates: list[_RetrievalCandidate],
+    ) -> float | None:
+        if not candidates:
+            return None
+
+        query_tokens = self._literal_guard_tokens(query)
+        query_token_set = set(query_tokens)
+        if len(query_token_set) < SUPPLEMENTAL_LITERAL_COVERAGE_MIN_QUERY_TOKENS:
+            return None
+
+        payload = candidates[0].payload
+        candidate_text = str(payload.get("retrieval_text") or payload.get("text") or "").strip()
+        if not candidate_text:
+            return 0.0
+
+        candidate_tokens = set(self._literal_guard_tokens(candidate_text))
+        if not candidate_tokens:
+            return 0.0
+
+        matched_terms = sum(1 for token in query_token_set if token in candidate_tokens)
+        return matched_terms / len(query_token_set)
+
+    def _literal_guard_tokens(self, text: str) -> list[str]:
+        normalized_text = text.strip()
+        if not normalized_text or self.lexical_retriever is None:
+            return []
+
+        tokenizer = getattr(self.lexical_retriever, "_tokenize", None)
+        if not callable(tokenizer):
+            return []
+
+        try:
+            tokenized = tokenizer(normalized_text)
+        except Exception:
+            logger.debug("literal coverage tokenization failed", exc_info=True)
+            return []
+
+        raw_tokens = getattr(tokenized, "primary_tokens", None)
+        if not isinstance(raw_tokens, list):
+            return []
+
+        normalized_tokens: list[str] = []
+        for token in raw_tokens:
+            token_text = str(token).strip().lower()
+            if token_text:
+                normalized_tokens.append(token_text)
+        return normalized_tokens
 
     def _apply_ocr_quality_governance(
         self,
@@ -1249,6 +1379,8 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
         department_candidates: list[_RetrievalCandidate],
         global_candidates: list[_RetrievalCandidate],
         limit: int,
+        reserve_global_slots: int = 0,
+        reserve_window: int | None = None,
     ) -> list[_RetrievalCandidate]:
         """部门优先候选融合：将部门候选与全局候选按去重+优先部门命中规则合并排序。
 
@@ -1285,18 +1417,88 @@ class RetrievalService:  # 封装文档检索接口的业务逻辑。
             fused.global_hit = fused.global_hit or candidate.global_hit
             fused.source_scope = self._resolve_source_scope(fused)
 
-        ranked_candidates = sorted(
-            fused_candidates.values(),
-            key=lambda item: (
+        # When low-quality department triggers supplemental (reserve_global_slots > 0),
+        # soften department-first ordering so that higher-scoring global candidates
+        # can outrank weaker department candidates.  Use vector_score as the primary
+        # comparison because it is always a raw cosine score regardless of whether
+        # the route went through hybrid (RRF) or pure-vector (qdrant) fusion.
+        # Otherwise retain strict department-first ordering.
+        if reserve_global_slots > 0:
+            sort_key = lambda item: (
+                item.vector_score if item.vector_score is not None else -1.0,
+                int(item.global_hit),
+                item.lexical_score if item.lexical_score is not None else -1.0,
+                item.score,
+            )
+        else:
+            sort_key = lambda item: (
                 int(item.department_hit),
                 item.score,
                 int(item.department_hit and item.global_hit),
                 item.lexical_score if item.lexical_score is not None else -1.0,
                 item.vector_score if item.vector_score is not None else -1.0,
-            ),
+            )
+        ranked_candidates = sorted(
+            fused_candidates.values(),
+            key=sort_key,
             reverse=True,
         )
+        if reserve_global_slots > 0 and reserve_window:
+            ranked_candidates = self._reserve_pure_global_candidates_within_window(
+                ranked_candidates,
+                reserve_global_slots=reserve_global_slots,
+                reserve_window=reserve_window,
+                limit=limit,
+            )
         return ranked_candidates[:limit]
+
+    @staticmethod
+    def _reserve_pure_global_candidates_within_window(
+        ranked_candidates: list[_RetrievalCandidate],
+        *,
+        reserve_global_slots: int,
+        reserve_window: int,
+        limit: int,
+    ) -> list[_RetrievalCandidate]:
+        """Ensure low-quality supplemental runs expose some pure-global candidates in the first result window."""
+        if reserve_global_slots <= 0 or reserve_window <= 0 or limit <= 0 or not ranked_candidates:
+            return ranked_candidates
+
+        window_size = min(limit, reserve_window, len(ranked_candidates))
+        if window_size <= 0:
+            return ranked_candidates
+
+        def is_pure_global(candidate: _RetrievalCandidate) -> bool:
+            return candidate.global_hit and not candidate.department_hit
+
+        prefix = list(ranked_candidates[:window_size])
+        current_global_count = sum(1 for candidate in prefix if is_pure_global(candidate))
+        available_promotions = [candidate for candidate in ranked_candidates[window_size:] if is_pure_global(candidate)]
+        needed = min(reserve_global_slots - current_global_count, len(available_promotions))
+        if needed <= 0:
+            return ranked_candidates
+
+        replaceable_indices = [
+            index
+            for index in range(window_size - 1, -1, -1)
+            if not is_pure_global(prefix[index])
+        ]
+        if not replaceable_indices:
+            return ranked_candidates
+
+        replace_count = min(needed, len(replaceable_indices))
+        demoted_ids = {prefix[index].candidate_id for index in replaceable_indices[:replace_count]}
+        promoted_candidates = available_promotions[:replace_count]
+        promoted_ids = {candidate.candidate_id for candidate in promoted_candidates}
+
+        kept_prefix = [candidate for candidate in prefix if candidate.candidate_id not in demoted_ids]
+        demoted_candidates = [candidate for candidate in prefix if candidate.candidate_id in demoted_ids]
+        suffix_candidates = [
+            candidate
+            for candidate in ranked_candidates[window_size:]
+            if candidate.candidate_id not in promoted_ids
+        ]
+        return kept_prefix + promoted_candidates + demoted_candidates + suffix_candidates
 
     @staticmethod
     def _candidate_from_vector_point(point: object) -> _RetrievalCandidate:

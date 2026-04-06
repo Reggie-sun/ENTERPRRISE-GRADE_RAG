@@ -69,7 +69,7 @@ export function EvidenceSourceSummary({
   }
 
   return (
-    <div className="mt-3 rounded-2xl bg-[rgba(23,32,42,0.04)] px-4 py-3">
+    <div className="mt-3 rounded-2xl bg-[rgba(15,23,42,0.04)] px-4 py-3">
       <div className="flex flex-wrap gap-2">
         {ocrUsed ? <StatusPill tone={isLowQuality ? 'warn' : 'ok'}>OCR 证据</StatusPill> : null}
         {readableParserLabel ? <StatusPill tone="default">{readableParserLabel}</StatusPill> : null}

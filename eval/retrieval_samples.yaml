@@ -488,3 +488,267 @@ samples:
       auth-provisional: after-sales training new operators on the tool management system would need
       to explain its features. The spec logically belongs to dept_digitalization.
       supplemental_expected=true because it is a dept_digitalization document needed by dept_after_sales.
+
+  # ── P0: threshold boundary samples ──
+  # These samples exercise the provisional quality thresholds at their boundary:
+  #   top1_threshold = 0.55 / fine_query_top1_threshold = 0.95
+  #   avg_top_n_threshold = 0.45 / fine_query_avg_top_n_threshold = 0.70
+  #   SUPPLEMENTAL_LOW_LEXICAL_SCORE_THRESHOLD = 10.0
+  #   SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD = 0.5
+  #
+  # Design intent:
+  # - boundary-001: broad semantic query from a dept that has no indexed docs,
+  #   so department results are empty -> supplemental triggers on "department_insufficient"
+  # - boundary-002: exact/fine query from a non-owner dept; department hybrid returns
+  #   weak top1 (~0.5) in the query has enough keywords that literal coverage sits
+  #   near the 0.5 threshold boundary
+  # - boundary-003: semantic query from a dept that has some partially related docs;
+  #   avg_top_n should land near 0.45-0.65, exercising the avg threshold
+  # - boundary-004: exact/fine query where department returns a result with a high
+  #   lexical score but low literal coverage (< 0.5), testing the literal coverage guard
+  # - boundary-005: semantic query from a dept with no documents at all,
+  #   forcing pure department_insufficient with no lexical signal
+
+  - id: boundary-001
+    query: "刀具管理系统有哪些功能模块和特点"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326071937_37f67e8c"]
+    expected_chunk_type: section_summary
+    expected_terms: ["刀具管理系统", "功能", "操作"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: unverified
+    source: synthetic
+    note: >-
+      P0 threshold boundary: broad semantic query from dept_after_sales.
+      Department has no digitalization docs, so department results should be 0 -> department_insufficient.
+      The target doc is doc_20260326071937_37f67e8c (刀具系统技术要求).
+      Tests whether the system correctly falls back to supplemental when the requester's
+      department has zero relevant documents for a broad semantic query.
+
+
+
+  - id: boundary-002
+    query: "滑触线施工手册中接触式供电系统定期检测周期"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331081535_5d30086d"]
+    expected_chunk_type: clause
+    expected_terms: ["接触式移动供电系统", "定期检测", "最低一年一次"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: unverified
+    source: synthetic
+    note: >-
+      P0 threshold boundary: exact/fine query from dept_after_sales about the
+      滑触线施工手册 (doc_20260331081535_5d30086d). The after_sales department has no
+      construction manual indexed. This exercises the fine_query_top1_threshold=0.95 boundary:
+      if department hybrid returns a weakly-related doc, its top1 should fall below 0.95
+      and trigger department_low_quality supplemental.
+
+  - id: boundary-003
+    query: "DFMS 系统的总体架构和各模块关系"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326064202_f5b7a9ae"]
+    expected_chunk_type: section_summary
+    expected_terms: ["DFMS", "架构", "模块"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: unverified
+    source: synthetic
+    note: >-
+      P0 threshold boundary: broad semantic query about DFMS architecture from dept_assembly.
+      The RAG architecture report (doc_20260326064202_f5b7a9ae) belongs to dept_digitalization.
+      Dept_assembly may have some partially related docs. This tests whether avg_top_n lands
+      near the 0.45-0.65 boundary for a coarse semantic query.
+
+  - id: boundary-004
+    query: "700018 B轴夹紧放松信号异常 检查步骤和处置方法"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700018", "B轴", "夹紧放松信号异常"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: unverified
+    source: synthetic
+    note: >-
+      P0 threshold boundary: exact/fine fault-code query from dept_digitalization.
+      The fault code manual (doc_20260321070337_445684f4) belongs to dept_after_sales.
+      Dept_digitalization has no fault code docs. Tests literal coverage guard at boundary:
+      query contains specific terms (700018, B轴) that won't appear in digitalization docs,
+      so literal coverage should be very low if any dept doc is returned.
+
+  - id: boundary-005
+    query: "企业智能助手的技术选型和部署方案"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260326064202_f5b7a9ae"]
+    expected_chunk_type: section_summary
+    expected_terms: ["智能助手", "技术", "部署"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: unverified
+    source: synthetic
+    note: >-
+      P0 threshold boundary: semantic query about DFMS tech stack from dept_after_sales.
+      No after_sales docs discuss the DFMS tech architecture. This exercises the
+      department_insufficient path when department returns 0 results. The query is
+      intentionally broad/synonym-heavy (not exact keywords from the doc) to test
+      whether the semantic recall still finds the right doc via supplemental.
+
+  # ── P1: lexical boundary samples ──
+  # These samples test scenarios where department lexical returns exist (2-8 results)
+  # but quality is insufficient — the intermediate state between "lexical returns many"
+  # and "lexical returns 0".
+  #
+  # - lexical-001: query with domain-specific terms that partially overlap with
+  #   the requester's department docs, but the true answer is in a different dept's doc
+  # - lexical-002: query that uses slightly different terminology than what's in the
+  #   indexed docs, creating a lexical score in the 2-8 range (partially matching)
+
+  - id: lexical-001
+    query: "电机齿轮装配时齿轮齿条间隙调整标准"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260331021041_adff1740"]
+    expected_chunk_type: clause
+    expected_terms: ["齿轮与齿条", "间隙", "0.15mm-0.3mm"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: unverified
+    source: synthetic
+    note: >-
+      P1 lexical boundary: exact query about gear/rack clearance from dept_digitalization.
+      The motor gear SOP (doc_20260331021041_adff1740) belongs to dept_assembly.
+      Dept_digitalization may return some partially-related tech docs that mention 齿轮 in
+      passing (e.g., tool management system specs), creating a lexical boundary state with
+      2-8 weak matches. Tests whether supplemental fires despite partial lexical coverage.
+
+  - id: lexical-002
+    query: "产品外观检验标准 镜面麻点判定"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260401084714_b7ed464a"]
+    expected_chunk_type: clause
+    expected_terms: ["电镀", "镜光", "麻点", "A面"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: unverified
+    source: synthetic
+    note: >-
+      P1 lexical boundary: query about plating inspection standards from dept_after_sales.
+      The inspection standard doc (doc_20260401084714_b7ed464a) belongs to dept_assembly.
+      Query uses slightly different phrasing (产品外观检验标准 vs 电镀检验标准), creating
+      a lexical gap where the query terms don't exactly match the doc title. Tests whether
+      the system can still find the right doc when keyword overlap is partial.
+
+  # ── P1: hybrid -> qdrant degradation boundary ──
+  # These samples specifically test scenarios where global lexical returns are 0,
+  # forcing the retrieval to fall back from hybrid mode to pure qdrant.
+  # This is the sup_lexical_count=0 boundary.
+  #
+  # - hybrid-001: query with terms that are unlikely to appear in any document's
+  #   lexical index, testing the qdrant-only fallback path
+  # - hybrid-002: highly specific technical query where only vector similarity
+  #   can find the right doc (no lexical overlap)
+
+  - id: hybrid-001
+    query: "摇臂钻床日常维护保养和安全检查要点"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260330055115_c20cfc5a"]
+    expected_chunk_type: section_summary
+    expected_terms: ["摇臂钻床", "维护", "安全"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: unverified
+    source: synthetic
+    note: >-
+      P1 hybrid->qdrant boundary: semantic query about radial drill press maintenance
+      from dept_digitalization. The WI-SJ-052 (doc_20260330055115_c20cfc5a) belongs to
+      dept_assembly. The query uses general terminology (日常维护保养) rather than
+      exact doc terms (WI-SJ-052, 操作规范), creating a scenario where lexical recall
+      in the supplemental/global scope may return 0 results. Tests the qdrant-only
+      fallback path in supplemental recall.
+
+  - id: hybrid-002
+    query: "V1版本为什么不用大而全的方案而是分步交付"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401085300_13d0ce46"]
+    expected_chunk_type: section_summary
+    expected_terms: ["大而全", "低耦合", "分步交付"]
+    supplemental_expected: false
+    requester_department_id: "dept_digitalization"
+    status: unverified
+    source: synthetic
+    note: >-
+      P1 hybrid->qdrant boundary: semantic query about V1 development philosophy from
+      dept_digitalization. The V1_PLAN (doc_20260401085300_13d0ce46) belongs to
+      dept_digitalization itself, so this tests a SAME-department case where the doc
+      should be found via department route. Query uses paraphrased terminology
+      (分步交付 vs 可连续交付), testing whether the department route finds it despite
+      lexical mismatch. supplemental_expected=false because the doc is in the same dept.
+
+  # ── P2: cross-dept diversity samples ──
+  # These samples add new department perspectives (beyond after_sales/assembly/digitalization)
+  # and cover non-SOP/WI document types (FAQ, manual, specification).
+  #
+  # - cross-013: after_sales querying a technical spec doc (new dept perspective)
+  # - cross-014: assembly querying a fault code manual (reverses the typical direction)
+  # - cross-015: digitalization querying an operational manual (new doc type)
+
+  - id: cross-013
+    query: "皮带轮部品组装 止动螺丝和压装的完整工艺流程"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401092629_f470103f"]
+    expected_chunk_type: section_summary
+    expected_terms: ["皮带轮", "止动螺丝", "压装", "工艺"]
+    supplemental_expected: true
+    requester_department_id: "dept_digitalization"
+    status: unverified
+    source: synthetic
+    note: >-
+      P2 cross-dept diversity: semantic query about pulley assembly process from
+      dept_digitalization. The FAW05 SOP (doc_20260401092629_f470103f) belongs to
+      dept_assembly. This tests a broader semantic query (完整工艺流程) rather than
+      a specific step, adding query-type diversity to the cross-dept coverage.
+
+  - id: cross-014
+    query: "围栏急停报警恢复后不消失的排查方法"
+    query_type: exact
+    expected_granularity: fine
+    expected_doc_ids: ["doc_20260321070337_445684f4"]
+    expected_chunk_type: clause
+    expected_terms: ["700014", "围栏急停报警", "安全继电器"]
+    supplemental_expected: true
+    requester_department_id: "dept_assembly"
+    status: unverified
+    source: synthetic
+    note: >-
+      P2 cross-dept diversity: exact query about fence emergency stop alarm troubleshooting
+      from dept_assembly. The fault code manual (doc_20260321070337_445684f4) belongs to
+      dept_after_sales. This reverses the typical direction (usually after_sales queries
+      assembly docs). Tests supplemental trigger when assembly queries after_sales docs.
+
+  - id: cross-015
+    query: "电镀表面质量判定标准有哪些等级"
+    query_type: semantic
+    expected_granularity: coarse
+    expected_doc_ids: ["doc_20260401084714_b7ed464a"]
+    expected_chunk_type: section_summary
+    expected_terms: ["电镀", "表面质量", "等级"]
+    supplemental_expected: true
+    requester_department_id: "dept_after_sales"
+    status: unverified
+    source: synthetic
+    note: >-
+      P2 cross-dept diversity: semantic query about plating quality classification from
+      dept_after_sales. The inspection standard (doc_20260401084714_b7ed464a) belongs to
+      dept_assembly. This adds a non-SOP/non-WI document type (quality inspection standard)
+      to the cross-dept coverage, testing supplemental recall for specification-type docs.

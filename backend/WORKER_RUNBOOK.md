@@ -18,6 +18,10 @@
   - `RAG_QDRANT_URL`
 - Redis 与 Qdrant 可访问
 - 本地模式使用 `conda` 环境 `rag_backend`
+- 如果需要处理旧版 `.doc`，当前运行时必须能解析到 LibreOffice 二进制
+  - Docker / server compose：仓库内置镜像会安装 `libreoffice-writer`，并把 `RAG_LIBREOFFICE_BINARY` 固定到 `/usr/bin/soffice`
+  - 非 Docker 本地模式：需要在宿主机安装 LibreOffice，或通过 `RAG_LIBREOFFICE_BINARY` / `LIBREOFFICE_BINARY` 指向可执行文件
+  - 注意：LibreOffice 依赖较重，首次构建镜像时间和镜像体积都会明显增加
 
 ## 3. 启动命令
 
@@ -47,6 +51,13 @@ conda run -n rag_backend celery -A backend.app.worker.celery_app:celery_app work
 docker compose up -d
 ```
 
+验证 LibreOffice 已进入镜像：
+
+```bash
+docker compose exec worker soffice --version
+docker compose exec worker env | rg RAG_LIBREOFFICE_BINARY
+```
+
 查看日志：
 
 ```bash
@@ -59,6 +70,13 @@ docker compose logs -f worker
 
 ```bash
 docker compose -f docker-compose.server.yml up -d --build
+```
+
+验证 worker 容器可解析 LibreOffice：
+
+```bash
+docker compose -f docker-compose.server.yml exec worker soffice --version
+docker compose -f docker-compose.server.yml exec worker env | rg RAG_LIBREOFFICE_BINARY
 ```
 
 查看服务状态：

@@ -14,6 +14,9 @@
 #    make test         – run backend unit tests
 #    make test-smoke   – run integration smoke tests (requires running API)
 #    make lint         – lint frontend + backend
+#    make agent-inspect – classify current changes and suggest workflow checks
+#    make agent-preflight TASK=... – enforce task contract before coding
+#    make agent-verify TASK=... – run task-contract verification checks
 #    make build        – production build (frontend + docker images)
 #    make build-fe     – frontend production build only
 #    make clean        – remove generated artifacts
@@ -71,7 +74,7 @@ dev-frontend:
 
 # ── Test targets ─────────────────────────────────────────
 
-.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval eval-baseline show-chunk-config check-retrieval-state
+.PHONY: test test-backend test-frontend test-smoke test-smoke-v02 eval-retrieval eval-baseline show-chunk-config check-retrieval-state agent-inspect agent-preflight agent-verify
 
 ## Run all tests (backend unit + frontend lint)
 test: test-backend test-frontend
@@ -122,6 +125,29 @@ show-chunk-config:
 check-retrieval-state:
 	@printf "$(_CYN)▸ Checking retrieval-state sync …$(_RST)\n"
 	python scripts/check_retrieval_state_sync.py
+
+## Inspect current changes against the agent harness policy
+agent-inspect:
+	@printf "$(_CYN)▸ Inspecting current changes with agent harness …$(_RST)\n"
+	python scripts/agent_harness.py inspect
+
+## Validate current changes against a task contract before coding
+agent-preflight:
+	@if [ -z "$(TASK)" ]; then \
+		printf "$(_RED)ERROR: TASK is required. Usage: make agent-preflight TASK=.agent/runs/<task>.yaml$(_RST)\n"; \
+		exit 1; \
+	fi
+	@printf "$(_CYN)▸ Running agent harness preflight …$(_RST)\n"
+	python scripts/agent_harness.py preflight --task "$(TASK)"
+
+## Run verification checks declared by a task contract
+agent-verify:
+	@if [ -z "$(TASK)" ]; then \
+		printf "$(_RED)ERROR: TASK is required. Usage: make agent-verify TASK=.agent/runs/<task>.yaml$(_RST)\n"; \
+		exit 1; \
+	fi
+	@printf "$(_CYN)▸ Running agent harness verification …$(_RST)\n"
+	python scripts/agent_harness.py verify --task "$(TASK)"
 
 # ── Lint targets ─────────────────────────────────────────
 
@@ -189,6 +215,9 @@ help:
 	@printf "  $(_CYN)eval-baseline$(_RST)    Run eval and save as baseline (TAG=name)\n"
 	@printf "  $(_CYN)show-chunk-config$(_RST) Show current chunk parameters\n"
 	@printf "  $(_CYN)check-retrieval-state$(_RST) Check retrieval-state.md sync\n"
+	@printf "  $(_CYN)agent-inspect$(_RST)    Classify current changes and suggest workflow checks\n"
+	@printf "  $(_CYN)agent-preflight$(_RST)  Validate current changes against TASK=.agent/runs/<task>.yaml\n"
+	@printf "  $(_CYN)agent-verify$(_RST)     Run verification checks declared by TASK=.agent/runs/<task>.yaml\n"
 	@printf "\n"
 	@printf "  $(_CYN)lint$(_RST)             Lint frontend + backend\n"
 	@printf "  $(_CYN)build$(_RST)            Production build (frontend + Docker)\n"

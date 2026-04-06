@@ -1,0 +1,66 @@
+{
+  "document_id": "doc_20260406020404_97beed34",
+  "file_name": "FCW25-2500 X4000 Y1850#开放式全伺服机械手（正装-3吸3夹）单臂式-引拔部（装配SOP)#A0).pdf",
+  "source_path": "/app/data/uploads/doc_20260406020404_97beed34__FCW25-2500_X4000_Y1850_-3_3_-_SOP_A0.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 9,
+  "page_count": 1,
+  "normalized_text": "WELLLIH\nAuto Robot For Plastic Injection Molding Machine\n注塑机专用机械手臂\n开放式全伺服机械手\nFCW25-引|拔部\n装配作业指导书（机械篇)\n一生技部\n伟立机器人\nWELLLIH ROBOTS",
+  "segments": [
+    {
+      "text": "WELLLIH",
+      "page_no": 1,
+      "line_no": 1,
+      "confidence": 0.7891918420791626
+    },
+    {
+      "text": "Auto Robot For Plastic Injection Molding Machine",
+      "page_no": 1,
+      "line_no": 2,
+      "confidence": 0.9613313674926758
+    },
+    {
+      "text": "注塑机专用机械手臂",
+      "page_no": 1,
+      "line_no": 3,
+      "confidence": 0.9981794357299805
+    },
+    {
+      "text": "开放式全伺服机械手",
+      "page_no": 1,
+      "line_no": 4,
+      "confidence": 0.9994680881500244
+    },
+    {
+      "text": "FCW25-引|拔部",
+      "page_no": 1,
+      "line_no": 5,
+      "confidence": 0.9453439712524414
+    },
+    {
+      "text": "装配作业指导书（机械篇)",
+      "page_no": 1,
+      "line_no": 6,
+      "confidence": 0.9747068881988525
+    },
+    {
+      "text": "一生技部",
+      "page_no": 1,
+      "line_no": 7,
+      "confidence": 0.9931259751319885
+    },
+    {
+      "text": "伟立机器人",
+      "page_no": 1,
+      "line_no": 8,
+      "confidence": 0.9998836517333984
+    },
+    {
+      "text": "WELLLIH ROBOTS",
+      "page_no": 1,
+      "line_no": 9,
+      "confidence": 0.994627833366394
+    }
+  ]
+}

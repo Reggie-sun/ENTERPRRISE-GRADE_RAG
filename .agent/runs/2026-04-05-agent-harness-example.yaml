@@ -1,0 +1,24 @@
+task_type: retrieval
+phase: supplemental
+allowed_paths:
+  - backend/app/services/retrieval_service.py
+  - backend/tests/test_retrieval_chat.py
+  - .agent/context/retrieval-state.md
+required_reads:
+  - MAIN_CONTRACT_MATRIX.md
+  - RETRIEVAL_OPTIMIZATION_PLAN.md
+  - RETRIEVAL_OPTIMIZATION_BACKLOG.md
+  - .agent/context/repo-map.md
+  - .agent/context/retrieval-state.md
+  - eval/README.md
+  - eval/retrieval_samples.yaml
+  - scripts/eval_retrieval.py
+  - backend/app/services/retrieval_service.py
+required_checks:
+  - retrieval_state_sync
+  - retrieval_eval
+risk_notes:
+  - Do not touch stable contract fields or semantics.
+  - Stop and re-plan if the change expands into chunk, router, or rerank.
+expected_artifacts:
+  - .agent/context/retrieval-state.md

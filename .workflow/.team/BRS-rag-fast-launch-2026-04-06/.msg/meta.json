@@ -1,0 +1,26 @@
+{
+  "pipeline_mode": "full",
+  "pipeline_stages": [
+    "ideator",
+    "challenger",
+    "synthesizer",
+    "evaluator"
+  ],
+  "topic": "最快上线当前 RAG，暂不处理 SOP，优先保证回答准确性，同时保留后续可优化空间",
+  "angles": [
+    "accuracy-first MVP",
+    "launch guardrails",
+    "optimization-ready architecture"
+  ],
+  "constraints": [
+    "上线速度优先",
+    "SOP 暂不纳入范围",
+    "回答准确性优先于覆盖率",
+    "后续优化不能被一次性方案锁死"
+  ],
+  "gc_round": 0,
+  "generated_ideas": [],
+  "critique_insights": [],
+  "synthesis_themes": [],
+  "evaluation_scores": []
+}

@@ -1,0 +1,23 @@
+{
+  "session_id": "BRS-rag-fast-launch-2026-04-06",
+  "team_name": "brainstorm",
+  "topic": "最快上线当前 RAG，暂不处理 SOP，优先保证回答准确性，同时保留后续可优化空间",
+  "status": "active",
+  "pipeline_mode": "full",
+  "angles": [
+    "accuracy-first MVP",
+    "launch guardrails",
+    "optimization-ready architecture"
+  ],
+  "constraints": [
+    "上线速度优先",
+    "SOP 暂不纳入范围",
+    "回答准确性优先于覆盖率",
+    "后续优化不能被一次性方案锁死"
+  ],
+  "gc_round": 0,
+  "max_gc_rounds": 2,
+  "task_count": 6,
+  "completion_action": "auto_keep",
+  "created_at": "2026-04-06"
+}

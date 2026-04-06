@@ -119,6 +119,36 @@ spec 只允许使用：
 - 前后端联动变更
 - 权限 / scope 变更
 
+### 3.4 Harness v1（仓库内建执行入口）
+
+为避免 workflow 只停留在文本规则层，本仓库提供轻量 harness：
+
+- 规则策略文件：`.agent/harness/policy.yaml`
+- 任务声明文件：`.agent/runs/*.yaml`
+- 执行入口：`python scripts/agent_harness.py`
+
+默认用法：
+
+1. `make agent-inspect`
+2. 对命中的高风险改动补 `.agent/runs/<task>.yaml`
+3. `make agent-preflight TASK=.agent/runs/<task>.yaml`
+4. 在 plan 边界内实现
+5. `make agent-verify TASK=.agent/runs/<task>.yaml`
+
+说明：
+
+- v1 只对 `retrieval`、`ingestion / chunk`、`API / schema` 做强约束。
+- Lite 改动默认只给分类和检查建议，不做全面硬阻断。
+- harness 不替代 `spec → plan → implement → review`，只负责把已有规则变成可执行检查。
+- 高风险任务的 task contract 至少要写清：
+  - `task_type`
+  - `phase`
+  - `allowed_paths`
+  - `required_reads`
+  - `required_checks`
+  - `risk_notes`
+  - `expected_artifacts`
+
 ## 模型分工（Brain / Executor）
 
 本仓库默认采用“GPT-5.4 当大脑，GLM 当执行器”的协作方式，但不改变主 workflow：

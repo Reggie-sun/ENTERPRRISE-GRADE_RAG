@@ -1,0 +1,533 @@
+{
+  "snapshot_id": "rsp_725f4137b15d457d",
+  "trace_id": "trc_retrieval_cf958f8324cf4844",
+  "request_id": "req_retrieval_b17ccdca9a5c4d3c",
+  "category": "retrieval",
+  "action": "search",
+  "outcome": "success",
+  "occurred_at": "2026-04-05T06:59:44.529912Z",
+  "actor": {
+    "tenant_id": "wl",
+    "user_id": "user_roster_10565",
+    "username": "10565",
+    "role_id": "department_admin",
+    "department_id": "dept_production_technology"
+  },
+  "target_type": null,
+  "target_id": null,
+  "request": {
+    "query": "解释一下cpps",
+    "top_k": 5,
+    "mode": "fast",
+    "candidate_top_k": null,
+    "document_id": null
+  },
+  "profile": {
+    "purpose": "retrieval",
+    "mode": "fast",
+    "top_k": 5,
+    "candidate_top_k": 20,
+    "lexical_top_k": 20,
+    "rerank_top_n": 5,
+    "timeout_budget_seconds": 12.0,
+    "fallback_mode": null
+  },
+  "memory_summary": null,
+  "rewrite": {
+    "status": "skipped",
+    "original_question": "解释一下cpps",
+    "rewritten_question": null,
+    "details": {
+      "reason": "query rewrite is not applicable to retrieval requests."
+    }
+  },
+  "contexts": [
+    {
+      "rank": 1,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "慢性盆腔疼痛（症）\n”\n、“ 盆腔疼痛（症）\n”\n和\n“\nCPPS （慢性盆腔疼\n痛综合征的英文简写）\n”\n都是同义词， 指的是上面提到的 所 有症 状 。\n传统名 称和诊断类别\n用千男性\n·前 列腺炎（ 国立健康研究所 的类别 ）\nL急 性细菌性前列腺炎\n2． 慢性细菌性前列腺炎\n3a. CPPS 非细菌性炎 性\n33\n\n34 盆腔之痛\n3b. CPPS 非细菌性无炎 症前列腺炎\n4． 无症 状",
+      "score": 0.9692307692307693,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.5115614,
+      "lexical_score": 9.413651034210096,
+      "fused_score": 0.03177805800756621
+    },
+    {
+      "rank": 2,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "习， 每天晚上 临睡前把它和放松技巧结合在 一起做。 我每次会做\n四五个深度牵拉， 包括婴 儿式、 臀肌牵拉以及深蹲坐 。 这个过程与平静的\n呼吸相结合 ， 大约需要二十分钟 。总 的来说 ， 我相信自己的症状有了百分\n之九十的 改善 。 在经历了十五年的盆腔疼痛之后，我 对此心怀无 限的感激。\n\n\n\n＇， 亡\n定义和类别\n数以 百万计的 男 性和女性有 盆腔疼痛、 不适或功 能障碍的 症状 。这",
+      "score": 0.4919354838709677,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.50701344,
+      "lexical_score": null,
+      "fused_score": 0.016129032258064516
+    },
+    {
+      "rank": 3,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-471",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "疼\n痛综合征的临 床研究。 他们希 望找 到一个满 意 的治疗方式。 治疗方式的进\n步需要有记录的结果 与强有力 的证据。 最好的证据是当 患者服用有效药物\n或者接受 某种治疗方法的同 时， 有随 机分配的类似组 在不知情的情况下接\n受假 手术或安慰剂药物的治疗。 我们称之为双盲临床 研究试验。 但这些实\n验都非常 昂贵 ， 实施起来也有难度。 有时候不可能不让患者发现他们没有\n真正 的接受 治疗",
+      "score": 0.4841269841269841,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.50519013,
+      "lexical_score": null,
+      "fused_score": 0.015873015873015872
+    },
+    {
+      "rank": 4,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-457",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "士修改后也可以用来评估女 性症状得分 情况。 另 一种类型的 CPPS 症状问\n卷 斯坦福盆腔疼痛症状评分 (P PSS) 表对我们也很有用， 虽然在科学\n研究中通常不会提到它。 PPSS 扩展了疼痛的解 剖 位置， 将每 一个位置的疼\n痛强度进行了 分级 (0 -4 +)；它还包括了泌尿 系统症状， 并模仿国际前列腺\n症状评分 (I PSS) ，将 病人的性功能障碍作为一个单独的部 分进行评分。",
+      "score": 0.4765625,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.49396962,
+      "lexical_score": null,
+      "fused_score": 0.015625
+    },
+    {
+      "rank": 5,
+      "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+      "document_id": "doc_20260325053354_d093bd3e",
+      "document_name": "The headache of Penq.pdf",
+      "snippet": "一个更大的范围 ——\n膀胱疼痛综合征 (B PS) 中。 在本 章 中， 我们使用前 列腺疼痛综合征或\nCPPS 作为模型来对相关的科学研究和 治疗方法进行讨论。\n\n慢性盆腔疼痛 相关的 科学研究 355\n解剖 学： 器官 、 肌肉和神经\n我们关于前列腺炎 (CPPS) 的观点不同于传统的做法。 传统做法是将盆\n腔疼痛当 作前列腺炎进行治疗， 但我们不认为前列腺是大部 分男性盆腔疼\n痛问 题的根源",
+      "score": 0.9112597547380157,
+      "source_path": "document://doc_20260325053354_d093bd3e/source",
+      "retrieval_strategy": "hybrid",
+      "source_scope": "global",
+      "vector_score": 0.49304807,
+      "lexical_score": 8.172772211772267,
+      "fused_score": 0.029877369007803793
+    }
+  ],
+  "citations": [],
+  "model_route": {
+    "provider": "openai",
+    "base_url": null,
+    "model": "BAAI/bge-m3"
+  },
+  "component_versions": {
+    "prompt_version": "retrieval-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "BAAI/bge-m3",
+    "reranker_provider": "openai_compatible",
+    "reranker_model": "BAAI/bge-reranker-v2-m3"
+  },
+  "result": {
+    "response_mode": "hybrid",
+    "model": "BAAI/bge-m3",
+    "answer_preview": null,
+    "answer_chars": 0,
+    "citation_count": 5,
+    "rerank_strategy": "skipped",
+    "downgraded_from": null,
+    "timeout_flag": false,
+    "error_message": null
+  },
+  "details": {
+    "query": "解释一下cpps",
+    "query_type": "fixed",
+    "query_granularity": "fine",
+    "requested_mode": "fast",
+    "retrieval_mode": "hybrid",
+    "document_id_filter_applied": false,
+    "department_priority_enabled": true,
+    "primary_threshold": 5,
+    "primary_effective_count": 19,
+    "supplemental_triggered": true,
+    "supplemental_reason": "department_quality(top1=0.8656,avg_top_n=0.5699,lexical_top1=5.2401)_below_thresholds(0.95,0.70,10.00)",
+    "recall_counts": {
+      "department_vector_count": 11,
+      "department_lexical_count": 10,
+      "department_fused_count": 20,
+      "department_after_ocr": 19,
+      "department_unique_docs_after_ocr": 7,
+      "supplemental_vector_count": 6,
+      "supplemental_lexical_count": 7,
+      "supplemental_fused_count": 10,
+      "total_candidates": 20
+    },
+    "filter_counts": {
+      "ocr_quality": 1,
+      "top_k_truncated": 14
+    },
+    "final_result_count": 5,
+    "branch_weights": {
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "dynamic_enabled": false
+    },
+    "stage_durations_ms": {},
+    "query_stage": {
+      "raw_query": "解释一下cpps",
+      "normalized_query": null,
+      "query_type": "fixed",
+      "query_granularity": "fine",
+      "requested_mode": "fast",
+      "effective_mode": "hybrid"
+    },
+    "routing_stage": {
+      "is_hybrid": true,
+      "vector_weight": 1.0,
+      "lexical_weight": 1.0,
+      "is_document_id_exact": false,
+      "department_priority_enabled": true,
+      "structured_routing_applied": false
+    },
+    "primary_recall_stage": {
+      "vector_count": 11,
+      "lexical_count": 10,
+      "fused_count": 20,
+      "effective_count": 19,
+      "threshold": 5,
+      "whether_sufficient": false,
+      "top1_score": 0.8656400966183575,
+      "avg_top_n_score": 0.5699022128720586,
+      "quality_top1_threshold": 0.95,
+      "quality_avg_threshold": 0.7
+    },
+    "supplemental_recall_stage": {
+      "triggered": true,
+      "reason": "department_quality(top1=0.8656,avg_top_n=0.5699,lexical_top1=5.2401)_below_thresholds(0.95,0.70,10.00)",
+      "vector_count": 6,
+      "lexical_count": 7,
+      "fused_count": 10,
+      "trigger_basis": "department_low_quality"
+    },
+    "filter_stage": {
+      "ocr_quality_filtered_count": 1,
+      "permission_filtered_count": 0,
+      "document_scope_filtered_count": 0,
+      "top_k_truncated_count": 14,
+      "filtered_candidates": [
+        {
+          "document_id": "doc_20260401085048_c4fc9f78",
+          "chunk_id": "doc_20260401085048_c4fc9f78-chunk-6",
+          "filter_reason": "ocr_quality_below_threshold(0.55)",
+          "filter_layer": "ocr_governance"
+        },
+        {
+          "document_id": "doc_20260325071124_17f09733",
+          "chunk_id": "doc_20260325071124_17f09733-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260331081535_5d30086d",
+          "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401023359_ace477d5",
+          "chunk_id": "doc_20260401023359_ace477d5-chunk-65",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-23",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_e827beca",
+          "chunk_id": "doc_20260401085048_e827beca-chunk-4",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-28",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-30",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401084714_fa3b8bf6",
+          "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-35",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        },
+        {
+          "document_id": "doc_20260401085048_2d4a4c4f",
+          "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-1",
+          "filter_reason": "ranked_below_top_k",
+          "filter_layer": "top_k"
+        }
+      ]
+    },
+    "finalization_stage": {
+      "final_result_count": 5,
+      "returned_top_k": 5,
+      "response_mode": "hybrid",
+      "backfilled_chunk_count": 0,
+      "result_explanations": [
+        {
+          "rank": 1,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.5115614,
+          "lexical_score": 9.413651034210096,
+          "fused_score": 0.03177805800756621,
+          "final_score": 0.9692307692307693,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5116，词法 9.4137，融合 0.0318。"
+        },
+        {
+          "rank": 2,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.50701344,
+          "lexical_score": null,
+          "fused_score": 0.016129032258064516,
+          "final_score": 0.4919354838709677,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5070，融合 0.0161。"
+        },
+        {
+          "rank": 3,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-471",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.50519013,
+          "lexical_score": null,
+          "fused_score": 0.015873015873015872,
+          "final_score": 0.4841269841269841,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5052，融合 0.0159。"
+        },
+        {
+          "rank": 4,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-457",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.49396962,
+          "lexical_score": null,
+          "fused_score": 0.015625,
+          "final_score": 0.4765625,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4940，融合 0.0156。"
+        },
+        {
+          "rank": 5,
+          "document_id": "doc_20260325053354_d093bd3e",
+          "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+          "document_name": "The headache of Penq.pdf",
+          "source_scope": "global",
+          "department_hit": false,
+          "supplemental_hit": true,
+          "vector_score": 0.49304807,
+          "lexical_score": 8.172772211772267,
+          "fused_score": 0.029877369007803793,
+          "final_score": 0.9112597547380157,
+          "selected_via": "global",
+          "structured_backfill": false,
+          "structured_backfill_reason": null,
+          "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4930，词法 8.1728，融合 0.0299。"
+        }
+      ]
+    },
+    "result_explainability": [
+      {
+        "rank": 1,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-76",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.5115614,
+        "lexical_score": 9.413651034210096,
+        "fused_score": 0.03177805800756621,
+        "final_score": 0.9692307692307693,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5116，词法 9.4137，融合 0.0318。"
+      },
+      {
+        "rank": 2,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-75",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.50701344,
+        "lexical_score": null,
+        "fused_score": 0.016129032258064516,
+        "final_score": 0.4919354838709677,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5070，融合 0.0161。"
+      },
+      {
+        "rank": 3,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-471",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.50519013,
+        "lexical_score": null,
+        "fused_score": 0.015873015873015872,
+        "final_score": 0.4841269841269841,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.5052，融合 0.0159。"
+      },
+      {
+        "rank": 4,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-457",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.49396962,
+        "lexical_score": null,
+        "fused_score": 0.015625,
+        "final_score": 0.4765625,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4940，融合 0.0156。"
+      },
+      {
+        "rank": 5,
+        "document_id": "doc_20260325053354_d093bd3e",
+        "chunk_id": "doc_20260325053354_d093bd3e-chunk-452",
+        "document_name": "The headache of Penq.pdf",
+        "source_scope": "global",
+        "department_hit": false,
+        "supplemental_hit": true,
+        "vector_score": 0.49304807,
+        "lexical_score": 8.172772211772267,
+        "fused_score": 0.029877369007803793,
+        "final_score": 0.9112597547380157,
+        "selected_via": "global",
+        "structured_backfill": false,
+        "structured_backfill_reason": null,
+        "why_included": "全局范围命中，按 hybrid 融合排序 保留；向量 0.4930，词法 8.1728，融合 0.0299。"
+      }
+    ],
+    "filtered_candidates": [
+      {
+        "document_id": "doc_20260401085048_c4fc9f78",
+        "chunk_id": "doc_20260401085048_c4fc9f78-chunk-6",
+        "filter_reason": "ocr_quality_below_threshold(0.55)",
+        "filter_layer": "ocr_governance"
+      },
+      {
+        "document_id": "doc_20260325071124_17f09733",
+        "chunk_id": "doc_20260325071124_17f09733-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260331081535_5d30086d",
+        "chunk_id": "doc_20260331081535_5d30086d-chunk-18",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401023359_ace477d5",
+        "chunk_id": "doc_20260401023359_ace477d5-chunk-65",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-29",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-23",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_e827beca",
+        "chunk_id": "doc_20260401085048_e827beca-chunk-4",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-28",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-30",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401084714_fa3b8bf6",
+        "chunk_id": "doc_20260401084714_fa3b8bf6-chunk-35",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      },
+      {
+        "document_id": "doc_20260401085048_2d4a4c4f",
+        "chunk_id": "doc_20260401085048_2d4a4c4f-chunk-1",
+        "filter_reason": "ranked_below_top_k",
+        "filter_layer": "top_k"
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV RAG_LIBREOFFICE_BINARY=/usr/bin/soffice
 
 WORKDIR /app
 
@@ -10,6 +11,8 @@ RUN apt-get update \
         libgl1 \
         libglib2.0-0 \
         libgomp1 \
+        libreoffice-writer \
+    && /usr/bin/soffice --version \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt

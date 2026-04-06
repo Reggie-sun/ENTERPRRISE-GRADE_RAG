@@ -76,3 +76,14 @@
 ```
 
 如果没有发现明确问题，也必须输出结论。
+
+## 5. 配合 Harness v1
+
+- 如果本轮改动命中高风险分类，review 前至少先过一次：
+  - `make agent-preflight TASK=.agent/runs/<task>.yaml`
+  - `make agent-verify TASK=.agent/runs/<task>.yaml`
+- harness 结果不能替代 review 结论，但可以作为：
+  - 改动是否越界
+  - task contract 是否覆盖 Mandatory Reads
+  - 最小验证是否真实执行
+  的证据补充。

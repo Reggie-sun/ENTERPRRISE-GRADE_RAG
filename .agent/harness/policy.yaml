@@ -1,0 +1,166 @@
+version: 1
+
+ignored_prefixes:
+  - data/request_snapshots/
+  - data/request_traces/
+  - data/event_logs/
+  - data/chat_memory/
+
+high_risk_prefixes:
+  - backend/app/services/
+  - backend/app/api/v1/endpoints/
+  - backend/app/schemas/
+  - backend/app/rag/
+  - eval/
+  - scripts/
+
+categories:
+  retrieval:
+    label: Retrieval
+    task_required: true
+    suggested_plan: /retrieval-plan
+    workflows:
+      - /plan
+      - /review
+    patterns:
+      - backend/app/services/retrieval_service.py
+      - backend/app/services/retrieval_query_router.py
+      - backend/app/services/query_profile_service.py
+      - backend/app/services/retrieval_scope_policy.py
+      - backend/app/rag/rerankers/client.py
+      - eval/README.md
+      - eval/retrieval_samples.yaml
+      - eval/results/*
+      - eval/experiments/*
+      - scripts/eval_retrieval.py
+      - backend/tests/test_retrieval_*.py
+      - backend/tests/test_*retrieval*.py
+    mandatory_reads:
+      - MAIN_CONTRACT_MATRIX.md
+      - RETRIEVAL_OPTIMIZATION_PLAN.md
+      - RETRIEVAL_OPTIMIZATION_BACKLOG.md
+      - .agent/context/repo-map.md
+      - .agent/context/retrieval-state.md
+      - eval/README.md
+      - eval/retrieval_samples.yaml
+      - scripts/eval_retrieval.py
+      - backend/app/services/retrieval_service.py
+    default_checks:
+      - retrieval_state_sync
+    recommended_checks:
+      - retrieval_eval
+
+  ingestion:
+    label: Ingestion / Chunk
+    task_required: true
+    suggested_plan: /plan
+    workflows:
+      - /plan
+      - /review
+    patterns:
+      - backend/app/services/document_service.py
+      - backend/app/services/ingestion_service.py
+      - backend/app/rag/chunkers/text_chunker.py
+      - backend/app/rag/chunkers/structured_chunker.py
+      - backend/app/rag/parsers/document_parser.py
+      - scripts/rebuild_documents.py
+      - backend/tests/test_document_ingestion.py
+      - backend/tests/test_document_parser.py
+      - backend/tests/test_structured_chunker.py
+    mandatory_reads:
+      - MAIN_CONTRACT_MATRIX.md
+      - RETRIEVAL_OPTIMIZATION_PLAN.md
+      - RETRIEVAL_OPTIMIZATION_BACKLOG.md
+      - .agent/context/repo-map.md
+      - backend/app/services/document_service.py
+      - backend/app/services/ingestion_service.py
+      - backend/app/rag/chunkers/text_chunker.py
+      - backend/app/rag/chunkers/structured_chunker.py
+      - scripts/rebuild_documents.py
+    default_checks: []
+    recommended_checks:
+      - document_ingestion_tests
+
+  api_schema:
+    label: API / Schema
+    task_required: true
+    suggested_plan: /plan
+    workflows:
+      - /plan
+      - /review
+    patterns:
+      - backend/app/api/v1/endpoints/*
+      - backend/app/schemas/*
+      - frontend/src/api/types.ts
+      - frontend/src/api/client.ts
+      - backend/tests/test_main_contract_endpoints.py
+      - backend/tests/test_main_contract_errors.py
+    mandatory_reads:
+      - MAIN_CONTRACT_MATRIX.md
+      - frontend/src/api/types.ts
+      - frontend/src/api/client.ts
+      - backend/tests/test_main_contract_endpoints.py
+      - backend/tests/test_main_contract_errors.py
+    default_checks: []
+    recommended_checks:
+      - main_contract_tests
+      - frontend_lint
+
+  lite:
+    label: Lite
+    task_required: false
+    suggested_plan:
+    workflows:
+      - /review
+    patterns:
+      - frontend/src/**
+      - backend/tests/**
+      - docs/**
+      - .agent/**
+      - scripts/agent_harness.py
+      - Makefile
+      - AGENTS.md
+      - README.md
+    mandatory_reads: []
+    default_checks: []
+    recommended_checks: []
+
+checks:
+  retrieval_state_sync:
+    description: Check retrieval-state sync guard.
+    command:
+      - python
+      - scripts/check_retrieval_state_sync.py
+
+  retrieval_eval:
+    description: Run retrieval evaluation against the local API.
+    command:
+      - python
+      - scripts/eval_retrieval.py
+      - --api-base
+      - http://localhost:8020
+
+  document_ingestion_tests:
+    description: Run focused ingestion and chunking regression tests.
+    command:
+      - pytest
+      - backend/tests/test_document_ingestion.py
+      - backend/tests/test_document_parser.py
+      - backend/tests/test_structured_chunker.py
+      - -q
+
+  main_contract_tests:
+    description: Run stable contract endpoint and error tests.
+    command:
+      - pytest
+      - backend/tests/test_main_contract_endpoints.py
+      - backend/tests/test_main_contract_errors.py
+      - -q
+
+  frontend_lint:
+    description: Run frontend lint.
+    cwd: frontend
+    command:
+      - npm
+      - run
+      - lint

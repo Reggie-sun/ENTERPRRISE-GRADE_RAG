@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Card, Input } from '@/components';
+import { Button, Input } from '@/components';
 import { formatAuthError, normalizeNextPath, useAuth } from '@/auth';
 
 export function LoginPage() {
@@ -37,55 +37,51 @@ export function LoginPage() {
   };
 
   return (
-    <>
-      {/* 科技感背景层 */}
-      <div className="login-page-bg" />
-      <div className="login-page-glow-secondary" />
-      <div className="login-page-noise" />
+    <div className="login-enterprise-root">
+      <div className="login-enterprise-card">
+        {/* Logo */}
+        <div className="login-enterprise-logo">
+          <img
+            src="/welli-login-logo-v2.png"
+            alt="WELLI 伟立知识库"
+            className="h-auto w-full max-w-[280px]"
+          />
+        </div>
 
-      {/* 登录卡片 */}
-      <div className="login-card-wrapper">
-        <Card className="login-card w-full max-w-[560px]">
-          <div className="mb-2 flex justify-center">
-            <img
-              src="/welli-login-logo-v2.png"
-              alt="WELLI 伟立知识库"
-              className="h-auto w-full max-w-[360px] rounded-2xl"
-            />
+        {/* Error */}
+        {error ? (
+          <div className="login-enterprise-error">
+            {error}
           </div>
+        ) : null}
 
-          {error ? (
-            <div className="mt-4 rounded-2xl border border-[rgba(182,70,47,0.12)] bg-[rgba(255,255,255,0.8)] px-4 py-3 text-sm leading-relaxed text-accent-deep">
-              {error}
-            </div>
-          ) : null}
+        {/* Form */}
+        <form className="login-enterprise-form" onSubmit={handleSubmit}>
+          <Input
+            label="用户名"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            placeholder="请输入用户名"
+            autoComplete="username"
+          />
+          <Input
+            label="密码"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="输入密码"
+            autoComplete="current-password"
+          />
+          <Button type="submit" loading={submitting} className="login-enterprise-submit">
+            登录并进入系统
+          </Button>
+        </form>
 
-          <form className="mt-3 grid gap-4" onSubmit={handleSubmit}>
-            <Input
-              label="用户名"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="请输入用户名"
-              autoComplete="username"
-            />
-            <Input
-              label="密码"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="输入密码"
-              autoComplete="current-password"
-            />
-            <Button type="submit" loading={submitting}>
-              登录并进入系统
-            </Button>
-          </form>
-
-          <div className="mt-5 rounded-2xl bg-[rgba(255,255,255,0.74)] p-4 text-sm leading-relaxed text-ink-soft">
-            如需开通账号、重置密码或调整权限，请联系数字化部孙瑞杰。
-          </div>
-        </Card>
+        {/* Footer note */}
+        <div className="login-enterprise-note">
+          如需开通账号、重置密码或调整权限，请联系数字化部孙瑞杰。
+        </div>
       </div>
-    </>
+    </div>
   );
 }

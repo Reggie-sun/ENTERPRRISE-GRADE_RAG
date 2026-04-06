@@ -136,6 +136,27 @@
 - 需要改 schema / frontend API / 主字段
 - 当前 baseline 不再可信
 
+### 4.9 Harness task contract
+
+retrieval 场景默认同步维护 `.agent/runs/<task>.yaml`，至少写清：
+
+- `task_type: retrieval`
+- `phase`
+- `allowed_paths`
+- `required_reads`
+- `required_checks`
+- `risk_notes`
+- `expected_artifacts`
+
+在开始实现前，默认先跑：
+
+- `make agent-inspect`
+- `make agent-preflight TASK=.agent/runs/<task>.yaml`
+
+实现收尾时，默认再跑：
+
+- `make agent-verify TASK=.agent/runs/<task>.yaml`
+
 ---
 
 ## 5. Retrieval 场景下的强约束

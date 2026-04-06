@@ -60,6 +60,8 @@
 
 ## 3. 强约束
 
+- 如果命中高风险改动，先跑 `make agent-inspect`，并在 `.agent/runs/` 补 task contract 后再进入实现。
+- plan 中写的“涉及文件 / 可改边界 / 验证计划”，应能直接映射到 task contract 的 `allowed_paths / required_checks / expected_artifacts`。
 - plan 输出后默认等待确认
 - 未确认前禁止改代码
 - 命中 `AGENTS.md` 中的 `Auto Enforcement` / 自动触发规则时，不得跳过 `/plan`

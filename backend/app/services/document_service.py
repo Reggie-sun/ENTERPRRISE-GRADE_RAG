@@ -226,7 +226,7 @@ class DocumentService:
         """
         started_at = perf_counter()
         # --- 1. 读取上传内容 ---
-        filename, suffix, content = await self._read_upload_content(upload)
+        filename, suffix, content = await self._read_upload_content_for_queued_ingest(upload)
 
         # --- 2. 标准化参数 ---
         normalized_tenant_id = _normalize_optional_str(tenant_id)
@@ -654,7 +654,7 @@ class DocumentService:
         直接在当前进程完成入库，返回完整的解析结果。
         登录态下会额外写入最小文档/任务元数据，保证后续检索与问答仍受同一权限边界约束。
         """
-        filename, suffix, content = await self._read_upload_content(upload)
+        filename, suffix, content = await self._read_upload_content_for_current_runtime_parse(upload)
         document_id = uuid4().hex
         target_name = f"{document_id}__{_sanitize_filename(filename)}"
         storage_path = self.asset_store.save_upload(
@@ -1336,7 +1336,7 @@ class DocumentService:
     # ===== 上传内容读取与校验 =====
 
     async def _read_upload_content(self, upload: UploadFile) -> tuple[str, str, bytes]:
-        """读取上传文件内容，校验文件类型和大小。返回 (文件名, 扩展名, 字节内容)。"""
+        """读取上传文件内容，只做通用的类型、大小和空文件校验。"""
         filename = upload.filename or "document"
         suffix = Path(filename).suffix.lower()
 
@@ -1370,12 +1370,39 @@ class DocumentService:
                 detail="Uploaded file is empty.",
             )
 
-        self._validate_upload_parse_prerequisites(filename=filename, suffix=suffix, content=content)
+        return filename, suffix, content
+
+    async def _read_upload_content_for_queued_ingest(self, upload: UploadFile) -> tuple[str, str, bytes]:
+        """异步建任务入口：只校验文件结构；eager 模式下再补当前进程解析依赖校验。"""
+        filename, suffix, content = await self._read_upload_content(upload)
+        self._validate_upload_file_prerequisites(
+            filename=filename,
+            suffix=suffix,
+            content=content,
+        )
+        if self.settings.celery_task_always_eager:
+            self._validate_current_runtime_parse_dependencies(filename=filename, suffix=suffix)
+        return filename, suffix, content
+
+    async def _read_upload_content_for_current_runtime_parse(self, upload: UploadFile) -> tuple[str, str, bytes]:
+        """当前进程会立即解析的入口：同时校验文件结构和当前进程解析依赖。"""
+        filename, suffix, content = await self._read_upload_content(upload)
+        self._validate_upload_file_prerequisites(
+            filename=filename,
+            suffix=suffix,
+            content=content,
+        )
+        self._validate_current_runtime_parse_dependencies(filename=filename, suffix=suffix)
         return filename, suffix, content
 
     @staticmethod
-    def _validate_upload_parse_prerequisites(*, filename: str, suffix: str, content: bytes) -> None:
-        """上传前的前置校验：PDF 文件头、Office 容器格式、依赖检查。"""
+    def _validate_upload_file_prerequisites(
+        *,
+        filename: str,
+        suffix: str,
+        content: bytes,
+    ) -> None:
+        """上传前的文件结构校验：PDF 文件头、Office 容器格式。"""
         # PDF：校验文件头魔数
         if suffix == ".pdf" and not content.lstrip().startswith(PDF_MAGIC_PREFIX):
             raise HTTPException(
@@ -1394,6 +1421,9 @@ class DocumentService:
                 detail=f"Invalid {office_label} container for '{filename}'.",
             )
 
+    @staticmethod
+    def _validate_current_runtime_parse_dependencies(*, filename: str, suffix: str) -> None:
+        """当前进程会直接执行解析时，校验本进程所需的解析依赖。"""
         # .doc 格式：检查 LibreOffice 是否可用
         if suffix == ".doc" and find_libreoffice_binary() is None:
             raise HTTPException(

@@ -1,0 +1,3642 @@
+{
+  "document_id": "doc_20260406015930_69146d90",
+  "file_name": "FL5+2说明书（外部版）20230526（繁体中文）.pdf",
+  "source_path": "/app/data/uploads/doc_20260406015930_69146d90__FL5_2_20230526.pdf",
+  "parser_name": "pdf_ocr_paddle",
+  "warning_message": null,
+  "segment_count": 605,
+  "page_count": 16,
+  "normalized_text": "ARBURG\n前言/安全提示\n阿博格\n前言/安全提示\n阿博格FL5+2說明書\n3\n\nARBURG\n原裝操作手冊\n阿博格\n原裝操作手冊\n警告\n機器操作不當可能導致重大的人員和財物損傷！\n在您開始操作機器前，請通讀操作手冊並熟悉安全裝置。\n+\n4\n\nARBURG\n引言\n阿博格\n引言\n1\n阿博格FL5+2說明書\n-1-\n\nARBURG\n阿博格\n輔助軸|FL5/FL5+2/FL10/FL10+2\nC軸氣動\n54\n80\n22\n□\n10\n①\nD\n4-M5\nO\nO\n90°\n①\n3\n号\n5\n4-M6\n甲\n中\nG\n29.8\n30\n18\n50\n-0°\n9\n本體重量1.0KG，额定扭矩12N•m\n夾具\n20\n33\n22\n2E\n-2-\n\nARBURG\n阿博格\n輔助軸|FL15\nC軸氣動\n0\n922\n12\n©\n4xM8\n4xM5\n4xM6\n回\nO\nD\n001\n0\n0000\n0\n0\nQ\nQ\n中\nQ\n广\n90\n35\n31\n818\n本體重量4.0KG，额定扭矩15N•m\n阿博格FL5+2說明書\n夾具\n20\n33\n22\n2E\n-3-\n\nARBURG\n安装安全護欄\n阿博格\n●首先，將安全護欄通過連接板及緊固螺絲固定到機器上。\nΔO\n6\n阿博格FL5+2說明書\n福\n-17 -\n\nARBURG\n外觀說明\n阿博格\n1安全開關\n阿博格FL5+2說明書\n-41-\n\nARBURG\n阿博格\n待機點\n在自動模式下，執行待機程式。\nC\n迴圈停止\n程式運行過程中按下，下一個迴圈完成會停止程\n式。\n阿博格FL5+2說明書\n-43-\n\nARBURG\n插入輸入信號\n阿博格\n1、選擇\n“\n”\n點擊右下角\n設置輸入信號的通斷：\n→\n“\n0\n”\n表示輸出信號通\n“”表示輸出信號斷\n0\n用\nZ1：\n0.0\nX1：\n0.0\nx2：\n0.01：0.0Y2： 0.0\n道\nA\n100%\nM\nV\nY\n主程序[text.prR]\n[001]動作開始…\n超時\n100\nM\n[002] 通行一次，<>检查啟動位置\n超時選项\n暂停\n[003]等待P：開模完成通，超時：暂停\n吸1檢涮\nx1.0\n[004] 轴Z1:→100.0,\n[005] 输出吸1輸出通\n未使用\nEmpty\n[006]等待P吸1检測斷，超時：暂停\n未使用\nEmpty\n[007] 計数器No.100,增加1\n未使用\nEmpty\n[008]\n-動作結束-\n未使用\nEmpty\n未使用\nvalue = -1\nB\n-56-\n\nARBURG\n功能操作說明\n阿博格\n待機點\n預先設定的點，用於歸待機點或全自動時檢測。\n0\n国\nZ1\n0.0\n0.0\n2\n0.0\n1：\n0.0\n12:0.0\n△\n￥\n100%\n四\n口\nA\n品\nY\n待横點\nZ1\n0\nX1\n0\nX2\n0\nY1\n0\nY2\n0\n$X2\n0\n堆疊設置\n使用堆疊功能前需提前設定。\n2+9\n田\nZ1:\n0.0\nX1：\n0.0x2:0.01:0.0Y2:0.0\n△\n凉\n100%\nD\n品\nY\n堆叠設置\nNo.1\nz1\nx1\nY1\n口\nNo.1\n次序\n第一\n第二\n第三\nNo.2\nX1+\nZ1+\n方向\n反向\n反向\n反向\nNo.3\n啟動位置\n0\n0\n0\n堆费固款\n1\n1\n1\nNo.4\n中心間距\n10\n10\n10\nNo.5\n居中分雕Z1\n0\n居中分離X1\n0\n□\n自由堆叠\n-70-\n\nARBURG\n功能操作說明\n阿博格\n參考位置\n提前設定參考位置，可在動作编輯時引用。\n国\n21:\n0.0\nX1：\n0.0\n2：\n0.0Y1：0.0\nY2： 0.0\n华\n100%\nV\n考位置\nID\nZ1\nX1\n×2\nY1\n$Y2\n×2\n<1>\n0\n0\n0\n0\n0\n0\n<2>\n0\n0\n0\n0\n0\n0\n訂單數據\n可查看迥圈週期、取出時間、產量等數據。\n阿博格FL5+2說明書\n国\n00\n1：\n00\nX2：0.0\nY1: 0.0\nY2:0.0\n首\nΔ\n凉\n100%\n邹\n《\n$\n訂草资料\n通圈逻期\n0\nS\n取出時間\n0\nS\n產量\n0\npcs\n不良品\n0\npcs\n抽樣\n0\npcs\n区\n-71 -\n\nARBURG\n功能操作說明\n阿博格\n2\n横出允許信號：該信號為 ON時，横行軸允許移動，有其他設備與機\n械手產生干涉的時候使用。\n3真空泵：真空泵信號消失時報警\n-74-\n\nARBURG\n監視\n阿博格\n3.8監視\nEUROMAP 67\n国\nZ1： 0.0x1： 0.0x2： 0.0￥1：0.0.2: 0.0\nV\n丽\nD\n100%\n☆\nEUROMAP 67\n输入信號\n帕出信\n注塑機急停1\n×0.0\n機械手急停\nYO.0\n安全門1\nx0.1\n合模允許\nY0.1\n合模完成\n×0.2\n機械手不使用\nYO.2\n阴模完成\nX0.3\n丁顶針退允許\nY0.3\n開模中途\nX0.4\n顶針進允許\nY0.4\n全自動\nX0.5\n週圈啟動\nY0.5\n顶针退到位\n●X0.6\n中子1退允許\nY0.6\n顶针進到位\nx0.7\n中子1進允\nY0.7\n由子1调到\nvna\n由子间分址\nva\n夾具信號\n国\n最2+ST\n81：\nx2：0.011：0.0\nr2:0.0\nO\n100%\n中\nR\n夹具信號\n检入信號\n帕出信號\n吸1检测\n●X1.0\n吸1翰出\nY1.0\n吸2檢测\nx1.1\n吸2翰出\nY1.1\n夾1通检测\nx1.4\n夾1翰出\nY1.4\n夹1断检测\n×1.5\n夾2输出\nY1.5\n夹2通检测\nx1.6\n夾3翰出\nY1.6\n夹2断检测\nx1.7\nC轴旋入\nY1.8\nC旋入到位\n×1.8\nC轴旋出\nY1.9\nC旋出到位\n×1.9\n夹5翰出\nY1.10\n检理\nv1 10\n-78-\n\nARBURG\n監視\n阿博格\n自定義\n国\n0.0：0.0\nX2： 0.01： 0.0\nY2: 0.0\n田\n100%\n中\nR\n自訂\n帖入信\n输出信號\n预留输入1\nX1.15\n夹6舱出\nY1.11\n预留输入2\nX2.0\n吹1输出\nY1.12\n预留输入3\nx2.1\n吹2输出\nY1.13\n预留输入4\nx22\n预留输出3\nY1.14\n预留输入5\nx23\n预留输出4\nY1.15\n预留输入6\nx2.4\n预留输入7\n×2.5\n預留输入8\n×2.6\n入a\nv27\n計數器\n暖\n国\n21：\n0.0\n0.0\nX2: 0.0Y1: 0.0\nY2：\n0.0\n40\n100%\n阿博格FL5+2說明書\n123\n計数器\nNo.1<100座量計数器>\n0\nNo.2<101堆體1計数器>\n0\nă\n-79 -\n\nARBURG\n監視\n阿博格\n軸位置\n国\n21：\n0.0\nX1：\n0.0\nX2\n0.0\n1：\n.0.0\nY2：0.0\n0\nV\n丽\n回\n100%\n2\n触位置\nZ1:\n0.0\nX1:\n0.0\nX2:\n0.0\nY1:\n0.0\n$Y2\n0.0\nX2:\n0.0\n-80-\n\nARBURG\n監視\n阿博格\n報警記錄\n国\n0\n0.01: 0.0x2： 0.0Y1： 0.0\nY2： 0.0\n国\n100%\n報警記錄\n報警時間\n编码\n錯誤资讯\n站號\n15:06:5404-242023\n94\n94氯壓過低，请檢查氣源1訊號\n0\n15:06:5404-242023\n67\n67[横行轴/上下触]同時無訊號\n0\n09:20:0503-202023\n94\n94氯壓過低，请檢查氧源1訊號\n0\n20:40:1103-06 2023\n67\n67[横行轴]/上下軸]同時無訊號\n0\n20:12:4103-062023\n81\n81軸1未在待機點\n0\n18:19:39 03-06 2023\n2\n2驅動器故障\n0\n18:19:3603-062023\n0X00510002X\n10.1控制電路電源的電壓下降\n5\n18:19:36 03-062023\n2\n2幅動器故障\n0\n18:19:2903-062023\n0X 00e10007X\n10.1控制電路電源的電壓下降\n5\n18:17:5703-06 2023\n0X00510002X\n10.1控制電路電源的電壓下降\n5\n18:17-5703-062023\n2\n2题动器路\n0\n報警解決方法見4機械手報警及故障處理\n阿博格FL5+2說明書\n-81-",
+  "segments": [
+    {
+      "text": "ARBURG",
+      "page_no": 4,
+      "line_no": 1,
+      "confidence": 0.9771221280097961
+    },
+    {
+      "text": "前言/安全提示",
+      "page_no": 4,
+      "line_no": 2,
+      "confidence": 0.9952279329299927
+    },
+    {
+      "text": "阿博格",
+      "page_no": 4,
+      "line_no": 3,
+      "confidence": 0.999605655670166
+    },
+    {
+      "text": "前言/安全提示",
+      "page_no": 4,
+      "line_no": 4,
+      "confidence": 0.9977564811706543
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 4,
+      "line_no": 5,
+      "confidence": 0.9942912459373474
+    },
+    {
+      "text": "3",
+      "page_no": 4,
+      "line_no": 6,
+      "confidence": 0.9969556331634521
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 5,
+      "line_no": 1,
+      "confidence": 0.9863884449005127
+    },
+    {
+      "text": "原裝操作手冊",
+      "page_no": 5,
+      "line_no": 2,
+      "confidence": 0.9766876697540283
+    },
+    {
+      "text": "阿博格",
+      "page_no": 5,
+      "line_no": 3,
+      "confidence": 0.9997081160545349
+    },
+    {
+      "text": "原裝操作手冊",
+      "page_no": 5,
+      "line_no": 4,
+      "confidence": 0.9997532963752747
+    },
+    {
+      "text": "警告",
+      "page_no": 5,
+      "line_no": 5,
+      "confidence": 0.9980732202529907
+    },
+    {
+      "text": "機器操作不當可能導致重大的人員和財物損傷！",
+      "page_no": 5,
+      "line_no": 6,
+      "confidence": 0.9889768958091736
+    },
+    {
+      "text": "在您開始操作機器前，請通讀操作手冊並熟悉安全裝置。",
+      "page_no": 5,
+      "line_no": 7,
+      "confidence": 0.9963283538818359
+    },
+    {
+      "text": "+",
+      "page_no": 5,
+      "line_no": 8,
+      "confidence": 0.35618168115615845
+    },
+    {
+      "text": "4",
+      "page_no": 5,
+      "line_no": 9,
+      "confidence": 0.9988553524017334
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 28,
+      "line_no": 1,
+      "confidence": 0.9833343029022217
+    },
+    {
+      "text": "引言",
+      "page_no": 28,
+      "line_no": 2,
+      "confidence": 0.9977532029151917
+    },
+    {
+      "text": "阿博格",
+      "page_no": 28,
+      "line_no": 3,
+      "confidence": 0.9996700882911682
+    },
+    {
+      "text": "引言",
+      "page_no": 28,
+      "line_no": 4,
+      "confidence": 0.9960585832595825
+    },
+    {
+      "text": "1",
+      "page_no": 28,
+      "line_no": 5,
+      "confidence": 0.9998016953468323
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 28,
+      "line_no": 6,
+      "confidence": 0.9946478009223938
+    },
+    {
+      "text": "-1-",
+      "page_no": 28,
+      "line_no": 7,
+      "confidence": 0.9824910163879395
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 29,
+      "line_no": 1,
+      "confidence": 0.9743971228599548
+    },
+    {
+      "text": "阿博格",
+      "page_no": 29,
+      "line_no": 2,
+      "confidence": 0.9996891617774963
+    },
+    {
+      "text": "輔助軸|FL5/FL5+2/FL10/FL10+2",
+      "page_no": 29,
+      "line_no": 3,
+      "confidence": 0.9813253879547119
+    },
+    {
+      "text": "C軸氣動",
+      "page_no": 29,
+      "line_no": 4,
+      "confidence": 0.9878508448600769
+    },
+    {
+      "text": "54",
+      "page_no": 29,
+      "line_no": 5,
+      "confidence": 0.9947094917297363
+    },
+    {
+      "text": "80",
+      "page_no": 29,
+      "line_no": 6,
+      "confidence": 0.9830551743507385
+    },
+    {
+      "text": "22",
+      "page_no": 29,
+      "line_no": 7,
+      "confidence": 0.2605655789375305
+    },
+    {
+      "text": "□",
+      "page_no": 29,
+      "line_no": 8,
+      "confidence": 0.29010680317878723
+    },
+    {
+      "text": "10",
+      "page_no": 29,
+      "line_no": 9,
+      "confidence": 0.989472508430481
+    },
+    {
+      "text": "①",
+      "page_no": 29,
+      "line_no": 10,
+      "confidence": 0.7469384670257568
+    },
+    {
+      "text": "D",
+      "page_no": 29,
+      "line_no": 11,
+      "confidence": 0.1532786637544632
+    },
+    {
+      "text": "4-M5",
+      "page_no": 29,
+      "line_no": 12,
+      "confidence": 0.9667491316795349
+    },
+    {
+      "text": "O",
+      "page_no": 29,
+      "line_no": 13,
+      "confidence": 0.5671775937080383
+    },
+    {
+      "text": "O",
+      "page_no": 29,
+      "line_no": 14,
+      "confidence": 0.2842571437358856
+    },
+    {
+      "text": "90°",
+      "page_no": 29,
+      "line_no": 15,
+      "confidence": 0.8366108536720276
+    },
+    {
+      "text": "①",
+      "page_no": 29,
+      "line_no": 16,
+      "confidence": 0.2558075487613678
+    },
+    {
+      "text": "3",
+      "page_no": 29,
+      "line_no": 17,
+      "confidence": 0.935453474521637
+    },
+    {
+      "text": "号",
+      "page_no": 29,
+      "line_no": 18,
+      "confidence": 0.1673932820558548
+    },
+    {
+      "text": "5",
+      "page_no": 29,
+      "line_no": 19,
+      "confidence": 0.8512884974479675
+    },
+    {
+      "text": "4-M6",
+      "page_no": 29,
+      "line_no": 20,
+      "confidence": 0.9939337968826294
+    },
+    {
+      "text": "甲",
+      "page_no": 29,
+      "line_no": 21,
+      "confidence": 0.1667117327451706
+    },
+    {
+      "text": "中",
+      "page_no": 29,
+      "line_no": 22,
+      "confidence": 0.322843462228775
+    },
+    {
+      "text": "G",
+      "page_no": 29,
+      "line_no": 23,
+      "confidence": 0.19010750949382782
+    },
+    {
+      "text": "29.8",
+      "page_no": 29,
+      "line_no": 24,
+      "confidence": 0.9962354302406311
+    },
+    {
+      "text": "30",
+      "page_no": 29,
+      "line_no": 25,
+      "confidence": 0.9562426805496216
+    },
+    {
+      "text": "18",
+      "page_no": 29,
+      "line_no": 26,
+      "confidence": 0.9936510324478149
+    },
+    {
+      "text": "50",
+      "page_no": 29,
+      "line_no": 27,
+      "confidence": 0.9835859537124634
+    },
+    {
+      "text": "-0°",
+      "page_no": 29,
+      "line_no": 28,
+      "confidence": 0.5998634099960327
+    },
+    {
+      "text": "9",
+      "page_no": 29,
+      "line_no": 29,
+      "confidence": 0.28051623702049255
+    },
+    {
+      "text": "本體重量1.0KG，额定扭矩12N•m",
+      "page_no": 29,
+      "line_no": 30,
+      "confidence": 0.9749950766563416
+    },
+    {
+      "text": "夾具",
+      "page_no": 29,
+      "line_no": 31,
+      "confidence": 0.9943176507949829
+    },
+    {
+      "text": "20",
+      "page_no": 29,
+      "line_no": 32,
+      "confidence": 0.9896585941314697
+    },
+    {
+      "text": "33",
+      "page_no": 29,
+      "line_no": 33,
+      "confidence": 0.9976550340652466
+    },
+    {
+      "text": "22",
+      "page_no": 29,
+      "line_no": 34,
+      "confidence": 0.9991675019264221
+    },
+    {
+      "text": "2E",
+      "page_no": 29,
+      "line_no": 35,
+      "confidence": 0.2963144779205322
+    },
+    {
+      "text": "-2-",
+      "page_no": 29,
+      "line_no": 36,
+      "confidence": 0.9946535229682922
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 30,
+      "line_no": 1,
+      "confidence": 0.981747567653656
+    },
+    {
+      "text": "阿博格",
+      "page_no": 30,
+      "line_no": 2,
+      "confidence": 0.9997060894966125
+    },
+    {
+      "text": "輔助軸|FL15",
+      "page_no": 30,
+      "line_no": 3,
+      "confidence": 0.9203229546546936
+    },
+    {
+      "text": "C軸氣動",
+      "page_no": 30,
+      "line_no": 4,
+      "confidence": 0.992942750453949
+    },
+    {
+      "text": "0",
+      "page_no": 30,
+      "line_no": 5,
+      "confidence": 0.23046249151229858
+    },
+    {
+      "text": "922",
+      "page_no": 30,
+      "line_no": 6,
+      "confidence": 0.45358920097351074
+    },
+    {
+      "text": "12",
+      "page_no": 30,
+      "line_no": 7,
+      "confidence": 0.9741992950439453
+    },
+    {
+      "text": "©",
+      "page_no": 30,
+      "line_no": 8,
+      "confidence": 0.4531305432319641
+    },
+    {
+      "text": "4xM8",
+      "page_no": 30,
+      "line_no": 9,
+      "confidence": 0.8924773335456848
+    },
+    {
+      "text": "4xM5",
+      "page_no": 30,
+      "line_no": 10,
+      "confidence": 0.8481791615486145
+    },
+    {
+      "text": "4xM6",
+      "page_no": 30,
+      "line_no": 11,
+      "confidence": 0.9051893949508667
+    },
+    {
+      "text": "回",
+      "page_no": 30,
+      "line_no": 12,
+      "confidence": 0.12530307471752167
+    },
+    {
+      "text": "O",
+      "page_no": 30,
+      "line_no": 13,
+      "confidence": 0.29965099692344666
+    },
+    {
+      "text": "D",
+      "page_no": 30,
+      "line_no": 14,
+      "confidence": 0.3009335994720459
+    },
+    {
+      "text": "001",
+      "page_no": 30,
+      "line_no": 15,
+      "confidence": 0.5436612963676453
+    },
+    {
+      "text": "0",
+      "page_no": 30,
+      "line_no": 16,
+      "confidence": 0.44681593775749207
+    },
+    {
+      "text": "0000",
+      "page_no": 30,
+      "line_no": 17,
+      "confidence": 0.7423375248908997
+    },
+    {
+      "text": "0",
+      "page_no": 30,
+      "line_no": 18,
+      "confidence": 0.887434720993042
+    },
+    {
+      "text": "0",
+      "page_no": 30,
+      "line_no": 19,
+      "confidence": 0.5211355090141296
+    },
+    {
+      "text": "Q",
+      "page_no": 30,
+      "line_no": 20,
+      "confidence": 0.4125305414199829
+    },
+    {
+      "text": "Q",
+      "page_no": 30,
+      "line_no": 21,
+      "confidence": 0.9354650378227234
+    },
+    {
+      "text": "中",
+      "page_no": 30,
+      "line_no": 22,
+      "confidence": 0.20327214896678925
+    },
+    {
+      "text": "Q",
+      "page_no": 30,
+      "line_no": 23,
+      "confidence": 0.6779541373252869
+    },
+    {
+      "text": "广",
+      "page_no": 30,
+      "line_no": 24,
+      "confidence": 0.1141829714179039
+    },
+    {
+      "text": "90",
+      "page_no": 30,
+      "line_no": 25,
+      "confidence": 0.9713810086250305
+    },
+    {
+      "text": "35",
+      "page_no": 30,
+      "line_no": 26,
+      "confidence": 0.9898492693901062
+    },
+    {
+      "text": "31",
+      "page_no": 30,
+      "line_no": 27,
+      "confidence": 0.9970496296882629
+    },
+    {
+      "text": "818",
+      "page_no": 30,
+      "line_no": 28,
+      "confidence": 0.43805983662605286
+    },
+    {
+      "text": "本體重量4.0KG，额定扭矩15N•m",
+      "page_no": 30,
+      "line_no": 29,
+      "confidence": 0.9743130207061768
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 30,
+      "line_no": 30,
+      "confidence": 0.9942912459373474
+    },
+    {
+      "text": "夾具",
+      "page_no": 30,
+      "line_no": 31,
+      "confidence": 0.9943176507949829
+    },
+    {
+      "text": "20",
+      "page_no": 30,
+      "line_no": 32,
+      "confidence": 0.9896585941314697
+    },
+    {
+      "text": "33",
+      "page_no": 30,
+      "line_no": 33,
+      "confidence": 0.9976550340652466
+    },
+    {
+      "text": "22",
+      "page_no": 30,
+      "line_no": 34,
+      "confidence": 0.9991675019264221
+    },
+    {
+      "text": "2E",
+      "page_no": 30,
+      "line_no": 35,
+      "confidence": 0.2963144779205322
+    },
+    {
+      "text": "-3-",
+      "page_no": 30,
+      "line_no": 36,
+      "confidence": 0.9928297400474548
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 44,
+      "line_no": 1,
+      "confidence": 0.9715496897697449
+    },
+    {
+      "text": "安装安全護欄",
+      "page_no": 44,
+      "line_no": 2,
+      "confidence": 0.8987227082252502
+    },
+    {
+      "text": "阿博格",
+      "page_no": 44,
+      "line_no": 3,
+      "confidence": 0.9997606873512268
+    },
+    {
+      "text": "●首先，將安全護欄通過連接板及緊固螺絲固定到機器上。",
+      "page_no": 44,
+      "line_no": 4,
+      "confidence": 0.9871639609336853
+    },
+    {
+      "text": "ΔO",
+      "page_no": 44,
+      "line_no": 5,
+      "confidence": 0.2834019064903259
+    },
+    {
+      "text": "6",
+      "page_no": 44,
+      "line_no": 6,
+      "confidence": 0.12722668051719666
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 44,
+      "line_no": 7,
+      "confidence": 0.9905965328216553
+    },
+    {
+      "text": "福",
+      "page_no": 44,
+      "line_no": 8,
+      "confidence": 0.021020138636231422
+    },
+    {
+      "text": "-17 -",
+      "page_no": 44,
+      "line_no": 9,
+      "confidence": 0.9259956479072571
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 68,
+      "line_no": 1,
+      "confidence": 0.9814281463623047
+    },
+    {
+      "text": "外觀說明",
+      "page_no": 68,
+      "line_no": 2,
+      "confidence": 0.9962360858917236
+    },
+    {
+      "text": "阿博格",
+      "page_no": 68,
+      "line_no": 3,
+      "confidence": 0.9996015429496765
+    },
+    {
+      "text": "1安全開關",
+      "page_no": 68,
+      "line_no": 4,
+      "confidence": 0.9842513203620911
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 68,
+      "line_no": 5,
+      "confidence": 0.9843084812164307
+    },
+    {
+      "text": "-41-",
+      "page_no": 68,
+      "line_no": 6,
+      "confidence": 0.9951146841049194
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 70,
+      "line_no": 1,
+      "confidence": 0.9559211730957031
+    },
+    {
+      "text": "阿博格",
+      "page_no": 70,
+      "line_no": 2,
+      "confidence": 0.9997081160545349
+    },
+    {
+      "text": "待機點",
+      "page_no": 70,
+      "line_no": 3,
+      "confidence": 0.9969961047172546
+    },
+    {
+      "text": "在自動模式下，執行待機程式。",
+      "page_no": 70,
+      "line_no": 4,
+      "confidence": 0.9940797090530396
+    },
+    {
+      "text": "C",
+      "page_no": 70,
+      "line_no": 5,
+      "confidence": 0.20447328686714172
+    },
+    {
+      "text": "迴圈停止",
+      "page_no": 70,
+      "line_no": 6,
+      "confidence": 0.9551181793212891
+    },
+    {
+      "text": "程式運行過程中按下，下一個迴圈完成會停止程",
+      "page_no": 70,
+      "line_no": 7,
+      "confidence": 0.9908372163772583
+    },
+    {
+      "text": "式。",
+      "page_no": 70,
+      "line_no": 8,
+      "confidence": 0.9995601773262024
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 70,
+      "line_no": 9,
+      "confidence": 0.991651177406311
+    },
+    {
+      "text": "-43-",
+      "page_no": 70,
+      "line_no": 10,
+      "confidence": 0.9968411922454834
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 83,
+      "line_no": 1,
+      "confidence": 0.9833343029022217
+    },
+    {
+      "text": "插入輸入信號",
+      "page_no": 83,
+      "line_no": 2,
+      "confidence": 0.9907078742980957
+    },
+    {
+      "text": "阿博格",
+      "page_no": 83,
+      "line_no": 3,
+      "confidence": 0.9998051524162292
+    },
+    {
+      "text": "1、選擇",
+      "page_no": 83,
+      "line_no": 4,
+      "confidence": 0.9983537197113037
+    },
+    {
+      "text": "“",
+      "page_no": 83,
+      "line_no": 5,
+      "confidence": 0.9887831807136536
+    },
+    {
+      "text": "”",
+      "page_no": 83,
+      "line_no": 6,
+      "confidence": 0.7458468079566956
+    },
+    {
+      "text": "點擊右下角",
+      "page_no": 83,
+      "line_no": 7,
+      "confidence": 0.9355248212814331
+    },
+    {
+      "text": "設置輸入信號的通斷：",
+      "page_no": 83,
+      "line_no": 8,
+      "confidence": 0.9451003074645996
+    },
+    {
+      "text": "→",
+      "page_no": 83,
+      "line_no": 9,
+      "confidence": 0.09649016708135605
+    },
+    {
+      "text": "“",
+      "page_no": 83,
+      "line_no": 10,
+      "confidence": 0.9881324172019958
+    },
+    {
+      "text": "0",
+      "page_no": 83,
+      "line_no": 11,
+      "confidence": 0.19439561665058136
+    },
+    {
+      "text": "”",
+      "page_no": 83,
+      "line_no": 12,
+      "confidence": 0.8081127405166626
+    },
+    {
+      "text": "表示輸出信號通",
+      "page_no": 83,
+      "line_no": 13,
+      "confidence": 0.9918246865272522
+    },
+    {
+      "text": "“”表示輸出信號斷",
+      "page_no": 83,
+      "line_no": 14,
+      "confidence": 0.9817029237747192
+    },
+    {
+      "text": "0",
+      "page_no": 83,
+      "line_no": 15,
+      "confidence": 0.7440652251243591
+    },
+    {
+      "text": "用",
+      "page_no": 83,
+      "line_no": 16,
+      "confidence": 0.08988398313522339
+    },
+    {
+      "text": "Z1：",
+      "page_no": 83,
+      "line_no": 17,
+      "confidence": 0.7576664090156555
+    },
+    {
+      "text": "0.0",
+      "page_no": 83,
+      "line_no": 18,
+      "confidence": 0.9761843085289001
+    },
+    {
+      "text": "X1：",
+      "page_no": 83,
+      "line_no": 19,
+      "confidence": 0.6619789600372314
+    },
+    {
+      "text": "0.0",
+      "page_no": 83,
+      "line_no": 20,
+      "confidence": 0.9888871312141418
+    },
+    {
+      "text": "x2：",
+      "page_no": 83,
+      "line_no": 21,
+      "confidence": 0.5813555121421814
+    },
+    {
+      "text": "0.01：0.0Y2： 0.0",
+      "page_no": 83,
+      "line_no": 22,
+      "confidence": 0.7803393602371216
+    },
+    {
+      "text": "道",
+      "page_no": 83,
+      "line_no": 23,
+      "confidence": 0.04101846367120743
+    },
+    {
+      "text": "A",
+      "page_no": 83,
+      "line_no": 24,
+      "confidence": 0.24722076952457428
+    },
+    {
+      "text": "100%",
+      "page_no": 83,
+      "line_no": 25,
+      "confidence": 0.980076253414154
+    },
+    {
+      "text": "M",
+      "page_no": 83,
+      "line_no": 26,
+      "confidence": 0.07650976628065109
+    },
+    {
+      "text": "V",
+      "page_no": 83,
+      "line_no": 27,
+      "confidence": 0.13619652390480042
+    },
+    {
+      "text": "Y",
+      "page_no": 83,
+      "line_no": 28,
+      "confidence": 0.6536270976066589
+    },
+    {
+      "text": "主程序[text.prR]",
+      "page_no": 83,
+      "line_no": 29,
+      "confidence": 0.9119710922241211
+    },
+    {
+      "text": "[001]動作開始…",
+      "page_no": 83,
+      "line_no": 30,
+      "confidence": 0.6667917966842651
+    },
+    {
+      "text": "超時",
+      "page_no": 83,
+      "line_no": 31,
+      "confidence": 0.9322724342346191
+    },
+    {
+      "text": "100",
+      "page_no": 83,
+      "line_no": 32,
+      "confidence": 0.9921526908874512
+    },
+    {
+      "text": "M",
+      "page_no": 83,
+      "line_no": 33,
+      "confidence": 0.2853184938430786
+    },
+    {
+      "text": "[002] 通行一次，<>检查啟動位置",
+      "page_no": 83,
+      "line_no": 34,
+      "confidence": 0.8768699765205383
+    },
+    {
+      "text": "超時選项",
+      "page_no": 83,
+      "line_no": 35,
+      "confidence": 0.823582649230957
+    },
+    {
+      "text": "暂停",
+      "page_no": 83,
+      "line_no": 36,
+      "confidence": 0.9889563322067261
+    },
+    {
+      "text": "[003]等待P：開模完成通，超時：暂停",
+      "page_no": 83,
+      "line_no": 37,
+      "confidence": 0.9118879437446594
+    },
+    {
+      "text": "吸1檢涮",
+      "page_no": 83,
+      "line_no": 38,
+      "confidence": 0.8681672811508179
+    },
+    {
+      "text": "x1.0",
+      "page_no": 83,
+      "line_no": 39,
+      "confidence": 0.8483635187149048
+    },
+    {
+      "text": "[004] 轴Z1:→100.0,",
+      "page_no": 83,
+      "line_no": 40,
+      "confidence": 0.8487551808357239
+    },
+    {
+      "text": "[005] 输出吸1輸出通",
+      "page_no": 83,
+      "line_no": 41,
+      "confidence": 0.8972505331039429
+    },
+    {
+      "text": "未使用",
+      "page_no": 83,
+      "line_no": 42,
+      "confidence": 0.9833080172538757
+    },
+    {
+      "text": "Empty",
+      "page_no": 83,
+      "line_no": 43,
+      "confidence": 0.9936176538467407
+    },
+    {
+      "text": "[006]等待P吸1检測斷，超時：暂停",
+      "page_no": 83,
+      "line_no": 44,
+      "confidence": 0.8383065462112427
+    },
+    {
+      "text": "未使用",
+      "page_no": 83,
+      "line_no": 45,
+      "confidence": 0.9992532730102539
+    },
+    {
+      "text": "Empty",
+      "page_no": 83,
+      "line_no": 46,
+      "confidence": 0.9924843907356262
+    },
+    {
+      "text": "[007] 計数器No.100,增加1",
+      "page_no": 83,
+      "line_no": 47,
+      "confidence": 0.9381412863731384
+    },
+    {
+      "text": "未使用",
+      "page_no": 83,
+      "line_no": 48,
+      "confidence": 0.9987387657165527
+    },
+    {
+      "text": "Empty",
+      "page_no": 83,
+      "line_no": 49,
+      "confidence": 0.9951934814453125
+    },
+    {
+      "text": "[008]",
+      "page_no": 83,
+      "line_no": 50,
+      "confidence": 0.9866650700569153
+    },
+    {
+      "text": "-動作結束-",
+      "page_no": 83,
+      "line_no": 51,
+      "confidence": 0.8773424625396729
+    },
+    {
+      "text": "未使用",
+      "page_no": 83,
+      "line_no": 52,
+      "confidence": 0.9996780753135681
+    },
+    {
+      "text": "Empty",
+      "page_no": 83,
+      "line_no": 53,
+      "confidence": 0.9540901184082031
+    },
+    {
+      "text": "未使用",
+      "page_no": 83,
+      "line_no": 54,
+      "confidence": 0.9968698620796204
+    },
+    {
+      "text": "value = -1",
+      "page_no": 83,
+      "line_no": 55,
+      "confidence": 0.947005569934845
+    },
+    {
+      "text": "B",
+      "page_no": 83,
+      "line_no": 56,
+      "confidence": 0.21492666006088257
+    },
+    {
+      "text": "-56-",
+      "page_no": 83,
+      "line_no": 57,
+      "confidence": 0.9974757432937622
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 97,
+      "line_no": 1,
+      "confidence": 0.9575598835945129
+    },
+    {
+      "text": "功能操作說明",
+      "page_no": 97,
+      "line_no": 2,
+      "confidence": 0.999346911907196
+    },
+    {
+      "text": "阿博格",
+      "page_no": 97,
+      "line_no": 3,
+      "confidence": 0.9997060894966125
+    },
+    {
+      "text": "待機點",
+      "page_no": 97,
+      "line_no": 4,
+      "confidence": 0.9909265041351318
+    },
+    {
+      "text": "預先設定的點，用於歸待機點或全自動時檢測。",
+      "page_no": 97,
+      "line_no": 5,
+      "confidence": 0.9903174042701721
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 6,
+      "confidence": 0.5918596386909485
+    },
+    {
+      "text": "国",
+      "page_no": 97,
+      "line_no": 7,
+      "confidence": 0.8559370636940002
+    },
+    {
+      "text": "Z1",
+      "page_no": 97,
+      "line_no": 8,
+      "confidence": 0.9162484407424927
+    },
+    {
+      "text": "0.0",
+      "page_no": 97,
+      "line_no": 9,
+      "confidence": 0.9074155688285828
+    },
+    {
+      "text": "0.0",
+      "page_no": 97,
+      "line_no": 10,
+      "confidence": 0.9929652214050293
+    },
+    {
+      "text": "2",
+      "page_no": 97,
+      "line_no": 11,
+      "confidence": 0.9905549883842468
+    },
+    {
+      "text": "0.0",
+      "page_no": 97,
+      "line_no": 12,
+      "confidence": 0.9881442189216614
+    },
+    {
+      "text": "1：",
+      "page_no": 97,
+      "line_no": 13,
+      "confidence": 0.695046603679657
+    },
+    {
+      "text": "0.0",
+      "page_no": 97,
+      "line_no": 14,
+      "confidence": 0.9576138854026794
+    },
+    {
+      "text": "12:0.0",
+      "page_no": 97,
+      "line_no": 15,
+      "confidence": 0.8394187092781067
+    },
+    {
+      "text": "△",
+      "page_no": 97,
+      "line_no": 16,
+      "confidence": 0.12931352853775024
+    },
+    {
+      "text": "￥",
+      "page_no": 97,
+      "line_no": 17,
+      "confidence": 0.24874256551265717
+    },
+    {
+      "text": "100%",
+      "page_no": 97,
+      "line_no": 18,
+      "confidence": 0.9850836396217346
+    },
+    {
+      "text": "四",
+      "page_no": 97,
+      "line_no": 19,
+      "confidence": 0.5040362477302551
+    },
+    {
+      "text": "口",
+      "page_no": 97,
+      "line_no": 20,
+      "confidence": 0.2556876540184021
+    },
+    {
+      "text": "A",
+      "page_no": 97,
+      "line_no": 21,
+      "confidence": 0.38704124093055725
+    },
+    {
+      "text": "品",
+      "page_no": 97,
+      "line_no": 22,
+      "confidence": 0.5443231463432312
+    },
+    {
+      "text": "Y",
+      "page_no": 97,
+      "line_no": 23,
+      "confidence": 0.4820796251296997
+    },
+    {
+      "text": "待横點",
+      "page_no": 97,
+      "line_no": 24,
+      "confidence": 0.7269806861877441
+    },
+    {
+      "text": "Z1",
+      "page_no": 97,
+      "line_no": 25,
+      "confidence": 0.98638916015625
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 26,
+      "confidence": 0.9542965292930603
+    },
+    {
+      "text": "X1",
+      "page_no": 97,
+      "line_no": 27,
+      "confidence": 0.6886518001556396
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 28,
+      "confidence": 0.9563658237457275
+    },
+    {
+      "text": "X2",
+      "page_no": 97,
+      "line_no": 29,
+      "confidence": 0.7014071941375732
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 30,
+      "confidence": 0.9771478176116943
+    },
+    {
+      "text": "Y1",
+      "page_no": 97,
+      "line_no": 31,
+      "confidence": 0.9651318192481995
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 32,
+      "confidence": 0.9743063449859619
+    },
+    {
+      "text": "Y2",
+      "page_no": 97,
+      "line_no": 33,
+      "confidence": 0.9663708209991455
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 34,
+      "confidence": 0.922533392906189
+    },
+    {
+      "text": "$X2",
+      "page_no": 97,
+      "line_no": 35,
+      "confidence": 0.6520509719848633
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 36,
+      "confidence": 0.9910945296287537
+    },
+    {
+      "text": "堆疊設置",
+      "page_no": 97,
+      "line_no": 37,
+      "confidence": 0.9776639938354492
+    },
+    {
+      "text": "使用堆疊功能前需提前設定。",
+      "page_no": 97,
+      "line_no": 38,
+      "confidence": 0.9805033206939697
+    },
+    {
+      "text": "2+9",
+      "page_no": 97,
+      "line_no": 39,
+      "confidence": 0.4467242658138275
+    },
+    {
+      "text": "田",
+      "page_no": 97,
+      "line_no": 40,
+      "confidence": 0.19209587574005127
+    },
+    {
+      "text": "Z1:",
+      "page_no": 97,
+      "line_no": 41,
+      "confidence": 0.749119758605957
+    },
+    {
+      "text": "0.0",
+      "page_no": 97,
+      "line_no": 42,
+      "confidence": 0.9912163615226746
+    },
+    {
+      "text": "X1：",
+      "page_no": 97,
+      "line_no": 43,
+      "confidence": 0.5676603317260742
+    },
+    {
+      "text": "0.0x2:0.01:0.0Y2:0.0",
+      "page_no": 97,
+      "line_no": 44,
+      "confidence": 0.8025723695755005
+    },
+    {
+      "text": "△",
+      "page_no": 97,
+      "line_no": 45,
+      "confidence": 0.21568289399147034
+    },
+    {
+      "text": "凉",
+      "page_no": 97,
+      "line_no": 46,
+      "confidence": 0.08159822225570679
+    },
+    {
+      "text": "100%",
+      "page_no": 97,
+      "line_no": 47,
+      "confidence": 0.9801205396652222
+    },
+    {
+      "text": "D",
+      "page_no": 97,
+      "line_no": 48,
+      "confidence": 0.2813895642757416
+    },
+    {
+      "text": "品",
+      "page_no": 97,
+      "line_no": 49,
+      "confidence": 0.999658465385437
+    },
+    {
+      "text": "Y",
+      "page_no": 97,
+      "line_no": 50,
+      "confidence": 0.5645056962966919
+    },
+    {
+      "text": "堆叠設置",
+      "page_no": 97,
+      "line_no": 51,
+      "confidence": 0.9211880564689636
+    },
+    {
+      "text": "No.1",
+      "page_no": 97,
+      "line_no": 52,
+      "confidence": 0.9941626787185669
+    },
+    {
+      "text": "z1",
+      "page_no": 97,
+      "line_no": 53,
+      "confidence": 0.8056066632270813
+    },
+    {
+      "text": "x1",
+      "page_no": 97,
+      "line_no": 54,
+      "confidence": 0.7453104853630066
+    },
+    {
+      "text": "Y1",
+      "page_no": 97,
+      "line_no": 55,
+      "confidence": 0.9486606121063232
+    },
+    {
+      "text": "口",
+      "page_no": 97,
+      "line_no": 56,
+      "confidence": 0.4192202091217041
+    },
+    {
+      "text": "No.1",
+      "page_no": 97,
+      "line_no": 57,
+      "confidence": 0.993401288986206
+    },
+    {
+      "text": "次序",
+      "page_no": 97,
+      "line_no": 58,
+      "confidence": 0.9999622702598572
+    },
+    {
+      "text": "第一",
+      "page_no": 97,
+      "line_no": 59,
+      "confidence": 0.98789381980896
+    },
+    {
+      "text": "第二",
+      "page_no": 97,
+      "line_no": 60,
+      "confidence": 0.9990824460983276
+    },
+    {
+      "text": "第三",
+      "page_no": 97,
+      "line_no": 61,
+      "confidence": 0.9958394765853882
+    },
+    {
+      "text": "No.2",
+      "page_no": 97,
+      "line_no": 62,
+      "confidence": 0.9863084554672241
+    },
+    {
+      "text": "X1+",
+      "page_no": 97,
+      "line_no": 63,
+      "confidence": 0.9216867089271545
+    },
+    {
+      "text": "Z1+",
+      "page_no": 97,
+      "line_no": 64,
+      "confidence": 0.9205171465873718
+    },
+    {
+      "text": "方向",
+      "page_no": 97,
+      "line_no": 65,
+      "confidence": 0.9575644731521606
+    },
+    {
+      "text": "反向",
+      "page_no": 97,
+      "line_no": 66,
+      "confidence": 0.9950676560401917
+    },
+    {
+      "text": "反向",
+      "page_no": 97,
+      "line_no": 67,
+      "confidence": 0.9961527585983276
+    },
+    {
+      "text": "反向",
+      "page_no": 97,
+      "line_no": 68,
+      "confidence": 0.9978483319282532
+    },
+    {
+      "text": "No.3",
+      "page_no": 97,
+      "line_no": 69,
+      "confidence": 0.9923995137214661
+    },
+    {
+      "text": "啟動位置",
+      "page_no": 97,
+      "line_no": 70,
+      "confidence": 0.9519831538200378
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 71,
+      "confidence": 0.9434234499931335
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 72,
+      "confidence": 0.7951081991195679
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 73,
+      "confidence": 0.9600809216499329
+    },
+    {
+      "text": "堆费固款",
+      "page_no": 97,
+      "line_no": 74,
+      "confidence": 0.5969762802124023
+    },
+    {
+      "text": "1",
+      "page_no": 97,
+      "line_no": 75,
+      "confidence": 0.9709210991859436
+    },
+    {
+      "text": "1",
+      "page_no": 97,
+      "line_no": 76,
+      "confidence": 0.9527581930160522
+    },
+    {
+      "text": "1",
+      "page_no": 97,
+      "line_no": 77,
+      "confidence": 0.9459338784217834
+    },
+    {
+      "text": "No.4",
+      "page_no": 97,
+      "line_no": 78,
+      "confidence": 0.9843530654907227
+    },
+    {
+      "text": "中心間距",
+      "page_no": 97,
+      "line_no": 79,
+      "confidence": 0.9561370611190796
+    },
+    {
+      "text": "10",
+      "page_no": 97,
+      "line_no": 80,
+      "confidence": 0.9954605102539062
+    },
+    {
+      "text": "10",
+      "page_no": 97,
+      "line_no": 81,
+      "confidence": 0.9942744970321655
+    },
+    {
+      "text": "10",
+      "page_no": 97,
+      "line_no": 82,
+      "confidence": 0.9947218894958496
+    },
+    {
+      "text": "No.5",
+      "page_no": 97,
+      "line_no": 83,
+      "confidence": 0.9895288944244385
+    },
+    {
+      "text": "居中分雕Z1",
+      "page_no": 97,
+      "line_no": 84,
+      "confidence": 0.9163228869438171
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 85,
+      "confidence": 0.900780439376831
+    },
+    {
+      "text": "居中分離X1",
+      "page_no": 97,
+      "line_no": 86,
+      "confidence": 0.88150954246521
+    },
+    {
+      "text": "0",
+      "page_no": 97,
+      "line_no": 87,
+      "confidence": 0.9440577030181885
+    },
+    {
+      "text": "□",
+      "page_no": 97,
+      "line_no": 88,
+      "confidence": 0.829129159450531
+    },
+    {
+      "text": "自由堆叠",
+      "page_no": 97,
+      "line_no": 89,
+      "confidence": 0.8458546996116638
+    },
+    {
+      "text": "-70-",
+      "page_no": 97,
+      "line_no": 90,
+      "confidence": 0.9886834025382996
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 98,
+      "line_no": 1,
+      "confidence": 0.9857194423675537
+    },
+    {
+      "text": "功能操作說明",
+      "page_no": 98,
+      "line_no": 2,
+      "confidence": 0.9990274310112
+    },
+    {
+      "text": "阿博格",
+      "page_no": 98,
+      "line_no": 3,
+      "confidence": 0.9997803568840027
+    },
+    {
+      "text": "參考位置",
+      "page_no": 98,
+      "line_no": 4,
+      "confidence": 0.9255023002624512
+    },
+    {
+      "text": "提前設定參考位置，可在動作编輯時引用。",
+      "page_no": 98,
+      "line_no": 5,
+      "confidence": 0.9740713834762573
+    },
+    {
+      "text": "国",
+      "page_no": 98,
+      "line_no": 6,
+      "confidence": 0.9401593208312988
+    },
+    {
+      "text": "21:",
+      "page_no": 98,
+      "line_no": 7,
+      "confidence": 0.7211067080497742
+    },
+    {
+      "text": "0.0",
+      "page_no": 98,
+      "line_no": 8,
+      "confidence": 0.8662734627723694
+    },
+    {
+      "text": "X1：",
+      "page_no": 98,
+      "line_no": 9,
+      "confidence": 0.5149150490760803
+    },
+    {
+      "text": "0.0",
+      "page_no": 98,
+      "line_no": 10,
+      "confidence": 0.9369311928749084
+    },
+    {
+      "text": "2：",
+      "page_no": 98,
+      "line_no": 11,
+      "confidence": 0.6916162967681885
+    },
+    {
+      "text": "0.0Y1：0.0",
+      "page_no": 98,
+      "line_no": 12,
+      "confidence": 0.8517671823501587
+    },
+    {
+      "text": "Y2： 0.0",
+      "page_no": 98,
+      "line_no": 13,
+      "confidence": 0.8515475392341614
+    },
+    {
+      "text": "华",
+      "page_no": 98,
+      "line_no": 14,
+      "confidence": 0.07572342455387115
+    },
+    {
+      "text": "100%",
+      "page_no": 98,
+      "line_no": 15,
+      "confidence": 0.9906251430511475
+    },
+    {
+      "text": "V",
+      "page_no": 98,
+      "line_no": 16,
+      "confidence": 0.8772608041763306
+    },
+    {
+      "text": "考位置",
+      "page_no": 98,
+      "line_no": 17,
+      "confidence": 0.998169481754303
+    },
+    {
+      "text": "ID",
+      "page_no": 98,
+      "line_no": 18,
+      "confidence": 0.9504934549331665
+    },
+    {
+      "text": "Z1",
+      "page_no": 98,
+      "line_no": 19,
+      "confidence": 0.94527667760849
+    },
+    {
+      "text": "X1",
+      "page_no": 98,
+      "line_no": 20,
+      "confidence": 0.6946764588356018
+    },
+    {
+      "text": "×2",
+      "page_no": 98,
+      "line_no": 21,
+      "confidence": 0.65865558385849
+    },
+    {
+      "text": "Y1",
+      "page_no": 98,
+      "line_no": 22,
+      "confidence": 0.9493944644927979
+    },
+    {
+      "text": "$Y2",
+      "page_no": 98,
+      "line_no": 23,
+      "confidence": 0.765455424785614
+    },
+    {
+      "text": "×2",
+      "page_no": 98,
+      "line_no": 24,
+      "confidence": 0.6586558222770691
+    },
+    {
+      "text": "<1>",
+      "page_no": 98,
+      "line_no": 25,
+      "confidence": 0.9141664505004883
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 26,
+      "confidence": 0.9649879932403564
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 27,
+      "confidence": 0.9818265438079834
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 28,
+      "confidence": 0.9818265438079834
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 29,
+      "confidence": 0.975195586681366
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 30,
+      "confidence": 0.9818265438079834
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 31,
+      "confidence": 0.9818265438079834
+    },
+    {
+      "text": "<2>",
+      "page_no": 98,
+      "line_no": 32,
+      "confidence": 0.8652448654174805
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 33,
+      "confidence": 0.9832073450088501
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 34,
+      "confidence": 0.9815203547477722
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 35,
+      "confidence": 0.9804269075393677
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 36,
+      "confidence": 0.9826198816299438
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 37,
+      "confidence": 0.9839771389961243
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 38,
+      "confidence": 0.9839771389961243
+    },
+    {
+      "text": "訂單數據",
+      "page_no": 98,
+      "line_no": 39,
+      "confidence": 0.9962470531463623
+    },
+    {
+      "text": "可查看迥圈週期、取出時間、產量等數據。",
+      "page_no": 98,
+      "line_no": 40,
+      "confidence": 0.9695399403572083
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 98,
+      "line_no": 41,
+      "confidence": 0.9943258166313171
+    },
+    {
+      "text": "国",
+      "page_no": 98,
+      "line_no": 42,
+      "confidence": 0.9631620645523071
+    },
+    {
+      "text": "00",
+      "page_no": 98,
+      "line_no": 43,
+      "confidence": 0.9710528254508972
+    },
+    {
+      "text": "1：",
+      "page_no": 98,
+      "line_no": 44,
+      "confidence": 0.6794005632400513
+    },
+    {
+      "text": "00",
+      "page_no": 98,
+      "line_no": 45,
+      "confidence": 0.9470560550689697
+    },
+    {
+      "text": "X2：0.0",
+      "page_no": 98,
+      "line_no": 46,
+      "confidence": 0.7738732695579529
+    },
+    {
+      "text": "Y1: 0.0",
+      "page_no": 98,
+      "line_no": 47,
+      "confidence": 0.8114867806434631
+    },
+    {
+      "text": "Y2:0.0",
+      "page_no": 98,
+      "line_no": 48,
+      "confidence": 0.8389260172843933
+    },
+    {
+      "text": "首",
+      "page_no": 98,
+      "line_no": 49,
+      "confidence": 0.20009028911590576
+    },
+    {
+      "text": "Δ",
+      "page_no": 98,
+      "line_no": 50,
+      "confidence": 0.26591235399246216
+    },
+    {
+      "text": "凉",
+      "page_no": 98,
+      "line_no": 51,
+      "confidence": 0.1243973821401596
+    },
+    {
+      "text": "100%",
+      "page_no": 98,
+      "line_no": 52,
+      "confidence": 0.9958180785179138
+    },
+    {
+      "text": "邹",
+      "page_no": 98,
+      "line_no": 53,
+      "confidence": 0.13037067651748657
+    },
+    {
+      "text": "《",
+      "page_no": 98,
+      "line_no": 54,
+      "confidence": 0.6410880088806152
+    },
+    {
+      "text": "$",
+      "page_no": 98,
+      "line_no": 55,
+      "confidence": 0.6340861320495605
+    },
+    {
+      "text": "訂草资料",
+      "page_no": 98,
+      "line_no": 56,
+      "confidence": 0.7402138113975525
+    },
+    {
+      "text": "通圈逻期",
+      "page_no": 98,
+      "line_no": 57,
+      "confidence": 0.839004635810852
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 58,
+      "confidence": 0.9801551699638367
+    },
+    {
+      "text": "S",
+      "page_no": 98,
+      "line_no": 59,
+      "confidence": 0.5467696785926819
+    },
+    {
+      "text": "取出時間",
+      "page_no": 98,
+      "line_no": 60,
+      "confidence": 0.9260528087615967
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 61,
+      "confidence": 0.9947872161865234
+    },
+    {
+      "text": "S",
+      "page_no": 98,
+      "line_no": 62,
+      "confidence": 0.41043931245803833
+    },
+    {
+      "text": "產量",
+      "page_no": 98,
+      "line_no": 63,
+      "confidence": 0.6228885650634766
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 64,
+      "confidence": 0.9750128388404846
+    },
+    {
+      "text": "pcs",
+      "page_no": 98,
+      "line_no": 65,
+      "confidence": 0.9511340260505676
+    },
+    {
+      "text": "不良品",
+      "page_no": 98,
+      "line_no": 66,
+      "confidence": 0.9970676302909851
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 67,
+      "confidence": 0.9761030077934265
+    },
+    {
+      "text": "pcs",
+      "page_no": 98,
+      "line_no": 68,
+      "confidence": 0.9460229277610779
+    },
+    {
+      "text": "抽樣",
+      "page_no": 98,
+      "line_no": 69,
+      "confidence": 0.947853684425354
+    },
+    {
+      "text": "0",
+      "page_no": 98,
+      "line_no": 70,
+      "confidence": 0.985045850276947
+    },
+    {
+      "text": "pcs",
+      "page_no": 98,
+      "line_no": 71,
+      "confidence": 0.8117150664329529
+    },
+    {
+      "text": "区",
+      "page_no": 98,
+      "line_no": 72,
+      "confidence": 0.26468995213508606
+    },
+    {
+      "text": "-71 -",
+      "page_no": 98,
+      "line_no": 73,
+      "confidence": 0.9404615163803101
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 101,
+      "line_no": 1,
+      "confidence": 0.9694495797157288
+    },
+    {
+      "text": "功能操作說明",
+      "page_no": 101,
+      "line_no": 2,
+      "confidence": 0.9991773962974548
+    },
+    {
+      "text": "阿博格",
+      "page_no": 101,
+      "line_no": 3,
+      "confidence": 0.999722957611084
+    },
+    {
+      "text": "2",
+      "page_no": 101,
+      "line_no": 4,
+      "confidence": 0.9959762692451477
+    },
+    {
+      "text": "横出允許信號：該信號為 ON時，横行軸允許移動，有其他設備與機",
+      "page_no": 101,
+      "line_no": 5,
+      "confidence": 0.9408267736434937
+    },
+    {
+      "text": "械手產生干涉的時候使用。",
+      "page_no": 101,
+      "line_no": 6,
+      "confidence": 0.9843654036521912
+    },
+    {
+      "text": "3真空泵：真空泵信號消失時報警",
+      "page_no": 101,
+      "line_no": 7,
+      "confidence": 0.9902130961418152
+    },
+    {
+      "text": "-74-",
+      "page_no": 101,
+      "line_no": 8,
+      "confidence": 0.9951556921005249
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 105,
+      "line_no": 1,
+      "confidence": 0.9735792279243469
+    },
+    {
+      "text": "監視",
+      "page_no": 105,
+      "line_no": 2,
+      "confidence": 0.9952681660652161
+    },
+    {
+      "text": "阿博格",
+      "page_no": 105,
+      "line_no": 3,
+      "confidence": 0.9998652935028076
+    },
+    {
+      "text": "3.8監視",
+      "page_no": 105,
+      "line_no": 4,
+      "confidence": 0.9994408488273621
+    },
+    {
+      "text": "EUROMAP 67",
+      "page_no": 105,
+      "line_no": 5,
+      "confidence": 0.9917963147163391
+    },
+    {
+      "text": "国",
+      "page_no": 105,
+      "line_no": 6,
+      "confidence": 0.6468743085861206
+    },
+    {
+      "text": "Z1： 0.0x1： 0.0x2： 0.0￥1：0.0.2: 0.0",
+      "page_no": 105,
+      "line_no": 7,
+      "confidence": 0.808142900466919
+    },
+    {
+      "text": "V",
+      "page_no": 105,
+      "line_no": 8,
+      "confidence": 0.09077858924865723
+    },
+    {
+      "text": "丽",
+      "page_no": 105,
+      "line_no": 9,
+      "confidence": 0.8635772466659546
+    },
+    {
+      "text": "D",
+      "page_no": 105,
+      "line_no": 10,
+      "confidence": 0.18615712225437164
+    },
+    {
+      "text": "100%",
+      "page_no": 105,
+      "line_no": 11,
+      "confidence": 0.9857549667358398
+    },
+    {
+      "text": "☆",
+      "page_no": 105,
+      "line_no": 12,
+      "confidence": 0.25488442182540894
+    },
+    {
+      "text": "EUROMAP 67",
+      "page_no": 105,
+      "line_no": 13,
+      "confidence": 0.9647740125656128
+    },
+    {
+      "text": "输入信號",
+      "page_no": 105,
+      "line_no": 14,
+      "confidence": 0.9322748184204102
+    },
+    {
+      "text": "帕出信",
+      "page_no": 105,
+      "line_no": 15,
+      "confidence": 0.8776350617408752
+    },
+    {
+      "text": "注塑機急停1",
+      "page_no": 105,
+      "line_no": 16,
+      "confidence": 0.8964802622795105
+    },
+    {
+      "text": "×0.0",
+      "page_no": 105,
+      "line_no": 17,
+      "confidence": 0.8207700252532959
+    },
+    {
+      "text": "機械手急停",
+      "page_no": 105,
+      "line_no": 18,
+      "confidence": 0.8943471908569336
+    },
+    {
+      "text": "YO.0",
+      "page_no": 105,
+      "line_no": 19,
+      "confidence": 0.8574901819229126
+    },
+    {
+      "text": "安全門1",
+      "page_no": 105,
+      "line_no": 20,
+      "confidence": 0.9677568674087524
+    },
+    {
+      "text": "x0.1",
+      "page_no": 105,
+      "line_no": 21,
+      "confidence": 0.914919912815094
+    },
+    {
+      "text": "合模允許",
+      "page_no": 105,
+      "line_no": 22,
+      "confidence": 0.9562128782272339
+    },
+    {
+      "text": "Y0.1",
+      "page_no": 105,
+      "line_no": 23,
+      "confidence": 0.7749050855636597
+    },
+    {
+      "text": "合模完成",
+      "page_no": 105,
+      "line_no": 24,
+      "confidence": 0.9876960515975952
+    },
+    {
+      "text": "×0.2",
+      "page_no": 105,
+      "line_no": 25,
+      "confidence": 0.8361079096794128
+    },
+    {
+      "text": "機械手不使用",
+      "page_no": 105,
+      "line_no": 26,
+      "confidence": 0.8942059874534607
+    },
+    {
+      "text": "YO.2",
+      "page_no": 105,
+      "line_no": 27,
+      "confidence": 0.7601348161697388
+    },
+    {
+      "text": "阴模完成",
+      "page_no": 105,
+      "line_no": 28,
+      "confidence": 0.8079293370246887
+    },
+    {
+      "text": "X0.3",
+      "page_no": 105,
+      "line_no": 29,
+      "confidence": 0.839148759841919
+    },
+    {
+      "text": "丁顶針退允許",
+      "page_no": 105,
+      "line_no": 30,
+      "confidence": 0.8284875750541687
+    },
+    {
+      "text": "Y0.3",
+      "page_no": 105,
+      "line_no": 31,
+      "confidence": 0.8768935203552246
+    },
+    {
+      "text": "開模中途",
+      "page_no": 105,
+      "line_no": 32,
+      "confidence": 0.9268407225608826
+    },
+    {
+      "text": "X0.4",
+      "page_no": 105,
+      "line_no": 33,
+      "confidence": 0.8451640605926514
+    },
+    {
+      "text": "顶針進允許",
+      "page_no": 105,
+      "line_no": 34,
+      "confidence": 0.9074737429618835
+    },
+    {
+      "text": "Y0.4",
+      "page_no": 105,
+      "line_no": 35,
+      "confidence": 0.960081934928894
+    },
+    {
+      "text": "全自動",
+      "page_no": 105,
+      "line_no": 36,
+      "confidence": 0.9928295016288757
+    },
+    {
+      "text": "X0.5",
+      "page_no": 105,
+      "line_no": 37,
+      "confidence": 0.9167985320091248
+    },
+    {
+      "text": "週圈啟動",
+      "page_no": 105,
+      "line_no": 38,
+      "confidence": 0.7240614891052246
+    },
+    {
+      "text": "Y0.5",
+      "page_no": 105,
+      "line_no": 39,
+      "confidence": 0.9322445392608643
+    },
+    {
+      "text": "顶针退到位",
+      "page_no": 105,
+      "line_no": 40,
+      "confidence": 0.9171603918075562
+    },
+    {
+      "text": "●X0.6",
+      "page_no": 105,
+      "line_no": 41,
+      "confidence": 0.8168595433235168
+    },
+    {
+      "text": "中子1退允許",
+      "page_no": 105,
+      "line_no": 42,
+      "confidence": 0.9065355658531189
+    },
+    {
+      "text": "Y0.6",
+      "page_no": 105,
+      "line_no": 43,
+      "confidence": 0.9305586814880371
+    },
+    {
+      "text": "顶针進到位",
+      "page_no": 105,
+      "line_no": 44,
+      "confidence": 0.9263745546340942
+    },
+    {
+      "text": "x0.7",
+      "page_no": 105,
+      "line_no": 45,
+      "confidence": 0.8422918319702148
+    },
+    {
+      "text": "中子1進允",
+      "page_no": 105,
+      "line_no": 46,
+      "confidence": 0.9753832817077637
+    },
+    {
+      "text": "Y0.7",
+      "page_no": 105,
+      "line_no": 47,
+      "confidence": 0.8450371623039246
+    },
+    {
+      "text": "由子1调到",
+      "page_no": 105,
+      "line_no": 48,
+      "confidence": 0.6544585824012756
+    },
+    {
+      "text": "vna",
+      "page_no": 105,
+      "line_no": 49,
+      "confidence": 0.6424899101257324
+    },
+    {
+      "text": "由子间分址",
+      "page_no": 105,
+      "line_no": 50,
+      "confidence": 0.5478049516677856
+    },
+    {
+      "text": "va",
+      "page_no": 105,
+      "line_no": 51,
+      "confidence": 0.509677529335022
+    },
+    {
+      "text": "夾具信號",
+      "page_no": 105,
+      "line_no": 52,
+      "confidence": 0.994080662727356
+    },
+    {
+      "text": "国",
+      "page_no": 105,
+      "line_no": 53,
+      "confidence": 0.5039690732955933
+    },
+    {
+      "text": "最2+ST",
+      "page_no": 105,
+      "line_no": 54,
+      "confidence": 0.4182620048522949
+    },
+    {
+      "text": "81：",
+      "page_no": 105,
+      "line_no": 55,
+      "confidence": 0.417753130197525
+    },
+    {
+      "text": "x2：0.011：0.0",
+      "page_no": 105,
+      "line_no": 56,
+      "confidence": 0.8082830905914307
+    },
+    {
+      "text": "r2:0.0",
+      "page_no": 105,
+      "line_no": 57,
+      "confidence": 0.7878534197807312
+    },
+    {
+      "text": "O",
+      "page_no": 105,
+      "line_no": 58,
+      "confidence": 0.257497102022171
+    },
+    {
+      "text": "100%",
+      "page_no": 105,
+      "line_no": 59,
+      "confidence": 0.9864643216133118
+    },
+    {
+      "text": "中",
+      "page_no": 105,
+      "line_no": 60,
+      "confidence": 0.12046840041875839
+    },
+    {
+      "text": "R",
+      "page_no": 105,
+      "line_no": 61,
+      "confidence": 0.8460949063301086
+    },
+    {
+      "text": "夹具信號",
+      "page_no": 105,
+      "line_no": 62,
+      "confidence": 0.8329573273658752
+    },
+    {
+      "text": "检入信號",
+      "page_no": 105,
+      "line_no": 63,
+      "confidence": 0.76353919506073
+    },
+    {
+      "text": "帕出信號",
+      "page_no": 105,
+      "line_no": 64,
+      "confidence": 0.8303926587104797
+    },
+    {
+      "text": "吸1检测",
+      "page_no": 105,
+      "line_no": 65,
+      "confidence": 0.8132989406585693
+    },
+    {
+      "text": "●X1.0",
+      "page_no": 105,
+      "line_no": 66,
+      "confidence": 0.7784773707389832
+    },
+    {
+      "text": "吸1翰出",
+      "page_no": 105,
+      "line_no": 67,
+      "confidence": 0.8615556955337524
+    },
+    {
+      "text": "Y1.0",
+      "page_no": 105,
+      "line_no": 68,
+      "confidence": 0.978706955909729
+    },
+    {
+      "text": "吸2檢测",
+      "page_no": 105,
+      "line_no": 69,
+      "confidence": 0.8489202260971069
+    },
+    {
+      "text": "x1.1",
+      "page_no": 105,
+      "line_no": 70,
+      "confidence": 0.8658798336982727
+    },
+    {
+      "text": "吸2翰出",
+      "page_no": 105,
+      "line_no": 71,
+      "confidence": 0.8753184080123901
+    },
+    {
+      "text": "Y1.1",
+      "page_no": 105,
+      "line_no": 72,
+      "confidence": 0.8980987071990967
+    },
+    {
+      "text": "夾1通检测",
+      "page_no": 105,
+      "line_no": 73,
+      "confidence": 0.8541110157966614
+    },
+    {
+      "text": "x1.4",
+      "page_no": 105,
+      "line_no": 74,
+      "confidence": 0.8253380656242371
+    },
+    {
+      "text": "夾1翰出",
+      "page_no": 105,
+      "line_no": 75,
+      "confidence": 0.8223745226860046
+    },
+    {
+      "text": "Y1.4",
+      "page_no": 105,
+      "line_no": 76,
+      "confidence": 0.9836772680282593
+    },
+    {
+      "text": "夹1断检测",
+      "page_no": 105,
+      "line_no": 77,
+      "confidence": 0.8756710290908813
+    },
+    {
+      "text": "×1.5",
+      "page_no": 105,
+      "line_no": 78,
+      "confidence": 0.7715672254562378
+    },
+    {
+      "text": "夾2输出",
+      "page_no": 105,
+      "line_no": 79,
+      "confidence": 0.9068293571472168
+    },
+    {
+      "text": "Y1.5",
+      "page_no": 105,
+      "line_no": 80,
+      "confidence": 0.9492043256759644
+    },
+    {
+      "text": "夹2通检测",
+      "page_no": 105,
+      "line_no": 81,
+      "confidence": 0.8463333249092102
+    },
+    {
+      "text": "x1.6",
+      "page_no": 105,
+      "line_no": 82,
+      "confidence": 0.8403409719467163
+    },
+    {
+      "text": "夾3翰出",
+      "page_no": 105,
+      "line_no": 83,
+      "confidence": 0.7782431840896606
+    },
+    {
+      "text": "Y1.6",
+      "page_no": 105,
+      "line_no": 84,
+      "confidence": 0.872109055519104
+    },
+    {
+      "text": "夹2断检测",
+      "page_no": 105,
+      "line_no": 85,
+      "confidence": 0.9188520312309265
+    },
+    {
+      "text": "x1.7",
+      "page_no": 105,
+      "line_no": 86,
+      "confidence": 0.8525791168212891
+    },
+    {
+      "text": "C轴旋入",
+      "page_no": 105,
+      "line_no": 87,
+      "confidence": 0.874064564704895
+    },
+    {
+      "text": "Y1.8",
+      "page_no": 105,
+      "line_no": 88,
+      "confidence": 0.9833705425262451
+    },
+    {
+      "text": "C旋入到位",
+      "page_no": 105,
+      "line_no": 89,
+      "confidence": 0.998310387134552
+    },
+    {
+      "text": "×1.8",
+      "page_no": 105,
+      "line_no": 90,
+      "confidence": 0.8519525527954102
+    },
+    {
+      "text": "C轴旋出",
+      "page_no": 105,
+      "line_no": 91,
+      "confidence": 0.9158902168273926
+    },
+    {
+      "text": "Y1.9",
+      "page_no": 105,
+      "line_no": 92,
+      "confidence": 0.9894868731498718
+    },
+    {
+      "text": "C旋出到位",
+      "page_no": 105,
+      "line_no": 93,
+      "confidence": 0.9973303079605103
+    },
+    {
+      "text": "×1.9",
+      "page_no": 105,
+      "line_no": 94,
+      "confidence": 0.8461646437644958
+    },
+    {
+      "text": "夹5翰出",
+      "page_no": 105,
+      "line_no": 95,
+      "confidence": 0.8265341520309448
+    },
+    {
+      "text": "Y1.10",
+      "page_no": 105,
+      "line_no": 96,
+      "confidence": 0.9866982698440552
+    },
+    {
+      "text": "检理",
+      "page_no": 105,
+      "line_no": 97,
+      "confidence": 0.2078303098678589
+    },
+    {
+      "text": "v1 10",
+      "page_no": 105,
+      "line_no": 98,
+      "confidence": 0.8173331022262573
+    },
+    {
+      "text": "-78-",
+      "page_no": 105,
+      "line_no": 99,
+      "confidence": 0.9969475865364075
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 106,
+      "line_no": 1,
+      "confidence": 0.9797200560569763
+    },
+    {
+      "text": "監視",
+      "page_no": 106,
+      "line_no": 2,
+      "confidence": 0.9931728839874268
+    },
+    {
+      "text": "阿博格",
+      "page_no": 106,
+      "line_no": 3,
+      "confidence": 0.9998051524162292
+    },
+    {
+      "text": "自定義",
+      "page_no": 106,
+      "line_no": 4,
+      "confidence": 0.9930453300476074
+    },
+    {
+      "text": "国",
+      "page_no": 106,
+      "line_no": 5,
+      "confidence": 0.8932092785835266
+    },
+    {
+      "text": "0.0：0.0",
+      "page_no": 106,
+      "line_no": 6,
+      "confidence": 0.8240674734115601
+    },
+    {
+      "text": "X2： 0.01： 0.0",
+      "page_no": 106,
+      "line_no": 7,
+      "confidence": 0.785021185874939
+    },
+    {
+      "text": "Y2: 0.0",
+      "page_no": 106,
+      "line_no": 8,
+      "confidence": 0.8337150812149048
+    },
+    {
+      "text": "田",
+      "page_no": 106,
+      "line_no": 9,
+      "confidence": 0.23649795353412628
+    },
+    {
+      "text": "100%",
+      "page_no": 106,
+      "line_no": 10,
+      "confidence": 0.8814828395843506
+    },
+    {
+      "text": "中",
+      "page_no": 106,
+      "line_no": 11,
+      "confidence": 0.23115567862987518
+    },
+    {
+      "text": "R",
+      "page_no": 106,
+      "line_no": 12,
+      "confidence": 0.4514846205711365
+    },
+    {
+      "text": "自訂",
+      "page_no": 106,
+      "line_no": 13,
+      "confidence": 0.774289608001709
+    },
+    {
+      "text": "帖入信",
+      "page_no": 106,
+      "line_no": 14,
+      "confidence": 0.79082852602005
+    },
+    {
+      "text": "输出信號",
+      "page_no": 106,
+      "line_no": 15,
+      "confidence": 0.7773868441581726
+    },
+    {
+      "text": "预留输入1",
+      "page_no": 106,
+      "line_no": 16,
+      "confidence": 0.9475948214530945
+    },
+    {
+      "text": "X1.15",
+      "page_no": 106,
+      "line_no": 17,
+      "confidence": 0.9523528218269348
+    },
+    {
+      "text": "夹6舱出",
+      "page_no": 106,
+      "line_no": 18,
+      "confidence": 0.7978839874267578
+    },
+    {
+      "text": "Y1.11",
+      "page_no": 106,
+      "line_no": 19,
+      "confidence": 0.9913660287857056
+    },
+    {
+      "text": "预留输入2",
+      "page_no": 106,
+      "line_no": 20,
+      "confidence": 0.9194859266281128
+    },
+    {
+      "text": "X2.0",
+      "page_no": 106,
+      "line_no": 21,
+      "confidence": 0.8651156425476074
+    },
+    {
+      "text": "吹1输出",
+      "page_no": 106,
+      "line_no": 22,
+      "confidence": 0.9049324989318848
+    },
+    {
+      "text": "Y1.12",
+      "page_no": 106,
+      "line_no": 23,
+      "confidence": 0.9959591031074524
+    },
+    {
+      "text": "预留输入3",
+      "page_no": 106,
+      "line_no": 24,
+      "confidence": 0.9645445942878723
+    },
+    {
+      "text": "x2.1",
+      "page_no": 106,
+      "line_no": 25,
+      "confidence": 0.8196189999580383
+    },
+    {
+      "text": "吹2输出",
+      "page_no": 106,
+      "line_no": 26,
+      "confidence": 0.9522584676742554
+    },
+    {
+      "text": "Y1.13",
+      "page_no": 106,
+      "line_no": 27,
+      "confidence": 0.9848055839538574
+    },
+    {
+      "text": "预留输入4",
+      "page_no": 106,
+      "line_no": 28,
+      "confidence": 0.9283114671707153
+    },
+    {
+      "text": "x22",
+      "page_no": 106,
+      "line_no": 29,
+      "confidence": 0.8188163638114929
+    },
+    {
+      "text": "预留输出3",
+      "page_no": 106,
+      "line_no": 30,
+      "confidence": 0.9926103353500366
+    },
+    {
+      "text": "Y1.14",
+      "page_no": 106,
+      "line_no": 31,
+      "confidence": 0.987261950969696
+    },
+    {
+      "text": "预留输入5",
+      "page_no": 106,
+      "line_no": 32,
+      "confidence": 0.9727104902267456
+    },
+    {
+      "text": "x23",
+      "page_no": 106,
+      "line_no": 33,
+      "confidence": 0.8006978631019592
+    },
+    {
+      "text": "预留输出4",
+      "page_no": 106,
+      "line_no": 34,
+      "confidence": 0.9671089053153992
+    },
+    {
+      "text": "Y1.15",
+      "page_no": 106,
+      "line_no": 35,
+      "confidence": 0.990622341632843
+    },
+    {
+      "text": "预留输入6",
+      "page_no": 106,
+      "line_no": 36,
+      "confidence": 0.888626217842102
+    },
+    {
+      "text": "x2.4",
+      "page_no": 106,
+      "line_no": 37,
+      "confidence": 0.7511464357376099
+    },
+    {
+      "text": "预留输入7",
+      "page_no": 106,
+      "line_no": 38,
+      "confidence": 0.8438558578491211
+    },
+    {
+      "text": "×2.5",
+      "page_no": 106,
+      "line_no": 39,
+      "confidence": 0.7770425081253052
+    },
+    {
+      "text": "預留输入8",
+      "page_no": 106,
+      "line_no": 40,
+      "confidence": 0.8068350553512573
+    },
+    {
+      "text": "×2.6",
+      "page_no": 106,
+      "line_no": 41,
+      "confidence": 0.8302041292190552
+    },
+    {
+      "text": "入a",
+      "page_no": 106,
+      "line_no": 42,
+      "confidence": 0.37205076217651367
+    },
+    {
+      "text": "v27",
+      "page_no": 106,
+      "line_no": 43,
+      "confidence": 0.6804799437522888
+    },
+    {
+      "text": "計數器",
+      "page_no": 106,
+      "line_no": 44,
+      "confidence": 0.9971241354942322
+    },
+    {
+      "text": "暖",
+      "page_no": 106,
+      "line_no": 45,
+      "confidence": 0.3442063629627228
+    },
+    {
+      "text": "国",
+      "page_no": 106,
+      "line_no": 46,
+      "confidence": 0.966623842716217
+    },
+    {
+      "text": "21：",
+      "page_no": 106,
+      "line_no": 47,
+      "confidence": 0.7900640368461609
+    },
+    {
+      "text": "0.0",
+      "page_no": 106,
+      "line_no": 48,
+      "confidence": 0.9159707427024841
+    },
+    {
+      "text": "0.0",
+      "page_no": 106,
+      "line_no": 49,
+      "confidence": 0.9300883412361145
+    },
+    {
+      "text": "X2: 0.0Y1: 0.0",
+      "page_no": 106,
+      "line_no": 50,
+      "confidence": 0.8260278105735779
+    },
+    {
+      "text": "Y2：",
+      "page_no": 106,
+      "line_no": 51,
+      "confidence": 0.7812216281890869
+    },
+    {
+      "text": "0.0",
+      "page_no": 106,
+      "line_no": 52,
+      "confidence": 0.8482093214988708
+    },
+    {
+      "text": "40",
+      "page_no": 106,
+      "line_no": 53,
+      "confidence": 0.6874125003814697
+    },
+    {
+      "text": "100%",
+      "page_no": 106,
+      "line_no": 54,
+      "confidence": 0.9833955764770508
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 106,
+      "line_no": 55,
+      "confidence": 0.9958528280258179
+    },
+    {
+      "text": "123",
+      "page_no": 106,
+      "line_no": 56,
+      "confidence": 0.9120846390724182
+    },
+    {
+      "text": "計数器",
+      "page_no": 106,
+      "line_no": 57,
+      "confidence": 0.7426926493644714
+    },
+    {
+      "text": "No.1<100座量計数器>",
+      "page_no": 106,
+      "line_no": 58,
+      "confidence": 0.9326286315917969
+    },
+    {
+      "text": "0",
+      "page_no": 106,
+      "line_no": 59,
+      "confidence": 0.8502283692359924
+    },
+    {
+      "text": "No.2<101堆體1計数器>",
+      "page_no": 106,
+      "line_no": 60,
+      "confidence": 0.893303632736206
+    },
+    {
+      "text": "0",
+      "page_no": 106,
+      "line_no": 61,
+      "confidence": 0.982738196849823
+    },
+    {
+      "text": "ă",
+      "page_no": 106,
+      "line_no": 62,
+      "confidence": 0.19768784940242767
+    },
+    {
+      "text": "-79 -",
+      "page_no": 106,
+      "line_no": 63,
+      "confidence": 0.9371569752693176
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 107,
+      "line_no": 1,
+      "confidence": 0.9795388579368591
+    },
+    {
+      "text": "監視",
+      "page_no": 107,
+      "line_no": 2,
+      "confidence": 0.9952681660652161
+    },
+    {
+      "text": "阿博格",
+      "page_no": 107,
+      "line_no": 3,
+      "confidence": 0.9996414184570312
+    },
+    {
+      "text": "軸位置",
+      "page_no": 107,
+      "line_no": 4,
+      "confidence": 0.9979739785194397
+    },
+    {
+      "text": "国",
+      "page_no": 107,
+      "line_no": 5,
+      "confidence": 0.6924930214881897
+    },
+    {
+      "text": "21：",
+      "page_no": 107,
+      "line_no": 6,
+      "confidence": 0.6615557074546814
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 7,
+      "confidence": 0.8221041560173035
+    },
+    {
+      "text": "X1：",
+      "page_no": 107,
+      "line_no": 8,
+      "confidence": 0.5527446269989014
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 9,
+      "confidence": 0.9917640089988708
+    },
+    {
+      "text": "X2",
+      "page_no": 107,
+      "line_no": 10,
+      "confidence": 0.6607024669647217
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 11,
+      "confidence": 0.9528357982635498
+    },
+    {
+      "text": "1：",
+      "page_no": 107,
+      "line_no": 12,
+      "confidence": 0.7212691307067871
+    },
+    {
+      "text": ".0.0",
+      "page_no": 107,
+      "line_no": 13,
+      "confidence": 0.8872822523117065
+    },
+    {
+      "text": "Y2：0.0",
+      "page_no": 107,
+      "line_no": 14,
+      "confidence": 0.8356936573982239
+    },
+    {
+      "text": "0",
+      "page_no": 107,
+      "line_no": 15,
+      "confidence": 0.14376702904701233
+    },
+    {
+      "text": "V",
+      "page_no": 107,
+      "line_no": 16,
+      "confidence": 0.15322214365005493
+    },
+    {
+      "text": "丽",
+      "page_no": 107,
+      "line_no": 17,
+      "confidence": 0.2042759507894516
+    },
+    {
+      "text": "回",
+      "page_no": 107,
+      "line_no": 18,
+      "confidence": 0.11427731066942215
+    },
+    {
+      "text": "100%",
+      "page_no": 107,
+      "line_no": 19,
+      "confidence": 0.9710716009140015
+    },
+    {
+      "text": "2",
+      "page_no": 107,
+      "line_no": 20,
+      "confidence": 0.22307631373405457
+    },
+    {
+      "text": "触位置",
+      "page_no": 107,
+      "line_no": 21,
+      "confidence": 0.7933416366577148
+    },
+    {
+      "text": "Z1:",
+      "page_no": 107,
+      "line_no": 22,
+      "confidence": 0.922080934047699
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 23,
+      "confidence": 0.9871609807014465
+    },
+    {
+      "text": "X1:",
+      "page_no": 107,
+      "line_no": 24,
+      "confidence": 0.8095634579658508
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 25,
+      "confidence": 0.9930813908576965
+    },
+    {
+      "text": "X2:",
+      "page_no": 107,
+      "line_no": 26,
+      "confidence": 0.7660315036773682
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 27,
+      "confidence": 0.9779534339904785
+    },
+    {
+      "text": "Y1:",
+      "page_no": 107,
+      "line_no": 28,
+      "confidence": 0.9422097206115723
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 29,
+      "confidence": 0.9903769493103027
+    },
+    {
+      "text": "$Y2",
+      "page_no": 107,
+      "line_no": 30,
+      "confidence": 0.7694778442382812
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 31,
+      "confidence": 0.9884381890296936
+    },
+    {
+      "text": "X2:",
+      "page_no": 107,
+      "line_no": 32,
+      "confidence": 0.7455329298973083
+    },
+    {
+      "text": "0.0",
+      "page_no": 107,
+      "line_no": 33,
+      "confidence": 0.993847131729126
+    },
+    {
+      "text": "-80-",
+      "page_no": 107,
+      "line_no": 34,
+      "confidence": 0.9967485070228577
+    },
+    {
+      "text": "ARBURG",
+      "page_no": 108,
+      "line_no": 1,
+      "confidence": 0.9833343029022217
+    },
+    {
+      "text": "監視",
+      "page_no": 108,
+      "line_no": 2,
+      "confidence": 0.9931728839874268
+    },
+    {
+      "text": "阿博格",
+      "page_no": 108,
+      "line_no": 3,
+      "confidence": 0.9998254179954529
+    },
+    {
+      "text": "報警記錄",
+      "page_no": 108,
+      "line_no": 4,
+      "confidence": 0.9917528629302979
+    },
+    {
+      "text": "国",
+      "page_no": 108,
+      "line_no": 5,
+      "confidence": 0.9353911876678467
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 6,
+      "confidence": 0.453301340341568
+    },
+    {
+      "text": "0.01: 0.0x2： 0.0Y1： 0.0",
+      "page_no": 108,
+      "line_no": 7,
+      "confidence": 0.7512340545654297
+    },
+    {
+      "text": "Y2： 0.0",
+      "page_no": 108,
+      "line_no": 8,
+      "confidence": 0.8355151414871216
+    },
+    {
+      "text": "国",
+      "page_no": 108,
+      "line_no": 9,
+      "confidence": 0.07559467852115631
+    },
+    {
+      "text": "100%",
+      "page_no": 108,
+      "line_no": 10,
+      "confidence": 0.986676812171936
+    },
+    {
+      "text": "報警記錄",
+      "page_no": 108,
+      "line_no": 11,
+      "confidence": 0.7982804775238037
+    },
+    {
+      "text": "報警時間",
+      "page_no": 108,
+      "line_no": 12,
+      "confidence": 0.8692253828048706
+    },
+    {
+      "text": "编码",
+      "page_no": 108,
+      "line_no": 13,
+      "confidence": 0.758256196975708
+    },
+    {
+      "text": "錯誤资讯",
+      "page_no": 108,
+      "line_no": 14,
+      "confidence": 0.647913932800293
+    },
+    {
+      "text": "站號",
+      "page_no": 108,
+      "line_no": 15,
+      "confidence": 0.9314601421356201
+    },
+    {
+      "text": "15:06:5404-242023",
+      "page_no": 108,
+      "line_no": 16,
+      "confidence": 0.9903699159622192
+    },
+    {
+      "text": "94",
+      "page_no": 108,
+      "line_no": 17,
+      "confidence": 0.9988945722579956
+    },
+    {
+      "text": "94氯壓過低，请檢查氣源1訊號",
+      "page_no": 108,
+      "line_no": 18,
+      "confidence": 0.8950470685958862
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 19,
+      "confidence": 0.9863585829734802
+    },
+    {
+      "text": "15:06:5404-242023",
+      "page_no": 108,
+      "line_no": 20,
+      "confidence": 0.989093005657196
+    },
+    {
+      "text": "67",
+      "page_no": 108,
+      "line_no": 21,
+      "confidence": 0.9936791658401489
+    },
+    {
+      "text": "67[横行轴/上下触]同時無訊號",
+      "page_no": 108,
+      "line_no": 22,
+      "confidence": 0.8522140979766846
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 23,
+      "confidence": 0.9887545108795166
+    },
+    {
+      "text": "09:20:0503-202023",
+      "page_no": 108,
+      "line_no": 24,
+      "confidence": 0.9829314947128296
+    },
+    {
+      "text": "94",
+      "page_no": 108,
+      "line_no": 25,
+      "confidence": 0.9988246560096741
+    },
+    {
+      "text": "94氯壓過低，请檢查氧源1訊號",
+      "page_no": 108,
+      "line_no": 26,
+      "confidence": 0.8664673566818237
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 27,
+      "confidence": 0.9455699920654297
+    },
+    {
+      "text": "20:40:1103-06 2023",
+      "page_no": 108,
+      "line_no": 28,
+      "confidence": 0.9695096611976624
+    },
+    {
+      "text": "67",
+      "page_no": 108,
+      "line_no": 29,
+      "confidence": 0.9954910278320312
+    },
+    {
+      "text": "67[横行轴]/上下軸]同時無訊號",
+      "page_no": 108,
+      "line_no": 30,
+      "confidence": 0.8630779385566711
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 31,
+      "confidence": 0.9877614974975586
+    },
+    {
+      "text": "20:12:4103-062023",
+      "page_no": 108,
+      "line_no": 32,
+      "confidence": 0.9803757667541504
+    },
+    {
+      "text": "81",
+      "page_no": 108,
+      "line_no": 33,
+      "confidence": 0.9939131736755371
+    },
+    {
+      "text": "81軸1未在待機點",
+      "page_no": 108,
+      "line_no": 34,
+      "confidence": 0.8610455393791199
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 35,
+      "confidence": 0.9800690412521362
+    },
+    {
+      "text": "18:19:39 03-06 2023",
+      "page_no": 108,
+      "line_no": 36,
+      "confidence": 0.9598065614700317
+    },
+    {
+      "text": "2",
+      "page_no": 108,
+      "line_no": 37,
+      "confidence": 0.9964816570281982
+    },
+    {
+      "text": "2驅動器故障",
+      "page_no": 108,
+      "line_no": 38,
+      "confidence": 0.8743820786476135
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 39,
+      "confidence": 0.9811496734619141
+    },
+    {
+      "text": "18:19:3603-062023",
+      "page_no": 108,
+      "line_no": 40,
+      "confidence": 0.9741843938827515
+    },
+    {
+      "text": "0X00510002X",
+      "page_no": 108,
+      "line_no": 41,
+      "confidence": 0.9343433976173401
+    },
+    {
+      "text": "10.1控制電路電源的電壓下降",
+      "page_no": 108,
+      "line_no": 42,
+      "confidence": 0.9879568219184875
+    },
+    {
+      "text": "5",
+      "page_no": 108,
+      "line_no": 43,
+      "confidence": 0.9975447058677673
+    },
+    {
+      "text": "18:19:36 03-062023",
+      "page_no": 108,
+      "line_no": 44,
+      "confidence": 0.9603602886199951
+    },
+    {
+      "text": "2",
+      "page_no": 108,
+      "line_no": 45,
+      "confidence": 0.9953979849815369
+    },
+    {
+      "text": "2幅動器故障",
+      "page_no": 108,
+      "line_no": 46,
+      "confidence": 0.8501083850860596
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 47,
+      "confidence": 0.9814193248748779
+    },
+    {
+      "text": "18:19:2903-062023",
+      "page_no": 108,
+      "line_no": 48,
+      "confidence": 0.9802937507629395
+    },
+    {
+      "text": "0X 00e10007X",
+      "page_no": 108,
+      "line_no": 49,
+      "confidence": 0.8714446425437927
+    },
+    {
+      "text": "10.1控制電路電源的電壓下降",
+      "page_no": 108,
+      "line_no": 50,
+      "confidence": 0.9962213039398193
+    },
+    {
+      "text": "5",
+      "page_no": 108,
+      "line_no": 51,
+      "confidence": 0.9971223473548889
+    },
+    {
+      "text": "18:17:5703-06 2023",
+      "page_no": 108,
+      "line_no": 52,
+      "confidence": 0.9612609148025513
+    },
+    {
+      "text": "0X00510002X",
+      "page_no": 108,
+      "line_no": 53,
+      "confidence": 0.8980531692504883
+    },
+    {
+      "text": "10.1控制電路電源的電壓下降",
+      "page_no": 108,
+      "line_no": 54,
+      "confidence": 0.9790174961090088
+    },
+    {
+      "text": "5",
+      "page_no": 108,
+      "line_no": 55,
+      "confidence": 0.9966681599617004
+    },
+    {
+      "text": "18:17-5703-062023",
+      "page_no": 108,
+      "line_no": 56,
+      "confidence": 0.9739641547203064
+    },
+    {
+      "text": "2",
+      "page_no": 108,
+      "line_no": 57,
+      "confidence": 0.9892758131027222
+    },
+    {
+      "text": "2题动器路",
+      "page_no": 108,
+      "line_no": 58,
+      "confidence": 0.554890513420105
+    },
+    {
+      "text": "0",
+      "page_no": 108,
+      "line_no": 59,
+      "confidence": 0.8272229433059692
+    },
+    {
+      "text": "報警解決方法見4機械手報警及故障處理",
+      "page_no": 108,
+      "line_no": 60,
+      "confidence": 0.9938187003135681
+    },
+    {
+      "text": "阿博格FL5+2說明書",
+      "page_no": 108,
+      "line_no": 61,
+      "confidence": 0.9954028725624084
+    },
+    {
+      "text": "-81-",
+      "page_no": 108,
+      "line_no": 62,
+      "confidence": 0.9971729516983032
+    }
+  ]
+}
