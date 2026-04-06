@@ -3995,6 +3995,7 @@ def test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_
       Case B) avg_top_n marginal + top1 ALSO weak
               → suppression does NOT fire → supplemental IS triggered
     """
+    from backend.app.schemas.system_config import SupplementalQualityThresholdsConfig
     from backend.app.services.retrieval_service import (
         SUPPLEMENTAL_AVG_TOP_N_TOLERANCE_ZONE,
         SUPPLEMENTAL_LOW_LITERAL_COVERAGE_THRESHOLD,
@@ -4030,6 +4031,7 @@ def test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_
 
     def _run_case(dept_scores: list[float], query: str, top1_text: str, dept_doc_id: str, global_doc_id: str) -> RetrievalResponse:
         """Run a full retrieval pipeline with mocked components and return the response."""
+        from datetime import datetime, timedelta, timezone
 
         class SpyRetrievalScopePolicy:
             def build_department_priority_retrieval_scope(self, auth_context):
@@ -4067,6 +4069,15 @@ def test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_
 
         # Character-level tokenization for predictable literal coverage
         svc._literal_guard_tokens = lambda text: [c for c in text if c.strip() and not c.isspace()]
+
+        # Mock quality thresholds so test controls exact values regardless of system_config
+        # Set fine thresholds equal to regular so query_granularity doesn't override them
+        svc._get_supplemental_quality_thresholds = lambda: SupplementalQualityThresholdsConfig(
+            top1_threshold=0.55,
+            avg_top_n_threshold=0.45,
+            fine_query_top1_threshold=0.55,
+            fine_query_avg_top_n_threshold=0.45,
+        )
 
         request = RetrievalRequest(query=query, top_k=5)
         auth_context = AuthContext(
@@ -4172,6 +4183,8 @@ def test_retrieval_service_staged_triggers_supplemental_when_multi_doc_low_liter
 
     This test verifies the behavioral contract without requiring a live API.
     """
+    from datetime import datetime, timedelta, timezone
+
     from backend.app.services.retrieval_service import (
         SUPPLEMENTAL_MULTI_DOC_LOW_LITERAL_COVERAGE_THRESHOLD,
         SUPPLEMENTAL_MONO_DOCUMENT_LITERAL_COVERAGE_THRESHOLD,

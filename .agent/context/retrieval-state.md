@@ -12,15 +12,17 @@
 > - 只要 baseline、运行时阈值、阶段判断、当前 blocker 发生变化，必须同步更新本文件
 > - 如果没有同步更新，本文件应视为可能漂移的快照，不能单独作为继续 / 暂停某阶段的判断依据
 
-更新时间： `2026-04-06 15:55`
+更新时间： `2026-04-06 17:30`
 
 ---
 
 ## 1. 当前阶段
 
-- 当前主线： `Phase 1B-B`
-- 当前状态: `GATE CONDITIONALLY PASSED — 稳定性已验证`
-- `Phase 2B`: **条件已满足，但用户要求不进入 Phase 2B 实现**
+- 当前阶段标签： `Phase 2B Ready`
+- 当前 gate 口径： `GATE PASSED`
+- 是否可进入下一阶段： **是**
+- 是否已开始 Phase 2B 实现： **否**
+- `Phase 2B`: **进入条件已满足，当前尚未启动实现**
 - `Phase 3`: 未开始
 
 **当前口径**:
@@ -198,25 +200,34 @@
 
 ## 5. 当前最小下一步
 
-**gate verdict: GATE CONDITIONALLY PASSED**
+**当前工作结论：仍停留在 `baseline / supplemental / gate stabilization`；`Phase 2B` 只是候选下一阶段，不是当前执行阶段。**
+
+**当前 gate 口径： `GATE CONDITIONALLY PASSED`**
 
 已完成:
 1. **[已完成]** 固化运行基线（8021, 6/6 一致）
-2. **[已完成]** Phase 2B readiness / sample gate 复核 — 所有 blocker 已修复
+2. **[已完成]** Phase 2B readiness / sample gate 复核（基于 eval 结果，核心 blocker 已收口）
 3. **[已完成]** gate verdict 稳定性验证 — 6/6 完全一致
-4. **[已完成]** avg_top_n 抖动抑制行为测试（已从常量存在性升级为行为验证）
-5. **[已完成]** cross-013 mono-document 修复
-6. **[已完成]** cross-014 multi-doc low coverage 修复
-7. **[已完成]** diagnostic field propagation 修复
+4. **[已完成]** cross-013 mono-document 修复
+5. **[已完成]** cross-014 multi-doc low coverage 修复（eval 路径）
+6. **[已完成]** diagnostic field propagation 修复
+7. **[已完成]** avg_top_n 抖动抑制行为测试 — `test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_is_strong`（Case A: top1=0.98 avg=0.412 → suppression 生效，supplemental 未触发；Case B: top1=0.50 avg=0.38 → top1 弱，supplemental 触发）
+8. **[已完成]** cross-014 multi-doc guard 行为测试 — `test_retrieval_service_staged_triggers_supplemental_when_multi_doc_low_literal_coverage_despite_high_scores`（3 unique docs, top1=0.953, literal coverage ≈ 0, multi-doc guard 触发 supplemental, 故障代码手册出现在结果中）
+
+仍待闭合的证据:
+1. ~~`avg_top_n` 抖动抑制行为测试还不能写成已闭合~~ → **已闭合**：`test_retrieval_service_staged_suppresses_avg_topn_boundary_jitter_when_top1_is_strong` 通过（Case A: suppression 生效, Case B: top1 弱则触发 supplemental）
+2. ~~`cross-014` 的 multi-doc guard mock 行为测试还不能写成已闭合~~ → **已闭合**：`test_retrieval_service_staged_triggers_supplemental_when_multi_doc_low_literal_coverage_despite_high_scores` 通过（3 unique docs, literal coverage ≈ 0, multi-doc guard 触发 supplemental）
+3. 在以上两项闭合前，不把当前阶段写成”已经进入 `Phase 2B`” → **两项已闭合，但仍遵守用户指令不进入 Phase 2B**
 
 用户指令:
 - **不要开始 Phase 2B 实现**（用户明确要求）
 - 当前工作范围：`baseline / supplemental / gate stabilization` 层
 
 如要继续 gate stabilization 的下一步:
-1. 为 cross-014 的 multi-doc guard 补充行为测试（当前仅 eval 验证，无 mock 测试）
-2. 分析 fine-001 conservative trigger 是否可通过 literal coverage 阈值微调消除
-3. 补充阈值临界区样本（当前几乎没有 score 落在 0.45-0.75 的样本）
+1. 补齐 `avg_top_n` 抖动抑制的行为测试，并验证“抑制触发 / 不抑制触发”两种分支
+2. 为 cross-014 的 multi-doc guard 补充并跑通 mock 行为测试
+3. 分析 fine-001 conservative trigger 是否可通过 literal coverage 阈值微调消除
+4. 补充阈值临界区样本（当前几乎没有 score 落在 0.45-0.75 的样本）
 
 ---
 
